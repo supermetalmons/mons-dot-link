@@ -8,32 +8,56 @@
 		@import url('https://fonts.googleapis.com/css?family=SF+Pro+Display&display=swap');
 		
 		body {
+			margin-top: 24px;
 			background-color: white;
 			color: black;
 			text-align: center;
-			height: 100vh;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			font-family: 'SF Pro Display', sans-serif;
 		}
-		img {
-			max-width: 100%;
-			height: auto;
-			max-height: 420px;
-		}
 		.link {
 			margin: 20px;
 			font-size: 24px;
 		}
+		svg {
+        	display: block;
+        	margin: auto;
+        	cursor: pointer;
+			-webkit-user-select: none;
+  			-moz-user-select: none;
+  			-ms-user-select: none;
+  			user-select: none;
+			transition: none !important;
+    		animation: none !important;
+			transform: translate3d(0, 0, 0);
+			-webkit-tap-highlight-color: transparent;
+			outline: none;
+    	}
+    	.item {
+			-webkit-tap-highlight-color: transparent;
+        	pointer-events: none;
+			outline: none;
+			transform: translate3d(0, 0, 0);
+    	}
 	</style>
 </head>
 <body>
-	<img src="removed.jpg" alt="Mons Removed">
-	<p>mons are temporarily removed from the app store</p>
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges" width="363pt" height="363pt">
+	    <defs>
+	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
+	            <rect width="1" height="1" fill="#E8E8E8"/>
+	            <rect x="1" y="1" width="1" height="1" fill="#E8E8E8"/>
+	        </pattern>
+	    </defs>
+	    <rect width="11" height="11" fill="url(#chessPattern)"/>
+	    <g id="overlay"></g>
+	</svg>
+	<p style="color: gray; font-style: italic;">mons are temporarily removed from the app store</p>
 	<div class="link">
-		<a href="mons.dmg" download="mons.dmg">💻 download for macos</a>
+		<a href="mons.dmg" download="mons.dmg">download for macos</a>
 	</div>
 	<div class="link">
 		<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942">tabletop simulator on steam</a>
@@ -41,5 +65,58 @@
 	<div class="link">
 		<a href="http://supermetalmons.com">supermetalmons.com</a>
 	</div>
+	<script>
+    const overlay = document.getElementById('overlay');
+    const images = {};
+
+    for (let y = 0; y < 11; y++) {
+        for (let x = 0; x < 11; x++) {
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", x);
+            rect.setAttribute("y", y);
+            rect.setAttribute("width", 1);
+            rect.setAttribute("height", 1);
+            rect.setAttribute("fill", "rgba(255, 255, 255, 0)");
+            rect.addEventListener('click', function() {
+                toggleItem(x, y);
+            });
+            overlay.appendChild(rect);
+        }
+    }
+
+    function toggleItem(x, y) {
+        const key = `item-${x}-${y}`;
+        if (images[key]) {
+            images[key].remove();
+            delete images[key];
+        } else {
+            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', 'drainer.png');
+            img.setAttribute("x", x);
+            img.setAttribute("y", y);
+            img.setAttribute("width", 1);
+            img.setAttribute("height", 1);
+            img.setAttribute("class", "item");
+            overlay.appendChild(img);
+            images[key] = img;
+        }
+    }
+
+    placeRandomMons();
+
+    function placeRandomMons() {
+        const positions = new Set();
+        while (positions.size < 9) {
+            const x = Math.floor(Math.random() * 11);
+            const y = Math.floor(Math.random() * 11);
+            positions.add(`${x}-${y}`);
+        }
+
+        positions.forEach(pos => {
+            const [x, y] = pos.split('-').map(Number);
+            toggleItem(x, y);
+        });
+    }
+</script>
 </body>
 </html>
