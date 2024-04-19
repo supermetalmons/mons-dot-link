@@ -1,4 +1,4 @@
-const drainerImage = require("./drainer.png");
+import drainerImage from './public/drainer.png';
 
 document.addEventListener("DOMContentLoaded", (event) => {
   const overlay = document.getElementById("overlay");
