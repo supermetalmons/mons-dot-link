@@ -1,6 +1,5 @@
-import drainerImage from '../public/drainer.png';
-
 document.addEventListener("DOMContentLoaded", (event) => {
+  const drainerImage = document.getElementById('preload-drainer-image').src;
   const overlay = document.getElementById("overlay");
   const images = {};
 
