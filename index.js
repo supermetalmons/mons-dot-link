@@ -1,4 +1,4 @@
-import drainerImage from './drainer.png';
+import drainerImage from 'url:./drainer.png';
 
 const overlay = document.getElementById("overlay");
 const images = {};
