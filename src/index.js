@@ -95,9 +95,43 @@ function placeItem(item, x, y) {
 
 function toggleItem(x, y) {
   const key = `item-${x}-${y}`;
-  if (images[key]) {
-    images[key].remove();
-    delete images[key];
+  const img = images[key];
+  if (img) {
+    const overlay = document.getElementById('overlay');
+    const existingHighlight = overlay.querySelector(`.highlight-${x}-${y}`);
+    
+    if (existingHighlight) {
+      existingHighlight.remove();
+    } else {
+      const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      highlight.setAttribute('class', `highlight-${x}-${y}`);
+      highlight.style.pointerEvents = 'none';
+
+      const circleRadius = 0.56;
+      const circleCenter = { x: x + 0.5, y: y + 0.5 };
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', circleCenter.x);
+      circle.setAttribute('cy', circleCenter.y);
+      circle.setAttribute('r', circleRadius);
+      circle.setAttribute('fill', '#00F900');
+      
+      const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+      mask.setAttribute('id', `highlight-mask-${x}-${y}`);
+      const maskRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      maskRect.setAttribute('x', x);
+      maskRect.setAttribute('y', y);
+      maskRect.setAttribute('width', 1);
+      maskRect.setAttribute('height', 1);
+      maskRect.setAttribute('fill', 'white');
+      mask.appendChild(maskRect);
+      highlight.appendChild(mask);
+      
+      circle.setAttribute('mask', `url(#highlight-mask-${x}-${y})`);
+      highlight.appendChild(circle);
+
+      img.parentNode.insertBefore(highlight, img);
+    }
   } else {
     placeItem(drainer, x, y);
   }
