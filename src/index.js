@@ -1,5 +1,4 @@
 import init, { hello } from 'mons-web';
-const drainerImage = "../img/drainer.png";
 
 async function run() {
   await init();
@@ -26,19 +25,21 @@ for (let y = 0; y < 11; y++) {
   }
 }
 
+const drainerImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
+drainerImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", "../img/drainer.png");
+drainerImage.setAttribute("width", 1);
+drainerImage.setAttribute("height", 1);
+drainerImage.setAttribute("class", "item");
+
 function toggleItem(x, y) {
   const key = `item-${x}-${y}`;
   if (images[key]) {
     images[key].remove();
     delete images[key];
   } else {
-    const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    img.setAttributeNS("http://www.w3.org/1999/xlink", "href", drainerImage);
+    const img = drainerImage.cloneNode();
     img.setAttribute("x", x);
     img.setAttribute("y", y);
-    img.setAttribute("width", 1);
-    img.setAttribute("height", 1);
-    img.setAttribute("class", "item");
     overlay.appendChild(img);
     images[key] = img;
   }
