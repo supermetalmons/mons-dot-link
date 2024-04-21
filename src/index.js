@@ -7,12 +7,6 @@ async function run() {
 
 run();
 
-const bytes = Buffer.from('hello', 'utf8');
-const encoded = bs58.encode(bytes);
-console.log(encoded);
-const decoded = bs58.decode(encoded);
-console.log(decoded.toString('utf8'));
-
 const drainerImage = document.getElementById("preload-drainer-image").src;
 const overlay = document.getElementById("overlay");
 const images = {};

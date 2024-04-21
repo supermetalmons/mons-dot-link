@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "webpack serve",
+    "start": "webpack serve --mode production",
     "build": "webpack --mode production"
   },
   "devDependencies": {
@@ -12,8 +12,6 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
-    "bs58": "^5.0.0",
-    "buffer": "^6.0.3",
     "mons-web": "^0.1.6"
   }
 }
