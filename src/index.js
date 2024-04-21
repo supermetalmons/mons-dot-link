@@ -1,5 +1,11 @@
-import bs58 from 'bs58';
-import { Buffer } from 'buffer';
+import init, { hello } from 'mons-web';
+
+async function run() {
+  await init();
+  console.log(hello());
+}
+
+run();
 
 const bytes = Buffer.from('hello', 'utf8');
 const encoded = bs58.encode(bytes);
