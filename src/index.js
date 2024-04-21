@@ -43,6 +43,19 @@ const potion = loadImage("potion");
 const supermana = loadImage("supermana");
 const supermanaSimple = loadImage("supermana-simple");
 
+const attackTargetColor = "#941651";
+const destinationColor = "#008200";
+const spiritTargetColor = "#FF84FF";
+const startFromSuggestionColor = "#FEFB00";
+
+const trace1Color = "#FF2F92";
+const trace2Color = "#FFD478";
+const trace3Color = "#FFFB78";
+const trace4Color = "#72FA78";
+const trace5Color = "#73FDFF";
+const trace6Color = "#75D5FF";
+const trace7Color = "#D783FF";
+
 placeItem(demon, 3, 10);
 placeItem(angel, 4, 10);
 placeItem(drainer, 5, 10);
