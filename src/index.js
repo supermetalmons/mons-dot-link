@@ -1,4 +1,5 @@
 import init, { hello } from 'mons-web';
+const drainerImage = "../img/drainer.png";
 
 async function run() {
   await init();
@@ -7,7 +8,6 @@ async function run() {
 
 run();
 
-const drainerImage = document.getElementById("preload-drainer-image").src;
 const overlay = document.getElementById("overlay");
 const images = {};
 
