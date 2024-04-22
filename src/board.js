@@ -110,6 +110,22 @@ function faint(img, x, y) {
   img.style.transformOrigin = `${x + 0.5}px ${y + 0.5}px`;
 }
 
+function highlightEmptyDestination(x, y) {
+  const highlight = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "circle"
+  );
+  highlight.setAttribute("class", `highlight-${x}-${y}`);
+  highlight.style.pointerEvents = "none";
+  const circleRadius = 0.15;
+  const circleCenter = { x: x + 0.5, y: y + 0.5 };
+  highlight.setAttribute("cx", circleCenter.x);
+  highlight.setAttribute("cy", circleCenter.y);
+  highlight.setAttribute("r", circleRadius);
+  highlight.setAttribute("fill", destinationColor);
+  overlay.append(highlight);
+}
+
 function highlightSelectedItem(img, x, y) {
   const highlight = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -220,6 +236,11 @@ function toggleItem(x, y) {
       highlightSelectedItem(img, x, y);
     }
   } else {
-    placeItem(drainer, x, y);
+    const existingHighlight = overlay.querySelector(`.highlight-${x}-${y}`);
+    if (existingHighlight) {
+      existingHighlight.remove();
+    } else {
+      highlightEmptyDestination(x, y);
+    }
   }
 }
