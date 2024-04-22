@@ -93,13 +93,21 @@ function loadImage(name) {
   return image;
 }
 
-function placeItem(item, x, y) {
+function placeItem(item, x, y, fainted = false) {
   const img = item.cloneNode();
   img.setAttribute("x", x);
   img.setAttribute("y", y);
   overlay.appendChild(img);
   const key = `item-${x}-${y}`;
   images[key] = img;
+  if (fainted) {
+    faint(img, x, y);
+  }
+}
+
+function faint(img, x, y) {
+  img.style.transform = "rotate(90deg)";
+  img.style.transformOrigin = `${x + 0.5}px ${y + 0.5}px`;
 }
 
 function toggleItem(x, y) {
