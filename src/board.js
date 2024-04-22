@@ -110,7 +110,7 @@ function faint(img, x, y) {
   img.style.transformOrigin = `${x + 0.5}px ${y + 0.5}px`;
 }
 
-function highlightItem(img, x, y) {
+function highlightSelectedItem(img, x, y) {
   const highlight = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "g"
@@ -161,7 +161,7 @@ function toggleItem(x, y) {
     if (existingHighlight) {
       existingHighlight.remove();
     } else {
-      highlightItem(img, x, y);
+      highlightSelectedItem(img, x, y);
     }
   } else {
     placeItem(drainer, x, y);
