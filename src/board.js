@@ -231,6 +231,10 @@ function highlightDestinationItem(img, x, y, blink = false) {
   }
 }
 
+function drawTrace(start, end) {
+  // TODO: implement
+}
+
 function toggleItem(x, y) {
   const key = `item-${x}-${y}`;
   const img = images[key];
