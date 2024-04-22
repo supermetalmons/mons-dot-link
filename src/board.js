@@ -169,7 +169,7 @@ function highlightSelectedItem(img, x, y) {
   img.parentNode.insertBefore(highlight, img);
 }
 
-function highlightDestinationItem(img, x, y) {
+function highlightDestinationItem(img, x, y, blink = false) {
   const highlight = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "g"
@@ -223,6 +223,12 @@ function highlightDestinationItem(img, x, y) {
   rect.setAttribute("mask", `url(#highlight-mask-${x}-${y})`);
 
   img.parentNode.insertBefore(highlight, img);
+
+  if (blink) {
+    setTimeout(() => {
+      highlight.remove();
+    }, 100);
+  }
 }
 
 function toggleItem(x, y) {
