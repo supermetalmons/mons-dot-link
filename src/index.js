@@ -10,7 +10,7 @@ async function run() {
   const game = MonsGameModel.from_fen(fen);
 
   if (fen != game.fen()) {
-    throw new Error("smth is wrong with fen");
+    throw new Error("smth is wrong with a fen");
   }
 
   console.log(game.fen());
