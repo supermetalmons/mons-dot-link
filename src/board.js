@@ -153,6 +153,62 @@ function highlightSelectedItem(img, x, y) {
   img.parentNode.insertBefore(highlight, img);
 }
 
+function highlightDestinationItem(img, x, y) {
+  const highlight = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g"
+  );
+  highlight.setAttribute("class", `highlight-${x}-${y}`);
+  highlight.style.pointerEvents = "none";
+
+  const circleRadius = 0.56;
+  const circleCenter = { x: x + 0.5, y: y + 0.5 };
+
+  const rect = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "rect"
+  );
+  rect.setAttribute("x", x);
+  rect.setAttribute("y", y);
+  rect.setAttribute("width", 1);
+  rect.setAttribute("height", 1);
+  rect.setAttribute("fill", "#00F900");
+
+  const mask = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "mask"
+  );
+  mask.setAttribute("id", `highlight-mask-${x}-${y}`);
+
+  const maskRect = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "rect"
+  );
+  maskRect.setAttribute("x", x);
+  maskRect.setAttribute("y", y);
+  maskRect.setAttribute("width", 1);
+  maskRect.setAttribute("height", 1);
+  maskRect.setAttribute("fill", "white");
+  mask.appendChild(maskRect);
+
+  const maskCircle = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "circle"
+  );
+  maskCircle.setAttribute("cx", circleCenter.x);
+  maskCircle.setAttribute("cy", circleCenter.y);
+  maskCircle.setAttribute("r", circleRadius);
+  maskCircle.setAttribute("fill", "black");
+  mask.appendChild(maskCircle);
+
+  highlight.appendChild(mask);
+  highlight.appendChild(rect);
+
+  rect.setAttribute("mask", `url(#highlight-mask-${x}-${y})`);
+
+  img.parentNode.insertBefore(highlight, img);
+}
+
 function toggleItem(x, y) {
   const key = `item-${x}-${y}`;
   const img = images[key];
