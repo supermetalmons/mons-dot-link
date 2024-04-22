@@ -53,6 +53,7 @@ export function setupBoard() {
 
   // setBase(demon, 3, 9);
   // setBase(mysticB, 3, 1);
+  // placeMonWithMana(drainer, mana, 2, 3);
 
   placeItem(demon, 3, 10);
   placeItem(angel, 4, 10);
@@ -94,6 +95,26 @@ function loadImage(name) {
   image.setAttribute("height", 1);
   image.setAttribute("class", "item");
   return image;
+}
+
+function placeMonWithMana(item, mana, x, y) {
+  const img = item.cloneNode();
+  img.setAttribute("x", x);
+  img.setAttribute("y", y);
+
+  const carriedMana = mana.cloneNode();
+  carriedMana.setAttribute("x", x + 0.34);
+  carriedMana.setAttribute("y", y + 0.27);
+  carriedMana.setAttribute("width", 0.93);
+  carriedMana.setAttribute("height", 0.93);
+  
+  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  container.appendChild(img);
+  container.appendChild(carriedMana);
+
+  overlay.appendChild(container);
+  const key = `item-${x}-${y}`;
+  images[key] = container;
 }
 
 function placeItem(item, x, y, fainted = false) {
