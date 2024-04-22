@@ -8,11 +8,13 @@ async function run() {
   const location = new Location(10, 10);
   const fen = "0 0 w 0 0 0 0 0 1 n03y0xs0xd0xa0xe0xn03/n11/n11/n04xxmn01xxmn04/n03xxmn01xxmn01xxmn03/xxQn04xxUn04xxQ/n03xxMn01xxMn01xxMn03/n04xxMn01xxMn04/n11/n11/n03E0xA0xD0xS0xY0xn03";
   const game = MonsGameModel.from_fen(fen);
+  const moves = game.available_move_kinds();
 
   if (fen != game.fen()) {
     throw new Error("smth is wrong with a fen");
   }
 
+  console.log(moves);
   console.log(game.fen());
   console.log(color);
   console.log(modifier);
