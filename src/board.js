@@ -49,35 +49,38 @@ export function setupBoard() {
       });
       overlay.appendChild(rect);
     }
-
-    placeItem(demon, 3, 10);
-    placeItem(angel, 4, 10);
-    placeItem(drainer, 5, 10);
-    placeItem(spirit, 6, 10);
-    placeItem(mystic, 7, 10);
-
-    placeItem(demonB, 7, 0);
-    placeItem(angelB, 6, 0);
-    placeItem(drainerB, 5, 0);
-    placeItem(spiritB, 4, 0);
-    placeItem(mysticB, 3, 0);
-
-    placeItem(manaB, 4, 3);
-    placeItem(manaB, 6, 3);
-    placeItem(manaB, 3, 4);
-    placeItem(manaB, 5, 4);
-    placeItem(manaB, 7, 4);
-
-    placeItem(mana, 3, 6);
-    placeItem(mana, 4, 7);
-    placeItem(mana, 5, 6);
-    placeItem(mana, 6, 7);
-    placeItem(mana, 7, 6);
-
-    placeItem(bombOrPotion, 0, 5);
-    placeItem(bombOrPotion, 10, 5);
-    placeItem(supermana, 5, 5);
   }
+
+  // setBase(demon, 3, 9);
+  // setBase(mysticB, 3, 1);
+
+  placeItem(demon, 3, 10);
+  placeItem(angel, 4, 10);
+  placeItem(drainer, 5, 10);
+  placeItem(spirit, 6, 10);
+  placeItem(mystic, 7, 10);
+
+  placeItem(demonB, 7, 0);
+  placeItem(angelB, 6, 0);
+  placeItem(drainerB, 5, 0);
+  placeItem(spiritB, 4, 0);
+  placeItem(mysticB, 3, 0);
+
+  placeItem(manaB, 4, 3);
+  placeItem(manaB, 6, 3);
+  placeItem(manaB, 3, 4);
+  placeItem(manaB, 5, 4);
+  placeItem(manaB, 7, 4);
+
+  placeItem(mana, 3, 6);
+  placeItem(mana, 4, 7);
+  placeItem(mana, 5, 6);
+  placeItem(mana, 6, 7);
+  placeItem(mana, 7, 6);
+
+  placeItem(bombOrPotion, 0, 5);
+  placeItem(bombOrPotion, 10, 5);
+  placeItem(supermana, 5, 5);
 }
 
 function loadImage(name) {
@@ -105,6 +108,18 @@ function placeItem(item, x, y, fainted = false) {
   }
 }
 
+function setBase(item, x, y) {
+  const img = item.cloneNode();
+  img.setAttribute("width", 0.6);
+  img.setAttribute("height", 0.6);
+  const adjustedX = x + 0.2;
+  const adjustedY = y + 0.2;
+  img.setAttribute("x", adjustedX);
+  img.setAttribute("y", adjustedY);
+  img.style.opacity = "0.4";
+  overlay.appendChild(img);
+}
+
 function faint(img, x, y) {
   img.style.transform = "rotate(90deg)";
   img.style.transformOrigin = `${x + 0.5}px ${y + 0.5}px`;
@@ -127,10 +142,7 @@ function highlightEmptyDestination(x, y) {
 }
 
 function highlightSelectedItem(img, x, y) {
-  const highlight = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g"
-  );
+  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${x}-${y}`);
   highlight.style.pointerEvents = "none";
 
@@ -146,10 +158,7 @@ function highlightSelectedItem(img, x, y) {
   circle.setAttribute("r", circleRadius);
   circle.setAttribute("fill", "#00F900");
 
-  const mask = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "mask"
-  );
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${x}-${y}`);
   const maskRect = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -170,30 +179,21 @@ function highlightSelectedItem(img, x, y) {
 }
 
 function highlightDestinationItem(img, x, y, blink = false) {
-  const highlight = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g"
-  );
+  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${x}-${y}`);
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
   const circleCenter = { x: x + 0.5, y: y + 0.5 };
 
-  const rect = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "rect"
-  );
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   rect.setAttribute("x", x);
   rect.setAttribute("y", y);
   rect.setAttribute("width", 1);
   rect.setAttribute("height", 1);
   rect.setAttribute("fill", "#00F900");
 
-  const mask = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "mask"
-  );
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${x}-${y}`);
 
   const maskRect = document.createElementNS(
