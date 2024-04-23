@@ -1,4 +1,5 @@
 import { didClickSquare } from "./index";
+import { Location } from "./models";
 
 const overlay = document.getElementById("overlay");
 const images: { [key: string]: SVGElement } = {};
@@ -89,12 +90,11 @@ export function setupBoard() {
   placeItem(supermana, 5, 5);
 }
 
-export function blinkLocations(locations: { i: number; j: number }[]) {
+export function blinkLocations(locations: Location[]) {
   locations.forEach((location) => {
-    const { i, j } = location;
-    const key = `item-${j}-${i}`;
+    const key = `item-${location.j}-${location.i}`;
     const img = images[key];
-    highlightDestinationItem(img, j, i, true, startFromSuggestionColor);
+    highlightDestinationItem(img, location.j, location.i, true, startFromSuggestionColor);
   });
 }
 
@@ -311,7 +311,7 @@ function drawTrace(start: number, end: number) {
 }
 
 function toggleItem(x: number, y: number) {
-  // didClickSquare(y, x);
+  // didClickSquare({i: y, j: x});
   // return;
 
   const key = `item-${x}-${y}`;
