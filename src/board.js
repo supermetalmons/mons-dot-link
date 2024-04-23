@@ -25,6 +25,7 @@ const attackTargetColor = "#941651";
 const destinationColor = "#008200";
 const spiritTargetColor = "#FF84FF";
 const startFromSuggestionColor = "#FEFB00";
+const selectedItemColor = "#00F900";
 
 const trace1Color = "#FF2F92";
 const trace2Color = "#FFD478";
@@ -88,6 +89,15 @@ export function setupBoard() {
   placeItem(supermana, 5, 5);
 }
 
+export function blinkLocations(locations) {
+  locations.forEach((location) => {
+    const { i, j } = location;
+    const key = `item-${j}-${i}`;
+    const img = images[key];
+    highlightDestinationItem(img, j, i, true, startFromSuggestionColor);
+  });
+}
+
 function loadImage(name) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
   image.setAttributeNS(
@@ -111,7 +121,7 @@ function placeMonWithBomb(item, x, y) {
   carriedBomb.setAttribute("y", y + 0.495);
   carriedBomb.setAttribute("width", 0.54);
   carriedBomb.setAttribute("height", 0.54);
-  
+
   const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
   container.appendChild(img);
   container.appendChild(carriedBomb);
@@ -131,7 +141,7 @@ function placeMonWithSupermana(item, x, y) {
   carriedMana.setAttribute("y", y - 0.13);
   carriedMana.setAttribute("width", 0.74);
   carriedMana.setAttribute("height", 0.74);
-  
+
   const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
   container.appendChild(img);
   container.appendChild(carriedMana);
@@ -151,7 +161,7 @@ function placeMonWithMana(item, mana, x, y) {
   carriedMana.setAttribute("y", y + 0.27);
   carriedMana.setAttribute("width", 0.93);
   carriedMana.setAttribute("height", 0.93);
-  
+
   const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
   container.appendChild(img);
   container.appendChild(carriedMana);
@@ -243,7 +253,7 @@ function highlightSelectedItem(img, x, y) {
   img.parentNode.insertBefore(highlight, img);
 }
 
-function highlightDestinationItem(img, x, y, blink = false) {
+function highlightDestinationItem(img, x, y, blink = false, color) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${x}-${y}`);
   highlight.style.pointerEvents = "none";
@@ -256,7 +266,7 @@ function highlightDestinationItem(img, x, y, blink = false) {
   rect.setAttribute("y", y);
   rect.setAttribute("width", 1);
   rect.setAttribute("height", 1);
-  rect.setAttribute("fill", "#00F900");
+  rect.setAttribute("fill", color);
 
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${x}-${y}`);
@@ -302,6 +312,8 @@ function drawTrace(start, end) {
 
 function toggleItem(x, y) {
   didClickSquare(y, x);
+  return;
+
   const key = `item-${x}-${y}`;
   const img = images[key];
   if (img) {

@@ -1,5 +1,5 @@
 import init, { MonsGameModel, Location, Modifier, Color, OutputModelKind } from "mons-web";
-import { setupBoard } from "./board.js";
+import { setupBoard, blinkLocations } from "./board.js";
 
 setupBoard();
 
@@ -56,10 +56,12 @@ function processCurrentInputs() {
   switch (output.kind) {
     case OutputModelKind.InvalidInput:
       currentInputs = [];
+      processCurrentInputs(); // TODO: tune
       console.log("invalid input");
       break;
     case OutputModelKind.LocationsToStartFrom:
-      console.log("locations to start from");
+      const locations = output.locations().map(loc => ({i: loc.i, j: loc.j}));
+      blinkLocations(locations);
       break;
     case OutputModelKind.NextInputOptions:
       console.log("next input options");
