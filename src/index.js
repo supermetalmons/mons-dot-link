@@ -40,6 +40,5 @@ async function run() {
   console.log("locations with content:", locationsWithContent);
 }
 
-run();
-
 setupBoard();
+run();
