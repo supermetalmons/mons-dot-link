@@ -10,7 +10,7 @@ const game = MonsGameModel.new();
 const locationsWithContent = game.locations_with_content();
 
 locationsWithContent.forEach(loc => {
-  const location = {i: loc.i, j: loc.j};
+  const location = new Location(loc.i, loc.j);
   const item = game.item(new LocationModel(location.i, location.j));
   if (item !== undefined) {
     putItem(item, location);
@@ -40,7 +40,7 @@ function processCurrentInputs() {
       processCurrentInputs(); // TODO: tune
       break;
     case OutputModelKind.LocationsToStartFrom:
-      const locations: Location[] = output.locations().map(loc => ({i: loc.i, j: loc.j}));
+      const locations: Location[] = output.locations().map(loc => (new Location(loc.i, loc.j)));
       blinkLocations(locations);
       break;
     case OutputModelKind.NextInputOptions:
