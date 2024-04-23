@@ -1,11 +1,26 @@
 import init, { MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind } from "mons-web";
-import { setupBoard, blinkLocations } from "./board";
+import { setupBoard, blinkLocations, putItem, setupSquare } from "./board";
 import { Location } from "./models";
 
 setupBoard();
 
 await init();
 const game = MonsGameModel.new();
+
+const locationsWithContent = game.locations_with_content();
+
+locationsWithContent.forEach(loc => {
+  const location = {i: loc.i, j: loc.j};
+  const item = game.item(new LocationModel(location.i, location.j));
+  if (item !== undefined) {
+    putItem(item, location);
+  } else {
+    const square = game.square(new LocationModel(location.i, location.j));
+    if (square !== undefined) {
+      setupSquare(square, location);
+    }
+  }
+});
 
 var currentInputs: Location[] = [];
 

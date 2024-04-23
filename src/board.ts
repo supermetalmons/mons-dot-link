@@ -1,6 +1,7 @@
 import { didClickSquare } from "./index";
 import { Location } from "./models";
 import { colors } from "./colors";
+import { ItemModel, SquareModel } from "mons-web";
 
 const overlay = document.getElementById("overlay");
 const images: { [key: string]: SVGElement } = {};
@@ -22,6 +23,15 @@ const bomb = loadImage("bomb");
 const potion = loadImage("potion");
 const supermana = loadImage("supermana");
 const supermanaSimple = loadImage("supermana-simple");
+
+export function putItem(item: ItemModel, location: Location) {
+  placeItem(drainer, location.j, location.i);
+  // TODO: implement
+}
+
+export function setupSquare(square: SquareModel, location: Location) {
+  // TODO: implement
+}
 
 export function setupBoard() {
   for (let y = 0; y < 11; y++) {
