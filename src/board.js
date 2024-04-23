@@ -301,7 +301,7 @@ function drawTrace(start, end) {
 }
 
 function toggleItem(x, y) {
-  didClickSquare(x, y);
+  didClickSquare(y, x);
   const key = `item-${x}-${y}`;
   const img = images[key];
   if (img) {

@@ -4,7 +4,7 @@ import { setupBoard } from "./board.js";
 setupBoard();
 
 export function didClickSquare(i, j) {
-  inputs += (i, j);
+  currentInputs.push({i, j});
   processCurrentInputs();
 }
 
@@ -47,15 +47,15 @@ console.log("black score:", blackScore);
 console.log("white score:", whiteScore);
 console.log("locations with content:", locationsWithContent);
 
-var inputs = [];
+var currentInputs = [];
 
 function processCurrentInputs() {
-  const l1 = new Location(10, 5);
-  const l2 = new Location(9, 5);
-  let output = game.process_input([l1, l2]);
+  const gameInput = currentInputs.map(input => new Location(input.i, input.j));
+  let output = game.process_input(gameInput);
 
   switch (output.kind) {
     case OutputModelKind.InvalidInput:
+      currentInputs = [];
       console.log("invalid input");
       break;
     case OutputModelKind.LocationsToStartFrom:
@@ -65,6 +65,7 @@ function processCurrentInputs() {
       console.log("next input options");
       break;
     case OutputModelKind.Events:
+      currentInputs = [];
       console.log("events");
       break;
     default:
