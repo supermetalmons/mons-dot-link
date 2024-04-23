@@ -1,14 +1,15 @@
 import init, { MonsGameModel, Location, Modifier, Color, OutputModelKind } from "mons-web";
-import { setupBoard, blinkLocations } from "./board.js";
+import { setupBoard, blinkLocations } from "./board";
 
 setupBoard();
 
-export function didClickSquare(i, j) {
+export function didClickSquare(i: number, j: number) {
   currentInputs.push({i, j});
   processCurrentInputs();
 }
 
 await init();
+
 const color = Color.Black;
 const modifier = Modifier.SelectPotion;
 const location = new Location(0, 5);
@@ -47,7 +48,7 @@ console.log("black score:", blackScore);
 console.log("white score:", whiteScore);
 console.log("locations with content:", locationsWithContent);
 
-var currentInputs = [];
+var currentInputs: {i: number; j: number;}[] = [];
 
 function processCurrentInputs() {
   const gameInput = currentInputs.map(input => new Location(input.i, input.j));
@@ -57,13 +58,15 @@ function processCurrentInputs() {
     case OutputModelKind.InvalidInput:
       currentInputs = [];
       processCurrentInputs(); // TODO: tune
-      console.log("invalid input");
       break;
     case OutputModelKind.LocationsToStartFrom:
       const locations = output.locations().map(loc => ({i: loc.i, j: loc.j}));
       blinkLocations(locations);
       break;
     case OutputModelKind.NextInputOptions:
+
+      const nextInputs = output.next_inputs;
+
       console.log("next input options");
       break;
     case OutputModelKind.Events:

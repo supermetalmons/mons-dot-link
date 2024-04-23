@@ -1,7 +1,7 @@
-import { didClickSquare } from "./index.js";
+import { didClickSquare } from "./index";
 
 const overlay = document.getElementById("overlay");
-const images = {};
+const images: { [key: string]: SVGElement } = {};
 
 const drainer = loadImage("drainer");
 const angel = loadImage("angel");
@@ -42,10 +42,10 @@ export function setupBoard() {
         "http://www.w3.org/2000/svg",
         "rect"
       );
-      rect.setAttribute("x", x);
-      rect.setAttribute("y", y);
-      rect.setAttribute("width", 1);
-      rect.setAttribute("height", 1);
+      rect.setAttribute("x", x.toString());
+      rect.setAttribute("y", y.toString());
+      rect.setAttribute("width", "1");
+      rect.setAttribute("height", "1");
       rect.setAttribute("fill", "rgba(255, 255, 255, 0)");
       rect.addEventListener("click", function () {
         toggleItem(x, y);
@@ -89,7 +89,7 @@ export function setupBoard() {
   placeItem(supermana, 5, 5);
 }
 
-export function blinkLocations(locations) {
+export function blinkLocations(locations: { i: number; j: number }[]) {
   locations.forEach((location) => {
     const { i, j } = location;
     const key = `item-${j}-${i}`;
@@ -98,29 +98,29 @@ export function blinkLocations(locations) {
   });
 }
 
-function loadImage(name) {
+function loadImage(name: string) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
   image.setAttributeNS(
     "http://www.w3.org/1999/xlink",
     "href",
     `../img/${name}.png`
   );
-  image.setAttribute("width", 1);
-  image.setAttribute("height", 1);
+  image.setAttribute("width", "1");
+  image.setAttribute("height", "1");
   image.setAttribute("class", "item");
   return image;
 }
 
-function placeMonWithBomb(item, x, y) {
-  const img = item.cloneNode();
-  img.setAttribute("x", x);
-  img.setAttribute("y", y);
+function placeMonWithBomb(item: SVGElement, x: number, y: number) {
+  const img = item.cloneNode() as SVGElement;
+  img.setAttribute("x", x.toString());
+  img.setAttribute("y", y.toString());
 
-  const carriedBomb = bomb.cloneNode();
-  carriedBomb.setAttribute("x", x + 0.52);
-  carriedBomb.setAttribute("y", y + 0.495);
-  carriedBomb.setAttribute("width", 0.54);
-  carriedBomb.setAttribute("height", 0.54);
+  const carriedBomb = bomb.cloneNode() as SVGElement;
+  carriedBomb.setAttribute("x", (x + 0.52).toString());
+  carriedBomb.setAttribute("y", (y + 0.495).toString());
+  carriedBomb.setAttribute("width", (0.54).toString());
+  carriedBomb.setAttribute("height", (0.54).toString());
 
   const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
   container.appendChild(img);
@@ -131,36 +131,16 @@ function placeMonWithBomb(item, x, y) {
   images[key] = container;
 }
 
-function placeMonWithSupermana(item, x, y) {
-  const img = item.cloneNode();
-  img.setAttribute("x", x);
-  img.setAttribute("y", y);
+function placeMonWithSupermana(item: SVGElement, x: number, y: number) {
+  const img = item.cloneNode() as SVGElement;
+  img.setAttribute("x", x.toString());
+  img.setAttribute("y", y.toString());
 
-  const carriedMana = supermanaSimple.cloneNode();
-  carriedMana.setAttribute("x", x + 0.13);
-  carriedMana.setAttribute("y", y - 0.13);
-  carriedMana.setAttribute("width", 0.74);
-  carriedMana.setAttribute("height", 0.74);
-
-  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  container.appendChild(img);
-  container.appendChild(carriedMana);
-
-  overlay.appendChild(container);
-  const key = `item-${x}-${y}`;
-  images[key] = container;
-}
-
-function placeMonWithMana(item, mana, x, y) {
-  const img = item.cloneNode();
-  img.setAttribute("x", x);
-  img.setAttribute("y", y);
-
-  const carriedMana = mana.cloneNode();
-  carriedMana.setAttribute("x", x + 0.34);
-  carriedMana.setAttribute("y", y + 0.27);
-  carriedMana.setAttribute("width", 0.93);
-  carriedMana.setAttribute("height", 0.93);
+  const carriedMana = supermanaSimple.cloneNode() as SVGElement;
+  carriedMana.setAttribute("x", (x + 0.13).toString());
+  carriedMana.setAttribute("y", (y - 0.13).toString());
+  carriedMana.setAttribute("width", (0.74).toString());
+  carriedMana.setAttribute("height", (0.74).toString());
 
   const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
   container.appendChild(img);
@@ -171,10 +151,30 @@ function placeMonWithMana(item, mana, x, y) {
   images[key] = container;
 }
 
-function placeItem(item, x, y, fainted = false) {
-  const img = item.cloneNode();
-  img.setAttribute("x", x);
-  img.setAttribute("y", y);
+function placeMonWithMana(item: SVGElement, mana: SVGElement, x: number, y: number) {
+  const img = item.cloneNode() as SVGElement;
+  img.setAttribute("x", x.toString());
+  img.setAttribute("y", y.toString());
+
+  const carriedMana = mana.cloneNode() as SVGElement;
+  carriedMana.setAttribute("x", (x + 0.34).toString());
+  carriedMana.setAttribute("y", (y + 0.27).toString());
+  carriedMana.setAttribute("width", (0.93).toString());
+  carriedMana.setAttribute("height", (0.93).toString());
+
+  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  container.appendChild(img);
+  container.appendChild(carriedMana);
+
+  overlay.appendChild(container);
+  const key = `item-${x}-${y}`;
+  images[key] = container;
+}
+
+function placeItem(item: SVGElement, x: number, y: number, fainted = false) {
+  const img = item.cloneNode() as SVGElement;
+  img.setAttribute("x", x.toString());
+  img.setAttribute("y", y.toString());
   overlay.appendChild(img);
   const key = `item-${x}-${y}`;
   images[key] = img;
@@ -183,24 +183,24 @@ function placeItem(item, x, y, fainted = false) {
   }
 }
 
-function setBase(item, x, y) {
-  const img = item.cloneNode();
-  img.setAttribute("width", 0.6);
-  img.setAttribute("height", 0.6);
+function setBase(item: SVGElement, x: number, y: number) {
+  const img = item.cloneNode() as SVGElement;
+  img.setAttribute("width", "0.6");
+  img.setAttribute("height", "0.6");
   const adjustedX = x + 0.2;
   const adjustedY = y + 0.2;
-  img.setAttribute("x", adjustedX);
-  img.setAttribute("y", adjustedY);
+  img.setAttribute("x", adjustedX.toString());
+  img.setAttribute("y", adjustedY.toString());
   img.style.opacity = "0.4";
   overlay.appendChild(img);
 }
 
-function faint(img, x, y) {
+function faint(img: SVGElement, x: number, y: number) {
   img.style.transform = "rotate(90deg)";
   img.style.transformOrigin = `${x + 0.5}px ${y + 0.5}px`;
 }
 
-function highlightEmptyDestination(x, y) {
+function highlightEmptyDestination(x: number, y: number) {
   const highlight = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "circle"
@@ -209,14 +209,14 @@ function highlightEmptyDestination(x, y) {
   highlight.style.pointerEvents = "none";
   const circleRadius = 0.15;
   const circleCenter = { x: x + 0.5, y: y + 0.5 };
-  highlight.setAttribute("cx", circleCenter.x);
-  highlight.setAttribute("cy", circleCenter.y);
-  highlight.setAttribute("r", circleRadius);
+  highlight.setAttribute("cx", circleCenter.x.toString());
+  highlight.setAttribute("cy", circleCenter.y.toString());
+  highlight.setAttribute("r", circleRadius.toString());
   highlight.setAttribute("fill", destinationColor);
   overlay.append(highlight);
 }
 
-function highlightSelectedItem(img, x, y) {
+function highlightSelectedItem(img: SVGElement, x: number, y: number) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${x}-${y}`);
   highlight.style.pointerEvents = "none";
@@ -228,9 +228,9 @@ function highlightSelectedItem(img, x, y) {
     "http://www.w3.org/2000/svg",
     "circle"
   );
-  circle.setAttribute("cx", circleCenter.x);
-  circle.setAttribute("cy", circleCenter.y);
-  circle.setAttribute("r", circleRadius);
+  circle.setAttribute("cx", circleCenter.x.toString());
+  circle.setAttribute("cy", circleCenter.y.toString());
+  circle.setAttribute("r", circleRadius.toString());
   circle.setAttribute("fill", "#00F900");
 
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
@@ -239,10 +239,10 @@ function highlightSelectedItem(img, x, y) {
     "http://www.w3.org/2000/svg",
     "rect"
   );
-  maskRect.setAttribute("x", x);
-  maskRect.setAttribute("y", y);
-  maskRect.setAttribute("width", 1);
-  maskRect.setAttribute("height", 1);
+  maskRect.setAttribute("x", x.toString());
+  maskRect.setAttribute("y", y.toString());
+  maskRect.setAttribute("width","1");
+  maskRect.setAttribute("height", "1");
   maskRect.setAttribute("fill", "white");
   mask.appendChild(maskRect);
   highlight.appendChild(mask);
@@ -253,7 +253,7 @@ function highlightSelectedItem(img, x, y) {
   img.parentNode.insertBefore(highlight, img);
 }
 
-function highlightDestinationItem(img, x, y, blink = false, color) {
+function highlightDestinationItem(img: SVGElement, x: number, y: number, blink = false, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${x}-${y}`);
   highlight.style.pointerEvents = "none";
@@ -262,10 +262,10 @@ function highlightDestinationItem(img, x, y, blink = false, color) {
   const circleCenter = { x: x + 0.5, y: y + 0.5 };
 
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  rect.setAttribute("x", x);
-  rect.setAttribute("y", y);
-  rect.setAttribute("width", 1);
-  rect.setAttribute("height", 1);
+  rect.setAttribute("x", x.toString());
+  rect.setAttribute("y", y.toString());
+  rect.setAttribute("width", "1");
+  rect.setAttribute("height", "1");
   rect.setAttribute("fill", color);
 
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
@@ -275,10 +275,10 @@ function highlightDestinationItem(img, x, y, blink = false, color) {
     "http://www.w3.org/2000/svg",
     "rect"
   );
-  maskRect.setAttribute("x", x);
-  maskRect.setAttribute("y", y);
-  maskRect.setAttribute("width", 1);
-  maskRect.setAttribute("height", 1);
+  maskRect.setAttribute("x", x.toString());
+  maskRect.setAttribute("y", y.toString());
+  maskRect.setAttribute("width", "1");
+  maskRect.setAttribute("height", "1");
   maskRect.setAttribute("fill", "white");
   mask.appendChild(maskRect);
 
@@ -286,9 +286,9 @@ function highlightDestinationItem(img, x, y, blink = false, color) {
     "http://www.w3.org/2000/svg",
     "circle"
   );
-  maskCircle.setAttribute("cx", circleCenter.x);
-  maskCircle.setAttribute("cy", circleCenter.y);
-  maskCircle.setAttribute("r", circleRadius);
+  maskCircle.setAttribute("cx", circleCenter.x.toString());
+  maskCircle.setAttribute("cy", circleCenter.y.toString());
+  maskCircle.setAttribute("r", circleRadius.toString());
   maskCircle.setAttribute("fill", "black");
   mask.appendChild(maskCircle);
 
@@ -306,13 +306,13 @@ function highlightDestinationItem(img, x, y, blink = false, color) {
   }
 }
 
-function drawTrace(start, end) {
+function drawTrace(start: number, end: number) {
   // TODO: implement
 }
 
-function toggleItem(x, y) {
-  didClickSquare(y, x);
-  return;
+function toggleItem(x: number, y: number) {
+  // didClickSquare(y, x);
+  // return;
 
   const key = `item-${x}-${y}`;
   const img = images[key];
