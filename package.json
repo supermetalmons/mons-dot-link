@@ -12,6 +12,6 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
-    "mons-web": "^0.1.13"
+    "mons-web": "^0.1.15"
   }
 }
