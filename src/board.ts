@@ -1,7 +1,7 @@
 import { didClickSquare } from "./index";
 import { Location } from "./models";
 import { colors } from "./colors";
-import { ItemModel, SquareModel } from "mons-web";
+import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind } from "mons-web";
 
 const overlay = document.getElementById("overlay");
 const images: { [key: string]: SVGElement } = {};
@@ -25,8 +25,51 @@ const supermana = loadImage("supermana");
 const supermanaSimple = loadImage("supermana-simple");
 
 export function putItem(item: ItemModel, location: Location) {
-  placeItem(drainer, location.j, location.i);
-  // TODO: implement
+  switch (item.kind) {
+    case ItemModelKind.Mon:
+      const isBlack = item.mon.color == ColorModel.Black;
+      switch (item.mon.kind) {
+        case MonKind.Demon:
+          placeItem(isBlack ? demonB : demon, location);
+          break;
+        case MonKind.Drainer:
+          placeItem(isBlack ? drainerB : drainer, location);
+          break;
+        case MonKind.Angel:
+          placeItem(isBlack ? angelB : angel, location);
+          break;
+        case MonKind.Spirit:
+          placeItem(isBlack ? spiritB : spirit, location);
+          break;
+        case MonKind.Mystic:
+          placeItem(isBlack ? mysticB : mystic, location);
+          break;
+      }
+      break;
+    case ItemModelKind.Mana:
+      switch (item.mana.kind) {
+        case ManaKind.Regular:
+          const isBlack = item.mana.color == ColorModel.Black;
+          placeItem(isBlack ? manaB : mana, location);
+          break;
+        case ManaKind.Supermana:
+          placeItem(supermana, location);
+          break;
+      }
+      break;
+    case ItemModelKind.MonWithMana:
+       // TODO: implement
+      placeMonWithSupermana(drainer, 2, 3);
+      placeMonWithMana(drainer, mana, 2, 3);
+      break;
+    case ItemModelKind.MonWithConsumable:
+       // TODO: implement
+      placeMonWithBomb(drainer, 2, 3);
+      break;
+    case ItemModelKind.Consumable:
+      placeItem(bombOrPotion, location);
+      break;
+  }
 }
 
 export function setupSquare(square: SquareModel, location: Location) {
@@ -48,42 +91,6 @@ export function setupBoard() {
       overlay.appendChild(rect);
     }
   }
-}
-
-function addDemoMons() {
-  placeItem(demon, 3, 10);
-  placeItem(angel, 4, 10);
-  placeItem(drainer, 5, 10);
-  placeItem(spirit, 6, 10);
-  placeItem(mystic, 7, 10);
-
-  placeItem(demonB, 7, 0);
-  placeItem(angelB, 6, 0);
-  placeItem(drainerB, 5, 0);
-  placeItem(spiritB, 4, 0);
-  placeItem(mysticB, 3, 0);
-
-  placeItem(manaB, 4, 3);
-  placeItem(manaB, 6, 3);
-  placeItem(manaB, 3, 4);
-  placeItem(manaB, 5, 4);
-  placeItem(manaB, 7, 4);
-
-  placeItem(mana, 3, 6);
-  placeItem(mana, 4, 7);
-  placeItem(mana, 5, 6);
-  placeItem(mana, 6, 7);
-  placeItem(mana, 7, 6);
-
-  placeItem(bombOrPotion, 0, 5);
-  placeItem(bombOrPotion, 10, 5);
-  placeItem(supermana, 5, 5);
-
-  setBase(demon, 3, 9);
-  setBase(mysticB, 3, 1);
-  placeMonWithMana(drainer, mana, 2, 3);
-  placeMonWithSupermana(drainer, 2, 3);
-  placeMonWithBomb(drainer, 2, 3);
 }
 
 export function blinkLocations(locations: Location[]) {
@@ -163,15 +170,15 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, x: number, y: numb
   images[key] = container;
 }
 
-function placeItem(item: SVGElement, x: number, y: number, fainted = false) {
+function placeItem(item: SVGElement, location: Location, fainted = false) {
   const img = item.cloneNode() as SVGElement;
-  img.setAttribute("x", x.toString());
-  img.setAttribute("y", y.toString());
+  img.setAttribute("x", location.j.toString());
+  img.setAttribute("y", location.i.toString());
   overlay.appendChild(img);
-  const key = `item-${x}-${y}`;
+  const key = `item-${location.j}-${location.i}`;
   images[key] = img;
   if (fainted) {
-    faint(img, x, y);
+    faint(img, location.j, location.i);
   }
 }
 
