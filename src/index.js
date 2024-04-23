@@ -1,4 +1,4 @@
-import init, { MonsGameModel, Location, Modifier, Color } from "mons-web";
+import init, { MonsGameModel, Location, Modifier, Color, OutputModelKind } from "mons-web";
 import { setupBoard } from "./board.js";
 
 setupBoard();
@@ -53,5 +53,21 @@ function processCurrentInputs() {
   const l1 = new Location(10, 5);
   const l2 = new Location(9, 5);
   let output = game.process_input([l1, l2]);
-  console.log(output.kind);
+
+  switch (output.kind) {
+    case OutputModelKind.InvalidInput:
+      console.log("invalid input");
+      break;
+    case OutputModelKind.LocationsToStartFrom:
+      console.log("locations to start from");
+      break;
+    case OutputModelKind.NextInputOptions:
+      console.log("next input options");
+      break;
+    case OutputModelKind.Events:
+      console.log("events");
+      break;
+    default:
+      console.log("unknown output kind");
+  }
 }
