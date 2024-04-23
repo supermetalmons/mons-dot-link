@@ -1,3 +1,5 @@
+import { didClickSquare } from "./index.js";
+
 const overlay = document.getElementById("overlay");
 const images = {};
 
@@ -299,6 +301,7 @@ function drawTrace(start, end) {
 }
 
 function toggleItem(x, y) {
+  didClickSquare(x, y);
   const key = `item-${x}-${y}`;
   const img = images[key];
   if (img) {
