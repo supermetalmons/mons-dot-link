@@ -54,13 +54,10 @@ export function setupBoard() {
       overlay.appendChild(rect);
     }
   }
+}
 
-  // setBase(demon, 3, 9);
-  // setBase(mysticB, 3, 1);
-  // placeMonWithMana(drainer, mana, 2, 3);
-  // placeMonWithSupermana(drainer, 2, 3);
-  // placeMonWithBomb(drainer, 2, 3);
-
+// TODO: deprecate
+export function addDemoMons() {
   placeItem(demon, 3, 10);
   placeItem(angel, 4, 10);
   placeItem(drainer, 5, 10);
@@ -88,6 +85,12 @@ export function setupBoard() {
   placeItem(bombOrPotion, 0, 5);
   placeItem(bombOrPotion, 10, 5);
   placeItem(supermana, 5, 5);
+
+  // setBase(demon, 3, 9);
+  // setBase(mysticB, 3, 1);
+  // placeMonWithMana(drainer, mana, 2, 3);
+  // placeMonWithSupermana(drainer, 2, 3);
+  // placeMonWithBomb(drainer, 2, 3);
 }
 
 export function blinkLocations(locations: Location[]) {
