@@ -26,10 +26,7 @@ const supermanaSimple = loadImage("supermana-simple");
 export function setupBoard() {
   for (let y = 0; y < 11; y++) {
     for (let x = 0; x < 11; x++) {
-      const rect = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "rect"
-      );
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", x.toString());
       rect.setAttribute("y", y.toString());
       rect.setAttribute("width", "1");
@@ -43,8 +40,7 @@ export function setupBoard() {
   }
 }
 
-// TODO: deprecate
-export function addDemoMons() {
+function addDemoMons() {
   placeItem(demon, 3, 10);
   placeItem(angel, 4, 10);
   placeItem(drainer, 5, 10);
@@ -73,11 +69,11 @@ export function addDemoMons() {
   placeItem(bombOrPotion, 10, 5);
   placeItem(supermana, 5, 5);
 
-  // setBase(demon, 3, 9);
-  // setBase(mysticB, 3, 1);
-  // placeMonWithMana(drainer, mana, 2, 3);
-  // placeMonWithSupermana(drainer, 2, 3);
-  // placeMonWithBomb(drainer, 2, 3);
+  setBase(demon, 3, 9);
+  setBase(mysticB, 3, 1);
+  placeMonWithMana(drainer, mana, 2, 3);
+  placeMonWithSupermana(drainer, 2, 3);
+  placeMonWithBomb(drainer, 2, 3);
 }
 
 export function blinkLocations(locations: Location[]) {
@@ -90,11 +86,7 @@ export function blinkLocations(locations: Location[]) {
 
 function loadImage(name: string) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  image.setAttributeNS(
-    "http://www.w3.org/1999/xlink",
-    "href",
-    `../img/${name}.png`
-  );
+  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `../img/${name}.png`);
   image.setAttribute("width", "1");
   image.setAttribute("height", "1");
   image.setAttribute("class", "item");
@@ -191,10 +183,7 @@ function faint(img: SVGElement, x: number, y: number) {
 }
 
 function highlightEmptyDestination(x: number, y: number) {
-  const highlight = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "circle"
-  );
+  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   highlight.setAttribute("class", `highlight-${x}-${y}`);
   highlight.style.pointerEvents = "none";
   const circleRadius = 0.15;
@@ -214,10 +203,7 @@ function highlightSelectedItem(img: SVGElement, x: number, y: number) {
   const circleRadius = 0.56;
   const circleCenter = { x: x + 0.5, y: y + 0.5 };
 
-  const circle = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "circle"
-  );
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   circle.setAttribute("cx", circleCenter.x.toString());
   circle.setAttribute("cy", circleCenter.y.toString());
   circle.setAttribute("r", circleRadius.toString());
@@ -225,10 +211,7 @@ function highlightSelectedItem(img: SVGElement, x: number, y: number) {
 
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${x}-${y}`);
-  const maskRect = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "rect"
-  );
+  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   maskRect.setAttribute("x", x.toString());
   maskRect.setAttribute("y", y.toString());
   maskRect.setAttribute("width","1");
@@ -261,10 +244,7 @@ function highlightDestinationItem(img: SVGElement, x: number, y: number, blink =
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${x}-${y}`);
 
-  const maskRect = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "rect"
-  );
+  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   maskRect.setAttribute("x", x.toString());
   maskRect.setAttribute("y", y.toString());
   maskRect.setAttribute("width", "1");
@@ -272,10 +252,7 @@ function highlightDestinationItem(img: SVGElement, x: number, y: number, blink =
   maskRect.setAttribute("fill", "white");
   mask.appendChild(maskRect);
 
-  const maskCircle = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "circle"
-  );
+  const maskCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   maskCircle.setAttribute("cx", circleCenter.x.toString());
   maskCircle.setAttribute("cy", circleCenter.y.toString());
   maskCircle.setAttribute("r", circleRadius.toString());

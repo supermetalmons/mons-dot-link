@@ -1,9 +1,8 @@
 import init, { MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind } from "mons-web";
-import { setupBoard, blinkLocations, addDemoMons } from "./board";
+import { setupBoard, blinkLocations } from "./board";
 import { Location } from "./models";
 
 setupBoard();
-addDemoMons();
 
 await init();
 const game = MonsGameModel.new();
