@@ -33,3 +33,10 @@ export enum HighlightKind {
   EmptySquare,
   TargetSuggestion
 }
+
+export enum AssistedInputKind {
+  KeepSelectionAfterMove,
+  FindStartLocationsAfterInvalidInput,
+  ReselectLastInvalidInput,
+  None
+}

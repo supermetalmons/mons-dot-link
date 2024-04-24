@@ -8,7 +8,7 @@ import init, {
 } from "mons-web";
 
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
-import { Location, Highlight, HighlightKind } from "./models";
+import { Location, Highlight, HighlightKind, AssistedInputKind } from "./models";
 import { colors } from "./colors";
 
 setupBoard();
@@ -34,12 +34,11 @@ locationsWithContent.forEach((loc) => {
 var currentInputs: Location[] = [];
 
 export function didClickSquare(location: Location) {
-  console.log(location);
   currentInputs.push(location);
-  processCurrentInputs();
+  processCurrentInputs(AssistedInputKind.None);
 }
 
-function processCurrentInputs() {
+function processCurrentInputs(assistedInputKind: AssistedInputKind) {
   const gameInput = currentInputs.map(
     (input) => new LocationModel(input.i, input.j)
   );
@@ -49,7 +48,7 @@ function processCurrentInputs() {
     case OutputModelKind.InvalidInput:
       currentInputs = [];
       removeHighlights();
-      processCurrentInputs(); // TODO: tune
+      // TODO: assisted input suggestions
       break;
     case OutputModelKind.LocationsToStartFrom:
       const startFromHighlights: Highlight[] = output
@@ -137,6 +136,7 @@ function processCurrentInputs() {
       applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case OutputModelKind.Events:
+      const events = output.events();
       currentInputs = [];
       // TODO: apply events
       removeHighlights();
