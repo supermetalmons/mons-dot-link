@@ -1,10 +1,13 @@
 import { didClickSquare } from "./index";
-import { Location } from "./models";
+import { Highlight, HighlightKind, Location, Trace } from "./models";
 import { colors } from "./colors";
-import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind } from "mons-web";
+import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 
-const overlay = document.getElementById("overlay");
+const board = document.getElementById("monsboard");
+const highlightsLayer = document.getElementById("highlightsLayer");
+const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
+const basesPlaceholders: { [key: string]: SVGElement } = {};
 
 const drainer = loadImage("drainer");
 const angel = loadImage("angel");
@@ -24,25 +27,35 @@ const potion = loadImage("potion");
 const supermana = loadImage("supermana");
 const supermanaSimple = loadImage("supermana-simple");
 
+export function removeItem(location: Location) {
+  const locationKey = location.toString();
+  const toRemove = items[locationKey];
+  if (toRemove !== undefined) {
+    toRemove.remove();
+    delete items[locationKey];
+  }
+}
+
 export function putItem(item: ItemModel, location: Location) {
   switch (item.kind) {
     case ItemModelKind.Mon:
       const isBlack = item.mon.color == ColorModel.Black;
+      const isFainted = item.mon.is_fainted();
       switch (item.mon.kind) {
         case MonKind.Demon:
-          placeItem(isBlack ? demonB : demon, location);
+          placeItem(isBlack ? demonB : demon, location, isFainted);
           break;
         case MonKind.Drainer:
-          placeItem(isBlack ? drainerB : drainer, location);
+          placeItem(isBlack ? drainerB : drainer, location, isFainted);
           break;
         case MonKind.Angel:
-          placeItem(isBlack ? angelB : angel, location);
+          placeItem(isBlack ? angelB : angel, location, isFainted);
           break;
         case MonKind.Spirit:
-          placeItem(isBlack ? spiritB : spirit, location);
+          placeItem(isBlack ? spiritB : spirit, location, isFainted);
           break;
         case MonKind.Mystic:
-          placeItem(isBlack ? mysticB : mystic, location);
+          placeItem(isBlack ? mysticB : mystic, location, isFainted);
           break;
       }
       break;
@@ -59,7 +72,7 @@ export function putItem(item: ItemModel, location: Location) {
       break;
     case ItemModelKind.MonWithMana:
        // TODO: implement
-      placeMonWithSupermana(drainer, location);
+      // placeMonWithSupermana(drainer, location);
       placeMonWithMana(drainer, mana, location);
       break;
     case ItemModelKind.MonWithConsumable:
@@ -73,7 +86,26 @@ export function putItem(item: ItemModel, location: Location) {
 }
 
 export function setupSquare(square: SquareModel, location: Location) {
-  // TODO: implement
+  if (square.kind == SquareModelKind.MonBase) {
+    const isBlack = square.color == ColorModel.Black;
+    switch (square.mon_kind) {
+      case MonKind.Demon:
+        setBase(isBlack ? demonB : demon, location);
+        break;
+      case MonKind.Drainer:
+        setBase(isBlack ? drainerB : drainer, location);
+        break;
+      case MonKind.Angel:
+        setBase(isBlack ? angelB : angel, location);
+        break;
+      case MonKind.Spirit:
+        setBase(isBlack ? spiritB : spirit, location);
+        break;
+      case MonKind.Mystic:
+        setBase(isBlack ? mysticB : mystic, location);
+        break;
+    }
+  }
 }
 
 export function setupBoard() {
@@ -86,17 +118,32 @@ export function setupBoard() {
       rect.setAttribute("height", "1");
       rect.setAttribute("fill", "rgba(255, 255, 255, 0)");
       rect.addEventListener("click", function () {
-        toggleItem(new Location(y, x));
+        didClickSquare(new Location(y, x));
       });
-      overlay.appendChild(rect);
+      itemsLayer.appendChild(rect);
     }
   }
 }
 
-export function blinkLocations(locations: Location[]) {
-  locations.forEach((location) => {
-    const img = items[location.toString()];
-    highlightDestinationItem(img, location, true, colors.startFromSuggestion);
+export function removeHighlights() {
+  while (highlightsLayer.firstChild) {
+    highlightsLayer.removeChild(highlightsLayer.firstChild);
+  }
+}
+
+export function applyHighlights(highlights: Highlight[]) {
+  highlights.forEach((highlight) => {
+    switch (highlight.kind) {
+      case HighlightKind.Selected:
+        highlightSelectedItem(highlight.location, highlight.color);
+        break;
+      case HighlightKind.EmptySquare:
+        highlightEmptyDestination(highlight.location, highlight.color);
+        break;
+      case HighlightKind.TargetSuggestion:
+        highlightDestinationItem(highlight.location, highlight.isBlink, highlight.color);
+        break;
+    }
   });
 }
 
@@ -124,7 +171,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedBomb);
 
-  overlay.appendChild(container);
+  itemsLayer.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -143,7 +190,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  overlay.appendChild(container);
+  itemsLayer.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -162,31 +209,41 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  overlay.appendChild(container);
+  itemsLayer.appendChild(container);
   items[location.toString()] = container;
 }
 
 function placeItem(item: SVGElement, location: Location, fainted = false) {
+  const key = location.toString();
+  if (hasBasePlaceholder(key)) {
+    basesPlaceholders[key].style.display = 'none';
+  }
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
-  overlay.appendChild(img);
-  items[location.toString()] = img;
+  itemsLayer.appendChild(img);
+  items[key] = img;
   if (fainted) {
     faint(img, location);
   }
 }
 
 function setBase(item: SVGElement, location: Location) {
-  const img = item.cloneNode() as SVGElement;
-  img.setAttribute("width", "0.6");
-  img.setAttribute("height", "0.6");
-  const adjustedX = location.j + 0.2;
-  const adjustedY = location.j + 0.2;
-  img.setAttribute("x", adjustedX.toString());
-  img.setAttribute("y", adjustedY.toString());
-  img.style.opacity = "0.4";
-  overlay.appendChild(img);
+  const key = location.toString();
+  if (hasBasePlaceholder(key)) {
+    basesPlaceholders[key].style.display = '';
+  } else {
+    const img = item.cloneNode() as SVGElement;
+    img.setAttribute("width", "0.6");
+    img.setAttribute("height", "0.6");
+    const adjustedX = location.j + 0.2;
+    const adjustedY = location.i + 0.2;
+    img.setAttribute("x", adjustedX.toString());
+    img.setAttribute("y", adjustedY.toString());
+    img.style.opacity = "0.4";
+    board.appendChild(img);
+    basesPlaceholders[key] = img;
+  }
 }
 
 function faint(img: SVGElement, location: Location) {
@@ -194,22 +251,20 @@ function faint(img: SVGElement, location: Location) {
   img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
 }
 
-function highlightEmptyDestination(location: Location) {
+function highlightEmptyDestination(location: Location, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
   const circleRadius = 0.15;
   const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
   highlight.setAttribute("cx", circleCenter.x.toString());
   highlight.setAttribute("cy", circleCenter.y.toString());
   highlight.setAttribute("r", circleRadius.toString());
-  highlight.setAttribute("fill", colors.destination);
-  overlay.append(highlight);
+  highlight.setAttribute("fill", color);
+  highlightsLayer.append(highlight);
 }
 
-function highlightSelectedItem(img: SVGElement, location: Location) {
+function highlightSelectedItem(location: Location, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
@@ -219,7 +274,7 @@ function highlightSelectedItem(img: SVGElement, location: Location) {
   circle.setAttribute("cx", circleCenter.x.toString());
   circle.setAttribute("cy", circleCenter.y.toString());
   circle.setAttribute("r", circleRadius.toString());
-  circle.setAttribute("fill", "#00F900");
+  circle.setAttribute("fill", color);
 
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
@@ -234,13 +289,11 @@ function highlightSelectedItem(img: SVGElement, location: Location) {
 
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
   highlight.appendChild(circle);
-
-  img.parentNode.insertBefore(highlight, img);
+  highlightsLayer.append(highlight);
 }
 
-function highlightDestinationItem(img: SVGElement, location: Location, blink = false, color: string) {
+function highlightDestinationItem(location: Location, blink = false, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
@@ -276,7 +329,7 @@ function highlightDestinationItem(img: SVGElement, location: Location, blink = f
 
   rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
 
-  img.parentNode.insertBefore(highlight, img);
+  highlightsLayer.append(highlight);
 
   if (blink) {
     setTimeout(() => {
@@ -285,28 +338,10 @@ function highlightDestinationItem(img: SVGElement, location: Location, blink = f
   }
 }
 
-function drawTrace(start: Location, end: Location) {
+function drawTrace(trace: Trace) {
   // TODO: implement
 }
 
-function toggleItem(location: Location) {
-  // didClickSquare({i: y, j: x});
-  // return;
-
-  const img = items[location.toString()];
-  if (img) {
-    const existingHighlight = overlay.querySelector(`.highlight-${location.toString()}`);
-    if (existingHighlight) {
-      existingHighlight.remove();
-    } else {
-      highlightSelectedItem(img, location);
-    }
-  } else {
-    const existingHighlight = overlay.querySelector(`.highlight-${location.toString()}`);
-    if (existingHighlight) {
-      existingHighlight.remove();
-    } else {
-      highlightEmptyDestination(location);
-    }
-  }
+export function hasBasePlaceholder(locationString: string): boolean {
+  return basesPlaceholders.hasOwnProperty(locationString);
 }
