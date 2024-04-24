@@ -1,6 +1,7 @@
 import init, { MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind } from "mons-web";
-import { setupBoard, blinkLocations, putItem, setupSquare } from "./board";
-import { Location } from "./models";
+import { setupBoard, putItem, setupSquare, applyHighlights } from "./board";
+import { Location, Highlight, HighlightKind } from "./models";
+import { colors } from "./colors";
 
 setupBoard();
 
@@ -40,8 +41,8 @@ function processCurrentInputs() {
       processCurrentInputs(); // TODO: tune
       break;
     case OutputModelKind.LocationsToStartFrom:
-      const locations: Location[] = output.locations().map(loc => (new Location(loc.i, loc.j)));
-      blinkLocations(locations);
+      const highlights: Highlight[] = output.locations().map(loc => (new Highlight(new Location(loc.i, loc.j), HighlightKind.TargetSuggestion, colors.startFromSuggestion, true)));
+      applyHighlights(highlights);
       break;
     case OutputModelKind.NextInputOptions:
 

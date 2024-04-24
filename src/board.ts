@@ -1,5 +1,5 @@
 import { didClickSquare } from "./index";
-import { Location } from "./models";
+import { Highlight, HighlightKind, Location } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind } from "mons-web";
 
@@ -93,10 +93,10 @@ export function setupBoard() {
   }
 }
 
-export function blinkLocations(locations: Location[]) {
-  locations.forEach((location) => {
-    const img = items[location.toString()];
-    highlightDestinationItem(img, location, true, colors.startFromSuggestion);
+export function applyHighlights(highlights: Highlight[]) {
+  highlights.forEach((highlight) => {
+    const img = items[highlight.location.toString()]; // TODO: avoid using img here
+    highlightDestinationItem(img, highlight.location, highlight.isBlink, highlight.color);
   });
 }
 
