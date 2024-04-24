@@ -1,12 +1,4 @@
-import init, {
-  NextInputKind,
-  MonsGameModel,
-  Location as LocationModel,
-  Modifier as ModifierModel,
-  Color as ColorModel,
-  OutputModelKind,
-} from "mons-web";
-
+import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind } from "mons-web";
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier } from "./models";
 import { colors } from "./colors";
@@ -42,9 +34,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
     currentInputs.push(inputLocation);
   }
 
-  const gameInput = currentInputs.map(
-    (input) => new LocationModel(input.i, input.j)
-  );
+  const gameInput = currentInputs.map((input) => new LocationModel(input.i, input.j));
   let output = game.process_input(gameInput);
 
   switch (output.kind) {
@@ -60,17 +50,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       }
       break;
     case OutputModelKind.LocationsToStartFrom:
-      const startFromHighlights: Highlight[] = output
-        .locations()
-        .map(
-          (loc) =>
-            new Highlight(
-              new Location(loc.i, loc.j),
-              HighlightKind.TargetSuggestion,
-              colors.startFromSuggestion,
-              true
-            )
-        );
+      const startFromHighlights: Highlight[] = output.locations().map((loc) => new Highlight(new Location(loc.i, loc.j), HighlightKind.TargetSuggestion, colors.startFromSuggestion, true));
       removeHighlights();
       applyHighlights(startFromHighlights);
       break;
@@ -80,7 +60,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       const nextInputHighlights = nextInputs.flatMap((input) => {
         const location = new Location(input.location.i, input.location.j);
         let color: string;
-        let highlightKind:  HighlightKind;
+        let highlightKind: HighlightKind;
         switch (input.kind) {
           // TODO: different style for mons bases
           case NextInputKind.MonMove:
@@ -122,7 +102,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       });
 
       const selectedItemsHighlights = currentInputs.map((input, index) => {
-        let color: string
+        let color: string;
         if (index > 0) {
           switch (nextInputs[nextInputs.length - 1].kind) {
             case NextInputKind.DemonAdditionalStep:
@@ -151,7 +131,48 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       let mightKeepHighlightOnLocation: Location | undefined;
       let mustReleaseHighlight = false;
       let sounds: Sound[] = [];
-      // TODO: apply events
+
+      for (const event of events) {
+        switch (event.kind) {
+          case EventModelKind.MonMove:
+            break;
+          case EventModelKind.ManaMove:
+            break;
+          case EventModelKind.ManaScored:
+            break;
+          case EventModelKind.MysticAction:
+            break;
+          case EventModelKind.DemonAction:
+            break;
+          case EventModelKind.DemonAdditionalStep:
+            break;
+          case EventModelKind.SpiritTargetMove:
+            break;
+          case EventModelKind.PickupBomb:
+            break;
+          case EventModelKind.PickupPotion:
+            break;
+          case EventModelKind.PickupMana:
+            break;
+          case EventModelKind.MonFainted:
+            break;
+          case EventModelKind.ManaDropped:
+            break;
+          case EventModelKind.SupermanaBackToBase:
+            break;
+          case EventModelKind.BombAttack:
+            break;
+          case EventModelKind.MonAwake:
+            break;
+          case EventModelKind.BombExplosion:
+            break;
+          case EventModelKind.NextTurn:
+            break;
+          case EventModelKind.GameOver:
+            break;
+        }
+      }
+
       removeHighlights();
       break;
   }
