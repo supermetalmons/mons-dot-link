@@ -40,21 +40,22 @@ export function putItem(item: ItemModel, location: Location) {
   switch (item.kind) {
     case ItemModelKind.Mon:
       const isBlack = item.mon.color == ColorModel.Black;
+      const isFainted = item.mon.is_fainted();
       switch (item.mon.kind) {
         case MonKind.Demon:
-          placeItem(isBlack ? demonB : demon, location);
+          placeItem(isBlack ? demonB : demon, location, isFainted);
           break;
         case MonKind.Drainer:
-          placeItem(isBlack ? drainerB : drainer, location);
+          placeItem(isBlack ? drainerB : drainer, location, isFainted);
           break;
         case MonKind.Angel:
-          placeItem(isBlack ? angelB : angel, location);
+          placeItem(isBlack ? angelB : angel, location, isFainted);
           break;
         case MonKind.Spirit:
-          placeItem(isBlack ? spiritB : spirit, location);
+          placeItem(isBlack ? spiritB : spirit, location, isFainted);
           break;
         case MonKind.Mystic:
-          placeItem(isBlack ? mysticB : mystic, location);
+          placeItem(isBlack ? mysticB : mystic, location, isFainted);
           break;
       }
       break;
