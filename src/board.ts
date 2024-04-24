@@ -213,7 +213,6 @@ function faint(img: SVGElement, location: Location) {
 
 function highlightEmptyDestination(location: Location, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
   const circleRadius = 0.15;
   const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
@@ -226,7 +225,6 @@ function highlightEmptyDestination(location: Location, color: string) {
 
 function highlightSelectedItem(location: Location, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
@@ -256,7 +254,6 @@ function highlightSelectedItem(location: Location, color: string) {
 
 function highlightDestinationItem(location: Location, blink = false, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
@@ -303,22 +300,4 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
 
 function drawTrace(start: Location, end: Location) {
   // TODO: implement
-}
-
-// TODO: deprecate
-function toggleItem(location: Location) {
-  const img = items[location.toString()];
-  if (img) {
-    const existingHighlight = highlightsLayer.querySelector(`.highlight-${location.toString()}`);
-    if (existingHighlight) {
-      existingHighlight.remove();
-    } else {
-    }
-  } else {
-    const existingHighlight = highlightsLayer.querySelector(`.highlight-${location.toString()}`);
-    if (existingHighlight) {
-      existingHighlight.remove();
-    } else {
-    }
-  }
 }
