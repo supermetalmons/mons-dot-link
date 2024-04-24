@@ -26,6 +26,15 @@ const potion = loadImage("potion");
 const supermana = loadImage("supermana");
 const supermanaSimple = loadImage("supermana-simple");
 
+export function removeItem(location: Location) {
+  const locationKey = location.toString();
+  const toRemove = items[locationKey];
+  if (toRemove !== undefined) {
+    toRemove.remove();
+    delete items[locationKey];
+  }
+}
+
 export function putItem(item: ItemModel, location: Location) {
   switch (item.kind) {
     case ItemModelKind.Mon:
@@ -61,7 +70,7 @@ export function putItem(item: ItemModel, location: Location) {
       break;
     case ItemModelKind.MonWithMana:
        // TODO: implement
-      placeMonWithSupermana(drainer, location);
+      // placeMonWithSupermana(drainer, location);
       placeMonWithMana(drainer, mana, location);
       break;
     case ItemModelKind.MonWithConsumable:

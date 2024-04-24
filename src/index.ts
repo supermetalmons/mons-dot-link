@@ -1,5 +1,5 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
+import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 
@@ -12,15 +12,7 @@ const locationsWithContent = game.locations_with_content();
 
 locationsWithContent.forEach((loc) => {
   const location = new Location(loc.i, loc.j);
-  const item = game.item(new LocationModel(location.i, location.j));
-  if (item !== undefined) {
-    putItem(item, location);
-  } else {
-    const square = game.square(new LocationModel(location.i, location.j));
-    if (square !== undefined) {
-      setupSquare(square, location);
-    }
-  }
+  updateLocation(location);
 });
 
 var currentInputs: Location[] = [];
@@ -229,16 +221,34 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       removeHighlights();
 
+      for (const location of locationsToUpdate) {
+        updateLocation(location);
+        // TODO: do not update twice – keep a list of uniques
+      }
+
       // TODO: play sounds
       // TODO: update game status controls
       // TODO: draw traces
-      // TODO: update unique locations
 
       if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
       }
 
       break;
+  }
+}
+
+function updateLocation(location: Location) {
+  removeItem(location);
+  const item = game.item(new LocationModel(location.i, location.j));
+  if (item !== undefined) {
+    putItem(item, location);
+  } else {
+    // TODO: setup base if needed
+    const square = game.square(new LocationModel(location.i, location.j));
+    if (square !== undefined) {
+      setupSquare(square, location);
+    }
   }
 }
 
