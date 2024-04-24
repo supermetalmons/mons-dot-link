@@ -86,7 +86,7 @@ export function setupBoard() {
       rect.setAttribute("height", "1");
       rect.setAttribute("fill", "rgba(255, 255, 255, 0)");
       rect.addEventListener("click", function () {
-        toggleItem(new Location(y, x));
+        didClickSquare(new Location(y, x));
       });
       overlay.appendChild(rect);
     }
@@ -289,10 +289,8 @@ function drawTrace(start: Location, end: Location) {
   // TODO: implement
 }
 
+// TODO: deprecate
 function toggleItem(location: Location) {
-  // didClickSquare({i: y, j: x});
-  // return;
-
   const img = items[location.toString()];
   if (img) {
     const existingHighlight = overlay.querySelector(`.highlight-${location.toString()}`);
