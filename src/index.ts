@@ -2,6 +2,7 @@ import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
+import { playSounds } from "./sounds";
 
 setupBoard();
 
@@ -226,9 +227,10 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         // TODO: do not update twice – keep a list of uniques
       }
 
-      // TODO: play sounds
       // TODO: update game status controls
       // TODO: draw traces
+
+      playSounds(sounds);
 
       if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
