@@ -1,12 +1,26 @@
 import init, { MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind } from "mons-web";
-import { setupBoard, blinkLocations, addDemoMons } from "./board";
+import { setupBoard, blinkLocations, putItem, setupSquare } from "./board";
 import { Location } from "./models";
 
 setupBoard();
-addDemoMons();
 
 await init();
 const game = MonsGameModel.new();
+
+const locationsWithContent = game.locations_with_content();
+
+locationsWithContent.forEach(loc => {
+  const location = new Location(loc.i, loc.j);
+  const item = game.item(new LocationModel(location.i, location.j));
+  if (item !== undefined) {
+    putItem(item, location);
+  } else {
+    const square = game.square(new LocationModel(location.i, location.j));
+    if (square !== undefined) {
+      setupSquare(square, location);
+    }
+  }
+});
 
 var currentInputs: Location[] = [];
 
@@ -26,7 +40,7 @@ function processCurrentInputs() {
       processCurrentInputs(); // TODO: tune
       break;
     case OutputModelKind.LocationsToStartFrom:
-      const locations: Location[] = output.locations().map(loc => ({i: loc.i, j: loc.j}));
+      const locations: Location[] = output.locations().map(loc => (new Location(loc.i, loc.j)));
       blinkLocations(locations);
       break;
     case OutputModelKind.NextInputOptions:
