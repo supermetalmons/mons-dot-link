@@ -40,3 +40,22 @@ export enum AssistedInputKind {
   ReselectLastInvalidInput,
   None
 }
+
+export enum Sound {
+  Bomb,
+  Click,
+  DemonAbility,
+  ManaPickUp,
+  Move,
+  EndTurn,
+  MysticAbility,
+  PickupPotion,
+  PickupBomb,
+  ChoosePickup,
+  ScoreMana,
+  ScoreSupermana,
+  SpiritAbility,
+  Victory,
+  Defeat,
+  DidConnect
+}

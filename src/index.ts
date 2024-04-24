@@ -8,7 +8,7 @@ import init, {
 } from "mons-web";
 
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
-import { Location, Highlight, HighlightKind, AssistedInputKind } from "./models";
+import { Location, Highlight, HighlightKind, AssistedInputKind, Sound } from "./models";
 import { colors } from "./colors";
 
 setupBoard();
@@ -136,8 +136,12 @@ function processCurrentInputs(assistedInputKind: AssistedInputKind) {
       applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case OutputModelKind.Events:
-      const events = output.events();
       currentInputs = [];
+      const events = output.events();
+      let locationsToUpdate: Location[] = [];
+      let mightKeepHighlightOnLocation: Location | undefined;
+      let mustReleaseHighlight = false;
+      let sounds: Sound[] = [];
       // TODO: apply events
       removeHighlights();
       break;
