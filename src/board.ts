@@ -3,7 +3,9 @@ import { Highlight, HighlightKind, Location } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind } from "mons-web";
 
-const overlay = document.getElementById("overlay");
+const board = document.getElementById("monsboard");
+const highlightsLayer = document.getElementById("highlightsLayer");
+const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
 
 const drainer = loadImage("drainer");
@@ -88,15 +90,14 @@ export function setupBoard() {
       rect.addEventListener("click", function () {
         didClickSquare(new Location(y, x));
       });
-      overlay.appendChild(rect);
+      itemsLayer.appendChild(rect);
     }
   }
 }
 
 export function applyHighlights(highlights: Highlight[]) {
   highlights.forEach((highlight) => {
-    const img = items[highlight.location.toString()]; // TODO: avoid using img here
-    highlightDestinationItem(img, highlight.location, highlight.isBlink, highlight.color);
+    highlightDestinationItem(highlight.location, highlight.isBlink, highlight.color);
   });
 }
 
@@ -124,7 +125,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedBomb);
 
-  overlay.appendChild(container);
+  itemsLayer.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -143,7 +144,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  overlay.appendChild(container);
+  itemsLayer.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -162,7 +163,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  overlay.appendChild(container);
+  itemsLayer.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -170,7 +171,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
-  overlay.appendChild(img);
+  itemsLayer.appendChild(img);
   items[location.toString()] = img;
   if (fainted) {
     faint(img, location);
@@ -186,7 +187,7 @@ function setBase(item: SVGElement, location: Location) {
   img.setAttribute("x", adjustedX.toString());
   img.setAttribute("y", adjustedY.toString());
   img.style.opacity = "0.4";
-  overlay.appendChild(img);
+  board.appendChild(img);
 }
 
 function faint(img: SVGElement, location: Location) {
@@ -204,7 +205,7 @@ function highlightEmptyDestination(location: Location) {
   highlight.setAttribute("cy", circleCenter.y.toString());
   highlight.setAttribute("r", circleRadius.toString());
   highlight.setAttribute("fill", colors.destination);
-  overlay.append(highlight);
+  highlightsLayer.append(highlight);
 }
 
 function highlightSelectedItem(img: SVGElement, location: Location) {
@@ -238,7 +239,7 @@ function highlightSelectedItem(img: SVGElement, location: Location) {
   img.parentNode.insertBefore(highlight, img);
 }
 
-function highlightDestinationItem(img: SVGElement, location: Location, blink = false, color: string) {
+function highlightDestinationItem(location: Location, blink = false, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
@@ -276,7 +277,7 @@ function highlightDestinationItem(img: SVGElement, location: Location, blink = f
 
   rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
 
-  img.parentNode.insertBefore(highlight, img);
+  highlightsLayer.append(highlight);
 
   if (blink) {
     setTimeout(() => {
@@ -293,14 +294,14 @@ function drawTrace(start: Location, end: Location) {
 function toggleItem(location: Location) {
   const img = items[location.toString()];
   if (img) {
-    const existingHighlight = overlay.querySelector(`.highlight-${location.toString()}`);
+    const existingHighlight = highlightsLayer.querySelector(`.highlight-${location.toString()}`);
     if (existingHighlight) {
       existingHighlight.remove();
     } else {
       highlightSelectedItem(img, location);
     }
   } else {
-    const existingHighlight = overlay.querySelector(`.highlight-${location.toString()}`);
+    const existingHighlight = highlightsLayer.querySelector(`.highlight-${location.toString()}`);
     if (existingHighlight) {
       existingHighlight.remove();
     } else {
