@@ -95,6 +95,12 @@ export function setupBoard() {
   }
 }
 
+export function removeHighlights() {
+  while (highlightsLayer.firstChild) {
+    highlightsLayer.removeChild(highlightsLayer.firstChild);
+  }
+}
+
 export function applyHighlights(highlights: Highlight[]) {
   highlights.forEach((highlight) => {
     switch (highlight.kind) {

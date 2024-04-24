@@ -7,7 +7,7 @@ import init, {
   OutputModelKind,
 } from "mons-web";
 
-import { setupBoard, putItem, setupSquare, applyHighlights } from "./board";
+import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
 import { Location, Highlight, HighlightKind } from "./models";
 import { colors } from "./colors";
 
@@ -48,6 +48,7 @@ function processCurrentInputs() {
   switch (output.kind) {
     case OutputModelKind.InvalidInput:
       currentInputs = [];
+      removeHighlights();
       processCurrentInputs(); // TODO: tune
       break;
     case OutputModelKind.LocationsToStartFrom:
@@ -62,15 +63,18 @@ function processCurrentInputs() {
               true
             )
         );
+      removeHighlights();
       applyHighlights(startFromHighlights);
       break;
     case OutputModelKind.NextInputOptions:
       const nextInputs = output.next_inputs();
+      // TODO: handle select bomb or potion
       const nextInputHighlights = nextInputs.flatMap((input) => {
         const location = new Location(input.location.i, input.location.j);
         let color: string;
         let highlightKind:  HighlightKind;
         switch (input.kind) {
+          // TODO: different style for mons bases
           case NextInputKind.MonMove:
             highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
@@ -108,19 +112,35 @@ function processCurrentInputs() {
         }
         return new Highlight(location, highlightKind, color, false);
       });
-      applyHighlights(nextInputHighlights);
 
-      // TODO: apply at once with others
-      const selectedItemHighlight = new Highlight(currentInputs[0], HighlightKind.Selected, colors.selectedItem, false);
-      applyHighlights([selectedItemHighlight]);
+      const selectedItemsHighlights = currentInputs.map((input, index) => {
+        let color: string
+        if (index > 0) {
+          switch (nextInputs[nextInputs.length - 1].kind) {
+            case NextInputKind.DemonAdditionalStep:
+              color = colors.attackTarget;
+              break;
+            case NextInputKind.SpiritTargetMove:
+              color = colors.spiritTarget;
+              break;
+            default:
+              color = colors.selectedItem;
+              break;
+          }
+        } else {
+          color = colors.selectedItem;
+        }
+        return new Highlight(input, HighlightKind.Selected, color, false);
+      });
 
+      removeHighlights();
+      applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case OutputModelKind.Events:
       currentInputs = [];
-      console.log("events");
+      // TODO: apply events
+      removeHighlights();
       break;
-    default:
-      console.log("unknown output kind");
   }
 }
 
