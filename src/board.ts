@@ -81,8 +81,24 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.MonWithConsumable:
-       // TODO: implement
-      placeMonWithBomb(drainer, location);
+      const isBlackWithConsumable = item.mon.color == ColorModel.Black;
+      switch (item.mon.kind) {
+        case MonKind.Demon:
+          placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location);
+          break;
+        case MonKind.Drainer:
+          placeMonWithBomb(isBlackWithConsumable ? drainerB : drainer, location);
+          break;
+        case MonKind.Angel:
+          placeMonWithBomb(isBlackWithConsumable ? angelB : angel, location);
+          break;
+        case MonKind.Spirit:
+          placeMonWithBomb(isBlackWithConsumable ? spiritB : spirit, location);
+          break;
+        case MonKind.Mystic:
+          placeMonWithBomb(isBlackWithConsumable ? mysticB : mystic, location);
+          break;
+      }
       break;
     case ItemModelKind.Consumable:
       placeItem(bombOrPotion, location);

@@ -1,4 +1,4 @@
-import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind } from "mons-web";
+import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel } from "mons-web";
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
@@ -28,7 +28,27 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   }
 
   const gameInput = currentInputs.map((input) => new LocationModel(input.i, input.j));
-  let output = game.process_input(gameInput);
+  let output: OutputModel;
+  if (inputModifier != InputModifier.None) {
+    let modifier: ModifierModel
+    switch (inputModifier) {
+      case InputModifier.Bomb:
+        modifier = ModifierModel.SelectBomb;
+        break;
+      case InputModifier.Potion:
+        modifier = ModifierModel.SelectPotion;
+        break;
+      case InputModifier.Cancel:
+        modifier = ModifierModel.Cancel;
+        break;
+      default:
+        modifier = undefined;
+        break;
+    }
+    output = game.process_input(gameInput, modifier);
+  } else {
+    output = game.process_input(gameInput);
+  }
 
   switch (output.kind) {
     case OutputModelKind.InvalidInput:
@@ -52,6 +72,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       if (nextInputs[0].kind == NextInputKind.SelectConsumable) {
         // TODO: select consumable
+        processInput(AssistedInputKind.None, InputModifier.Bomb);
         return;
       }
 
