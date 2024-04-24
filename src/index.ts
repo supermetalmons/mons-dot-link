@@ -8,7 +8,7 @@ import init, {
 } from "mons-web";
 
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
-import { Location, Highlight, HighlightKind, AssistedInputKind, Sound } from "./models";
+import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier } from "./models";
 import { colors } from "./colors";
 
 setupBoard();
@@ -34,10 +34,10 @@ locationsWithContent.forEach((loc) => {
 var currentInputs: Location[] = [];
 
 export function didClickSquare(location: Location) {
-  processInput(AssistedInputKind.None, location);
+  processInput(AssistedInputKind.None, InputModifier.None, location);
 }
 
-function processInput(assistedInputKind: AssistedInputKind, inputLocation?: Location) {
+function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
   if (inputLocation) {
     currentInputs.push(inputLocation);
   }
@@ -54,9 +54,9 @@ function processInput(assistedInputKind: AssistedInputKind, inputLocation?: Loca
       currentInputs = [];
       removeHighlights();
       if (shouldTryToReselect) {
-        processInput(AssistedInputKind.ReselectLastInvalidInput, inputLocation);
+        processInput(AssistedInputKind.ReselectLastInvalidInput, InputModifier.None, inputLocation);
       } else if (shouldHelpFindOptions) {
-        processInput(AssistedInputKind.FindStartLocationsAfterInvalidInput);
+        processInput(AssistedInputKind.FindStartLocationsAfterInvalidInput, InputModifier.None);
       }
       break;
     case OutputModelKind.LocationsToStartFrom:

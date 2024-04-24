@@ -63,3 +63,10 @@ export enum Sound {
   Defeat,
   DidConnect
 }
+
+export enum InputModifier {
+  None,
+  Bomb,
+  Potion,
+  Cancel
+}
