@@ -49,7 +49,12 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       break;
     case OutputModelKind.NextInputOptions:
       const nextInputs = output.next_inputs();
-      // TODO: handle select bomb or potion
+
+      if (nextInputs[0].kind == NextInputKind.SelectConsumable) {
+        // TODO: select consumable
+        return;
+      }
+
       const nextInputHighlights = nextInputs.flatMap((input) => {
         const location = new Location(input.location.i, input.location.j);
         let color: string;
@@ -84,7 +89,9 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.spiritTarget;
             break;
           case NextInputKind.SelectConsumable:
-            return [];
+            highlightKind = HighlightKind.TargetSuggestion;
+            color = colors.selectedItem;
+            break;
           case NextInputKind.BombAttack:
             highlightKind = HighlightKind.TargetSuggestion;
             color = colors.attackTarget;
