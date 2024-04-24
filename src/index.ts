@@ -221,7 +221,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
           case EventModelKind.GameOver:
             // TODO: based on player side
             sounds.push(Sound.Victory);
-            sounds.push(Sound.Defeat);
+            // sounds.push(Sound.Defeat);
             break;
         }
       }

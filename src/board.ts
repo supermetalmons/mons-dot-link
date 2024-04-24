@@ -71,9 +71,14 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.MonWithMana:
-       // TODO: implement
-      // placeMonWithSupermana(drainer, location);
-      placeMonWithMana(drainer, mana, location);
+      const isBlackDrainer = item.mon.color == ColorModel.Black;
+      const isSupermana = item.mana.kind == ManaKind.Supermana;
+      if (isSupermana) {
+        placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
+      } else {
+        const isBlackMana = item.mana.color == ColorModel.Black;
+        placeMonWithMana(isBlackDrainer ? drainerB : drainer,isBlackMana ? manaB : mana, location);
+      }
       break;
     case ItemModelKind.MonWithConsumable:
        // TODO: implement
