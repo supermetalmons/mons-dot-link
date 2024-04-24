@@ -1,4 +1,4 @@
-import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel } from "mons-web";
+import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
@@ -170,7 +170,11 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             traces.push(new Trace(from, to));
             break;
           case EventModelKind.ManaScored:
-            sounds.push(Sound.ScoreMana); // TODO: or ScoreSupermana
+            if (event.mana.kind == ManaKind.Supermana) {
+              sounds.push(Sound.ScoreSupermana);
+            } else {
+              sounds.push(Sound.ScoreMana);
+            }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
             break;
