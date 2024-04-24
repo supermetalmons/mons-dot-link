@@ -227,16 +227,17 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         }
       }
 
-      if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
-        processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
-      }
+      removeHighlights();
 
       // TODO: play sounds
       // TODO: update game status controls
       // TODO: draw traces
       // TODO: update unique locations
 
-      removeHighlights();
+      if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
+        processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
+      }
+
       break;
   }
 }
