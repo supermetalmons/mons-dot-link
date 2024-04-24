@@ -213,11 +213,15 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
 }
 
 function placeItem(item: SVGElement, location: Location, fainted = false) {
+  const key = location.toString();
+  if (hasBasePlaceholder(key)) {
+    basesPlaceholders[key].style.display = 'none';
+  }
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
   itemsLayer.appendChild(img);
-  items[location.toString()] = img;
+  items[key] = img;
   if (fainted) {
     faint(img, location);
   }
@@ -225,16 +229,20 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
 
 function setBase(item: SVGElement, location: Location) {
   const key = location.toString();
-  const img = item.cloneNode() as SVGElement;
-  img.setAttribute("width", "0.6");
-  img.setAttribute("height", "0.6");
-  const adjustedX = location.j + 0.2;
-  const adjustedY = location.i + 0.2;
-  img.setAttribute("x", adjustedX.toString());
-  img.setAttribute("y", adjustedY.toString());
-  img.style.opacity = "0.4";
-  board.appendChild(img);
-  basesPlaceholders[key] = img;
+  if (hasBasePlaceholder(key)) {
+    basesPlaceholders[key].style.display = '';
+  } else {
+    const img = item.cloneNode() as SVGElement;
+    img.setAttribute("width", "0.6");
+    img.setAttribute("height", "0.6");
+    const adjustedX = location.j + 0.2;
+    const adjustedY = location.i + 0.2;
+    img.setAttribute("x", adjustedX.toString());
+    img.setAttribute("y", adjustedY.toString());
+    img.style.opacity = "0.4";
+    board.appendChild(img);
+    basesPlaceholders[key] = img;
+  }
 }
 
 function faint(img: SVGElement, location: Location) {
@@ -331,4 +339,8 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
 
 function drawTrace(trace: Trace) {
   // TODO: implement
+}
+
+export function hasBasePlaceholder(locationString: string): boolean {
+  return basesPlaceholders.hasOwnProperty(locationString);
 }
