@@ -1,5 +1,5 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem } from "./board";
+import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
@@ -55,9 +55,8 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         let color: string;
         let highlightKind: HighlightKind;
         switch (input.kind) {
-          // TODO: different style for mons bases
           case NextInputKind.MonMove:
-            highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = (hasItemAt(location) || hasBasePlaceholder(location.toString())) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
             break;
           case NextInputKind.ManaMove:
@@ -73,7 +72,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.attackTarget;
             break;
           case NextInputKind.DemonAdditionalStep:
-            highlightKind = HighlightKind.EmptySquare;
+            highlightKind = hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.attackTarget;
             break;
           case NextInputKind.SpiritTargetCapture:
@@ -81,7 +80,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.spiritTarget;
             break;
           case NextInputKind.SpiritTargetMove:
-            highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = (hasItemAt(location) || hasBasePlaceholder(location.toString())) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.spiritTarget;
             break;
           case NextInputKind.SelectConsumable:
