@@ -246,7 +246,6 @@ function updateLocation(location: Location) {
   if (item !== undefined) {
     putItem(item, location);
   } else {
-    // TODO: setup base if needed
     const square = game.square(new LocationModel(location.i, location.j));
     if (square !== undefined) {
       setupSquare(square, location);

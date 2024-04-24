@@ -1,12 +1,13 @@
 import { didClickSquare } from "./index";
 import { Highlight, HighlightKind, Location, Trace } from "./models";
 import { colors } from "./colors";
-import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind } from "mons-web";
+import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 
 const board = document.getElementById("monsboard");
 const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
+const basesPlaceholders: { [key: string]: SVGElement } = {};
 
 const drainer = loadImage("drainer");
 const angel = loadImage("angel");
@@ -84,7 +85,26 @@ export function putItem(item: ItemModel, location: Location) {
 }
 
 export function setupSquare(square: SquareModel, location: Location) {
-  // TODO: implement
+  if (square.kind == SquareModelKind.MonBase) {
+    const isBlack = square.color == ColorModel.Black;
+    switch (square.mon_kind) {
+      case MonKind.Demon:
+        setBase(isBlack ? demonB : demon, location);
+        break;
+      case MonKind.Drainer:
+        setBase(isBlack ? drainerB : drainer, location);
+        break;
+      case MonKind.Angel:
+        setBase(isBlack ? angelB : angel, location);
+        break;
+      case MonKind.Spirit:
+        setBase(isBlack ? spiritB : spirit, location);
+        break;
+      case MonKind.Mystic:
+        setBase(isBlack ? mysticB : mystic, location);
+        break;
+    }
+  }
 }
 
 export function setupBoard() {
@@ -204,15 +224,17 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
 }
 
 function setBase(item: SVGElement, location: Location) {
+  const key = location.toString();
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("width", "0.6");
   img.setAttribute("height", "0.6");
   const adjustedX = location.j + 0.2;
-  const adjustedY = location.j + 0.2;
+  const adjustedY = location.i + 0.2;
   img.setAttribute("x", adjustedX.toString());
   img.setAttribute("y", adjustedY.toString());
   img.style.opacity = "0.4";
   board.appendChild(img);
+  basesPlaceholders[key] = img;
 }
 
 function faint(img: SVGElement, location: Location) {
