@@ -34,11 +34,14 @@ locationsWithContent.forEach((loc) => {
 var currentInputs: Location[] = [];
 
 export function didClickSquare(location: Location) {
-  currentInputs.push(location);
-  processCurrentInputs(AssistedInputKind.None);
+  processInput(AssistedInputKind.None, location);
 }
 
-function processCurrentInputs(assistedInputKind: AssistedInputKind) {
+function processInput(assistedInputKind: AssistedInputKind, inputLocation?: Location) {
+  if (inputLocation) {
+    currentInputs.push(inputLocation);
+  }
+
   const gameInput = currentInputs.map(
     (input) => new LocationModel(input.i, input.j)
   );
@@ -46,9 +49,15 @@ function processCurrentInputs(assistedInputKind: AssistedInputKind) {
 
   switch (output.kind) {
     case OutputModelKind.InvalidInput:
+      const shouldTryToReselect = assistedInputKind == AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
+      const shouldHelpFindOptions = assistedInputKind == AssistedInputKind.None && currentInputs.length == 1;
       currentInputs = [];
       removeHighlights();
-      // TODO: assisted input suggestions
+      if (shouldTryToReselect) {
+        processInput(AssistedInputKind.ReselectLastInvalidInput, inputLocation);
+      } else if (shouldHelpFindOptions) {
+        processInput(AssistedInputKind.FindStartLocationsAfterInvalidInput);
+      }
       break;
     case OutputModelKind.LocationsToStartFrom:
       const startFromHighlights: Highlight[] = output

@@ -11,6 +11,10 @@ export class Location {
   toString(): string {
     return `${this.i}-${this.j}`;
   }
+
+  equals(other: Location): boolean {
+    return this.i == other.i && this.j == other.j;
+  }
   
 }
 
