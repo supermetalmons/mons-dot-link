@@ -1,5 +1,5 @@
 import { didClickSquare } from "./index";
-import { Highlight, HighlightKind, Location } from "./models";
+import { Highlight, HighlightKind, Location, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind } from "mons-web";
 
@@ -298,6 +298,6 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
   }
 }
 
-function drawTrace(start: Location, end: Location) {
+function drawTrace(trace: Trace) {
   // TODO: implement
 }

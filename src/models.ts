@@ -70,3 +70,15 @@ export enum InputModifier {
   Potion,
   Cancel
 }
+
+export class Trace {
+
+  from: Location;
+  to: Location;
+
+  constructor(from: Location, to: Location) {
+    this.from = from;
+    this.to = to;
+  }
+
+}

@@ -1,6 +1,6 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind } from "mons-web";
 import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights } from "./board";
-import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier } from "./models";
+import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 
 setupBoard();
@@ -131,51 +131,118 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       let mightKeepHighlightOnLocation: Location | undefined;
       let mustReleaseHighlight = false;
       let sounds: Sound[] = [];
+      let traces: Trace[] = [];
 
       for (const event of events) {
+        const from = event.loc1 ? location(event.loc1) : undefined;
+        const to = event.loc2 ? location(event.loc2) : undefined;
         switch (event.kind) {
           case EventModelKind.MonMove:
+            sounds.push(Sound.Move);
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            mightKeepHighlightOnLocation = to;
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.ManaMove:
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.ManaScored:
+            sounds.push(Sound.ScoreMana); // TODO: or ScoreSupermana
+            locationsToUpdate.push(from);
+            mustReleaseHighlight = true;
             break;
           case EventModelKind.MysticAction:
+            sounds.push(Sound.MysticAbility);
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.DemonAction:
+            sounds.push(Sound.DemonAbility);
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.DemonAdditionalStep:
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.SpiritTargetMove:
+            sounds.push(Sound.SpiritAbility);
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.PickupBomb:
+            sounds.push(Sound.PickupBomb);
+            locationsToUpdate.push(from);
+            mustReleaseHighlight = true;
             break;
           case EventModelKind.PickupPotion:
+            sounds.push(Sound.PickupPotion);
+            locationsToUpdate.push(from);
+            mustReleaseHighlight = true;
             break;
           case EventModelKind.PickupMana:
+            sounds.push(Sound.ManaPickUp);
+            locationsToUpdate.push(from);
             break;
           case EventModelKind.MonFainted:
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
             break;
           case EventModelKind.ManaDropped:
+            locationsToUpdate.push(from);
             break;
           case EventModelKind.SupermanaBackToBase:
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
             break;
           case EventModelKind.BombAttack:
+            sounds.push(Sound.Bomb);
+            locationsToUpdate.push(from);
+            locationsToUpdate.push(to);
+            traces.push(new Trace(from, to));
             break;
           case EventModelKind.MonAwake:
+            locationsToUpdate.push(from);
             break;
           case EventModelKind.BombExplosion:
+            sounds.push(Sound.Bomb);
+            locationsToUpdate.push(from);
             break;
           case EventModelKind.NextTurn:
+            sounds.push(Sound.EndTurn);
+            // TODO: update for the next turn
             break;
           case EventModelKind.GameOver:
+            // TODO: based on player side
+            sounds.push(Sound.Victory);
+            sounds.push(Sound.Defeat);
             break;
         }
       }
 
+      if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
+        processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
+      }
+
+      // TODO: play sounds
+      // TODO: update game status controls
+      // TODO: draw traces
+      // TODO: update unique locations
+
       removeHighlights();
       break;
   }
+}
+
+function location(locationModel: LocationModel): Location {
+  return new Location(locationModel.i, locationModel.j);
 }
 
 function hasItemAt(location: Location): boolean {
