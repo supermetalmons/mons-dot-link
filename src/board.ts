@@ -242,11 +242,14 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
+  
+  if (fainted) {
+    img.style.transform = "rotate(90deg)";
+    img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
+  }
+  
   itemsLayer.appendChild(img);
   items[key] = img;
-  if (fainted) {
-    faint(img, location);
-  }
 }
 
 function setBase(item: SVGElement, location: Location) {
@@ -265,11 +268,6 @@ function setBase(item: SVGElement, location: Location) {
     board.appendChild(img);
     basesPlaceholders[key] = img;
   }
-}
-
-function faint(img: SVGElement, location: Location) {
-  img.style.transform = "rotate(90deg)";
-  img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
 }
 
 function highlightEmptyDestination(location: Location, color: string) {
