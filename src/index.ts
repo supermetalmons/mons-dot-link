@@ -1,4 +1,12 @@
-import init, { MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind } from "mons-web";
+import init, {
+  NextInputKind,
+  MonsGameModel,
+  Location as LocationModel,
+  Modifier as ModifierModel,
+  Color as ColorModel,
+  OutputModelKind,
+} from "mons-web";
+
 import { setupBoard, putItem, setupSquare, applyHighlights } from "./board";
 import { Location, Highlight, HighlightKind } from "./models";
 import { colors } from "./colors";
@@ -10,7 +18,7 @@ const game = MonsGameModel.new();
 
 const locationsWithContent = game.locations_with_content();
 
-locationsWithContent.forEach(loc => {
+locationsWithContent.forEach((loc) => {
   const location = new Location(loc.i, loc.j);
   const item = game.item(new LocationModel(location.i, location.j));
   if (item !== undefined) {
@@ -32,7 +40,9 @@ export function didClickSquare(location: Location) {
 }
 
 function processCurrentInputs() {
-  const gameInput = currentInputs.map(input => new LocationModel(input.i, input.j));
+  const gameInput = currentInputs.map(
+    (input) => new LocationModel(input.i, input.j)
+  );
   let output = game.process_input(gameInput);
 
   switch (output.kind) {
@@ -41,14 +51,69 @@ function processCurrentInputs() {
       processCurrentInputs(); // TODO: tune
       break;
     case OutputModelKind.LocationsToStartFrom:
-      const highlights: Highlight[] = output.locations().map(loc => (new Highlight(new Location(loc.i, loc.j), HighlightKind.TargetSuggestion, colors.startFromSuggestion, true)));
-      applyHighlights(highlights);
+      const startFromHighlights: Highlight[] = output
+        .locations()
+        .map(
+          (loc) =>
+            new Highlight(
+              new Location(loc.i, loc.j),
+              HighlightKind.TargetSuggestion,
+              colors.startFromSuggestion,
+              true
+            )
+        );
+      applyHighlights(startFromHighlights);
       break;
     case OutputModelKind.NextInputOptions:
+      const nextInputs = output.next_inputs();
+      const nextInputHighlights = nextInputs.flatMap((input) => {
+        const location = new Location(input.location.i, input.location.j);
+        let color: string;
+        let highlightKind:  HighlightKind;
+        switch (input.kind) {
+          case NextInputKind.MonMove:
+            highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            color = colors.destination;
+            break;
+          case NextInputKind.ManaMove:
+            highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            color = colors.destination;
+            break;
+          case NextInputKind.MysticAction:
+            highlightKind = HighlightKind.TargetSuggestion;
+            color = colors.attackTarget;
+            break;
+          case NextInputKind.DemonAction:
+            highlightKind = HighlightKind.TargetSuggestion;
+            color = colors.attackTarget;
+            break;
+          case NextInputKind.DemonAdditionalStep:
+            highlightKind = HighlightKind.EmptySquare;
+            color = colors.attackTarget;
+            break;
+          case NextInputKind.SpiritTargetCapture:
+            highlightKind = HighlightKind.TargetSuggestion;
+            color = colors.spiritTarget;
+            break;
+          case NextInputKind.SpiritTargetMove:
+            highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            color = colors.spiritTarget;
+            break;
+          case NextInputKind.SelectConsumable:
+            return [];
+          case NextInputKind.BombAttack:
+            highlightKind = HighlightKind.TargetSuggestion;
+            color = colors.attackTarget;
+            break;
+        }
+        return new Highlight(location, highlightKind, color, false);
+      });
+      applyHighlights(nextInputHighlights);
 
-      const nextInputs = output.next_inputs;
+      // TODO: apply at once with others
+      const selectedItemHighlight = new Highlight(currentInputs[0], HighlightKind.Selected, colors.selectedItem, false);
+      applyHighlights([selectedItemHighlight]);
 
-      console.log("next input options");
       break;
     case OutputModelKind.Events:
       currentInputs = [];
@@ -56,5 +121,14 @@ function processCurrentInputs() {
       break;
     default:
       console.log("unknown output kind");
+  }
+}
+
+function hasItemAt(location: Location): boolean {
+  const item = game.item(new LocationModel(location.i, location.j));
+  if (item !== undefined) {
+    return true;
+  } else {
+    return false;
   }
 }

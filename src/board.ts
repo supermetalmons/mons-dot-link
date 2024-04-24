@@ -97,7 +97,17 @@ export function setupBoard() {
 
 export function applyHighlights(highlights: Highlight[]) {
   highlights.forEach((highlight) => {
-    highlightDestinationItem(highlight.location, highlight.isBlink, highlight.color);
+    switch (highlight.kind) {
+      case HighlightKind.Selected:
+        highlightSelectedItem(highlight.location, highlight.color);
+        break;
+      case HighlightKind.EmptySquare:
+        highlightEmptyDestination(highlight.location, highlight.color);
+        break;
+      case HighlightKind.TargetSuggestion:
+        highlightDestinationItem(highlight.location, highlight.isBlink, highlight.color);
+        break;
+    }
   });
 }
 
@@ -195,7 +205,7 @@ function faint(img: SVGElement, location: Location) {
   img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
 }
 
-function highlightEmptyDestination(location: Location) {
+function highlightEmptyDestination(location: Location, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
@@ -204,11 +214,11 @@ function highlightEmptyDestination(location: Location) {
   highlight.setAttribute("cx", circleCenter.x.toString());
   highlight.setAttribute("cy", circleCenter.y.toString());
   highlight.setAttribute("r", circleRadius.toString());
-  highlight.setAttribute("fill", colors.destination);
+  highlight.setAttribute("fill", color);
   highlightsLayer.append(highlight);
 }
 
-function highlightSelectedItem(img: SVGElement, location: Location) {
+function highlightSelectedItem(location: Location, color: string) {
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.setAttribute("class", `highlight-${location.toString()}`);
   highlight.style.pointerEvents = "none";
@@ -220,7 +230,7 @@ function highlightSelectedItem(img: SVGElement, location: Location) {
   circle.setAttribute("cx", circleCenter.x.toString());
   circle.setAttribute("cy", circleCenter.y.toString());
   circle.setAttribute("r", circleRadius.toString());
-  circle.setAttribute("fill", "#00F900");
+  circle.setAttribute("fill", color);
 
   const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
@@ -235,8 +245,7 @@ function highlightSelectedItem(img: SVGElement, location: Location) {
 
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
   highlight.appendChild(circle);
-
-  img.parentNode.insertBefore(highlight, img);
+  highlightsLayer.append(highlight);
 }
 
 function highlightDestinationItem(location: Location, blink = false, color: string) {
@@ -298,14 +307,12 @@ function toggleItem(location: Location) {
     if (existingHighlight) {
       existingHighlight.remove();
     } else {
-      highlightSelectedItem(img, location);
     }
   } else {
     const existingHighlight = highlightsLayer.querySelector(`.highlight-${location.toString()}`);
     if (existingHighlight) {
       existingHighlight.remove();
     } else {
-      highlightEmptyDestination(location);
     }
   }
 }
