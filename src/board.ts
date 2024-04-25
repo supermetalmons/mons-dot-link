@@ -24,7 +24,6 @@ const mysticB = loadImage(assets.mysticB);
 const manaB = loadImage(assets.manaB);
 const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
-const potion = loadImage(assets.potion);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 
@@ -38,9 +37,47 @@ export function removeItem(location: Location) {
 }
 
 export function showItemSelection() {
-  didSelectInputModifier(InputModifier.Bomb);
-  // didSelectInputModifier(InputModifier.Potion);
-  // didSelectInputModifier(InputModifier.Cancel);
+  const overlay = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  
+  const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  background.setAttribute("x", "0");
+  background.setAttribute("y", "0");
+  background.setAttribute("width", "100%");
+  background.setAttribute("height", "100%");
+  background.setAttribute("fill", "rgba(0, 0, 0, 0.5)");
+  background.style.backdropFilter = "blur(5px)";
+  overlay.appendChild(background);
+  
+  const bombButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
+  bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.bomb}`);
+  bombButton.setAttribute("x", "25%");
+  bombButton.setAttribute("y", "40%");
+  bombButton.setAttribute("width", "20%");
+  bombButton.setAttribute("height", "20%");
+  bombButton.addEventListener("click", () => {
+    didSelectInputModifier(InputModifier.Bomb);
+    overlay.remove();
+  });
+  overlay.appendChild(bombButton);
+
+  const potionButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
+  potionButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.potion}`);
+  potionButton.setAttribute("x", "55%");
+  potionButton.setAttribute("y", "40%");
+  potionButton.setAttribute("width", "20%");
+  potionButton.setAttribute("height", "20%");
+  potionButton.addEventListener("click", () => {
+    didSelectInputModifier(InputModifier.Potion);
+    overlay.remove();
+  });
+  overlay.appendChild(potionButton);
+
+  background.addEventListener("click", () => {
+    didSelectInputModifier(InputModifier.Cancel);
+    overlay.remove();
+  });
+
+  itemsLayer.appendChild(overlay);
 }
 
 export function putItem(item: ItemModel, location: Location) {
