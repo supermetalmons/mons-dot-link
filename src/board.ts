@@ -3,29 +3,30 @@ import { Highlight, HighlightKind, Location, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 
+const assets = (await import("./assets")).assets;
 const board = document.getElementById("monsboard");
 const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
 
-const drainer = loadImage("drainer");
-const angel = loadImage("angel");
-const demon = loadImage("demon");
-const spirit = loadImage("spirit");
-const mystic = loadImage("mystic");
-const mana = loadImage("mana");
-const drainerB = loadImage("drainer-black");
-const angelB = loadImage("angel-black");
-const demonB = loadImage("demon-black");
-const spiritB = loadImage("spirit-black");
-const mysticB = loadImage("mystic-black");
-const manaB = loadImage("mana-black");
-const bombOrPotion = loadImage("bombOrPotion");
-const bomb = loadImage("bomb");
-const potion = loadImage("potion");
-const supermana = loadImage("supermana");
-const supermanaSimple = loadImage("supermana-simple");
+const drainer = loadImage(assets.drainer);
+const angel = loadImage(assets.angel);
+const demon = loadImage(assets.demon);
+const spirit = loadImage(assets.spirit);
+const mystic = loadImage(assets.mystic);
+const mana = loadImage(assets.mana);
+const drainerB = loadImage(assets.drainerB);
+const angelB = loadImage(assets.angelB);
+const demonB = loadImage(assets.demonB);
+const spiritB = loadImage(assets.spiritB);
+const mysticB = loadImage(assets.mysticB);
+const manaB = loadImage(assets.manaB);
+const bombOrPotion = loadImage(assets.bombOrPotion);
+const bomb = loadImage(assets.bomb);
+const potion = loadImage(assets.potion);
+const supermana = loadImage(assets.supermana);
+const supermanaSimple = loadImage(assets.supermanaSimple);
 
 export function removeItem(location: Location) {
   const locationKey = location.toString();
@@ -71,13 +72,34 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.MonWithMana:
-       // TODO: implement
-      // placeMonWithSupermana(drainer, location);
-      placeMonWithMana(drainer, mana, location);
+      const isBlackDrainer = item.mon.color == ColorModel.Black;
+      const isSupermana = item.mana.kind == ManaKind.Supermana;
+      if (isSupermana) {
+        placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
+      } else {
+        const isBlackMana = item.mana.color == ColorModel.Black;
+        placeMonWithMana(isBlackDrainer ? drainerB : drainer,isBlackMana ? manaB : mana, location);
+      }
       break;
     case ItemModelKind.MonWithConsumable:
-       // TODO: implement
-      placeMonWithBomb(drainer, location);
+      const isBlackWithConsumable = item.mon.color == ColorModel.Black;
+      switch (item.mon.kind) {
+        case MonKind.Demon:
+          placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location);
+          break;
+        case MonKind.Drainer:
+          placeMonWithBomb(isBlackWithConsumable ? drainerB : drainer, location);
+          break;
+        case MonKind.Angel:
+          placeMonWithBomb(isBlackWithConsumable ? angelB : angel, location);
+          break;
+        case MonKind.Spirit:
+          placeMonWithBomb(isBlackWithConsumable ? spiritB : spirit, location);
+          break;
+        case MonKind.Mystic:
+          placeMonWithBomb(isBlackWithConsumable ? mysticB : mystic, location);
+          break;
+      }
       break;
     case ItemModelKind.Consumable:
       placeItem(bombOrPotion, location);
@@ -147,9 +169,9 @@ export function applyHighlights(highlights: Highlight[]) {
   });
 }
 
-function loadImage(name: string) {
+function loadImage(data: string) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `../img/${name}.png`);
+  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${data}`);
   image.setAttribute("width", "1");
   image.setAttribute("height", "1");
   image.setAttribute("class", "item");
@@ -221,11 +243,14 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
+  
+  if (fainted) {
+    img.style.transform = "rotate(90deg)";
+    img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
+  }
+  
   itemsLayer.appendChild(img);
   items[key] = img;
-  if (fainted) {
-    faint(img, location);
-  }
 }
 
 function setBase(item: SVGElement, location: Location) {
@@ -244,11 +269,6 @@ function setBase(item: SVGElement, location: Location) {
     board.appendChild(img);
     basesPlaceholders[key] = img;
   }
-}
-
-function faint(img: SVGElement, location: Location) {
-  img.style.transform = "rotate(90deg)";
-  img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
 }
 
 function highlightEmptyDestination(location: Location, color: string) {

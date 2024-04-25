@@ -12,7 +12,6 @@ frontend:
     files:
       - 'index.html'
       - 'dist/**/*'
-      - 'img/**/*'
       - 'assets/**/*'
       - '.well-known/**/*'
   cache:
