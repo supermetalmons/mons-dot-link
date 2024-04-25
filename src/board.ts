@@ -28,11 +28,6 @@ const potion = loadImage(assets.potion);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 
-addWaves(new Location(0, 0));
-addWaves(new Location(10, 0));
-addWaves(new Location(0, 10));
-addWaves(new Location(10, 10));
-
 export function removeItem(location: Location) {
   const locationKey = location.toString();
   const toRemove = items[locationKey];
@@ -149,6 +144,12 @@ export function setupBoard() {
       });
       itemsLayer.appendChild(rect);
     }
+  }
+}
+
+export function decorateBoard() {
+  for (const location of [new Location(0, 0), new Location(10, 0), new Location(0, 10), new Location(10, 10)]) {
+    addWaves(location);
   }
 }
 
