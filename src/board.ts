@@ -1,5 +1,5 @@
-import { didClickSquare } from "./index";
-import { Highlight, HighlightKind, Location, Trace } from "./models";
+import { didClickSquare, didSelectInputModifier } from "./index";
+import { Highlight, HighlightKind, InputModifier, Location, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 
@@ -35,6 +35,12 @@ export function removeItem(location: Location) {
     toRemove.remove();
     delete items[locationKey];
   }
+}
+
+export function showItemSelection() {
+  didSelectInputModifier(InputModifier.Bomb);
+  // didSelectInputModifier(InputModifier.Potion);
+  // didSelectInputModifier(InputModifier.Cancel);
 }
 
 export function putItem(item: ItemModel, location: Location) {
