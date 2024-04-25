@@ -452,7 +452,7 @@ function addWaves(location: Location) {
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     const width = Math.random() * (3/32) + 3/32;
     const x = Math.random() * (1 - width);
-    const y = Math.random() * (1 - height);
+    const y = height * (2 + i * 3);
     rect.setAttribute("x", x.toString());
     rect.setAttribute("y", y.toString());
     rect.setAttribute("width", width.toString());
