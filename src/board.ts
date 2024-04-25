@@ -45,7 +45,7 @@ export function showItemSelection() {
   background.setAttribute("width", "100%");
   background.setAttribute("height", "100%");
   background.setAttribute("fill", "rgba(0, 0, 0, 0.5)");
-  background.style.backdropFilter = "blur(5px)";
+  background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
   
   const bombButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
