@@ -245,8 +245,8 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
   img.setAttribute("y", location.i.toString());
   
   if (fainted) {
-    img.style.transform = "rotate(90deg)";
     img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
+    img.style.transform = "rotate(90deg)";
   }
   
   itemsLayer.appendChild(img);
