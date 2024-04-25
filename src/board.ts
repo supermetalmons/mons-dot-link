@@ -241,16 +241,20 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
     basesPlaceholders[key].style.display = 'none';
   }
   const img = item.cloneNode() as SVGElement;
-  img.setAttribute("x", location.j.toString());
-  img.setAttribute("y", location.i.toString());
-  
   if (fainted) {
-    img.style.transformOrigin = `${location.j + 0.5}px ${location.i + 0.5}px`;
-    img.style.transform = "rotate(90deg)";
+    img.setAttribute("x", "0");
+    img.setAttribute("y", "0");
+    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
+    container.appendChild(img); 
+    itemsLayer.appendChild(container);
+    items[key] = container;
+  } else {
+    img.setAttribute("x", location.j.toString());
+    img.setAttribute("y", location.i.toString());
+    itemsLayer.appendChild(img);
+    items[key] = img;
   }
-  
-  itemsLayer.appendChild(img);
-  items[key] = img;
 }
 
 function setBase(item: SVGElement, location: Location) {
