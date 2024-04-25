@@ -28,6 +28,11 @@ const potion = loadImage(assets.potion);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 
+addWaves(new Location(0, 0));
+addWaves(new Location(10, 0));
+addWaves(new Location(0, 10));
+addWaves(new Location(10, 10));
+
 export function removeItem(location: Location) {
   const locationKey = location.toString();
   const toRemove = items[locationKey];
@@ -78,7 +83,7 @@ export function putItem(item: ItemModel, location: Location) {
         placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
       } else {
         const isBlackMana = item.mana.color == ColorModel.Black;
-        placeMonWithMana(isBlackDrainer ? drainerB : drainer,isBlackMana ? manaB : mana, location);
+        placeMonWithMana(isBlackDrainer ? drainerB : drainer, isBlackMana ? manaB : mana, location);
       }
       break;
     case ItemModelKind.MonWithConsumable:
@@ -238,7 +243,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
 function placeItem(item: SVGElement, location: Location, fainted = false) {
   const key = location.toString();
   if (hasBasePlaceholder(key)) {
-    basesPlaceholders[key].style.display = 'none';
+    basesPlaceholders[key].style.display = "none";
   }
   const img = item.cloneNode() as SVGElement;
   if (fainted) {
@@ -246,7 +251,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
     img.setAttribute("y", "0");
     const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
     container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
-    container.appendChild(img); 
+    container.appendChild(img);
     itemsLayer.appendChild(container);
     items[key] = container;
   } else {
@@ -260,7 +265,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
 function setBase(item: SVGElement, location: Location) {
   const key = location.toString();
   if (hasBasePlaceholder(key)) {
-    basesPlaceholders[key].style.display = '';
+    basesPlaceholders[key].style.display = "";
   } else {
     const img = item.cloneNode() as SVGElement;
     img.setAttribute("width", "0.6");
@@ -305,7 +310,7 @@ function highlightSelectedItem(location: Location, color: string) {
   const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   maskRect.setAttribute("x", location.j.toString());
   maskRect.setAttribute("y", location.i.toString());
-  maskRect.setAttribute("width","1");
+  maskRect.setAttribute("width", "1");
   maskRect.setAttribute("height", "1");
   maskRect.setAttribute("fill", "white");
   mask.appendChild(maskRect);
@@ -371,37 +376,34 @@ export function drawTrace(trace: Trace) {
   stop1.setAttribute("offset", "0%");
   stop1.setAttribute("stop-color", colors[1]);
   gradient.appendChild(stop1);
-  
+
   const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
   stop2.setAttribute("offset", "100%");
   stop2.setAttribute("stop-color", colors[0]);
   gradient.appendChild(stop2);
   board.appendChild(gradient);
-  
+
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   const fromCenter = { x: trace.from.j + 0.5, y: trace.from.i + 0.5 };
   const toCenter = { x: trace.to.j + 0.5, y: trace.to.i + 0.5 };
   const dx = toCenter.x - fromCenter.x;
   const dy = toCenter.y - fromCenter.y;
   const length = Math.sqrt(dx * dx + dy * dy);
-  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
   const transform = `translate(${fromCenter.x},${fromCenter.y}) rotate(${angle})`;
-  
+
   rect.setAttribute("x", "0");
   rect.setAttribute("y", "-0.1");
   rect.setAttribute("width", length.toString());
   rect.setAttribute("height", "0.2");
   rect.setAttribute("transform", transform);
-  
+
   rect.setAttribute("fill", `url(#trace-gradient-${trace.from.toString()}-${trace.to.toString()})`);
   board.append(rect);
 
-  const fadeOut = rect.animate([
-    { opacity: 1 },
-    { opacity: 0 }
-  ], {
+  const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
     duration: 2000,
-    easing: 'ease-out'
+    easing: "ease-out",
   });
 
   fadeOut.onfinish = () => {
@@ -437,5 +439,14 @@ function getTraceColors(): string[] {
     case 6:
       return [colors.trace6, colors.trace7];
   }
+}
 
+function addWaves(location: Location) {
+  const waveElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  waveElement.setAttribute("x", location.j.toString());
+  waveElement.setAttribute("y", location.i.toString());
+  waveElement.setAttribute("width", "1");
+  waveElement.setAttribute("height", "1");
+  waveElement.setAttribute("fill", "transparent");
+  board.append(waveElement);
 }

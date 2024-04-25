@@ -18,6 +18,6 @@
     "useTabs": false,
     "embeddedLanguageFormatting": "auto",
     "vueIndentScriptAndStyle": false,
-    "parser": "babel",
+    "parser": "typescript",
     "printWidth": 699
   }

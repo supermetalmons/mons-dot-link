@@ -32,7 +32,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   const gameInput = currentInputs.map((input) => new LocationModel(input.i, input.j));
   let output: OutputModel;
   if (inputModifier != InputModifier.None) {
-    let modifier: ModifierModel
+    let modifier: ModifierModel;
     switch (inputModifier) {
       case InputModifier.Bomb:
         modifier = ModifierModel.SelectBomb;
@@ -84,7 +84,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         let highlightKind: HighlightKind;
         switch (input.kind) {
           case NextInputKind.MonMove:
-            highlightKind = (hasItemAt(location) || hasBasePlaceholder(location.toString())) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasItemAt(location) || hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
             break;
           case NextInputKind.ManaMove:
@@ -108,7 +108,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.spiritTarget;
             break;
           case NextInputKind.SpiritTargetMove:
-            highlightKind = (hasItemAt(location) || hasBasePlaceholder(location.toString())) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasItemAt(location) || hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.spiritTarget;
             break;
           case NextInputKind.SelectConsumable:
