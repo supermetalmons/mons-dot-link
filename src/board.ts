@@ -362,10 +362,60 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
   }
 }
 
-function drawTrace(trace: Trace) {
-  // TODO: implement
+export function drawTrace(trace: Trace) {
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const fromCenter = { x: trace.from.j + 0.5, y: trace.from.i + 0.5 };
+  const toCenter = { x: trace.to.j + 0.5, y: trace.to.i + 0.5 };
+  const dx = toCenter.x - fromCenter.x;
+  const dy = toCenter.y - fromCenter.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  const transform = `translate(${fromCenter.x},${fromCenter.y}) rotate(${angle})`;
+  
+  rect.setAttribute("x", "0");
+  rect.setAttribute("y", "-0.025");
+  rect.setAttribute("width", length.toString());
+  rect.setAttribute("height", "0.05");
+  rect.setAttribute("transform", transform);
+  
+  rect.setAttribute("fill", "none");
+  rect.setAttribute("stroke", getTraceColor());
+  rect.setAttribute("stroke-width", "0.2");
+  rect.setAttribute("opacity", "0.69");
+  board.append(rect);
+
+  setTimeout(() => {
+    rect.remove();
+  }, 230);
 }
 
 export function hasBasePlaceholder(locationString: string): boolean {
   return basesPlaceholders.hasOwnProperty(locationString);
+}
+
+let traceIndex = 0;
+
+function getTraceColor(): string {
+  traceIndex += 1;
+  if (traceIndex > 7) {
+    traceIndex = 1;
+  }
+
+  switch (traceIndex) {
+    case 1:
+      return colors.trace1;
+    case 2:
+      return colors.trace2;
+    case 3:
+      return colors.trace3;
+    case 4:
+      return colors.trace4;
+    case 5:
+      return colors.trace5;
+    case 6:
+      return colors.trace6;
+    case 7:
+      return colors.trace7;
+  }
+
 }

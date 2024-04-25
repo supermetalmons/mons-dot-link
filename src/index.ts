@@ -1,5 +1,5 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder } from "./board";
+import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
@@ -23,6 +23,8 @@ export function didClickSquare(location: Location) {
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
+  const opponentsTurn = game.active_color() == ColorModel.Black;
+
   if (inputLocation) {
     currentInputs.push(inputLocation);
   }
@@ -259,7 +261,12 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       }
 
       // TODO: update game status controls
-      // TODO: draw traces
+
+      if (opponentsTurn) {
+        for (const trace of traces) {
+          drawTrace(trace);
+        }
+      }
 
       playSounds(sounds);
 
