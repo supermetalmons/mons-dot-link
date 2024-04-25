@@ -363,6 +363,21 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
 }
 
 export function drawTrace(trace: Trace) {
+  const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+  gradient.setAttribute("id", `trace-gradient-${trace.from.toString()}-${trace.to.toString()}`);
+  const colors = getTraceColors();
+
+  const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+  stop1.setAttribute("offset", "0%");
+  stop1.setAttribute("stop-color", colors[1]);
+  gradient.appendChild(stop1);
+  
+  const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+  stop2.setAttribute("offset", "100%");
+  stop2.setAttribute("stop-color", colors[0]);
+  gradient.appendChild(stop2);
+  board.appendChild(gradient);
+  
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   const fromCenter = { x: trace.from.j + 0.5, y: trace.from.i + 0.5 };
   const toCenter = { x: trace.to.j + 0.5, y: trace.to.i + 0.5 };
@@ -373,15 +388,12 @@ export function drawTrace(trace: Trace) {
   const transform = `translate(${fromCenter.x},${fromCenter.y}) rotate(${angle})`;
   
   rect.setAttribute("x", "0");
-  rect.setAttribute("y", "-0.025");
+  rect.setAttribute("y", "-0.1");
   rect.setAttribute("width", length.toString());
-  rect.setAttribute("height", "0.05");
+  rect.setAttribute("height", "0.2");
   rect.setAttribute("transform", transform);
   
-  rect.setAttribute("fill", "none");
-  rect.setAttribute("stroke", getTraceColor());
-  rect.setAttribute("stroke-width", "0.2");
-  rect.setAttribute("opacity", "0.69");
+  rect.setAttribute("fill", `url(#trace-gradient-${trace.from.toString()}-${trace.to.toString()})`);
   board.append(rect);
 
   const fadeOut = rect.animate([
@@ -394,6 +406,7 @@ export function drawTrace(trace: Trace) {
 
   fadeOut.onfinish = () => {
     rect.remove();
+    gradient.remove();
   };
 }
 
@@ -403,27 +416,26 @@ export function hasBasePlaceholder(locationString: string): boolean {
 
 let traceIndex = 0;
 
-function getTraceColor(): string {
-  traceIndex += 1;
-  if (traceIndex > 7) {
-    traceIndex = 1;
+function getTraceColors(): string[] {
+  if (traceIndex == 6) {
+    traceIndex = 0;
   }
+
+  traceIndex += 1;
 
   switch (traceIndex) {
     case 1:
-      return colors.trace1;
+      return [colors.trace1, colors.trace2];
     case 2:
-      return colors.trace2;
+      return [colors.trace2, colors.trace3];
     case 3:
-      return colors.trace3;
+      return [colors.trace3, colors.trace4];
     case 4:
-      return colors.trace4;
+      return [colors.trace4, colors.trace5];
     case 5:
-      return colors.trace5;
+      return [colors.trace5, colors.trace6];
     case 6:
-      return colors.trace6;
-    case 7:
-      return colors.trace7;
+      return [colors.trace6, colors.trace7];
   }
 
 }
