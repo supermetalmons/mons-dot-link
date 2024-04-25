@@ -384,9 +384,17 @@ export function drawTrace(trace: Trace) {
   rect.setAttribute("opacity", "0.69");
   board.append(rect);
 
-  setTimeout(() => {
+  const fadeOut = rect.animate([
+    { opacity: 1 },
+    { opacity: 0 }
+  ], {
+    duration: 2000,
+    easing: 'ease-out'
+  });
+
+  fadeOut.onfinish = () => {
     rect.remove();
-  }, 230);
+  };
 }
 
 export function hasBasePlaceholder(locationString: string): boolean {
