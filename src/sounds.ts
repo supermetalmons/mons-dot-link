@@ -1,7 +1,9 @@
 import { Sound } from "./models";
 
 export function playSounds(sounds: Sound[]) {
-  // TODO: prioritize
+  const maxSoundPriority = Math.max(...sounds.map((sound) => getSoundPriority(sound)));
+  sounds = sounds.filter((sound) => getSoundPriority(sound) === maxSoundPriority || sound === Sound.EndTurn);
+
   for (const sound of sounds) {
     let name: string;
     switch (sound) {
@@ -58,3 +60,27 @@ export function playSounds(sounds: Sound[]) {
     audio.play();
   }
 }
+
+const getSoundPriority = (sound: Sound) => {
+  switch (sound) {
+    case Sound.Click:
+    case Sound.EndTurn:
+    case Sound.Move:
+    case Sound.DidConnect:
+      return 0;
+    case Sound.ManaPickUp:
+    case Sound.ChoosePickup:
+    case Sound.MysticAbility:
+    case Sound.SpiritAbility:
+    case Sound.DemonAbility:
+    case Sound.Bomb:
+    case Sound.PickupBomb:
+    case Sound.PickupPotion:
+      return 1;
+    case Sound.ScoreMana:
+    case Sound.ScoreSupermana:
+    case Sound.Victory:
+    case Sound.Defeat:
+      return 2;
+  }
+};
