@@ -1,5 +1,4 @@
 export class Location {
-
   i: number;
   j: number;
 
@@ -15,7 +14,6 @@ export class Location {
   equals(other: Location): boolean {
     return this.i == other.i && this.j == other.j;
   }
-  
 }
 
 export class Highlight {
@@ -35,14 +33,14 @@ export class Highlight {
 export enum HighlightKind {
   Selected,
   EmptySquare,
-  TargetSuggestion
+  TargetSuggestion,
 }
 
 export enum AssistedInputKind {
   KeepSelectionAfterMove,
   FindStartLocationsAfterInvalidInput,
   ReselectLastInvalidInput,
-  None
+  None,
 }
 
 export enum Sound {
@@ -61,18 +59,17 @@ export enum Sound {
   SpiritAbility,
   Victory,
   Defeat,
-  DidConnect
+  DidConnect,
 }
 
 export enum InputModifier {
   None,
   Bomb,
   Potion,
-  Cancel
+  Cancel,
 }
 
 export class Trace {
-
   from: Location;
   to: Location;
 
@@ -80,5 +77,4 @@ export class Trace {
     this.from = from;
     this.to = to;
   }
-
 }

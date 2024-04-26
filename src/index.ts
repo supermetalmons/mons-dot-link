@@ -1,10 +1,11 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder } from "./board";
+import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
 
 setupBoard();
+decorateBoard();
 
 await init();
 const game = MonsGameModel.new();
@@ -18,11 +19,17 @@ locationsWithContent.forEach((loc) => {
 
 var currentInputs: Location[] = [];
 
+export function didSelectInputModifier(inputModifier: InputModifier) {
+  processInput(AssistedInputKind.None, inputModifier);
+}
+
 export function didClickSquare(location: Location) {
   processInput(AssistedInputKind.None, InputModifier.None, location);
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
+  const opponentsTurn = game.active_color() == ColorModel.Black;
+
   if (inputLocation) {
     currentInputs.push(inputLocation);
   }
@@ -30,7 +37,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   const gameInput = currentInputs.map((input) => new LocationModel(input.i, input.j));
   let output: OutputModel;
   if (inputModifier != InputModifier.None) {
-    let modifier: ModifierModel
+    let modifier: ModifierModel;
     switch (inputModifier) {
       case InputModifier.Bomb:
         modifier = ModifierModel.SelectBomb;
@@ -39,11 +46,8 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         modifier = ModifierModel.SelectPotion;
         break;
       case InputModifier.Cancel:
-        modifier = ModifierModel.Cancel;
-        break;
-      default:
-        modifier = undefined;
-        break;
+        currentInputs = [];
+        return;
     }
     output = game.process_input(gameInput, modifier);
   } else {
@@ -71,8 +75,8 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       const nextInputs = output.next_inputs();
 
       if (nextInputs[0].kind == NextInputKind.SelectConsumable) {
-        // TODO: select consumable
-        processInput(AssistedInputKind.None, InputModifier.Bomb);
+        removeHighlights();
+        showItemSelection();
         return;
       }
 
@@ -82,7 +86,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         let highlightKind: HighlightKind;
         switch (input.kind) {
           case NextInputKind.MonMove:
-            highlightKind = (hasItemAt(location) || hasBasePlaceholder(location.toString())) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasItemAt(location) || hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
             break;
           case NextInputKind.ManaMove:
@@ -106,7 +110,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.spiritTarget;
             break;
           case NextInputKind.SpiritTargetMove:
-            highlightKind = (hasItemAt(location) || hasBasePlaceholder(location.toString())) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasItemAt(location) || hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.spiritTarget;
             break;
           case NextInputKind.SelectConsumable:
@@ -259,7 +263,12 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       }
 
       // TODO: update game status controls
-      // TODO: draw traces
+
+      if (opponentsTurn) {
+        for (const trace of traces) {
+          drawTrace(trace);
+        }
+      }
 
       playSounds(sounds);
 
