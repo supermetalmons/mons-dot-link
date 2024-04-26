@@ -48,6 +48,7 @@
 			align-items: center;
 			justify-content: center;
 			font-family: 'SF Pro Display', sans-serif;
+			cursor: pointer;
 		}
 		footer {
 			text-align: center;
@@ -84,6 +85,14 @@
 			height: 100vw;
 			max-height: min(69vh, calc(100vh - 123px));
 		}
+		.footer-link {
+			user-select: none;
+			text-decoration: none;
+			vertical-align: baseline;
+			-webkit-user-select: none;
+  			-moz-user-select: none;
+  			-ms-user-select: none;
+		}
 	</style>
 </head>
 <body>
@@ -118,12 +127,12 @@
 		<rect width="11" height="11" fill="transparent"/><g id="itemsLayer"></g>
 	</svg>
 	<footer>
-		<p style="color: gray;">mons are temporarily removed from the app store</p>
+		<p style="color: gray; user-select: none; -webkit-user-select: none;">mons are temporarily removed from the app store</p>
 		<div id="link-container" style="display: flex; justify-content: center; gap: 20px; align-items: baseline;">
-			<a href="https://github.com/supermetalmons/mons-dot-link" style="text-decoration: none; vertical-align: baseline;" data-key="github" data-text="&nbsp;github&nbsp;">☆ github</a>
-			<a href="assets/mons.dmg" download="mons.dmg" style="text-decoration: none; vertical-align: baseline;" data-key="macos" data-text="&nbsp;macos&nbsp;">↓ macos</a>
-			<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" style="text-decoration: none; vertical-align: baseline;" data-key="steam" data-text="&nbsp;steam&nbsp;">⚔︎ steam</a>
-			<a href="https://twitter.com/supermetalx" style="text-decoration: none; vertical-align: baseline;" data-key="x" data-text="&nbsp;x&nbsp;">♡ 𝕏</a>
+			<a href="https://github.com/supermetalmons/mons-dot-link" class="footer-link" data-key="github" data-text="&nbsp;github&nbsp;">☆ github</a>
+			<a href="assets/mons.dmg" download="mons.dmg" class="footer-link" data-key="macos" data-text="&nbsp;macos&nbsp;">↓ macos</a>
+			<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" class="footer-link" data-key="steam" data-text="&nbsp;steam&nbsp;">⚔︎ steam</a>
+			<a href="https://twitter.com/supermetalx" class="footer-link" data-key="x" data-text="&nbsp;x&nbsp;">♡ 𝕏</a>
 		</div>			
 	</footer>
 	<script src="dist/bundle.js"></script>
