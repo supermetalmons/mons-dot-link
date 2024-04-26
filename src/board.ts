@@ -9,7 +9,6 @@ const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
-let itemSelectionOverlay: SVGElement | undefined;
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
@@ -39,7 +38,6 @@ export function removeItem(location: Location) {
 
 export function showItemSelection() {
   const overlay = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  itemSelectionOverlay = overlay;
   
   const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   background.setAttribute("x", "0");
@@ -56,8 +54,7 @@ export function showItemSelection() {
   bombButton.setAttribute("y", "40%");
   bombButton.setAttribute("width", "20%");
   bombButton.setAttribute("height", "20%");
-  bombButton.addEventListener("click", (event) => {
-    event.stopPropagation();
+  bombButton.addEventListener("click", () => {
     didSelectInputModifier(InputModifier.Bomb);
     overlay.remove();
   });
@@ -69,15 +66,13 @@ export function showItemSelection() {
   potionButton.setAttribute("y", "40%");
   potionButton.setAttribute("width", "20%");
   potionButton.setAttribute("height", "20%");
-  potionButton.addEventListener("click", (event) => {
-    event.stopPropagation();
+  potionButton.addEventListener("click", () => {
     didSelectInputModifier(InputModifier.Potion);
     overlay.remove();
   });
   overlay.appendChild(potionButton);
 
-  background.addEventListener("click", (event) => {
-    event.stopPropagation();
+  background.addEventListener("click", () => {
     didSelectInputModifier(InputModifier.Cancel);
     overlay.remove();
   });
@@ -179,20 +174,6 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 export function setupBoard() {
-  document.addEventListener("click", function(event) {
-    const target = event.target as SVGElement;
-    if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
-      const x = parseInt(target.getAttribute("x") || "-1");
-      const y = parseInt(target.getAttribute("y") || "-1");
-      didClickSquare(new Location(y, x));
-    } else if (!target.closest('a, button')) {
-      if (itemSelectionOverlay) {
-        itemSelectionOverlay.remove();
-      }
-      didClickSquare(new Location(-1, -1));
-    }
-  });
-
   for (let y = 0; y < 11; y++) {
     for (let x = 0; x < 11; x++) {
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -201,7 +182,9 @@ export function setupBoard() {
       rect.setAttribute("width", "1");
       rect.setAttribute("height", "1");
       rect.setAttribute("fill", "rgba(255, 255, 255, 0)");
-      rect.classList.add("board-rect");
+      rect.addEventListener("click", function () {
+        didClickSquare(new Location(y, x));
+      });
       itemsLayer.appendChild(rect);
     }
   }
