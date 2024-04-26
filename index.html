@@ -4,11 +4,35 @@
 	<meta charset="UTF-8">
 	<title>mons</title>
 	<link rel="shortcut icon" type="image/png" href="assets/favicon.png" />
-	<style>		
+	<style>
+		:root {
+			--background-color-light: white;
+			--text-color-light: black;
+			--background-color-dark: #1E1E1E;
+			--text-color-dark: #e0e0e0;
+			--link-color-light: #0071F9;
+			--link-color-dark: #009AFF;
+		}
+		@media (prefers-color-scheme: dark) {
+			body {
+				background-color: var(--background-color-dark);
+				color: var(--text-color-dark);
+			}
+			a {
+				color: var(--link-color-dark);
+			}
+		}
+		@media (prefers-color-scheme: light) {
+			body {
+				background-color: var(--background-color-light);
+				color: var(--text-color-light);
+			}
+			a {
+				color: var(--link-color-light);
+			}
+		}
 		body {
 			margin-top: 24px;
-			background-color: white;
-			color: black;
 			text-align: center;
 			display: flex;
 			flex-direction: column;
@@ -75,13 +99,13 @@
 	</svg>
 	<p style="color: gray; font-style: italic;">mons are temporarily removed from the app store</p>
 	<div class="link">
-		<a href="assets/mons.dmg" download="mons.dmg">download for macos</a>
+		<a href="assets/mons.dmg" download="mons.dmg" style="text-decoration: none;">download for macos</a>
 	</div>
 	<div class="link">
-		<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942">tabletop simulator on steam</a>
+		<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" style="text-decoration: none;">tabletop simulator on steam</a>
 	</div>
 	<div class="link">
-		<a href="https://supermetalmons.com">supermetalmons.com</a>
+		<a href="https://supermetalmons.com" style="text-decoration: none;">supermetalmons.com</a>
 	</div>
 	<script src="dist/bundle.js"></script>
 </body>
