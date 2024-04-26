@@ -79,16 +79,15 @@
 			outline: none;
 			transform: translate3d(0, 0, 0);
     	}
-		@media (max-width: 600px) and (orientation: portrait) {
-			svg {
-				width: 100vw;
-				height: 100vw;
-			}
+		svg {
+			width: 100vw;
+			height: 100vw;
+			max-height: min(69vh, 444pt, calc(100vh - 123px));
 		}
 	</style>
 </head>
 <body>
-	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges" style="width:100%; height:50vh;">
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges">
 	    <defs>
 	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
 	            <rect width="1" height="1" fill="#E8E8E8"/>
