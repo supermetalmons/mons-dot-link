@@ -38,6 +38,10 @@
 			display: flex;
 			flex-direction: column;
 			overflow-x: hidden;
+			-webkit-touch-callout: none;
+			touch-action: manipulation;
+			user-select: none;
+			-webkit-user-select: none;
 		}
 		body {
 			margin-top: 24px;
@@ -54,10 +58,6 @@
 			padding: 20px;
 			width: 100%;
 			flex-shrink: 0;
-		}
-		.link {
-			margin: 20pt;
-			font-size: 24pt;
 		}
 		svg {
         	display: block;
@@ -82,12 +82,25 @@
 		svg {
 			width: 100vw;
 			height: 100vw;
-			max-height: min(69vh, calc(100vh - 123px));
+			max-height: min(66vh, calc(99vh - 132px));
+		}
+		.footer-link {
+			font-size: 1.23rem;
+			user-select: none;
+			text-decoration: none;
+			vertical-align: baseline;
+			-webkit-user-select: none;
+  			-moz-user-select: none;
+  			-ms-user-select: none;
+			transition: text-decoration 0.3s ease;
+		}
+		.footer-link:hover {
+			text-decoration: underline;
 		}
 	</style>
 </head>
 <body>
-	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges">
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges" style="-webkit-touch-callout: none;">
 	    <defs>
 	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
 	            <rect width="1" height="1" fill="#E8E8E8"/>
@@ -118,13 +131,13 @@
 		<rect width="11" height="11" fill="transparent"/><g id="itemsLayer"></g>
 	</svg>
 	<footer>
-		<p style="color: gray;">mons are temporarily removed from the app store</p>
+		<p style="color: gray; user-select: none; -webkit-user-select: none; font-size: 1.23rem;">mons are temporarily removed from the app store</p>
 		<div id="link-container" style="display: flex; justify-content: center; gap: 20px; align-items: baseline;">
-			<a href="https://github.com/supermetalmons/mons-dot-link" style="text-decoration: none; vertical-align: baseline;" data-key="github" data-text="&nbsp;github&nbsp;">☆ github</a>
-			<a href="assets/mons.dmg" download="mons.dmg" style="text-decoration: none; vertical-align: baseline;" data-key="macos" data-text="&nbsp;macos&nbsp;">↓ macos</a>
-			<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" style="text-decoration: none; vertical-align: baseline;" data-key="steam" data-text="&nbsp;steam&nbsp;">⚔︎ steam</a>
-			<a href="https://twitter.com/supermetalx" style="text-decoration: none; vertical-align: baseline;" data-key="x" data-text="&nbsp;x&nbsp;">♡ 𝕏</a>
-		</div>			
+			<a href="https://github.com/supermetalmons/mons-dot-link" class="footer-link" data-key="github" data-text="&nbsp;github&nbsp;">☆ github</a>
+			<a href="assets/mons.dmg" download="mons.dmg" class="footer-link" data-key="macos" data-text="&nbsp;macos&nbsp;">↓ macos</a>
+			<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" class="footer-link" data-key="steam" data-text="&nbsp;steam&nbsp;">⚔︎ steam</a>
+			<a href="https://twitter.com/supermetalx" class="footer-link" data-key="x" data-text="&nbsp;x&nbsp;">♡ 𝕏</a>
+		</div>
 	</footer>
 	<script src="dist/bundle.js"></script>
 </body>
