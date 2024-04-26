@@ -31,14 +31,28 @@
 				color: var(--link-color-light);
 			}
 		}
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+		}
 		body {
 			margin-top: 24px;
 			text-align: center;
+			flex: 1;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			font-family: 'SF Pro Display', sans-serif;
+		}
+		footer {
+			text-align: center;
+			padding: 20px;
+			width: 100%;
+			flex-shrink: 0;
 		}
 		.link {
 			margin: 20pt;
@@ -97,16 +111,14 @@
 		<rect width="11" height="11" fill="transparent"/><g id="highlightsLayer"></g>
 		<rect width="11" height="11" fill="transparent"/><g id="itemsLayer"></g>
 	</svg>
-	<p style="color: gray; font-style: italic;">mons are temporarily removed from the app store</p>
-	<div class="link">
-		<a href="assets/mons.dmg" download="mons.dmg" style="text-decoration: none;">download for macos</a>
-	</div>
-	<div class="link">
-		<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" style="text-decoration: none;">tabletop simulator on steam</a>
-	</div>
-	<div class="link">
-		<a href="https://supermetalmons.com" style="text-decoration: none;">supermetalmons.com</a>
-	</div>
+	<footer>
+		<p style="color: gray;">mons are temporarily removed from the app store</p>
+		<div style="display: flex; justify-content: center; gap: 20px;">
+			<a href="assets/mons.dmg" download="mons.dmg" style="text-decoration: none;">download for macos</a>
+			<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" style="text-decoration: none;">tabletop simulator on steam</a>
+			<a href="https://supermetalmons.com" style="text-decoration: none;">supermetalmons.com</a>
+		</div>
+	</footer>
 	<script src="dist/bundle.js"></script>
 </body>
 </html>
