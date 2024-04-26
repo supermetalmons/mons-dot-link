@@ -1,5 +1,7 @@
 import { Sound } from "./models";
 
+const audioCache: { [key: string]: any } = {};
+
 export function playSounds(sounds: Sound[]) {
   const maxSoundPriority = Math.max(...sounds.map((sound) => getSoundPriority(sound)));
   sounds = sounds.filter((sound) => getSoundPriority(sound) === maxSoundPriority || sound === Sound.EndTurn);
@@ -56,8 +58,12 @@ export function playSounds(sounds: Sound[]) {
         name = "didConnect";
         break;
     }
-    const audio = new Audio(`./assets/sounds/${name}.wav`);
-    audio.play();
+
+    if (!audioCache[name]) {
+      audioCache[name] = new Audio(`./assets/sounds/${name}.wav`);
+    }
+
+    audioCache[name].play();
   }
 }
 
