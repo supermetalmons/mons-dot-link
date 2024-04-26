@@ -4,17 +4,56 @@
 	<meta charset="UTF-8">
 	<title>mons</title>
 	<link rel="shortcut icon" type="image/png" href="assets/favicon.png" />
-	<style>		
+	<style>
+		:root {
+			--background-color-light: white;
+			--text-color-light: black;
+			--background-color-dark: #1E1E1E;
+			--text-color-dark: #e0e0e0;
+			--link-color-light: #0071F9;
+			--link-color-dark: #009AFF;
+		}
+		@media (prefers-color-scheme: dark) {
+			body {
+				background-color: var(--background-color-dark);
+				color: var(--text-color-dark);
+			}
+			a {
+				color: var(--link-color-dark);
+			}
+		}
+		@media (prefers-color-scheme: light) {
+			body {
+				background-color: var(--background-color-light);
+				color: var(--text-color-light);
+			}
+			a {
+				color: var(--link-color-light);
+			}
+		}
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			overflow-x: hidden;
+		}
 		body {
 			margin-top: 24px;
-			background-color: white;
-			color: black;
 			text-align: center;
+			flex: 1;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
 			font-family: 'SF Pro Display', sans-serif;
+		}
+		footer {
+			text-align: center;
+			padding: 20px;
+			width: 100%;
+			flex-shrink: 0;
 		}
 		.link {
 			margin: 20pt;
@@ -40,10 +79,15 @@
 			outline: none;
 			transform: translate3d(0, 0, 0);
     	}
+		svg {
+			width: 100vw;
+			height: 100vw;
+			max-height: min(69vh, calc(100vh - 123px));
+		}
 	</style>
 </head>
 <body>
-	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges" style="width:100vw; height:50vh;">
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges">
 	    <defs>
 	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
 	            <rect width="1" height="1" fill="#E8E8E8"/>
@@ -73,16 +117,15 @@
 		<rect width="11" height="11" fill="transparent"/><g id="highlightsLayer"></g>
 		<rect width="11" height="11" fill="transparent"/><g id="itemsLayer"></g>
 	</svg>
-	<p style="color: gray; font-style: italic;">mons are temporarily removed from the app store</p>
-	<div class="link">
-		<a href="assets/mons.dmg" download="mons.dmg">download for macos</a>
-	</div>
-	<div class="link">
-		<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942">tabletop simulator on steam</a>
-	</div>
-	<div class="link">
-		<a href="https://supermetalmons.com">supermetalmons.com</a>
-	</div>
+	<footer>
+		<p style="color: gray;">mons are temporarily removed from the app store</p>
+		<div id="link-container" style="display: flex; justify-content: center; gap: 20px; align-items: baseline;">
+			<a href="https://github.com/supermetalmons/mons-dot-link" style="text-decoration: none; vertical-align: baseline;" data-key="github" data-text="&nbsp;github&nbsp;">☆ github</a>
+			<a href="assets/mons.dmg" download="mons.dmg" style="text-decoration: none; vertical-align: baseline;" data-key="macos" data-text="&nbsp;macos&nbsp;">↓ macos</a>
+			<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" style="text-decoration: none; vertical-align: baseline;" data-key="steam" data-text="&nbsp;steam&nbsp;">⚔︎ steam</a>
+			<a href="https://twitter.com/supermetalx" style="text-decoration: none; vertical-align: baseline;" data-key="x" data-text="&nbsp;x&nbsp;">♡ 𝕏</a>
+		</div>			
+	</footer>
 	<script src="dist/bundle.js"></script>
 </body>
 </html>

@@ -3,7 +3,9 @@ import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, re
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
+import { tunePage } from "./page-tuning";
 
+tunePage();
 setupBoard();
 decorateBoard();
 
