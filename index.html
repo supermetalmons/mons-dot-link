@@ -74,7 +74,7 @@
 			flex-shrink: 0;
 			-webkit-touch-callout: none;
 		}
-		svg {
+		.board-svg {
         	display: block;
         	margin: auto;
         	cursor: pointer;
@@ -88,6 +88,10 @@
 			-webkit-tap-highlight-color: transparent;
 			outline: none;
 			-webkit-touch-callout: none;
+			width: 100vw;
+			height: 100vw;
+			max-height: min(66vh, calc(99vh - 132px));
+			touch-action: none;
     	}
     	.item {
 			-webkit-tap-highlight-color: transparent;
@@ -96,12 +100,6 @@
 			outline: none;
 			transform: translate3d(0, 0, 0);
     	}
-		svg {
-			width: 100vw;
-			height: 100vw;
-			max-height: min(66vh, calc(99vh - 132px));
-			touch-action: none;
-		}
 		.footer-link {
 			font-size: 1.23rem;
 			user-select: none;
@@ -126,7 +124,7 @@
 	</style>
 </head>
 <body>
-	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges" style="touch-action: none; user-select: none; -webkit-touch-callout: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">
+	<svg xmlns="http://www.w3.org/2000/svg" class="board-svg" viewBox="0 0 11 11" shape-rendering="crispEdges" style="touch-action: none; user-select: none; -webkit-touch-callout: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">
 	    <defs>
 	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
 	            <rect width="1" height="1" fill="#E8E8E8"/>
