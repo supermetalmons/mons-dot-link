@@ -179,6 +179,7 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 export function setupBoard() {
+  document.addEventListener("touchend", function() {});
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
