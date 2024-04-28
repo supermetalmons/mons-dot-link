@@ -185,11 +185,15 @@ export function setupBoard() {
       const x = parseInt(target.getAttribute("x") || "-1");
       const y = parseInt(target.getAttribute("y") || "-1");
       didClickSquare(new Location(y, x));
+      event.preventDefault();
+      event.stopPropagation();
     } else if (!target.closest('a, button')) {
       if (itemSelectionOverlay) {
         itemSelectionOverlay.remove();
       }
       didClickSquare(new Location(-1, -1));
+      event.preventDefault();
+      event.stopPropagation();
     }
   });
 
