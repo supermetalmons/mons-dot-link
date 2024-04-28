@@ -179,16 +179,6 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 export function setupBoard() {
-  let lastTapTime = 0;
-  document.addEventListener('touchend', function(event) {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTapTime;
-    if (tapLength < 500 && tapLength > 0) {
-      event.preventDefault();
-    }
-    lastTapTime = currentTime;
-  }, { passive: false });
-
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
