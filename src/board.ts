@@ -229,7 +229,7 @@ export function setupSquare(square: SquareModel, location: Location) {
   }
 }
 
-function setupGameInfoElements() {
+export function setupGameInfoElements() {
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
 
@@ -298,7 +298,6 @@ function setupGameInfoElements() {
 }
 
 export function setupBoard() {
-  setupGameInfoElements();
   document.addEventListener("touchend", function() {});
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;

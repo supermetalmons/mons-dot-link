@@ -1,5 +1,5 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection, updateScore, updateMoveStatus } from "./board";
+import { setupGameInfoElements, setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection, updateScore, updateMoveStatus } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
@@ -18,6 +18,8 @@ locationsWithContent.forEach((loc) => {
   const location = new Location(loc.i, loc.j);
   updateLocation(location);
 });
+
+setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
