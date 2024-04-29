@@ -88,7 +88,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         let highlightKind: HighlightKind;
         switch (input.kind) {
           case NextInputKind.MonMove:
-            highlightKind = hasItemAt(location) || hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasItemAt(location) || hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
             break;
           case NextInputKind.ManaMove:
@@ -104,7 +104,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.attackTarget;
             break;
           case NextInputKind.DemonAdditionalStep:
-            highlightKind = hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.attackTarget;
             break;
           case NextInputKind.SpiritTargetCapture:
@@ -112,7 +112,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.spiritTarget;
             break;
           case NextInputKind.SpiritTargetMove:
-            highlightKind = hasItemAt(location) || hasBasePlaceholder(location.toString()) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+            highlightKind = hasItemAt(location) || hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.spiritTarget;
             break;
           case NextInputKind.SelectConsumable:

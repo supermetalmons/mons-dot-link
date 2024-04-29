@@ -29,6 +29,7 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 
 export function removeItem(location: Location) {
+  location = inBoardCoordinates(location);
   const locationKey = location.toString();
   const toRemove = items[locationKey];
   if (toRemove !== undefined) {
@@ -43,9 +44,9 @@ export function showItemSelection() {
   
   const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   background.setAttribute("x", "0");
-  background.setAttribute("y", "0");
+  background.setAttribute("y", "1");
   background.setAttribute("width", "100%");
-  background.setAttribute("height", "100%");
+  background.setAttribute("height", "11");
   background.setAttribute("fill", "rgba(0, 0, 0, 0.5)");
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
@@ -179,17 +180,22 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 export function setupBoard() {
+  document.addEventListener("touchend", function() {});
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
       const x = parseInt(target.getAttribute("x") || "-1");
-      const y = parseInt(target.getAttribute("y") || "-1");
+      const y = parseInt(target.getAttribute("y") || "-1") - 1;
       didClickSquare(new Location(y, x));
+      event.preventDefault();
+      event.stopPropagation();
     } else if (!target.closest('a, button')) {
       if (itemSelectionOverlay) {
         itemSelectionOverlay.remove();
       }
       didClickSquare(new Location(-1, -1));
+      event.preventDefault();
+      event.stopPropagation();
     }
   });
 
@@ -197,7 +203,7 @@ export function setupBoard() {
     for (let x = 0; x < 11; x++) {
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", x.toString());
-      rect.setAttribute("y", y.toString());
+      rect.setAttribute("y", (y + 1).toString());
       rect.setAttribute("width", "1");
       rect.setAttribute("height", "1");
       rect.setAttribute("fill", "rgba(255, 255, 255, 0)");
@@ -245,6 +251,7 @@ function loadImage(data: string) {
 }
 
 function placeMonWithBomb(item: SVGElement, location: Location) {
+  location = inBoardCoordinates(location);
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
@@ -264,6 +271,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
 }
 
 function placeMonWithSupermana(item: SVGElement, location: Location) {
+  location = inBoardCoordinates(location);
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
@@ -283,6 +291,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
 }
 
 function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location) {
+  location = inBoardCoordinates(location);
   const img = item.cloneNode() as SVGElement;
   img.setAttribute("x", location.j.toString());
   img.setAttribute("y", location.i.toString());
@@ -302,8 +311,10 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
 }
 
 function placeItem(item: SVGElement, location: Location, fainted = false) {
+  const logicalLocation = location;
+  location = inBoardCoordinates(location);
   const key = location.toString();
-  if (hasBasePlaceholder(key)) {
+  if (hasBasePlaceholder(logicalLocation)) {
     basesPlaceholders[key].style.display = "none";
   }
   const img = item.cloneNode() as SVGElement;
@@ -324,8 +335,10 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
 }
 
 function setBase(item: SVGElement, location: Location) {
+  const logicalLocation = location;
+  location = inBoardCoordinates(location);
   const key = location.toString();
-  if (hasBasePlaceholder(key)) {
+  if (hasBasePlaceholder(logicalLocation)) {
     basesPlaceholders[key].style.display = "";
   } else {
     const img = item.cloneNode() as SVGElement;
@@ -342,6 +355,7 @@ function setBase(item: SVGElement, location: Location) {
 }
 
 function highlightEmptyDestination(location: Location, color: string) {
+  location = inBoardCoordinates(location);
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   highlight.style.pointerEvents = "none";
   const circleRadius = 0.15;
@@ -354,6 +368,7 @@ function highlightEmptyDestination(location: Location, color: string) {
 }
 
 function highlightSelectedItem(location: Location, color: string) {
+  location = inBoardCoordinates(location);
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.style.pointerEvents = "none";
 
@@ -383,6 +398,7 @@ function highlightSelectedItem(location: Location, color: string) {
 }
 
 function highlightDestinationItem(location: Location, blink = false, color: string) {
+  location = inBoardCoordinates(location);
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.style.pointerEvents = "none";
 
@@ -429,8 +445,11 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
 }
 
 export function drawTrace(trace: Trace) {
+  const from = inBoardCoordinates(trace.from);
+  const to = inBoardCoordinates(trace.to);
+
   const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-  gradient.setAttribute("id", `trace-gradient-${trace.from.toString()}-${trace.to.toString()}`);
+  gradient.setAttribute("id", `trace-gradient-${from.toString()}-${to.toString()}`);
   const colors = getTraceColors();
 
   const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
@@ -445,8 +464,8 @@ export function drawTrace(trace: Trace) {
   board.appendChild(gradient);
 
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  const fromCenter = { x: trace.from.j + 0.5, y: trace.from.i + 0.5 };
-  const toCenter = { x: trace.to.j + 0.5, y: trace.to.i + 0.5 };
+  const fromCenter = { x: from.j + 0.5, y: from.i + 0.5 };
+  const toCenter = { x: to.j + 0.5, y: to.i + 0.5 };
   const dx = toCenter.x - fromCenter.x;
   const dy = toCenter.y - fromCenter.y;
   const length = Math.sqrt(dx * dx + dy * dy);
@@ -459,7 +478,7 @@ export function drawTrace(trace: Trace) {
   rect.setAttribute("height", "0.2");
   rect.setAttribute("transform", transform);
 
-  rect.setAttribute("fill", `url(#trace-gradient-${trace.from.toString()}-${trace.to.toString()})`);
+  rect.setAttribute("fill", `url(#trace-gradient-${from.toString()}-${to.toString()})`);
   board.append(rect);
 
   const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
@@ -473,8 +492,10 @@ export function drawTrace(trace: Trace) {
   };
 }
 
-export function hasBasePlaceholder(locationString: string): boolean {
-  return basesPlaceholders.hasOwnProperty(locationString);
+export function hasBasePlaceholder(location: Location): boolean {
+  location = inBoardCoordinates(location);
+  const key = location.toString();
+  return basesPlaceholders.hasOwnProperty(key);
 }
 
 let traceIndex = 0;
@@ -503,6 +524,7 @@ function getTraceColors(): string[] {
 }
 
 function addWaves(location: Location) {
+  location = inBoardCoordinates(location);
   const waveElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
   waveElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
   waveElement.setAttribute("opacity", "0.5");
@@ -522,4 +544,8 @@ function addWaves(location: Location) {
   }
 
   board.appendChild(waveElement);
+}
+
+function inBoardCoordinates(location: Location): Location {
+  return new Location(location.i + 1, location.j);
 }
