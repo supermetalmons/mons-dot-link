@@ -9,7 +9,10 @@ const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
+
 let itemSelectionOverlay: SVGElement | undefined;
+let opponentScoreText: SVGElement | undefined;
+let playerScoreText: SVGElement | undefined;
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
@@ -41,6 +44,11 @@ export function removeItem(location: Location) {
     toRemove.remove();
     delete items[locationKey];
   }
+}
+
+export function updateScore(player: number, opponent: number) {
+  playerScoreText.textContent = player.toString();
+  opponentScoreText.textContent = opponent.toString();
 }
 
 export function showItemSelection() {
@@ -185,7 +193,9 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 function setupGameInfoElements() {
-  for (const y of [0.333, 12.169]) {
+  for (const isOpponent of [true, false]) {
+    const y = isOpponent ? 0.333 : 12.169;
+
     const avatar = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     avatar.style.pointerEvents = "none";
     const circleRadius = 0.25;
@@ -203,6 +213,11 @@ function setupGameInfoElements() {
     numberText.setAttribute("font-size", "0.5");
     numberText.textContent = "0";
     board.append(numberText);
+    if (isOpponent) {
+      opponentScoreText = numberText;
+    } else {
+      playerScoreText = numberText;
+    }
 
     for (let x = 0; x < 7; x++) {
       const img = statusMove.cloneNode() as SVGElement;

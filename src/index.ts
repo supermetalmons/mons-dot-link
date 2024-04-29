@@ -1,5 +1,5 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection } from "./board";
+import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection, updateScore } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
@@ -183,6 +183,8 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
+            // TODO: based on player side
+            updateScore(game.white_score(), game.black_score());
             break;
           case EventModelKind.MysticAction:
             sounds.push(Sound.MysticAbility);
