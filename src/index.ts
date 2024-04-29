@@ -1,5 +1,5 @@
 import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
-import { setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection } from "./board";
+import { setupGameInfoElements, setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection, updateScore, updateMoveStatus } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./models";
 import { colors } from "./colors";
 import { playSounds } from "./sounds";
@@ -18,6 +18,8 @@ locationsWithContent.forEach((loc) => {
   const location = new Location(loc.i, loc.j);
   updateLocation(location);
 });
+
+setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
@@ -183,6 +185,8 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
+            // TODO: based on player side
+            updateScore(game.white_score(), game.black_score());
             break;
           case EventModelKind.MysticAction:
             sounds.push(Sound.MysticAbility);
@@ -264,7 +268,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         // TODO: do not update twice – keep a list of uniques
       }
 
-      // TODO: update game status controls
+      updateMoveStatus(game.active_color(), game.available_move_kinds());
 
       if (opponentsTurn) {
         for (const trace of traces) {

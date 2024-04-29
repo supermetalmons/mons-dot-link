@@ -9,7 +9,13 @@ const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
+
+const opponentMoveStatusItems: SVGElement [] = [];
+const playerMoveStatusItems: SVGElement [] = [];
+
 let itemSelectionOverlay: SVGElement | undefined;
+let opponentScoreText: SVGElement | undefined;
+let playerScoreText: SVGElement | undefined;
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
@@ -28,6 +34,45 @@ const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 
+const statusMove = loadImage(assets.statusMove);
+const statusMana = loadImage(assets.statusMana);
+const statusAction = loadImage(assets.statusAction);
+const statusPotion = loadImage(assets.statusPotion);
+
+export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
+  const monMoves = moveKinds[0];
+  let actions = moveKinds[2];
+  let potions = moveKinds[3];
+  let manaMoves = moveKinds[1];
+
+  const total = monMoves + manaMoves + actions + potions;
+  const itemsToHide = color == ColorModel.Black ? playerMoveStatusItems : opponentMoveStatusItems;
+  const itemsToSetup = color == ColorModel.Black ? opponentMoveStatusItems : playerMoveStatusItems;
+
+  for (const item of itemsToHide) {
+    item.setAttribute("display", "none");
+  }
+  for (const [index, item] of itemsToSetup.entries()) {
+    if (index < total) {
+      item.setAttribute("display", "");
+      if (manaMoves > 0) {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMana}`);
+        manaMoves -= 1;
+      } else if (potions > 0) {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusPotion}`);
+        potions -= 1;
+      } else if (actions > 0) {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusAction}`);
+        actions -= 1;
+      } else {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMove}`);
+      }
+    } else {
+      item.setAttribute("display", "none");
+    }
+  }
+}
+
 export function removeItem(location: Location) {
   location = inBoardCoordinates(location);
   const locationKey = location.toString();
@@ -36,6 +81,11 @@ export function removeItem(location: Location) {
     toRemove.remove();
     delete items[locationKey];
   }
+}
+
+export function updateScore(player: number, opponent: number) {
+  playerScoreText.textContent = player.toString();
+  opponentScoreText.textContent = opponent.toString();
 }
 
 export function showItemSelection() {
@@ -175,6 +225,74 @@ export function setupSquare(square: SquareModel, location: Location) {
       case MonKind.Mystic:
         setBase(isBlack ? mysticB : mystic, location);
         break;
+    }
+  }
+}
+
+export function setupGameInfoElements() {
+  for (const isOpponent of [true, false]) {
+    const y = isOpponent ? 0.333 : 12.169;
+
+
+    const randomEmojiId = Math.floor(Math.random() * 5) + 1;
+    let emojiValue: string;
+    switch (randomEmojiId) {
+      case 1:
+        emojiValue = assets.emoji1;
+        break;
+      case 2:
+        emojiValue = assets.emoji2;
+        break;
+      case 3:
+        emojiValue = assets.emoji3;
+        break;
+      case 4:
+        emojiValue = assets.emoji4;
+        break;
+      case 5:
+        emojiValue = assets.emoji5;
+        break;
+    }
+
+    const avatar = loadImage(emojiValue);
+    avatar.style.pointerEvents = "none";
+    const avatarSize = 0.639;
+    avatar.setAttribute("x",  0.05.toString());
+    avatar.setAttribute("y", (y - 0.042).toString());
+    avatar.setAttribute("width", avatarSize.toString());
+    avatar.setAttribute("height", avatarSize.toString());
+    board.append(avatar);
+
+    const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    numberText.setAttribute("x", (0.83).toString());
+    numberText.setAttribute("y", (y + 0.44).toString());
+    numberText.setAttribute("fill", "gray");
+    numberText.setAttribute("font-size", "0.5");
+    numberText.textContent = "0";
+    board.append(numberText);
+    if (isOpponent) {
+      opponentScoreText = numberText;
+    } else {
+      playerScoreText = numberText;
+    }
+
+    for (let x = 0; x < 9; x++) {
+      const img = statusMove.cloneNode() as SVGElement;
+      img.setAttribute("x", (10.5 - x * 0.55 - 0.069).toString());
+      img.setAttribute("y", y.toString());
+      img.setAttribute("width", "0.5");
+      img.setAttribute("height", "0.5");
+      board.appendChild(img);
+
+      if (isOpponent) {
+        opponentMoveStatusItems.push(img);
+        img.setAttribute("display", "none");
+      } else {
+        playerMoveStatusItems.push(img);
+        if (x > 4) {
+          img.setAttribute("display", "none");
+        }
+      }
     }
   }
 }
