@@ -196,19 +196,39 @@ function setupGameInfoElements() {
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
 
-    const avatar = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+    const randomEmojiId = Math.floor(Math.random() * 5) + 1;
+    let emojiValue: string;
+    switch (randomEmojiId) {
+      case 1:
+        emojiValue = assets.emoji1;
+        break;
+      case 2:
+        emojiValue = assets.emoji2;
+        break;
+      case 3:
+        emojiValue = assets.emoji3;
+        break;
+      case 4:
+        emojiValue = assets.emoji4;
+        break;
+      case 5:
+        emojiValue = assets.emoji5;
+        break;
+    }
+
+    const avatar = loadImage(emojiValue);
     avatar.style.pointerEvents = "none";
-    const circleRadius = 0.25;
-    const circleCenter = { x: 0.25 + 0.05, y: y + 0.25 };
-    avatar.setAttribute("cx", circleCenter.x.toString());
-    avatar.setAttribute("cy", circleCenter.y.toString());
-    avatar.setAttribute("r", circleRadius.toString());
-    avatar.setAttribute("fill", "gray");
+    const avatarSize = 0.639;
+    avatar.setAttribute("x",  0.05.toString());
+    avatar.setAttribute("y", (y - 0.042).toString());
+    avatar.setAttribute("width", avatarSize.toString());
+    avatar.setAttribute("height", avatarSize.toString());
     board.append(avatar);
 
     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    numberText.setAttribute("x", (circleCenter.x + 0.35).toString());
-    numberText.setAttribute("y", (circleCenter.y + 0.19).toString());
+    numberText.setAttribute("x", (0.83).toString());
+    numberText.setAttribute("y", (y + 0.44).toString());
     numberText.setAttribute("fill", "gray");
     numberText.setAttribute("font-size", "0.5");
     numberText.textContent = "0";
