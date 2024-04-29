@@ -515,15 +515,34 @@ function highlightSelectedItem(location: Location, color: string) {
 
 function highlightStartFromSuggestion(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.style.pointerEvents = "none";
 
-  highlight.setAttribute("x", location.j.toString());
-  highlight.setAttribute("y", location.i.toString());
-  highlight.setAttribute("width", "1");
-  highlight.setAttribute("height", "1");
-  highlight.setAttribute("opacity", "0.69");
-  highlight.setAttribute("fill", color);
+  const circleRadius = 0.56;
+  const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", circleCenter.x.toString());
+  circle.setAttribute("cy", circleCenter.y.toString());
+  circle.setAttribute("r", circleRadius.toString());
+  circle.setAttribute("fill", color);
+  circle.setAttribute("stroke", "#fbbf24");
+  circle.setAttribute("stroke-width", "0.023");
+
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  mask.setAttribute("id", `highlight-mask-${location.toString()}`);
+  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  maskRect.setAttribute("x", location.j.toString());
+  maskRect.setAttribute("y", location.i.toString());
+  maskRect.setAttribute("width", "1");
+  maskRect.setAttribute("height", "1");
+  maskRect.setAttribute("fill", "white");
+  mask.appendChild(maskRect);
+  highlight.appendChild(mask);
+
+  circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+  highlight.setAttribute("opacity", "0.5");
+  highlight.appendChild(circle);
   highlightsLayer.append(highlight);
 
   setTimeout(() => {
