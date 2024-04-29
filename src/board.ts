@@ -279,7 +279,7 @@ export function setupGameInfoElements() {
     }
 
     const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
-    const statusItemsOffsetY = (isOpponent ? 0.11 : -0.155);
+    const statusItemsOffsetY = (isOpponent ? 0.1 : -0.155);
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
       img.setAttribute("x", (10.5 - x * 0.55 - statusItemsOffsetX).toString());
