@@ -10,6 +10,9 @@ const itemsLayer = document.getElementById("itemsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
 
+const opponentMoveStatusItems: SVGElement [] = [];
+const playerMoveStatusItems: SVGElement [] = [];
+
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
@@ -35,6 +38,40 @@ const statusMove = loadImage(assets.statusMove);
 const statusMana = loadImage(assets.statusMana);
 const statusAction = loadImage(assets.statusAction);
 const statusPotion = loadImage(assets.statusPotion);
+
+export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
+  const monMoves = moveKinds[0];
+  let actions = moveKinds[2];
+  let potions = moveKinds[3];
+  let manaMoves = moveKinds[1];
+
+  const total = monMoves + manaMoves + actions + potions;
+  const itemsToHide = color == ColorModel.Black ? playerMoveStatusItems : opponentMoveStatusItems;
+  const itemsToSetup = color == ColorModel.Black ? opponentMoveStatusItems : playerMoveStatusItems;
+
+  for (const item of itemsToHide) {
+    item.setAttribute("display", "none");
+  }
+  for (const [index, item] of itemsToSetup.entries()) {
+    if (index < total) {
+      item.setAttribute("display", "");
+      if (manaMoves > 0) {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMana}`);
+        manaMoves -= 1;
+      } else if (potions > 0) {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusPotion}`);
+        potions -= 1;
+      } else if (actions > 0) {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusAction}`);
+        actions -= 1;
+      } else {
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMove}`);
+      }
+    } else {
+      item.setAttribute("display", "none");
+    }
+  }
+}
 
 export function removeItem(location: Location) {
   location = inBoardCoordinates(location);
@@ -239,13 +276,23 @@ function setupGameInfoElements() {
       playerScoreText = numberText;
     }
 
-    for (let x = 0; x < 7; x++) {
+    for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
       img.setAttribute("x", (10.5 - x * 0.55 - 0.069).toString());
       img.setAttribute("y", y.toString());
       img.setAttribute("width", "0.5");
       img.setAttribute("height", "0.5");
       board.appendChild(img);
+
+      if (isOpponent) {
+        opponentMoveStatusItems.push(img);
+        img.setAttribute("display", "none");
+      } else {
+        playerMoveStatusItems.push(img);
+        if (x > 4) {
+          img.setAttribute("display", "none");
+        }
+      }
     }
   }
 }
