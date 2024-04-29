@@ -87,8 +87,7 @@
 			outline: none;
 			-webkit-touch-callout: none;
 			width: 100vw;
-			height: 100vw;
-			max-height: min(66vh, calc(99vh - 132px));
+			max-height: 77vh;
 			touch-action: none;
     	}
     	.item {
@@ -122,32 +121,33 @@
 	</style>
 </head>
 <body>
-	<svg xmlns="http://www.w3.org/2000/svg" class="board-svg" viewBox="0 0 11 11" shape-rendering="crispEdges" style="touch-action: none; user-select: none; -webkit-touch-callout: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">
+	<svg xmlns="http://www.w3.org/2000/svg" class="board-svg" viewBox="0 0 11 13" shape-rendering="crispEdges" style="touch-action: none; user-select: none; -webkit-touch-callout: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">
 	    <defs>
 	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
 	            <rect width="1" height="1" fill="#E8E8E8"/>
 	            <rect x="1" y="1" width="1" height="1" fill="#E8E8E8"/>
 	        </pattern>
 	    </defs>
-		<rect width="11" height="11" fill="#BEBEBE"/>
-	    <rect width="11" height="11" fill="url(#chessPattern)"/>
-		<rect x="5" y="5" width="1" height="1" fill="#030DF4"/>
-		<rect x="0" y="0" width="1" height="1" fill="#030DF4"/>
-		<rect x="10" y="10" width="1" height="1" fill="#030DF4"/>
-		<rect x="10" y="0" width="1" height="1" fill="#030DF4"/>
-		<rect x="0" y="10" width="1" height="1" fill="#030DF4"/>
-		<rect x="0" y="5" width="1" height="1" fill="#4F4F4F"/>
-		<rect x="10" y="5" width="1" height="1" fill="#4F4F4F"/>
-		<rect x="4" y="3" width="1" height="1" fill="#88A8F8"/>
-		<rect x="6" y="3" width="1" height="1" fill="#88A8F8"/>
-		<rect x="4" y="7" width="1" height="1" fill="#88A8F8"/>
-		<rect x="6" y="7" width="1" height="1" fill="#88A8F8"/>
-		<rect x="3" y="4" width="1" height="1" fill="#88A8F8"/>
-		<rect x="5" y="4" width="1" height="1" fill="#88A8F8"/>
-		<rect x="7" y="4" width="1" height="1" fill="#88A8F8"/>
-		<rect x="3" y="6" width="1" height="1" fill="#88A8F8"/>
-		<rect x="5" y="6" width="1" height="1" fill="#88A8F8"/>
-		<rect x="7" y="6" width="1" height="1" fill="#88A8F8"/>
+		<!-- <rect width="11" height="13" fill="yellow"/> -->
+		<rect y="1" width="11" height="11" fill="#BEBEBE"/>
+	    <rect y="1" width="11" height="11" fill="url(#chessPattern)"/>
+		<rect x="5" y="6" width="1" height="1" fill="#030DF4"/>
+		<rect x="0" y="1" width="1" height="1" fill="#030DF4"/>
+		<rect x="10" y="11" width="1" height="1" fill="#030DF4"/>
+		<rect x="10" y="1" width="1" height="1" fill="#030DF4"/>
+		<rect x="0" y="11" width="1" height="1" fill="#030DF4"/>
+		<rect x="0" y="6" width="1" height="1" fill="#4F4F4F"/>
+		<rect x="10" y="6" width="1" height="1" fill="#4F4F4F"/>
+		<rect x="4" y="4" width="1" height="1" fill="#88A8F8"/>
+		<rect x="6" y="4" width="1" height="1" fill="#88A8F8"/>
+		<rect x="4" y="8" width="1" height="1" fill="#88A8F8"/>
+		<rect x="6" y="8" width="1" height="1" fill="#88A8F8"/>
+		<rect x="3" y="5" width="1" height="1" fill="#88A8F8"/>
+		<rect x="5" y="5" width="1" height="1" fill="#88A8F8"/>
+		<rect x="7" y="5" width="1" height="1" fill="#88A8F8"/>
+		<rect x="3" y="7" width="1" height="1" fill="#88A8F8"/>
+		<rect x="5" y="7" width="1" height="1" fill="#88A8F8"/>
+		<rect x="7" y="7" width="1" height="1" fill="#88A8F8"/>
 	    <g id="monsboard"></g>
 		<rect width="11" height="11" fill="transparent"/><g id="highlightsLayer"></g>
 		<rect width="11" height="11" fill="transparent"/><g id="itemsLayer"></g>
