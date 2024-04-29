@@ -226,6 +226,9 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 export function setupGameInfoElements() {
+  const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
+  const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
+
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
 
@@ -251,19 +254,22 @@ export function setupGameInfoElements() {
     }
 
     const avatar = loadImage(emojiValue);
+    const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
     avatar.style.pointerEvents = "none";
-    const avatarSize = 0.639;
-    avatar.setAttribute("x",  0.05.toString());
-    avatar.setAttribute("y", (y - 0.042).toString());
+    const avatarSize = 0.777;
+    avatar.setAttribute("x",  offsetX.toString());
+    avatar.setAttribute("y", (y - avatarOffsetY).toString());
     avatar.setAttribute("width", avatarSize.toString());
     avatar.setAttribute("height", avatarSize.toString());
     board.append(avatar);
 
     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    numberText.setAttribute("x", (0.83).toString());
-    numberText.setAttribute("y", (y + 0.44).toString());
+    numberText.setAttribute("x", (offsetX + avatarSize + 0.21).toString());
+    numberText.setAttribute("y", (y + 0.55 - avatarOffsetY).toString());
     numberText.setAttribute("fill", "gray");
-    numberText.setAttribute("font-size", "0.5");
+    numberText.setAttribute("font-size", "0.51");
+    numberText.setAttribute("font-weight", "600");
+    numberText.setAttribute("opacity", "0.888");
     numberText.textContent = "0";
     board.append(numberText);
     if (isOpponent) {
@@ -272,10 +278,12 @@ export function setupGameInfoElements() {
       playerScoreText = numberText;
     }
 
+    const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
+    const statusItemsOffsetY = (isOpponent ? 0.11 : -0.155);
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
-      img.setAttribute("x", (10.5 - x * 0.55 - 0.069).toString());
-      img.setAttribute("y", y.toString());
+      img.setAttribute("x", (10.5 - x * 0.55 - statusItemsOffsetX).toString());
+      img.setAttribute("y", (y - statusItemsOffsetY).toString());
       img.setAttribute("width", "0.5");
       img.setAttribute("height", "0.5");
       board.appendChild(img);
@@ -541,7 +549,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   highlight.appendChild(mask);
 
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
-  highlight.setAttribute("opacity", "0.5");
+  highlight.setAttribute("opacity", "0.69");
   highlight.appendChild(circle);
   highlightsLayer.append(highlight);
 
