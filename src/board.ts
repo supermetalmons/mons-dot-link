@@ -28,6 +28,11 @@ const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 
+const statusMove = loadImage(assets.statusMove);
+const statusMana = loadImage(assets.statusMana);
+const statusAction = loadImage(assets.statusAction);
+const statusPotion = loadImage(assets.statusPotion);
+
 export function removeItem(location: Location) {
   location = inBoardCoordinates(location);
   const locationKey = location.toString();
@@ -179,7 +184,39 @@ export function setupSquare(square: SquareModel, location: Location) {
   }
 }
 
+function setupGameInfoElements() {
+  for (const y of [0.333, 12.169]) {
+    const avatar = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    avatar.style.pointerEvents = "none";
+    const circleRadius = 0.25;
+    const circleCenter = { x: 0.25 + 0.05, y: y + 0.25 };
+    avatar.setAttribute("cx", circleCenter.x.toString());
+    avatar.setAttribute("cy", circleCenter.y.toString());
+    avatar.setAttribute("r", circleRadius.toString());
+    avatar.setAttribute("fill", "gray");
+    board.append(avatar);
+
+    const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    numberText.setAttribute("x", (circleCenter.x + 0.35).toString());
+    numberText.setAttribute("y", (circleCenter.y + 0.19).toString());
+    numberText.setAttribute("fill", "gray");
+    numberText.setAttribute("font-size", "0.5");
+    numberText.textContent = "0";
+    board.append(numberText);
+
+    for (let x = 0; x < 7; x++) {
+      const img = statusMove.cloneNode() as SVGElement;
+      img.setAttribute("x", (10.5 - x * 0.55 - 0.069).toString());
+      img.setAttribute("y", y.toString());
+      img.setAttribute("width", "0.5");
+      img.setAttribute("height", "0.5");
+      board.appendChild(img);
+    }
+  }
+}
+
 export function setupBoard() {
+  setupGameInfoElements();
   document.addEventListener("touchend", function() {});
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;
