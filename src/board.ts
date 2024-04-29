@@ -265,11 +265,11 @@ export function setupGameInfoElements() {
 
     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     numberText.setAttribute("x", (offsetX + avatarSize + 0.21).toString());
-    numberText.setAttribute("y", (y + 0.55 - avatarOffsetY).toString());
+    numberText.setAttribute("y", (y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)).toString());
     numberText.setAttribute("fill", "gray");
-    numberText.setAttribute("font-size", "0.51");
+    numberText.setAttribute("font-size", "0.5");
     numberText.setAttribute("font-weight", "600");
-    numberText.setAttribute("opacity", "0.888");
+    numberText.setAttribute("opacity", "0.69");
     numberText.textContent = "0";
     board.append(numberText);
     if (isOpponent) {
