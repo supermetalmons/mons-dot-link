@@ -33,17 +33,13 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-
 const statusMove = loadImage(assets.statusMove);
-const statusMana = loadImage(assets.statusMana);
-const statusAction = loadImage(assets.statusAction);
-const statusPotion = loadImage(assets.statusPotion);
 
 export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
+  let manaMoves = moveKinds[1];
   let actions = moveKinds[2];
   let potions = moveKinds[3];
-  let manaMoves = moveKinds[1];
 
   const total = monMoves + manaMoves + actions + potions;
   const itemsToHide = color == ColorModel.Black ? playerMoveStatusItems : opponentMoveStatusItems;
@@ -298,7 +294,6 @@ export function setupGameInfoElements() {
 }
 
 export function setupBoard() {
-  document.addEventListener("touchend", function() {});
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
