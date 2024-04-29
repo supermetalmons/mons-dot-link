@@ -348,7 +348,10 @@ export function applyHighlights(highlights: Highlight[]) {
         highlightEmptyDestination(highlight.location, highlight.color);
         break;
       case HighlightKind.TargetSuggestion:
-        highlightDestinationItem(highlight.location, highlight.isBlink, highlight.color);
+        highlightDestinationItem(highlight.location, highlight.color);
+        break;
+      case HighlightKind.StartFromSuggestion:
+        highlightStartFromSuggestion(highlight.location, highlight.color);
         break;
     }
   });
@@ -510,7 +513,25 @@ function highlightSelectedItem(location: Location, color: string) {
   highlightsLayer.append(highlight);
 }
 
-function highlightDestinationItem(location: Location, blink = false, color: string) {
+function highlightStartFromSuggestion(location: Location, color: string) {
+  location = inBoardCoordinates(location);
+  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  highlight.style.pointerEvents = "none";
+
+  highlight.setAttribute("x", location.j.toString());
+  highlight.setAttribute("y", location.i.toString());
+  highlight.setAttribute("width", "1");
+  highlight.setAttribute("height", "1");
+  highlight.setAttribute("opacity", "0.69");
+  highlight.setAttribute("fill", color);
+  highlightsLayer.append(highlight);
+
+  setTimeout(() => {
+    highlight.remove();
+  }, 100);
+}
+
+function highlightDestinationItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.style.pointerEvents = "none";
@@ -549,12 +570,6 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
   rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
 
   highlightsLayer.append(highlight);
-
-  if (blink) {
-    setTimeout(() => {
-      highlight.remove();
-    }, 100);
-  }
 }
 
 export function drawTrace(trace: Trace) {
