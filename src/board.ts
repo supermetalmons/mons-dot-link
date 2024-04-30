@@ -303,16 +303,19 @@ export async function setupGameInfoElements() {
                 width: sizeString,
                 height: sizeString,
                 transform: "translate(0, 0)",
+                easing: "ease-out"
               },
               {
                 width: newSizeString,
                 height: newSizeString,
                 transform: `translate(0px, -1pt)`,
+                easing: "ease-in-out"
               },
               {
                 width: sizeString,
                 height: sizeString,
                 transform: "translate(0, 0)",
+                easing: "ease-in"
               },
             ],
             {
