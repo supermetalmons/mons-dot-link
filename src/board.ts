@@ -7,6 +7,7 @@ const assets = (await import("./assets")).assets;
 const board = document.getElementById("monsboard");
 const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
+const controlsLayer = document.getElementById("controlsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
 
@@ -234,15 +235,8 @@ export async function setupGameInfoElements() {
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
-    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
     const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
-    avatar.style.pointerEvents = "none";
     const avatarSize = 0.777;
-    avatar.setAttribute("x",  offsetX.toString());
-    avatar.setAttribute("y", (y - avatarOffsetY).toString());
-    avatar.setAttribute("width", avatarSize.toString());
-    avatar.setAttribute("height", avatarSize.toString());
-    board.append(avatar);
 
     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     numberText.setAttribute("x", (offsetX + avatarSize + 0.21).toString());
@@ -252,7 +246,7 @@ export async function setupGameInfoElements() {
     numberText.setAttribute("font-weight", "600");
     numberText.setAttribute("opacity", "0.69");
     numberText.textContent = "0";
-    board.append(numberText);
+    controlsLayer.append(numberText);
     if (isOpponent) {
       opponentScoreText = numberText;
     } else {
@@ -267,7 +261,7 @@ export async function setupGameInfoElements() {
       img.setAttribute("y", (y - statusItemsOffsetY).toString());
       img.setAttribute("width", "0.5");
       img.setAttribute("height", "0.5");
-      board.appendChild(img);
+      controlsLayer.appendChild(img);
 
       if (isOpponent) {
         opponentMoveStatusItems.push(img);
@@ -278,6 +272,26 @@ export async function setupGameInfoElements() {
           img.setAttribute("display", "none");
         }
       }
+    }
+
+    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
+    avatar.style.pointerEvents = "none";
+    avatar.setAttribute("x",  offsetX.toString());
+    avatar.setAttribute("y", (y - avatarOffsetY).toString());
+    avatar.setAttribute("width", avatarSize.toString());
+    avatar.setAttribute("height", avatarSize.toString());
+    controlsLayer.append(avatar);
+
+    if (isOpponent) {
+      avatar.style.pointerEvents = "auto";
+      avatar.addEventListener('click', (event) => {
+        event.stopPropagation();
+        avatar.style.transition = 'transform 0.3s';
+        avatar.style.transform = 'scale(1.8)';
+        setTimeout(() => {
+          avatar.style.transform = 'scale(1)';
+        }, 300);
+      });
     }
   }
 }
