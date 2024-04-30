@@ -71,7 +71,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       }
       break;
     case OutputModelKind.LocationsToStartFrom:
-      const startFromHighlights: Highlight[] = output.locations().map((loc) => new Highlight(new Location(loc.i, loc.j), HighlightKind.TargetSuggestion, colors.startFromSuggestion, true));
+      const startFromHighlights: Highlight[] = output.locations().map((loc) => new Highlight(new Location(loc.i, loc.j), HighlightKind.StartFromSuggestion, colors.startFromSuggestion));
       removeHighlights();
       applyHighlights(startFromHighlights);
       break;
@@ -126,7 +126,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             color = colors.attackTarget;
             break;
         }
-        return new Highlight(location, highlightKind, color, false);
+        return new Highlight(location, highlightKind, color);
       });
 
       const selectedItemsHighlights = currentInputs.map((input, index) => {
@@ -146,7 +146,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         } else {
           color = colors.selectedItem;
         }
-        return new Highlight(input, HighlightKind.Selected, color, false);
+        return new Highlight(input, HighlightKind.Selected, color);
       });
 
       removeHighlights();

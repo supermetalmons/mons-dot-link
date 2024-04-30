@@ -33,17 +33,13 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-
-const statusMove = loadImage(assets.statusMove);
-const statusMana = loadImage(assets.statusMana);
-const statusAction = loadImage(assets.statusAction);
-const statusPotion = loadImage(assets.statusPotion);
+const emojis = (await import("./emojis")).emojis;
 
 export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
+  let manaMoves = moveKinds[1];
   let actions = moveKinds[2];
   let potions = moveKinds[3];
-  let manaMoves = moveKinds[1];
 
   const total = monMoves + manaMoves + actions + potions;
   const itemsToHide = color == ColorModel.Black ? playerMoveStatusItems : opponentMoveStatusItems;
@@ -56,16 +52,16 @@ export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
     if (index < total) {
       item.setAttribute("display", "");
       if (manaMoves > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMana}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusMana}`);
         manaMoves -= 1;
       } else if (potions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusPotion}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusPotion}`);
         potions -= 1;
       } else if (actions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusAction}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusAction}`);
         actions -= 1;
       } else {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMove}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusMove}`);
       }
     } else {
       item.setAttribute("display", "none");
@@ -102,7 +98,7 @@ export function showItemSelection() {
   overlay.appendChild(background);
   
   const bombButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.bomb}`);
+  bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.bomb}`);
   bombButton.setAttribute("x", "25%");
   bombButton.setAttribute("y", "40%");
   bombButton.setAttribute("width", "20%");
@@ -115,7 +111,7 @@ export function showItemSelection() {
   overlay.appendChild(bombButton);
 
   const potionButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  potionButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.potion}`);
+  potionButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.potion}`);
   potionButton.setAttribute("x", "55%");
   potionButton.setAttribute("y", "40%");
   potionButton.setAttribute("width", "20%");
@@ -229,45 +225,32 @@ export function setupSquare(square: SquareModel, location: Location) {
   }
 }
 
-export function setupGameInfoElements() {
+export async function setupGameInfoElements() {
+  const statusMove = loadImage(emojis.statusMove);
+
+  const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
+  const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
+  const [playerEmoji, opponentEmoji] = emojis.getTwoRandomEmojis();
+
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
-
-
-    const randomEmojiId = Math.floor(Math.random() * 5) + 1;
-    let emojiValue: string;
-    switch (randomEmojiId) {
-      case 1:
-        emojiValue = assets.emoji1;
-        break;
-      case 2:
-        emojiValue = assets.emoji2;
-        break;
-      case 3:
-        emojiValue = assets.emoji3;
-        break;
-      case 4:
-        emojiValue = assets.emoji4;
-        break;
-      case 5:
-        emojiValue = assets.emoji5;
-        break;
-    }
-
-    const avatar = loadImage(emojiValue);
+    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
+    const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
     avatar.style.pointerEvents = "none";
-    const avatarSize = 0.639;
-    avatar.setAttribute("x",  0.05.toString());
-    avatar.setAttribute("y", (y - 0.042).toString());
+    const avatarSize = 0.777;
+    avatar.setAttribute("x",  offsetX.toString());
+    avatar.setAttribute("y", (y - avatarOffsetY).toString());
     avatar.setAttribute("width", avatarSize.toString());
     avatar.setAttribute("height", avatarSize.toString());
     board.append(avatar);
 
     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    numberText.setAttribute("x", (0.83).toString());
-    numberText.setAttribute("y", (y + 0.44).toString());
+    numberText.setAttribute("x", (offsetX + avatarSize + 0.21).toString());
+    numberText.setAttribute("y", (y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)).toString());
     numberText.setAttribute("fill", "gray");
     numberText.setAttribute("font-size", "0.5");
+    numberText.setAttribute("font-weight", "600");
+    numberText.setAttribute("opacity", "0.69");
     numberText.textContent = "0";
     board.append(numberText);
     if (isOpponent) {
@@ -276,10 +259,12 @@ export function setupGameInfoElements() {
       playerScoreText = numberText;
     }
 
+    const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
+    const statusItemsOffsetY = (isOpponent ? 0.1 : -0.155);
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
-      img.setAttribute("x", (10.5 - x * 0.55 - 0.069).toString());
-      img.setAttribute("y", y.toString());
+      img.setAttribute("x", (10.5 - x * 0.55 - statusItemsOffsetX).toString());
+      img.setAttribute("y", (y - statusItemsOffsetY).toString());
       img.setAttribute("width", "0.5");
       img.setAttribute("height", "0.5");
       board.appendChild(img);
@@ -298,7 +283,6 @@ export function setupGameInfoElements() {
 }
 
 export function setupBoard() {
-  document.addEventListener("touchend", function() {});
   document.addEventListener("click", function(event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
@@ -353,7 +337,10 @@ export function applyHighlights(highlights: Highlight[]) {
         highlightEmptyDestination(highlight.location, highlight.color);
         break;
       case HighlightKind.TargetSuggestion:
-        highlightDestinationItem(highlight.location, highlight.isBlink, highlight.color);
+        highlightDestinationItem(highlight.location, highlight.color);
+        break;
+      case HighlightKind.StartFromSuggestion:
+        highlightStartFromSuggestion(highlight.location, highlight.color);
         break;
     }
   });
@@ -361,7 +348,7 @@ export function applyHighlights(highlights: Highlight[]) {
 
 function loadImage(data: string) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${data}`);
+  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${data}`);
   image.setAttribute("width", "1");
   image.setAttribute("height", "1");
   image.setAttribute("class", "item");
@@ -515,7 +502,44 @@ function highlightSelectedItem(location: Location, color: string) {
   highlightsLayer.append(highlight);
 }
 
-function highlightDestinationItem(location: Location, blink = false, color: string) {
+function highlightStartFromSuggestion(location: Location, color: string) {
+  location = inBoardCoordinates(location);
+  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  highlight.style.pointerEvents = "none";
+
+  const circleRadius = 0.56;
+  const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
+
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", circleCenter.x.toString());
+  circle.setAttribute("cy", circleCenter.y.toString());
+  circle.setAttribute("r", circleRadius.toString());
+  circle.setAttribute("fill", color);
+  circle.setAttribute("stroke", "#fbbf24");
+  circle.setAttribute("stroke-width", "0.023");
+
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  mask.setAttribute("id", `highlight-mask-${location.toString()}`);
+  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  maskRect.setAttribute("x", location.j.toString());
+  maskRect.setAttribute("y", location.i.toString());
+  maskRect.setAttribute("width", "1");
+  maskRect.setAttribute("height", "1");
+  maskRect.setAttribute("fill", "white");
+  mask.appendChild(maskRect);
+  highlight.appendChild(mask);
+
+  circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+  highlight.setAttribute("opacity", "0.69");
+  highlight.appendChild(circle);
+  highlightsLayer.append(highlight);
+
+  setTimeout(() => {
+    highlight.remove();
+  }, 100);
+}
+
+function highlightDestinationItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
   const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
   highlight.style.pointerEvents = "none";
@@ -554,12 +578,6 @@ function highlightDestinationItem(location: Location, blink = false, color: stri
   rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
 
   highlightsLayer.append(highlight);
-
-  if (blink) {
-    setTimeout(() => {
-      highlight.remove();
-    }, 100);
-  }
 }
 
 export function drawTrace(trace: Trace) {
