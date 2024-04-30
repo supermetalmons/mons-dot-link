@@ -1,7 +1,8 @@
 import { didClickSquare, didSelectInputModifier } from "./index";
-import { Highlight, HighlightKind, InputModifier, Location, Trace } from "./models";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
+import { playSounds } from "./sounds";
 
 const assets = (await import("./assets")).assets;
 const board = document.getElementById("monsboard");
@@ -292,6 +293,9 @@ export async function setupGameInfoElements() {
           avatar.style.transform = "scale(1)";
         }, 300);
       } else {
+        avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
+        playSounds([Sound.Click]);
+
         if (isDesktopSafari) {
           const scale = 1.8;
           const sizeString = avatarSize.toString();
@@ -308,7 +312,7 @@ export async function setupGameInfoElements() {
               {
                 width: newSizeString,
                 height: newSizeString,
-                transform: `translate(0px, -1pt)`,
+                transform: `translate(0px, -0.77pt)`,
                 easing: "ease-in-out"
               },
               {
@@ -319,7 +323,7 @@ export async function setupGameInfoElements() {
               },
             ],
             {
-              duration: 300,
+              duration: 420,
               fill: "forwards",
             }
           );
