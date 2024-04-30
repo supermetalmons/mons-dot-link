@@ -232,8 +232,7 @@ export function setupGameInfoElements() {
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
 
-    const randomEmojiId = Math.floor(Math.random() * 5) + 1;
-    const emojiValue = assets.getEmoji(randomEmojiId);
+    const emojiValue = assets.getRandomEmoji();
     const avatar = loadImage(emojiValue);
     const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
     avatar.style.pointerEvents = "none";
