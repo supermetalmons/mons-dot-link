@@ -232,27 +232,8 @@ export function setupGameInfoElements() {
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
 
-
     const randomEmojiId = Math.floor(Math.random() * 5) + 1;
-    let emojiValue: string;
-    switch (randomEmojiId) {
-      case 1:
-        emojiValue = assets.emoji1;
-        break;
-      case 2:
-        emojiValue = assets.emoji2;
-        break;
-      case 3:
-        emojiValue = assets.emoji3;
-        break;
-      case 4:
-        emojiValue = assets.emoji4;
-        break;
-      case 5:
-        emojiValue = assets.emoji5;
-        break;
-    }
-
+    const emojiValue = assets.getEmoji(randomEmojiId);
     const avatar = loadImage(emojiValue);
     const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
     avatar.style.pointerEvents = "none";
