@@ -33,7 +33,7 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-const statusMove = loadImage(assets.statusMove);
+let emojis: any;
 
 export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
@@ -52,16 +52,16 @@ export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
     if (index < total) {
       item.setAttribute("display", "");
       if (manaMoves > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusMana}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusMana}`);
         manaMoves -= 1;
       } else if (potions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusPotion}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusPotion}`);
         potions -= 1;
       } else if (actions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusAction}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusAction}`);
         actions -= 1;
       } else {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusMove}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusMove}`);
       }
     } else {
       item.setAttribute("display", "none");
@@ -225,10 +225,13 @@ export function setupSquare(square: SquareModel, location: Location) {
   }
 }
 
-export function setupGameInfoElements() {
+export async function setupGameInfoElements() {
+  emojis = (await import("./emojis")).emojis;
+  const statusMove = loadImage(emojis.statusMove);
+
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
   const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
-  const [playerEmoji, opponentEmoji] = assets.getTwoRandomEmojis();
+  const [playerEmoji, opponentEmoji] = emojis.getTwoRandomEmojis();
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
