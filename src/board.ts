@@ -33,7 +33,7 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-let emojis: any;
+const emojis = (await import("./emojis")).emojis;
 
 export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
@@ -226,7 +226,6 @@ export function setupSquare(square: SquareModel, location: Location) {
 }
 
 export async function setupGameInfoElements() {
-  emojis = (await import("./emojis")).emojis;
   const statusMove = loadImage(emojis.statusMove);
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
