@@ -52,16 +52,16 @@ export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
     if (index < total) {
       item.setAttribute("display", "");
       if (manaMoves > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMana}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusMana}`);
         manaMoves -= 1;
       } else if (potions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusPotion}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusPotion}`);
         potions -= 1;
       } else if (actions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusAction}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusAction}`);
         actions -= 1;
       } else {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.statusMove}`);
+        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.statusMove}`);
       }
     } else {
       item.setAttribute("display", "none");
@@ -98,7 +98,7 @@ export function showItemSelection() {
   overlay.appendChild(background);
   
   const bombButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.bomb}`);
+  bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.bomb}`);
   bombButton.setAttribute("x", "25%");
   bombButton.setAttribute("y", "40%");
   bombButton.setAttribute("width", "20%");
@@ -111,7 +111,7 @@ export function showItemSelection() {
   overlay.appendChild(bombButton);
 
   const potionButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  potionButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${assets.potion}`);
+  potionButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.potion}`);
   potionButton.setAttribute("x", "55%");
   potionButton.setAttribute("y", "40%");
   potionButton.setAttribute("width", "20%");
@@ -367,7 +367,7 @@ export function applyHighlights(highlights: Highlight[]) {
 
 function loadImage(data: string) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/png;base64,${data}`);
+  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${data}`);
   image.setAttribute("width", "1");
   image.setAttribute("height", "1");
   image.setAttribute("class", "item");
