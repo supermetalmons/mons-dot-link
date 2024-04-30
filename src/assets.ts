@@ -25,6 +25,10 @@ export const assets = {
   getRandomEmoji: function() {
     return getRandomEmoji();
   },
+
+  getTwoRandomEmojis: function() {
+    return getTwoRandomEmojis();
+  },
   
   getEmoji: function(index: string) {
     return this.emoji[index];
@@ -40,6 +44,20 @@ export const assets = {
 };
 
 const emojiKeys = Object.keys(assets.emoji);
+
+function getTwoRandomEmojis(): [string, string] {
+  let firstIndex = Math.floor(Math.random() * emojiKeys.length);
+  let secondIndex = Math.floor(Math.random() * emojiKeys.length);
+  
+  while (secondIndex === firstIndex) {
+    secondIndex = Math.floor(Math.random() * emojiKeys.length);
+  }
+
+  const firstEmoji = assets.getEmoji(emojiKeys[firstIndex]);
+  const secondEmoji = assets.getEmoji(emojiKeys[secondIndex]);
+
+  return [firstEmoji, secondEmoji];
+}
 
 function getRandomEmoji(): string {
   const randomIndex = Math.floor(Math.random() * emojiKeys.length);

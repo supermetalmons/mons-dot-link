@@ -228,12 +228,11 @@ export function setupSquare(square: SquareModel, location: Location) {
 export function setupGameInfoElements() {
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
   const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
+  const [playerEmoji, opponentEmoji] = assets.getTwoRandomEmojis();
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
-
-    const emojiValue = assets.getRandomEmoji();
-    const avatar = loadImage(emojiValue);
+    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
     const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
     avatar.style.pointerEvents = "none";
     const avatarSize = 0.777;
