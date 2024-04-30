@@ -275,24 +275,32 @@ export async function setupGameInfoElements() {
     }
 
     const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
-    avatar.style.pointerEvents = "none";
+    avatar.style.pointerEvents = "auto";
     avatar.setAttribute("x",  offsetX.toString());
     avatar.setAttribute("y", (y - avatarOffsetY).toString());
     avatar.setAttribute("width", avatarSize.toString());
     avatar.setAttribute("height", avatarSize.toString());
-    controlsLayer.append(avatar);
+    controlsLayer.append(avatar);    
 
-    if (isOpponent) {
-      avatar.style.pointerEvents = "auto";
-      avatar.addEventListener('click', (event) => {
-        event.stopPropagation();
+    avatar.addEventListener('click', (event) => {
+      event.stopPropagation();
+
+      if (isOpponent) {
         avatar.style.transition = 'transform 0.3s';
         avatar.style.transform = 'scale(1.8)';
         setTimeout(() => {
           avatar.style.transform = 'scale(1)';
         }, 300);
-      });
-    }
+      } else {
+        // TODO: fix for safari
+        avatar.style.transformOrigin = '0px 13px';
+        avatar.style.transform = 'scale(1.8)';
+        avatar.style.transition = 'transform 0.3s';
+        setTimeout(() => {
+          avatar.style.transform = 'scale(1)';
+        }, 300);
+      }
+    });
   }
 }
 
