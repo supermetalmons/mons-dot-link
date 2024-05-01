@@ -753,25 +753,26 @@ function getTraceColors(): string[] {
 
 function addWaves(location: Location) {
   location = inBoardCoordinates(location);
-  const waveElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  waveElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
-  waveElement.setAttribute("opacity", "0.5");
+  const wavesSquareElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
+  wavesSquareElement.setAttribute("opacity", "0.5");
 
   const height = 1 / 32;
   for (let i = 0; i < 10; i++) {
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    const singleWaveElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const width = Math.random() * (3 / 32) + 3 / 32;
     const x = Math.random() * (1 - width);
     const y = height * (2 + i * 3);
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     rect.setAttribute("x", x.toString());
     rect.setAttribute("y", y.toString());
     rect.setAttribute("width", width.toString());
     rect.setAttribute("height", height.toString());
     rect.setAttribute("fill", i % 2 == 0 ? "#6666FF" : "#00FCFF");
-    waveElement.appendChild(rect);
+    wavesSquareElement.appendChild(singleWaveElement);
+    singleWaveElement.appendChild(rect);
   }
-
-  board.appendChild(waveElement);
+  board.appendChild(wavesSquareElement);
 }
 
 function inBoardCoordinates(location: Location): Location {
