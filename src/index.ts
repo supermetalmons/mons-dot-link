@@ -23,6 +23,10 @@ setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
+export function isPlayerSideTurn(): boolean {
+  return game.active_color() == ColorModel.White;
+}
+
 export function didSelectInputModifier(inputModifier: InputModifier) {
   processInput(AssistedInputKind.None, inputModifier);
 }

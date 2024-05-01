@@ -1,4 +1,4 @@
-import { didClickSquare, didSelectInputModifier } from "./index";
+import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
@@ -11,13 +11,19 @@ const itemsLayer = document.getElementById("itemsLayer");
 const controlsLayer = document.getElementById("controlsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
+const wavesFrames: { [key: string]: SVGElement } = {};
 
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+let isFlipped = false;
+
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
+
+let currentPlayerEmojiId = "";
+let currentOpponentEmojiId = "";
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
@@ -44,8 +50,11 @@ export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   let potions = moveKinds[3];
 
   const total = monMoves + manaMoves + actions + potions;
-  const itemsToHide = color == ColorModel.Black ? playerMoveStatusItems : opponentMoveStatusItems;
-  const itemsToSetup = color == ColorModel.Black ? opponentMoveStatusItems : playerMoveStatusItems;
+
+  const playerSideActive = isFlipped ? color == ColorModel.White : color == ColorModel.Black;
+
+  const itemsToHide = playerSideActive ? playerMoveStatusItems : opponentMoveStatusItems;
+  const itemsToSetup = playerSideActive ? opponentMoveStatusItems : playerMoveStatusItems;
 
   for (const item of itemsToHide) {
     item.setAttribute("display", "none");
@@ -232,7 +241,11 @@ export async function setupGameInfoElements() {
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
   const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
-  const [playerEmoji, opponentEmoji] = emojis.getTwoRandomEmojis();
+  const [playerEmojiId, playerEmoji] = emojis.getRandomEmoji();
+  const [opponentEmojiId, opponentEmoji] = emojis.getRandomEmojiOtherThan(playerEmojiId);
+
+  currentPlayerEmojiId = playerEmojiId;
+  currentOpponentEmojiId = opponentEmojiId;
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
@@ -266,12 +279,17 @@ export async function setupGameInfoElements() {
 
       if (isOpponent) {
         opponentMoveStatusItems.push(img);
-        img.setAttribute("display", "none");
       } else {
         playerMoveStatusItems.push(img);
+      }
+
+      const isActiveSide = isFlipped ? isOpponent : !isOpponent;
+      if (isActiveSide) {
         if (x > 4) {
           img.setAttribute("display", "none");
         }
+      } else {
+        img.setAttribute("display", "none");
       }
     }
 
@@ -286,15 +304,27 @@ export async function setupGameInfoElements() {
     avatar.addEventListener("click", (event) => {
       event.stopPropagation();
 
+      const playerSideActive = isFlipped ? !isPlayerSideTurn() : isPlayerSideTurn();
+
       if (isOpponent) {
+        if (!playerSideActive) {
+          const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
+          currentOpponentEmojiId = newId;
+          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
+          playSounds([Sound.Click]);
+        }
         avatar.style.transition = "transform 0.3s";
         avatar.style.transform = "scale(1.8)";
         setTimeout(() => {
           avatar.style.transform = "scale(1)";
         }, 300);
       } else {
-        avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
-        playSounds([Sound.Click]);
+        if (playerSideActive) {
+          const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
+          currentPlayerEmojiId = newId;
+          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
+          playSounds([Sound.Click]);
+        }
 
         if (isDesktopSafari) {
           const scale = 1.8;
@@ -307,19 +337,19 @@ export async function setupGameInfoElements() {
                 width: sizeString,
                 height: sizeString,
                 transform: "translate(0, 0)",
-                easing: "ease-out"
+                easing: "ease-out",
               },
               {
                 width: newSizeString,
                 height: newSizeString,
                 transform: `translate(0px, -0.77pt)`,
-                easing: "ease-in-out"
+                easing: "ease-in-out",
               },
               {
                 width: sizeString,
                 height: sizeString,
                 transform: "translate(0, 0)",
-                easing: "ease-in"
+                easing: "ease-in",
               },
             ],
             {
@@ -345,7 +375,10 @@ export function setupBoard() {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
       const x = parseInt(target.getAttribute("x") || "-1");
-      const y = parseInt(target.getAttribute("y") || "-1") - 1;
+      const rawY = parseInt(target.getAttribute("y") || "-1") - 1;
+
+      const y = isFlipped ? 10 - rawY : rawY;
+
       didClickSquare(new Location(y, x));
       event.preventDefault();
       event.stopPropagation();
@@ -719,29 +752,111 @@ function getTraceColors(): string[] {
 
 function addWaves(location: Location) {
   location = inBoardCoordinates(location);
-  const waveElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  waveElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
-  waveElement.setAttribute("opacity", "0.5");
+  const wavesSquareElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
+  wavesSquareElement.setAttribute("opacity", "0.5");
+  board.appendChild(wavesSquareElement);
 
-  const height = 1 / 32;
-  for (let i = 0; i < 10; i++) {
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    const width = Math.random() * (3 / 32) + 3 / 32;
-    const x = Math.random() * (1 - width);
-    const y = height * (2 + i * 3);
-    rect.setAttribute("x", x.toString());
-    rect.setAttribute("y", y.toString());
-    rect.setAttribute("width", width.toString());
-    rect.setAttribute("height", height.toString());
-    rect.setAttribute("fill", i % 2 == 0 ? "#6666FF" : "#00FCFF");
-    waveElement.appendChild(rect);
+  let frameIndex = 0;
+  wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
+  setInterval(() => {
+    frameIndex = (frameIndex + 1) % 9;
+    wavesSquareElement.innerHTML = "";
+    wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
+  }, 200);
+}
+
+function getWavesFrame(location: Location, frameIndex: number) {
+  const pixel = 1 / 32;
+  const key = location.toString() + frameIndex.toString();
+  if (!wavesFrames[key]) {
+    if (frameIndex == 0) {
+      const frame = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      for (let i = 0; i < 10; i++) {
+        const width = (Math.floor(Math.random() * 4) + 3) * pixel;
+        const x = Math.random() * (1 - width);
+        const y = pixel * (2 + i * 3);
+        const baseColor = i % 2 == 0 ? "#6666FF" : "#00FCFF";
+
+        const baseBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        baseBottomRect.setAttribute("x", x.toString());
+        baseBottomRect.setAttribute("y", y.toString());
+        baseBottomRect.setAttribute("width", width.toString());
+        baseBottomRect.setAttribute("height", pixel.toString());
+        baseBottomRect.setAttribute("fill", baseColor);
+        baseBottomRect.setAttribute("class", "base-bottom-rect");
+
+        const slidingBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        slidingBottomRect.setAttribute("x", (x + width).toString());
+        slidingBottomRect.setAttribute("y", y.toString());
+        slidingBottomRect.setAttribute("width", "0");
+        slidingBottomRect.setAttribute("height", pixel.toString());
+        slidingBottomRect.setAttribute("fill", "#030DF4");
+        slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
+
+        const slidingTopRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        slidingTopRect.setAttribute("x", (x + width).toString());
+        slidingTopRect.setAttribute("y", (y - pixel).toString());
+        slidingTopRect.setAttribute("width", "0");
+        slidingTopRect.setAttribute("height", pixel.toString());
+        slidingTopRect.setAttribute("fill", baseColor);
+        slidingTopRect.setAttribute("class", "sliding-top-rect");
+
+        frame.appendChild(baseBottomRect);
+        frame.appendChild(slidingTopRect);
+        frame.appendChild(slidingBottomRect);
+      }
+      wavesFrames[key] = frame;
+    } else {
+      const prevKey = location.toString() + (frameIndex - 1).toString();
+      const frame = wavesFrames[prevKey].cloneNode(true) as SVGElement;
+
+      const baseBottomRects = frame.querySelectorAll(".base-bottom-rect");
+      const slidingBottomRects = frame.querySelectorAll(".sliding-bottom-rect");
+      const slidingTopRects = frame.querySelectorAll(".sliding-top-rect");
+
+      for (let i = 0; i < baseBottomRects.length; i++) {
+        const baseBottomRect = baseBottomRects[i];
+        const slidingBottomRect = slidingBottomRects[i];
+        const slidingTopRect = slidingTopRects[i];
+        const baseX = parseFloat(baseBottomRect.getAttribute("x"));
+        const baseWidth = parseFloat(baseBottomRect.getAttribute("width"));
+        let sliderX = baseX + baseWidth - pixel * frameIndex;
+        const attemptedWidth = Math.min(frameIndex, 3) * pixel;
+        const visibleWidth = (() => {
+          if (sliderX < baseX) {
+            if (sliderX + attemptedWidth <= baseX) {
+              return 0;
+            } else {
+              const visible = attemptedWidth - baseX + sliderX;
+              if (visible < pixel / 2) {
+                return 0;
+              } else {
+                sliderX = baseX;
+                return visible;
+              }
+            }
+          } else {
+            return attemptedWidth;
+          }
+        })();
+        slidingBottomRect.setAttribute("x", sliderX.toString());
+        slidingTopRect.setAttribute("x", sliderX.toString());
+        slidingBottomRect.setAttribute("width", visibleWidth.toString());
+        slidingTopRect.setAttribute("width", visibleWidth.toString());
+      }
+      wavesFrames[key] = frame;
+    }
   }
-
-  board.appendChild(waveElement);
+  return wavesFrames[key];
 }
 
 function inBoardCoordinates(location: Location): Location {
-  return new Location(location.i + 1, location.j);
+  if (isFlipped) {
+    return new Location(12 - (location.i + 1), location.j);
+  } else {
+    return new Location(location.i + 1, location.j);
+  }
 }
 
 const isDesktopSafari = (() => {
