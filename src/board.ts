@@ -1,17 +1,19 @@
 import { didClickSquare, didSelectInputModifier } from "./index";
-import { Highlight, HighlightKind, InputModifier, Location, Trace } from "./models";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
+import { playSounds } from "./sounds";
 
 const assets = (await import("./assets")).assets;
 const board = document.getElementById("monsboard");
 const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
+const controlsLayer = document.getElementById("controlsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
 
-const opponentMoveStatusItems: SVGElement [] = [];
-const playerMoveStatusItems: SVGElement [] = [];
+const opponentMoveStatusItems: SVGElement[] = [];
+const playerMoveStatusItems: SVGElement[] = [];
 
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
@@ -87,7 +89,7 @@ export function updateScore(player: number, opponent: number) {
 export function showItemSelection() {
   const overlay = document.createElementNS("http://www.w3.org/2000/svg", "g");
   itemSelectionOverlay = overlay;
-  
+
   const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   background.setAttribute("x", "0");
   background.setAttribute("y", "1");
@@ -96,7 +98,7 @@ export function showItemSelection() {
   background.setAttribute("fill", "rgba(0, 0, 0, 0.5)");
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
-  
+
   const bombButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
   bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.bomb}`);
   bombButton.setAttribute("x", "25%");
@@ -234,15 +236,8 @@ export async function setupGameInfoElements() {
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
-    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
-    const avatarOffsetY = (isOpponent ? 0.23 : -0.1);
-    avatar.style.pointerEvents = "none";
+    const avatarOffsetY = isOpponent ? 0.23 : -0.1;
     const avatarSize = 0.777;
-    avatar.setAttribute("x",  offsetX.toString());
-    avatar.setAttribute("y", (y - avatarOffsetY).toString());
-    avatar.setAttribute("width", avatarSize.toString());
-    avatar.setAttribute("height", avatarSize.toString());
-    board.append(avatar);
 
     const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     numberText.setAttribute("x", (offsetX + avatarSize + 0.21).toString());
@@ -252,7 +247,7 @@ export async function setupGameInfoElements() {
     numberText.setAttribute("font-weight", "600");
     numberText.setAttribute("opacity", "0.69");
     numberText.textContent = "0";
-    board.append(numberText);
+    controlsLayer.append(numberText);
     if (isOpponent) {
       opponentScoreText = numberText;
     } else {
@@ -260,14 +255,14 @@ export async function setupGameInfoElements() {
     }
 
     const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
-    const statusItemsOffsetY = (isOpponent ? 0.1 : -0.155);
+    const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
       img.setAttribute("x", (10.5 - x * 0.55 - statusItemsOffsetX).toString());
       img.setAttribute("y", (y - statusItemsOffsetY).toString());
       img.setAttribute("width", "0.5");
       img.setAttribute("height", "0.5");
-      board.appendChild(img);
+      controlsLayer.appendChild(img);
 
       if (isOpponent) {
         opponentMoveStatusItems.push(img);
@@ -279,11 +274,74 @@ export async function setupGameInfoElements() {
         }
       }
     }
+
+    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
+    avatar.style.pointerEvents = "auto";
+    avatar.setAttribute("x", offsetX.toString());
+    avatar.setAttribute("y", (y - avatarOffsetY).toString());
+    avatar.setAttribute("width", avatarSize.toString());
+    avatar.setAttribute("height", avatarSize.toString());
+    controlsLayer.append(avatar);
+
+    avatar.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      if (isOpponent) {
+        avatar.style.transition = "transform 0.3s";
+        avatar.style.transform = "scale(1.8)";
+        setTimeout(() => {
+          avatar.style.transform = "scale(1)";
+        }, 300);
+      } else {
+        avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
+        playSounds([Sound.Click]);
+
+        if (isDesktopSafari) {
+          const scale = 1.8;
+          const sizeString = avatarSize.toString();
+          const newSizeString = (avatarSize * scale).toString();
+
+          avatar.animate(
+            [
+              {
+                width: sizeString,
+                height: sizeString,
+                transform: "translate(0, 0)",
+                easing: "ease-out"
+              },
+              {
+                width: newSizeString,
+                height: newSizeString,
+                transform: `translate(0px, -0.77pt)`,
+                easing: "ease-in-out"
+              },
+              {
+                width: sizeString,
+                height: sizeString,
+                transform: "translate(0, 0)",
+                easing: "ease-in"
+              },
+            ],
+            {
+              duration: 420,
+              fill: "forwards",
+            }
+          );
+        } else {
+          avatar.style.transformOrigin = "0px 13px";
+          avatar.style.transform = "scale(1.8)";
+          avatar.style.transition = "transform 0.3s";
+          setTimeout(() => {
+            avatar.style.transform = "scale(1)";
+          }, 300);
+        }
+      }
+    });
   }
 }
 
 export function setupBoard() {
-  document.addEventListener("click", function(event) {
+  document.addEventListener("click", function (event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
       const x = parseInt(target.getAttribute("x") || "-1");
@@ -291,7 +349,7 @@ export function setupBoard() {
       didClickSquare(new Location(y, x));
       event.preventDefault();
       event.stopPropagation();
-    } else if (!target.closest('a, button')) {
+    } else if (!target.closest("a, button")) {
       if (itemSelectionOverlay) {
         itemSelectionOverlay.remove();
       }
@@ -668,7 +726,7 @@ function addWaves(location: Location) {
   const height = 1 / 32;
   for (let i = 0; i < 10; i++) {
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    const width = Math.random() * (3/32) + 3/32;
+    const width = Math.random() * (3 / 32) + 3 / 32;
     const x = Math.random() * (1 - width);
     const y = height * (2 + i * 3);
     rect.setAttribute("x", x.toString());
@@ -685,3 +743,10 @@ function addWaves(location: Location) {
 function inBoardCoordinates(location: Location): Location {
   return new Location(location.i + 1, location.j);
 }
+
+const isDesktopSafari = (() => {
+  const userAgent = window.navigator.userAgent;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+  const isIos = /iPad|iPhone|iPod/.test(userAgent);
+  return isSafari && !isIos;
+})();
