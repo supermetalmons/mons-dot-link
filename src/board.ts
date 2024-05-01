@@ -763,7 +763,7 @@ function addWaves(location: Location) {
     frameIndex = (frameIndex + 1) % 9;
     wavesSquareElement.innerHTML = "";
     wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
-  }, 1000);
+  }, 200);
 }
 
 function getWavesFrame(location: Location, frameIndex: number) {
@@ -773,7 +773,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
     if (frameIndex == 0) {
       const frame = document.createElementNS("http://www.w3.org/2000/svg", "g");
       for (let i = 0; i < 10; i++) {
-        const width = Math.random() * (3 / 32) + 3 / 32;
+        const width = (Math.floor(Math.random() * 4) + 3) * pixel;
         const x = Math.random() * (1 - width);
         const y = pixel * (2 + i * 3);
         const baseColor = i % 2 == 0 ? "#6666FF" : "#00FCFF";
@@ -787,17 +787,17 @@ function getWavesFrame(location: Location, frameIndex: number) {
         baseBottomRect.setAttribute("class", "base-bottom-rect");
 
         const slidingBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        slidingBottomRect.setAttribute("x", (x + 3 * pixel).toString());
+        slidingBottomRect.setAttribute("x", (x + width).toString());
         slidingBottomRect.setAttribute("y", y.toString());
-        slidingBottomRect.setAttribute("width", pixel.toString());
+        slidingBottomRect.setAttribute("width", "0");
         slidingBottomRect.setAttribute("height", pixel.toString());
         slidingBottomRect.setAttribute("fill", "#030DF4");
         slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
 
         const slidingTopRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        slidingTopRect.setAttribute("x", (x + 3 * pixel).toString());
+        slidingTopRect.setAttribute("x", (x + width).toString());
         slidingTopRect.setAttribute("y", (y - pixel).toString());
-        slidingTopRect.setAttribute("width", pixel.toString());
+        slidingTopRect.setAttribute("width", "0");
         slidingTopRect.setAttribute("height", pixel.toString());
         slidingTopRect.setAttribute("fill", baseColor);
         slidingTopRect.setAttribute("class", "sliding-top-rect");
@@ -819,15 +819,26 @@ function getWavesFrame(location: Location, frameIndex: number) {
         const baseBottomRect = baseBottomRects[i];
         const slidingBottomRect = slidingBottomRects[i];
         const slidingTopRect = slidingTopRects[i];
-
-        // TODO: tune waves
-
-        const currentBottomX = parseFloat(slidingBottomRect.getAttribute("x"));
-        slidingBottomRect.setAttribute("x", (currentBottomX - pixel).toString());
-        const currentTopX = parseFloat(slidingTopRect.getAttribute("x"));
-        slidingTopRect.setAttribute("x", (currentTopX - pixel).toString());
+        const baseX = parseFloat(baseBottomRect.getAttribute("x"));
+        const baseWidth = parseFloat(baseBottomRect.getAttribute("width"));
+        let sliderX = baseX + baseWidth - pixel * frameIndex;
+        const attemptedWidth = Math.min(frameIndex, 3) * pixel;
+        const visibleWidth = (() => {
+          if (sliderX < baseX) {
+            const visible = Math.max(0, attemptedWidth - baseX + sliderX);
+            if ((sliderX + visible) < baseX) {
+              sliderX = baseX - visible;
+            }
+            return visible;
+          } else {
+            return attemptedWidth;
+          }
+        })();
+        slidingBottomRect.setAttribute("x", sliderX.toString());
+        slidingTopRect.setAttribute("x", sliderX.toString());
+        slidingBottomRect.setAttribute("width", visibleWidth.toString());
+        slidingTopRect.setAttribute("width", visibleWidth.toString());
       }
-      
       wavesFrames[key] = frame;
     }
   }
