@@ -9,12 +9,12 @@ export const emojis = {
     return getRandomEmoji();
   },
 
-  getTwoRandomEmojis: function() {
-    return getTwoRandomEmojis();
+  getRandomEmojiOtherThan: function(id: string) {
+    return getRandomEmojiOtherThan(id);
   },
   
-  getEmoji: function(index: string) {
-    return this.emoji[index];
+  getEmoji: function(id: string) {
+    return this.emoji[id];
   },
 
   emoji: {
@@ -62,22 +62,21 @@ export const emojis = {
 
 const emojiKeys = Object.keys(emojis.emoji);
 
-function getTwoRandomEmojis(): [string, string] {
-  let firstIndex = Math.floor(Math.random() * emojiKeys.length);
-  let secondIndex = Math.floor(Math.random() * emojiKeys.length);
+function getRandomEmojiOtherThan(id: string): [string, string] {
+  let index = Math.floor(Math.random() * emojiKeys.length);
   
-  while (secondIndex === firstIndex) {
-    secondIndex = Math.floor(Math.random() * emojiKeys.length);
+  while (emojiKeys[index] === id) {
+    index = Math.floor(Math.random() * emojiKeys.length);
   }
 
-  const firstEmoji = emojis.getEmoji(emojiKeys[firstIndex]);
-  const secondEmoji = emojis.getEmoji(emojiKeys[secondIndex]);
-
-  return [firstEmoji, secondEmoji];
+  const newId = emojiKeys[index];
+  const emoji = emojis.getEmoji(newId);
+  
+  return [newId, emoji];
 }
 
-function getRandomEmoji(): string {
+function getRandomEmoji(): [string, string] {
   const randomIndex = Math.floor(Math.random() * emojiKeys.length);
-  const randomKey = emojiKeys[randomIndex];
-  return emojis.getEmoji(randomKey);
+  const id = emojiKeys[randomIndex];
+  return [id, emojis.getEmoji(id)];
 }

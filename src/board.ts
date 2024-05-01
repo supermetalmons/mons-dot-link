@@ -19,6 +19,9 @@ let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
 
+let currentPlayerEmojiId = "";
+let currentOpponentEmojiId = "";
+
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
 const demon = loadImage(assets.demon);
@@ -232,7 +235,11 @@ export async function setupGameInfoElements() {
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
   const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
-  const [playerEmoji, opponentEmoji] = emojis.getTwoRandomEmojis();
+  const [playerEmojiId, playerEmoji] = emojis.getRandomEmoji();
+  const [opponentEmojiId, opponentEmoji] = emojis.getRandomEmojiOtherThan(playerEmojiId);
+
+  currentPlayerEmojiId = playerEmojiId;
+  currentOpponentEmojiId = opponentEmojiId;
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
@@ -288,7 +295,9 @@ export async function setupGameInfoElements() {
 
       if (isOpponent) {
         if (!isPlayerSideTurn()) {
-          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
+          const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
+          currentOpponentEmojiId = newId;
+          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
           playSounds([Sound.Click]);
         }
         avatar.style.transition = "transform 0.3s";
@@ -298,7 +307,9 @@ export async function setupGameInfoElements() {
         }, 300);
       } else {
         if (isPlayerSideTurn()) {
-          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
+          const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
+          currentPlayerEmojiId = newId;
+          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
           playSounds([Sound.Click]);
         }
 
