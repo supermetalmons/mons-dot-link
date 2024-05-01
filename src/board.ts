@@ -1,4 +1,4 @@
-import { didClickSquare, didSelectInputModifier } from "./index";
+import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
 import { colors } from "./colors";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
@@ -287,14 +287,20 @@ export async function setupGameInfoElements() {
       event.stopPropagation();
 
       if (isOpponent) {
+        if (!isPlayerSideTurn()) {
+          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
+          playSounds([Sound.Click]);
+        }
         avatar.style.transition = "transform 0.3s";
         avatar.style.transform = "scale(1.8)";
         setTimeout(() => {
           avatar.style.transform = "scale(1)";
         }, 300);
       } else {
-        avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
-        playSounds([Sound.Click]);
+        if (isPlayerSideTurn()) {
+          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.getRandomEmoji()}`);
+          playSounds([Sound.Click]);
+        }
 
         if (isDesktopSafari) {
           const scale = 1.8;
