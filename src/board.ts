@@ -11,6 +11,7 @@ const itemsLayer = document.getElementById("itemsLayer");
 const controlsLayer = document.getElementById("controlsLayer");
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
+const wavesFrames: { [key: string]: SVGElement } = {};
 
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
@@ -278,10 +279,8 @@ export async function setupGameInfoElements() {
 
       if (isOpponent) {
         opponentMoveStatusItems.push(img);
-        
       } else {
         playerMoveStatusItems.push(img);
-        
       }
 
       const isActiveSide = isFlipped ? isOpponent : !isOpponent;
@@ -338,19 +337,19 @@ export async function setupGameInfoElements() {
                 width: sizeString,
                 height: sizeString,
                 transform: "translate(0, 0)",
-                easing: "ease-out"
+                easing: "ease-out",
               },
               {
                 width: newSizeString,
                 height: newSizeString,
                 transform: `translate(0px, -0.77pt)`,
-                easing: "ease-in-out"
+                easing: "ease-in-out",
               },
               {
                 width: sizeString,
                 height: sizeString,
                 transform: "translate(0, 0)",
-                easing: "ease-in"
+                easing: "ease-in",
               },
             ],
             {
@@ -756,23 +755,37 @@ function addWaves(location: Location) {
   const wavesSquareElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
   wavesSquareElement.setAttribute("opacity", "0.5");
-
-  const height = 1 / 32;
-  for (let i = 0; i < 10; i++) {
-    const singleWaveElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const width = Math.random() * (3 / 32) + 3 / 32;
-    const x = Math.random() * (1 - width);
-    const y = height * (2 + i * 3);
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", x.toString());
-    rect.setAttribute("y", y.toString());
-    rect.setAttribute("width", width.toString());
-    rect.setAttribute("height", height.toString());
-    rect.setAttribute("fill", i % 2 == 0 ? "#6666FF" : "#00FCFF");
-    wavesSquareElement.appendChild(singleWaveElement);
-    singleWaveElement.appendChild(rect);
-  }
   board.appendChild(wavesSquareElement);
+
+  let frameIndex = 0;
+  wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
+  setInterval(() => {
+    frameIndex = (frameIndex + 1) % 9;
+    wavesSquareElement.innerHTML = "";
+    wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
+  }, 1000);
+}
+
+function getWavesFrame(location: Location, frameIndex: number) {
+  const pixel = 1 / 32;
+  const key = location.toString() + frameIndex.toString();
+  if (!wavesFrames[key]) {
+    const frame = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    for (let i = 0; i < 10; i++) {
+      const width = Math.random() * (3 / 32) + 3 / 32;
+      const x = Math.random() * (1 - width);
+      const y = pixel * (2 + i * 3);
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", x.toString());
+      rect.setAttribute("y", y.toString());
+      rect.setAttribute("width", width.toString());
+      rect.setAttribute("height", pixel.toString());
+      rect.setAttribute("fill", i % 2 == 0 ? "#6666FF" : "#00FCFF");
+      frame.appendChild(rect);
+    }
+    wavesFrames[key] = frame;
+  }
+  return wavesFrames[key];
 }
 
 function inBoardCoordinates(location: Location): Location {
