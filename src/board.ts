@@ -15,6 +15,8 @@ const basesPlaceholders: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+let isFlipped = false;
+
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
@@ -47,8 +49,11 @@ export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   let potions = moveKinds[3];
 
   const total = monMoves + manaMoves + actions + potions;
-  const itemsToHide = color == ColorModel.Black ? playerMoveStatusItems : opponentMoveStatusItems;
-  const itemsToSetup = color == ColorModel.Black ? opponentMoveStatusItems : playerMoveStatusItems;
+
+  const playerSideActive = isFlipped ? color == ColorModel.White : color == ColorModel.Black;
+
+  const itemsToHide = playerSideActive ? playerMoveStatusItems : opponentMoveStatusItems;
+  const itemsToSetup = playerSideActive ? opponentMoveStatusItems : playerMoveStatusItems;
 
   for (const item of itemsToHide) {
     item.setAttribute("display", "none");
@@ -273,12 +278,19 @@ export async function setupGameInfoElements() {
 
       if (isOpponent) {
         opponentMoveStatusItems.push(img);
-        img.setAttribute("display", "none");
+        
       } else {
         playerMoveStatusItems.push(img);
+        
+      }
+
+      const isActiveSide = isFlipped ? isOpponent : !isOpponent;
+      if (isActiveSide) {
         if (x > 4) {
           img.setAttribute("display", "none");
         }
+      } else {
+        img.setAttribute("display", "none");
       }
     }
 
@@ -293,8 +305,10 @@ export async function setupGameInfoElements() {
     avatar.addEventListener("click", (event) => {
       event.stopPropagation();
 
+      const playerSideActive = isFlipped ? !isPlayerSideTurn() : isPlayerSideTurn();
+
       if (isOpponent) {
-        if (!isPlayerSideTurn()) {
+        if (!playerSideActive) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
           currentOpponentEmojiId = newId;
           avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
@@ -306,7 +320,7 @@ export async function setupGameInfoElements() {
           avatar.style.transform = "scale(1)";
         }, 300);
       } else {
-        if (isPlayerSideTurn()) {
+        if (playerSideActive) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
           currentPlayerEmojiId = newId;
           avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
@@ -362,7 +376,10 @@ export function setupBoard() {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
       const x = parseInt(target.getAttribute("x") || "-1");
-      const y = parseInt(target.getAttribute("y") || "-1") - 1;
+      const rawY = parseInt(target.getAttribute("y") || "-1") - 1;
+
+      const y = isFlipped ? 10 - rawY : rawY;
+
       didClickSquare(new Location(y, x));
       event.preventDefault();
       event.stopPropagation();
@@ -758,7 +775,11 @@ function addWaves(location: Location) {
 }
 
 function inBoardCoordinates(location: Location): Location {
-  return new Location(location.i + 1, location.j);
+  if (isFlipped) {
+    return new Location(12 - (location.i + 1), location.j);
+  } else {
+    return new Location(location.i + 1, location.j);
+  }
 }
 
 const isDesktopSafari = (() => {
