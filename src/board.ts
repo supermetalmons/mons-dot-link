@@ -770,20 +770,66 @@ function getWavesFrame(location: Location, frameIndex: number) {
   const pixel = 1 / 32;
   const key = location.toString() + frameIndex.toString();
   if (!wavesFrames[key]) {
-    const frame = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    for (let i = 0; i < 10; i++) {
-      const width = Math.random() * (3 / 32) + 3 / 32;
-      const x = Math.random() * (1 - width);
-      const y = pixel * (2 + i * 3);
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", x.toString());
-      rect.setAttribute("y", y.toString());
-      rect.setAttribute("width", width.toString());
-      rect.setAttribute("height", pixel.toString());
-      rect.setAttribute("fill", i % 2 == 0 ? "#6666FF" : "#00FCFF");
-      frame.appendChild(rect);
+    if (frameIndex == 0) {
+      const frame = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      for (let i = 0; i < 10; i++) {
+        const width = Math.random() * (3 / 32) + 3 / 32;
+        const x = Math.random() * (1 - width);
+        const y = pixel * (2 + i * 3);
+        const baseColor = i % 2 == 0 ? "#6666FF" : "#00FCFF";
+
+        const baseBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        baseBottomRect.setAttribute("x", x.toString());
+        baseBottomRect.setAttribute("y", y.toString());
+        baseBottomRect.setAttribute("width", width.toString());
+        baseBottomRect.setAttribute("height", pixel.toString());
+        baseBottomRect.setAttribute("fill", baseColor);
+        baseBottomRect.setAttribute("class", "base-bottom-rect");
+
+        const slidingBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        slidingBottomRect.setAttribute("x", (x + 3 * pixel).toString());
+        slidingBottomRect.setAttribute("y", y.toString());
+        slidingBottomRect.setAttribute("width", pixel.toString());
+        slidingBottomRect.setAttribute("height", pixel.toString());
+        slidingBottomRect.setAttribute("fill", "#030DF4");
+        slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
+
+        const slidingTopRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        slidingTopRect.setAttribute("x", (x + 3 * pixel).toString());
+        slidingTopRect.setAttribute("y", (y - pixel).toString());
+        slidingTopRect.setAttribute("width", pixel.toString());
+        slidingTopRect.setAttribute("height", pixel.toString());
+        slidingTopRect.setAttribute("fill", baseColor);
+        slidingTopRect.setAttribute("class", "sliding-top-rect");
+
+        frame.appendChild(baseBottomRect);
+        frame.appendChild(slidingTopRect);
+        frame.appendChild(slidingBottomRect);
+      }
+      wavesFrames[key] = frame;
+    } else {
+      const prevKey = location.toString() + (frameIndex - 1).toString();
+      const frame = wavesFrames[prevKey].cloneNode(true) as SVGElement;
+
+      const baseBottomRects = frame.querySelectorAll(".base-bottom-rect");
+      const slidingBottomRects = frame.querySelectorAll(".sliding-bottom-rect");
+      const slidingTopRects = frame.querySelectorAll(".sliding-top-rect");
+
+      for (let i = 0; i < baseBottomRects.length; i++) {
+        const baseBottomRect = baseBottomRects[i];
+        const slidingBottomRect = slidingBottomRects[i];
+        const slidingTopRect = slidingTopRects[i];
+
+        // TODO: tune waves
+
+        const currentBottomX = parseFloat(slidingBottomRect.getAttribute("x"));
+        slidingBottomRect.setAttribute("x", (currentBottomX - pixel).toString());
+        const currentTopX = parseFloat(slidingTopRect.getAttribute("x"));
+        slidingTopRect.setAttribute("x", (currentTopX - pixel).toString());
+      }
+      
+      wavesFrames[key] = frame;
     }
-    wavesFrames[key] = frame;
   }
   return wavesFrames[key];
 }
