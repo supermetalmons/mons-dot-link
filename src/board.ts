@@ -825,11 +825,17 @@ function getWavesFrame(location: Location, frameIndex: number) {
         const attemptedWidth = Math.min(frameIndex, 3) * pixel;
         const visibleWidth = (() => {
           if (sliderX < baseX) {
-            const visible = Math.max(0, attemptedWidth - baseX + sliderX);
-            if ((sliderX + visible) < baseX) {
-              sliderX = baseX - visible;
+            if (sliderX + attemptedWidth <= baseX) {
+              return 0;
+            } else {
+              const visible = attemptedWidth - baseX + sliderX;
+              if (visible < pixel / 2) {
+                return 0;
+              } else {
+                sliderX = baseX;
+                return visible;
+              }
             }
-            return visible;
           } else {
             return attemptedWidth;
           }
