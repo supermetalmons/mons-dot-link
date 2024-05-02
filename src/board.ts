@@ -523,19 +523,11 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     itemsLayer.appendChild(container);
     items[key] = container;
   } else if (sparkles) {
+    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const sparkles = createSparklingContainer(location);
     img.setAttribute("x", location.j.toString());
     img.setAttribute("y", location.i.toString());
-    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
-
-    const sparklesRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    sparklesRect.setAttribute("x", location.j.toString());
-    sparklesRect.setAttribute("y", location.i.toString());
-    sparklesRect.setAttribute("width", "1");
-    sparklesRect.setAttribute("height", "1");
-    sparklesRect.setAttribute("fill", "transparent");
-    sparklesRect.setAttribute("class", "item");
-
-    container.appendChild(sparklesRect);
+    container.appendChild(sparkles);
     container.appendChild(img);
     itemsLayer.appendChild(container);
     items[key] = container;
@@ -545,6 +537,51 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     itemsLayer.appendChild(img);
     items[key] = img;
   }
+}
+
+function createSparklingContainer(location: Location): SVGElement {
+  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  container.setAttribute("class", "item");
+  const intervalId = setInterval(() => {
+    if (!container.parentNode.parentNode) {
+      clearInterval(intervalId);
+      return;
+    }
+    createParticle(location, container);
+  }, 100);
+
+  return container;
+}
+
+function createParticle(location: Location, container: SVGElement) {
+  const particle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  particle.setAttribute("x", location.j.toString());
+  particle.setAttribute("y", location.i.toString());
+  particle.setAttribute("opacity", "0.23");
+  particle.setAttribute("width", "1");
+  particle.setAttribute("height", "0");
+  particle.setAttribute("fill", "rgba(" + [Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random()].join(",") + ")");
+  container.appendChild(particle);
+
+  const duration = Math.random() * 3000 + 3000;
+  let startTime: number = null;
+
+  function animateParticle(time: number) {
+    if (!startTime) {
+      startTime = time;
+    }
+
+    let progress = (time - startTime) / duration;
+    if (progress > 1) {
+      container.removeChild(particle);
+      return;
+    }
+
+    particle.setAttribute("height", progress.toString());
+    requestAnimationFrame(animateParticle);
+  }
+
+  requestAnimationFrame(animateParticle);
 }
 
 function setBase(item: SVGElement, location: Location) {
