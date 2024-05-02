@@ -1,6 +1,7 @@
 import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
 import { colors } from "./colors";
+import { isModernAndPowerful } from "./page-tuning";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 import { playSounds } from "./sounds";
 
@@ -208,7 +209,7 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.Consumable:
-      placeItem(bombOrPotion, location, false, true);
+      placeItem(bombOrPotion, location, false, isModernAndPowerful);
       break;
   }
 }
@@ -313,6 +314,9 @@ export async function setupGameInfoElements() {
           avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
           playSounds([Sound.Click]);
         }
+
+        if (!isModernAndPowerful) { return; }
+
         avatar.style.transition = "transform 0.3s";
         avatar.style.transform = "scale(1.8)";
         setTimeout(() => {
@@ -325,6 +329,8 @@ export async function setupGameInfoElements() {
           avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
           playSounds([Sound.Click]);
         }
+
+        if (!isModernAndPowerful) { return; }
 
         if (isDesktopSafari) {
           const scale = 1.8;
@@ -813,6 +819,7 @@ function addWaves(location: Location) {
 
   let frameIndex = 0;
   wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
+  if (!isModernAndPowerful) { return; }
   setInterval(() => {
     frameIndex = (frameIndex + 1) % 9;
     wavesSquareElement.innerHTML = "";
