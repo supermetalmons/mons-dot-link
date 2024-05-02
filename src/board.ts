@@ -548,6 +548,21 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
 function createSparklingContainer(location: Location): SVGElement {
   const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
   container.setAttribute("class", "item");
+
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  mask.setAttribute("id", `mask-square-${location.toString()}`);
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", location.j.toString());
+  rect.setAttribute("y", location.i.toString());
+  rect.setAttribute("width", "1");
+  rect.setAttribute("height", "1");
+  rect.setAttribute("fill", "white");
+
+  mask.appendChild(rect);
+  container.appendChild(mask);
+  container.setAttribute("mask", `url(#mask-square-${location.toString()})`);
+
   const intervalId = setInterval(() => {
     if (!container.parentNode.parentNode) {
       clearInterval(intervalId);
