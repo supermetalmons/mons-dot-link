@@ -1,13 +1,5 @@
 export function tunePage() {
-  let allSupported: boolean = true;
-  ["⚔︎", "𝕏", "♡", "☆", "↓"].forEach((icon: string) => {
-    if (!supportsCharacter(icon)) {
-      allSupported = false;
-      return;
-    }
-  });
-
-  if (!allSupported) {
+  if (!isModernAndPowerful) {
     ["github", "macos", "steam", "x"].forEach((key: string) => {
       const link: HTMLAnchorElement | null = document.querySelector(`a[data-key="${key}"]`);
       if (link) {
@@ -16,6 +8,15 @@ export function tunePage() {
     });
   }
 }
+
+export const isModernAndPowerful = (() => {
+  for (const char of ["⚔︎", "𝕏", "♡", "☆", "↓"]) {
+    if (!supportsCharacter(char)) {
+      return false;
+    }
+  }
+  return true;
+})();
 
 function supportsCharacter(character: string): boolean {
   const testElement: HTMLSpanElement = document.createElement("span");

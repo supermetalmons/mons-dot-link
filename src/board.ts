@@ -1,6 +1,7 @@
 import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
 import { colors } from "./colors";
+import { isModernAndPowerful } from "./page-tuning";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 import { playSounds } from "./sounds";
 
@@ -208,7 +209,7 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.Consumable:
-      placeItem(bombOrPotion, location);
+      placeItem(bombOrPotion, location, false, true);
       break;
   }
 }
@@ -313,6 +314,9 @@ export async function setupGameInfoElements() {
           avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
           playSounds([Sound.Click]);
         }
+
+        if (!isModernAndPowerful) { return; }
+
         avatar.style.transition = "transform 0.3s";
         avatar.style.transform = "scale(1.8)";
         setTimeout(() => {
@@ -325,6 +329,8 @@ export async function setupGameInfoElements() {
           avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
           playSounds([Sound.Click]);
         }
+
+        if (!isModernAndPowerful) { return; }
 
         if (isDesktopSafari) {
           const scale = 1.8;
@@ -506,7 +512,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   items[location.toString()] = container;
 }
 
-function placeItem(item: SVGElement, location: Location, fainted = false) {
+function placeItem(item: SVGElement, location: Location, fainted = false, sparkles = false) {
   const logicalLocation = location;
   location = inBoardCoordinates(location);
   const key = location.toString();
@@ -522,12 +528,93 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
     container.appendChild(img);
     itemsLayer.appendChild(container);
     items[key] = container;
+  } else if (sparkles) {
+    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const sparkles = createSparklingContainer(location);
+    img.setAttribute("x", location.j.toString());
+    img.setAttribute("y", location.i.toString());
+    container.appendChild(sparkles);
+    container.appendChild(img);
+    itemsLayer.appendChild(container);
+    items[key] = container;
   } else {
     img.setAttribute("x", location.j.toString());
     img.setAttribute("y", location.i.toString());
     itemsLayer.appendChild(img);
     items[key] = img;
   }
+}
+
+function createSparklingContainer(location: Location): SVGElement {
+  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  container.setAttribute("class", "item");
+
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  mask.setAttribute("id", `mask-square-${location.toString()}`);
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", location.j.toString());
+  rect.setAttribute("y", location.i.toString());
+  rect.setAttribute("width", "1");
+  rect.setAttribute("height", "1");
+  rect.setAttribute("fill", "white");
+
+  mask.appendChild(rect);
+  container.appendChild(mask);
+  container.setAttribute("mask", `url(#mask-square-${location.toString()})`);
+
+  if (!isModernAndPowerful) {
+    for (let i = 0; i < 19; i++) {
+      createParticle(location, container, false);
+    }
+  } else {
+    const intervalId = setInterval(() => {
+      if (!container.parentNode.parentNode) {
+        clearInterval(intervalId);
+        return;
+      }
+      createParticle(location, container);
+    }, 125);
+  }
+
+  return container;
+}
+
+function createParticle(location: Location, container: SVGElement, animating: boolean = true) {
+  const particle = sparkle.cloneNode(true) as SVGElement;
+
+  const y = (location.i + Math.random());
+  particle.setAttribute("x", (location.j + Math.random()).toString());
+  particle.setAttribute("y", y.toString());
+  particle.setAttribute("opacity", (0.42 + 0.5 * Math.random()).toString());
+
+  const size = (Math.random() * 0.05 + 0.075) * 0.93;
+  particle.setAttribute("width", size.toString());
+  particle.setAttribute("height", size.toString());
+  container.appendChild(particle);
+
+  if (!animating) { return; }
+
+  const velocity = (4 + 2 * Math.random()) * 0.014;
+  const duration = Math.random() * 1000 + 2500;
+  let startTime: number = null;
+
+  function animateParticle(time: number) {
+    if (!startTime) { startTime = time; }
+
+    let timeDelta = time - startTime;
+    let progress = timeDelta / duration;
+    if (progress > 1) {
+      container.removeChild(particle);
+      return;
+    }
+
+    particle.setAttribute("y", (y - velocity * timeDelta / 1000).toString());
+    particle.setAttribute("opacity", (1 - 0.15 * timeDelta / 1000).toString());
+    requestAnimationFrame(animateParticle);
+  }
+
+  requestAnimationFrame(animateParticle);
 }
 
 function setBase(item: SVGElement, location: Location) {
@@ -759,6 +846,7 @@ function addWaves(location: Location) {
 
   let frameIndex = 0;
   wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
+  if (!isModernAndPowerful) { return; }
   setInterval(() => {
     frameIndex = (frameIndex + 1) % 9;
     wavesSquareElement.innerHTML = "";
@@ -864,4 +952,36 @@ const isDesktopSafari = (() => {
   const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
   const isIos = /iPad|iPhone|iPod/.test(userAgent);
   return isSafari && !isIos;
+})();
+
+const sparkle = (() => {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "3");
+  svg.setAttribute("height", "3");
+  svg.setAttribute("viewBox", "0 0 3 3");
+  svg.setAttribute("fill", "none");
+
+  const rect1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect1.setAttribute("y", "1");
+  rect1.setAttribute("width", "3");
+  rect1.setAttribute("height", "1");
+  rect1.setAttribute("fill", "#FEFEFE");
+  svg.appendChild(rect1);
+
+  const rect2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect2.setAttribute("x", "1");
+  rect2.setAttribute("width", "1");
+  rect2.setAttribute("height", "3");
+  rect2.setAttribute("fill", "#FEFEFE");
+  svg.appendChild(rect2);
+
+  const rect3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect3.setAttribute("x", "1");
+  rect3.setAttribute("y", "1");
+  rect3.setAttribute("width", "1");
+  rect3.setAttribute("height", "1");
+  rect3.setAttribute("fill", "black");
+  svg.appendChild(rect3);
+
+  return svg;
 })();
