@@ -209,7 +209,7 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.Consumable:
-      placeItem(bombOrPotion, location, false, isModernAndPowerful);
+      placeItem(bombOrPotion, location, false, true);
       break;
   }
 }
@@ -563,31 +563,39 @@ function createSparklingContainer(location: Location): SVGElement {
   container.appendChild(mask);
   container.setAttribute("mask", `url(#mask-square-${location.toString()})`);
 
-  const intervalId = setInterval(() => {
-    if (!container.parentNode.parentNode) {
-      clearInterval(intervalId);
-      return;
+  if (!isModernAndPowerful) {
+    for (let i = 0; i < 19; i++) {
+      createParticle(location, container, false);
     }
-    createParticle(location, container);
-  }, 125);
+  } else {
+    const intervalId = setInterval(() => {
+      if (!container.parentNode.parentNode) {
+        clearInterval(intervalId);
+        return;
+      }
+      createParticle(location, container);
+    }, 125);
+  }
 
   return container;
 }
 
-function createParticle(location: Location, container: SVGElement) {
+function createParticle(location: Location, container: SVGElement, animating: boolean = true) {
   const particle = sparkle.cloneNode(true) as SVGElement;
 
   const y = (location.i + Math.random());
   particle.setAttribute("x", (location.j + Math.random()).toString());
   particle.setAttribute("y", y.toString());
-  particle.setAttribute("opacity", (0.5 + 0.5 * Math.random()).toString());
+  particle.setAttribute("opacity", (0.42 + 0.5 * Math.random()).toString());
 
   const size = (Math.random() * 0.05 + 0.075) * 0.93;
   particle.setAttribute("width", size.toString());
   particle.setAttribute("height", size.toString());
   container.appendChild(particle);
 
-  const velocity = (4 + 2 * Math.random()) * 0.015;
+  if (!animating) { return; }
+
+  const velocity = (4 + 2 * Math.random()) * 0.014;
   const duration = Math.random() * 1000 + 2500;
   let startTime: number = null;
 
