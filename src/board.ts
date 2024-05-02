@@ -554,36 +554,40 @@ function createSparklingContainer(location: Location): SVGElement {
       return;
     }
     createParticle(location, container);
-  }, 100);
+  }, 125);
 
   return container;
 }
 
 function createParticle(location: Location, container: SVGElement) {
-  const particle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  particle.setAttribute("x", location.j.toString());
-  particle.setAttribute("y", location.i.toString());
-  particle.setAttribute("opacity", "0.23");
-  particle.setAttribute("width", "1");
-  particle.setAttribute("height", "0");
-  particle.setAttribute("fill", "rgba(" + [Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random()].join(",") + ")");
+  const particle = sparkle.cloneNode(true) as SVGElement;
+
+  const y = (location.i + Math.random());
+  particle.setAttribute("x", (location.j + Math.random()).toString());
+  particle.setAttribute("y", y.toString());
+  particle.setAttribute("opacity", (0.5 + 0.5 * Math.random()).toString());
+
+  const size = (Math.random() * 0.05 + 0.075) * 0.93;
+  particle.setAttribute("width", size.toString());
+  particle.setAttribute("height", size.toString());
   container.appendChild(particle);
 
-  const duration = Math.random() * 3000 + 3000;
+  const velocity = (4 + 2 * Math.random()) * 0.015;
+  const duration = Math.random() * 1000 + 2500;
   let startTime: number = null;
 
   function animateParticle(time: number) {
-    if (!startTime) {
-      startTime = time;
-    }
+    if (!startTime) { startTime = time; }
 
-    let progress = (time - startTime) / duration;
+    let timeDelta = time - startTime;
+    let progress = timeDelta / duration;
     if (progress > 1) {
       container.removeChild(particle);
       return;
     }
 
-    particle.setAttribute("height", progress.toString());
+    particle.setAttribute("y", (y - velocity * timeDelta / 1000).toString());
+    particle.setAttribute("opacity", (1 - 0.15 * timeDelta / 1000).toString());
     requestAnimationFrame(animateParticle);
   }
 
@@ -925,4 +929,36 @@ const isDesktopSafari = (() => {
   const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
   const isIos = /iPad|iPhone|iPod/.test(userAgent);
   return isSafari && !isIos;
+})();
+
+const sparkle = (() => {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "3");
+  svg.setAttribute("height", "3");
+  svg.setAttribute("viewBox", "0 0 3 3");
+  svg.setAttribute("fill", "none");
+
+  const rect1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect1.setAttribute("y", "1");
+  rect1.setAttribute("width", "3");
+  rect1.setAttribute("height", "1");
+  rect1.setAttribute("fill", "#FEFEFE");
+  svg.appendChild(rect1);
+
+  const rect2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect2.setAttribute("x", "1");
+  rect2.setAttribute("width", "1");
+  rect2.setAttribute("height", "3");
+  rect2.setAttribute("fill", "#FEFEFE");
+  svg.appendChild(rect2);
+
+  const rect3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect3.setAttribute("x", "1");
+  rect3.setAttribute("y", "1");
+  rect3.setAttribute("width", "1");
+  rect3.setAttribute("height", "1");
+  rect3.setAttribute("fill", "black");
+  svg.appendChild(rect3);
+
+  return svg;
 })();
