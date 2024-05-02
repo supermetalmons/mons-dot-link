@@ -208,7 +208,7 @@ export function putItem(item: ItemModel, location: Location) {
       }
       break;
     case ItemModelKind.Consumable:
-      placeItem(bombOrPotion, location);
+      placeItem(bombOrPotion, location, false, true);
       break;
   }
 }
@@ -506,7 +506,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   items[location.toString()] = container;
 }
 
-function placeItem(item: SVGElement, location: Location, fainted = false) {
+function placeItem(item: SVGElement, location: Location, fainted = false, sparkles = false) {
   const logicalLocation = location;
   location = inBoardCoordinates(location);
   const key = location.toString();
@@ -519,6 +519,23 @@ function placeItem(item: SVGElement, location: Location, fainted = false) {
     img.setAttribute("y", "0");
     const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
     container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
+    container.appendChild(img);
+    itemsLayer.appendChild(container);
+    items[key] = container;
+  } else if (sparkles) {
+    img.setAttribute("x", location.j.toString());
+    img.setAttribute("y", location.i.toString());
+    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+    const sparklesRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    sparklesRect.setAttribute("x", location.j.toString());
+    sparklesRect.setAttribute("y", location.i.toString());
+    sparklesRect.setAttribute("width", "1");
+    sparklesRect.setAttribute("height", "1");
+    sparklesRect.setAttribute("fill", "transparent");
+    sparklesRect.setAttribute("class", "item");
+
+    container.appendChild(sparklesRect);
     container.appendChild(img);
     itemsLayer.appendChild(container);
     items[key] = container;
