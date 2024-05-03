@@ -1,11 +1,11 @@
 import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
-import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
-import { colors } from "./colors";
-import { isModernAndPowerful } from "./page-tuning";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/models";
+import { colors } from "./helpers/colors";
+import { isModernAndPowerful } from "./helpers/page-tuning";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
-import { playSounds } from "./sounds";
+import { playSounds } from "./helpers/sounds";
 
-const assets = (await import("./assets")).assets;
+const assets = (await import("./helpers/assets")).assets;
 const board = document.getElementById("monsboard");
 const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
@@ -42,7 +42,7 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-const emojis = (await import("./emojis")).emojis;
+const emojis = (await import("./helpers/emojis")).emojis;
 
 export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
