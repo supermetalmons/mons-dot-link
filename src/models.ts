@@ -21,7 +21,7 @@ export class Highlight {
   kind: HighlightKind;
   color: string;
 
-constructor(location: Location, kind: HighlightKind, color: string) {
+  constructor(location: Location, kind: HighlightKind, color: string) {
     this.location = location;
     this.kind = kind;
     this.color = color;

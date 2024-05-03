@@ -583,7 +583,7 @@ function createSparklingContainer(location: Location): SVGElement {
 function createSparkleParticle(location: Location, container: SVGElement, animating: boolean = true) {
   const particle = sparkle.cloneNode(true) as SVGElement;
 
-  const y = (location.i + Math.random());
+  const y = location.i + Math.random();
   particle.setAttribute("x", (location.j + Math.random()).toString());
   particle.setAttribute("y", y.toString());
   const opacity = 0.3 + 0.42 * Math.random();
@@ -610,8 +610,8 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
       return;
     }
 
-    particle.setAttribute("y", (y - velocity * timeDelta / 1000).toString());
-    particle.setAttribute("opacity", Math.max(0, (opacity - 0.15 * timeDelta / 1000)).toString());
+    particle.setAttribute("y", (y - (velocity * timeDelta) / 1000).toString());
+    particle.setAttribute("opacity", Math.max(0, opacity - (0.15 * timeDelta) / 1000).toString());
     requestAnimationFrame(animateParticle);
   }
 

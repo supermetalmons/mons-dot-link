@@ -14,7 +14,7 @@ export const colors = {
     7: "#D783FF",
   },
 
-  getTrace: function(id: string) {
+  getTrace: function (id: string) {
     return this.trace[id];
   },
 };
