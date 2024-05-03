@@ -4,7 +4,7 @@ export const colors = {
   spiritTarget: "#FF84FF",
   startFromSuggestion: "#FEFB00",
   selectedItem: "#00F900",
-  trace: {
+  rainbow: {
     1: "#FF2F92",
     2: "#FFD478",
     3: "#FFFB78",
@@ -14,7 +14,7 @@ export const colors = {
     7: "#D783FF",
   },
 
-  getTrace: function (id: string) {
-    return this.trace[id];
+  getRainbow: function (index: string) {
+    return this.rainbow[index];
   },
 };

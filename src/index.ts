@@ -7,7 +7,6 @@ import { tunePage } from "./helpers/browser";
 
 tunePage();
 Board.setupBoard();
-Board.decorateBoard();
 
 await initMonsWeb();
 const game = MonsWeb.MonsGameModel.new();

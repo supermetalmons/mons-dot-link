@@ -394,9 +394,7 @@ export function setupBoard() {
       itemsLayer.appendChild(rect);
     }
   }
-}
 
-export function decorateBoard() {
   for (const location of [new Location(0, 0), new Location(10, 0), new Location(0, 10), new Location(10, 10)]) {
     addWaves(location);
   }
@@ -760,8 +758,8 @@ function getTraceColors(): string[] {
 
   traceIndex += 1;
 
-  const a = colors.getTrace(traceIndex.toString());
-  const b = colors.getTrace((traceIndex + 1).toString());
+  const a = colors.getRainbow(traceIndex.toString());
+  const b = colors.getRainbow((traceIndex + 1).toString());
 
   return [a, b];
 }
