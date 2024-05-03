@@ -20,6 +20,7 @@ const playerMoveStatusItems: SVGElement[] = [];
 const svgNS = "http://www.w3.org/2000/svg";
 
 let isFlipped = false;
+let traceIndex = 0;
 
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
@@ -445,6 +446,60 @@ export function applyHighlights(highlights: Highlight[]) {
   });
 }
 
+export function drawTrace(trace: Trace) {
+  const from = inBoardCoordinates(trace.from);
+  const to = inBoardCoordinates(trace.to);
+
+  const gradient = document.createElementNS(svgNS, "linearGradient");
+  gradient.setAttribute("id", `trace-gradient-${from.toString()}-${to.toString()}`);
+  const colors = getTraceColors();
+
+  const stop1 = document.createElementNS(svgNS, "stop");
+  stop1.setAttribute("offset", "0%");
+  stop1.setAttribute("stop-color", colors[1]);
+  gradient.appendChild(stop1);
+
+  const stop2 = document.createElementNS(svgNS, "stop");
+  stop2.setAttribute("offset", "100%");
+  stop2.setAttribute("stop-color", colors[0]);
+  gradient.appendChild(stop2);
+  board.appendChild(gradient);
+
+  const rect = document.createElementNS(svgNS, "rect");
+  const fromCenter = { x: from.j + 0.5, y: from.i + 0.5 };
+  const toCenter = { x: to.j + 0.5, y: to.i + 0.5 };
+  const dx = toCenter.x - fromCenter.x;
+  const dy = toCenter.y - fromCenter.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const transform = `translate(${fromCenter.x},${fromCenter.y}) rotate(${angle})`;
+
+  rect.setAttribute("x", "0");
+  rect.setAttribute("y", "-0.1");
+  rect.setAttribute("width", length.toString());
+  rect.setAttribute("height", "0.2");
+  rect.setAttribute("transform", transform);
+
+  rect.setAttribute("fill", `url(#trace-gradient-${from.toString()}-${to.toString()})`);
+  board.append(rect);
+
+  const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
+    duration: 2000,
+    easing: "ease-out",
+  });
+
+  fadeOut.onfinish = () => {
+    rect.remove();
+    gradient.remove();
+  };
+}
+
+export function hasBasePlaceholder(location: Location): boolean {
+  location = inBoardCoordinates(location);
+  const key = location.toString();
+  return basesPlaceholders.hasOwnProperty(key);
+}
+
 function loadImage(data: string) {
   const image = document.createElementNS(svgNS, "image");
   setImage(image, data);
@@ -761,66 +816,8 @@ function highlightDestinationItem(location: Location, color: string) {
   highlightsLayer.append(highlight);
 }
 
-export function drawTrace(trace: Trace) {
-  const from = inBoardCoordinates(trace.from);
-  const to = inBoardCoordinates(trace.to);
-
-  const gradient = document.createElementNS(svgNS, "linearGradient");
-  gradient.setAttribute("id", `trace-gradient-${from.toString()}-${to.toString()}`);
-  const colors = getTraceColors();
-
-  const stop1 = document.createElementNS(svgNS, "stop");
-  stop1.setAttribute("offset", "0%");
-  stop1.setAttribute("stop-color", colors[1]);
-  gradient.appendChild(stop1);
-
-  const stop2 = document.createElementNS(svgNS, "stop");
-  stop2.setAttribute("offset", "100%");
-  stop2.setAttribute("stop-color", colors[0]);
-  gradient.appendChild(stop2);
-  board.appendChild(gradient);
-
-  const rect = document.createElementNS(svgNS, "rect");
-  const fromCenter = { x: from.j + 0.5, y: from.i + 0.5 };
-  const toCenter = { x: to.j + 0.5, y: to.i + 0.5 };
-  const dx = toCenter.x - fromCenter.x;
-  const dy = toCenter.y - fromCenter.y;
-  const length = Math.sqrt(dx * dx + dy * dy);
-  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-  const transform = `translate(${fromCenter.x},${fromCenter.y}) rotate(${angle})`;
-
-  rect.setAttribute("x", "0");
-  rect.setAttribute("y", "-0.1");
-  rect.setAttribute("width", length.toString());
-  rect.setAttribute("height", "0.2");
-  rect.setAttribute("transform", transform);
-
-  rect.setAttribute("fill", `url(#trace-gradient-${from.toString()}-${to.toString()})`);
-  board.append(rect);
-
-  const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
-    duration: 2000,
-    easing: "ease-out",
-  });
-
-  fadeOut.onfinish = () => {
-    rect.remove();
-    gradient.remove();
-  };
-}
-
-export function hasBasePlaceholder(location: Location): boolean {
-  location = inBoardCoordinates(location);
-  const key = location.toString();
-  return basesPlaceholders.hasOwnProperty(key);
-}
-
-let traceIndex = 0;
-
 function getTraceColors(): string[] {
-  if (traceIndex == 6) {
-    traceIndex = 0;
-  }
+  if (traceIndex == 6) { traceIndex = 0; }
 
   traceIndex += 1;
 
