@@ -105,7 +105,7 @@ export function showItemSelection() {
   const background = document.createElementNS(SVG.ns, "rect");
   SVG.setOrigin(background, 0, 1);
   SVG.setSizeStr(background, "100%", "11");
-  background.setAttribute("fill", "rgba(0, 0, 0, 0.5)");
+  SVG.setFill(background, "rgba(0, 0, 0, 0.5)");
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
 
@@ -249,10 +249,10 @@ export async function setupGameInfoElements() {
 
     const numberText = document.createElementNS(SVG.ns, "text");
     SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
-    numberText.setAttribute("fill", "gray");
+    SVG.setFill(numberText, "gray");
+    SVG.setOpacity(numberText, 0.69);
     numberText.setAttribute("font-size", "0.5");
     numberText.setAttribute("font-weight", "600");
-    numberText.setAttribute("opacity", "0.69");
     numberText.textContent = "0";
     controlsLayer.append(numberText);
     if (isOpponent) {
@@ -389,7 +389,7 @@ export function setupBoard() {
     for (let x = 0; x < 11; x++) {
       const rect = document.createElementNS(SVG.ns, "rect");
       SVG.setFrame(rect, x, y + 1, 1, 1);
-      rect.setAttribute("fill", "transparent");
+      SVG.setFill(rect, "transparent");
       rect.classList.add("board-rect");
       itemsLayer.appendChild(rect);
     }
@@ -456,7 +456,7 @@ export function drawTrace(trace: Trace) {
   SVG.setFrame(rect, 0, -0.1, length, 0.2);
   rect.setAttribute("transform", transform);
 
-  rect.setAttribute("fill", `url(#trace-gradient-${from.toString()}-${to.toString()})`);
+  SVG.setFill(rect, `url(#trace-gradient-${from.toString()}-${to.toString()})`);
   board.append(rect);
 
   const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
@@ -620,7 +620,7 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
     }
 
     particle.setAttribute("y", (y - (velocity * timeDelta) / 1000).toString());
-    particle.setAttribute("opacity", Math.max(0, opacity - (0.15 * timeDelta) / 1000).toString());
+    SVG.setOpacity(particle, Math.max(0, opacity - (0.15 * timeDelta) / 1000));
     requestAnimationFrame(animateParticle);
   }
 
@@ -635,10 +635,8 @@ function setBase(item: SVGElement, location: Location) {
     SVG.setHidden(basesPlaceholders[key], false);
   } else {
     const img = item.cloneNode() as SVGElement;
-    const adjustedX = location.j + 0.2;
-    const adjustedY = location.i + 0.2;
-    SVG.setFrame(img, adjustedX, adjustedY, 0.6, 0.6);
-    img.style.opacity = "0.4";
+    SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
+    SVG.setOpacity(img, 0.4);
     board.appendChild(img);
     basesPlaceholders[key] = img;
   }
@@ -646,14 +644,9 @@ function setBase(item: SVGElement, location: Location) {
 
 function highlightEmptyDestination(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS(SVG.ns, "circle");
+  const highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
   highlight.style.pointerEvents = "none";
-  const circleRadius = 0.15;
-  const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
-  highlight.setAttribute("cx", circleCenter.x.toString());
-  highlight.setAttribute("cy", circleCenter.y.toString());
-  highlight.setAttribute("r", circleRadius.toString());
-  highlight.setAttribute("fill", color);
+  SVG.setFill(highlight, color);
   highlightsLayer.append(highlight);
 }
 
@@ -669,7 +662,7 @@ function highlightSelectedItem(location: Location, color: string) {
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
   const maskRect = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(maskRect, location.j, location.i, 1, 1);
-  maskRect.setAttribute("fill", "white");
+  SVG.setFill(maskRect);
   mask.appendChild(maskRect);
   highlight.appendChild(mask);
 
@@ -683,14 +676,9 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   const highlight = document.createElementNS(SVG.ns, "g");
   highlight.style.pointerEvents = "none";
 
-  const circleRadius = 0.56;
-  const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
-
-  const circle = document.createElementNS(SVG.ns, "circle");
-  circle.setAttribute("cx", circleCenter.x.toString());
-  circle.setAttribute("cy", circleCenter.y.toString());
-  circle.setAttribute("r", circleRadius.toString());
-  circle.setAttribute("fill", color);
+  const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
+  SVG.setFill(circle, color);
+  
   circle.setAttribute("stroke", "#fbbf24");
   circle.setAttribute("stroke-width", "0.023");
 
@@ -698,12 +686,12 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
   const maskRect = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(maskRect, location.j, location.i, 1, 1);
-  maskRect.setAttribute("fill", "white");
+  SVG.setFill(maskRect);
   mask.appendChild(maskRect);
   highlight.appendChild(mask);
 
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
-  highlight.setAttribute("opacity", "0.69");
+  SVG.setOpacity(highlight, 0.69);
   highlight.appendChild(circle);
   highlightsLayer.append(highlight);
 
@@ -717,26 +705,20 @@ function highlightDestinationItem(location: Location, color: string) {
   const highlight = document.createElementNS(SVG.ns, "g");
   highlight.style.pointerEvents = "none";
 
-  const circleRadius = 0.56;
-  const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
-
   const rect = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect, location.j, location.i, 1, 1);
-  rect.setAttribute("fill", color);
+  SVG.setFill(rect, color);
 
   const mask = document.createElementNS(SVG.ns, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
 
   const maskRect = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(maskRect, location.j, location.i, 1, 1);
-  maskRect.setAttribute("fill", "white");
+  SVG.setFill(maskRect);
   mask.appendChild(maskRect);
 
-  const maskCircle = document.createElementNS(SVG.ns, "circle");
-  maskCircle.setAttribute("cx", circleCenter.x.toString());
-  maskCircle.setAttribute("cy", circleCenter.y.toString());
-  maskCircle.setAttribute("r", circleRadius.toString());
-  maskCircle.setAttribute("fill", "black");
+  const maskCircle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
+  SVG.setFill(maskCircle, "black");
   mask.appendChild(maskCircle);
 
   highlight.appendChild(mask);
@@ -762,7 +744,7 @@ function addWaves(location: Location) {
   location = inBoardCoordinates(location);
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
-  wavesSquareElement.setAttribute("opacity", "0.5");
+  SVG.setOpacity(wavesSquareElement, 0.5);
   board.appendChild(wavesSquareElement);
 
   let frameIndex = 0;
@@ -789,17 +771,17 @@ function getWavesFrame(location: Location, frameIndex: number) {
 
         const baseBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(baseBottomRect, x, y, width, pixel);
-        baseBottomRect.setAttribute("fill", baseColor);
+        SVG.setFill(baseBottomRect, baseColor);
         baseBottomRect.setAttribute("class", "base-bottom-rect");
 
         const slidingBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(slidingBottomRect, x + width, y, 0, pixel);
-        slidingBottomRect.setAttribute("fill", "#030DF4");
+        SVG.setFill(slidingBottomRect, "#030DF4");
         slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
 
         const slidingTopRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(slidingTopRect, x + width, y - pixel, 0, pixel);
-        slidingTopRect.setAttribute("fill", baseColor);
+        SVG.setFill(slidingTopRect, baseColor);
         slidingTopRect.setAttribute("class", "sliding-top-rect");
 
         frame.appendChild(baseBottomRect);
@@ -863,21 +845,21 @@ const sparkle = (() => {
   const svg = document.createElementNS(SVG.ns, "svg");
   SVG.setSize(svg, 3, 3);
   svg.setAttribute("viewBox", "0 0 3 3");
-  svg.setAttribute("fill", "none");
+  SVG.setFill(svg, "transparent");
 
   const rect1 = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect1, 0, 1, 3, 1);
-  rect1.setAttribute("fill", "#FEFEFE");
+  SVG.setFill(rect1, "#FEFEFE");
   svg.appendChild(rect1);
 
   const rect2 = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect2, 1, 0, 1, 3);
-  rect2.setAttribute("fill", "#FEFEFE");
+  SVG.setFill(rect2, "#FEFEFE");
   svg.appendChild(rect2);
 
   const rect3 = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect3, 1, 1, 1, 1);  
-  rect3.setAttribute("fill", "#000");
+  SVG.setFill(rect3, "#000");
   svg.appendChild(rect3);
 
   return svg;
