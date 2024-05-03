@@ -17,4 +17,12 @@ export const colors = {
   getRainbow: function (index: string) {
     return this.rainbow[index];
   },
+  itemSelectionBackground: "rgba(0, 0, 0, 0.5)",
+  scoreText: "gray",
+  wave1: "#6666FF",
+  wave2: "#00FCFF",
+  pool: "#030DF4",
+  sparkleLight: "#FEFEFE",
+  sparkleDark: "#000",
+  startFromStroke: "#fbbf24",
 };

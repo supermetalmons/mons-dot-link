@@ -105,7 +105,7 @@ export function showItemSelection() {
   const background = document.createElementNS(SVG.ns, "rect");
   SVG.setOrigin(background, 0, 1);
   SVG.setSizeStr(background, "100%", "11");
-  SVG.setFill(background, "rgba(0, 0, 0, 0.5)");
+  SVG.setFill(background, colors.itemSelectionBackground);
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
 
@@ -249,7 +249,7 @@ export async function setupGameInfoElements() {
 
     const numberText = document.createElementNS(SVG.ns, "text");
     SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
-    SVG.setFill(numberText, "gray");
+    SVG.setFill(numberText, colors.scoreText);
     SVG.setOpacity(numberText, 0.69);
     numberText.setAttribute("font-size", "0.5");
     numberText.setAttribute("font-weight", "600");
@@ -679,7 +679,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
   SVG.setFill(circle, color);
   
-  circle.setAttribute("stroke", "#fbbf24");
+  circle.setAttribute("stroke", colors.startFromStroke);
   circle.setAttribute("stroke-width", "0.023");
 
   const mask = document.createElementNS(SVG.ns, "mask");
@@ -767,7 +767,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
         const width = (Math.floor(Math.random() * 4) + 3) * pixel;
         const x = Math.random() * (1 - width);
         const y = pixel * (2 + i * 3);
-        const baseColor = i % 2 == 0 ? "#6666FF" : "#00FCFF";
+        const baseColor = i % 2 == 0 ? colors.wave1 : colors.wave2;
 
         const baseBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(baseBottomRect, x, y, width, pixel);
@@ -776,7 +776,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
 
         const slidingBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(slidingBottomRect, x + width, y, 0, pixel);
-        SVG.setFill(slidingBottomRect, "#030DF4");
+        SVG.setFill(slidingBottomRect, colors.pool);
         slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
 
         const slidingTopRect = document.createElementNS(SVG.ns, "rect");
@@ -849,17 +849,17 @@ const sparkle = (() => {
 
   const rect1 = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect1, 0, 1, 3, 1);
-  SVG.setFill(rect1, "#FEFEFE");
+  SVG.setFill(rect1, colors.sparkleLight);
   svg.appendChild(rect1);
 
   const rect2 = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect2, 1, 0, 1, 3);
-  SVG.setFill(rect2, "#FEFEFE");
+  SVG.setFill(rect2, colors.sparkleLight);
   svg.appendChild(rect2);
 
   const rect3 = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect3, 1, 1, 1, 1);  
-  SVG.setFill(rect3, "#000");
+  SVG.setFill(rect3, colors.sparkleDark);
   svg.appendChild(rect3);
 
   return svg;
