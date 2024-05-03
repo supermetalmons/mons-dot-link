@@ -1,6 +1,6 @@
 export function tunePage() {
   if (!isModernAndPowerful) {
-    ["github", "macos", "steam", "x"].forEach((key: string) => {
+    ["github", "app store", "steam", "x"].forEach((key: string) => {
       const link: HTMLAnchorElement | null = document.querySelector(`a[data-key="${key}"]`);
       if (link) {
         link.textContent = link.getAttribute("data-text") || "";

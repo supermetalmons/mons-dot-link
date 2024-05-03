@@ -574,7 +574,7 @@ function createSparklingContainer(location: Location): SVGElement {
         return;
       }
       createParticle(location, container);
-    }, 125);
+    }, 230);
   }
 
   return container;
@@ -586,16 +586,17 @@ function createParticle(location: Location, container: SVGElement, animating: bo
   const y = (location.i + Math.random());
   particle.setAttribute("x", (location.j + Math.random()).toString());
   particle.setAttribute("y", y.toString());
-  particle.setAttribute("opacity", (0.42 + 0.5 * Math.random()).toString());
+  const opacity = 0.3 + 0.42 * Math.random();
+  particle.setAttribute("opacity", opacity.toString());
 
-  const size = (Math.random() * 0.05 + 0.075) * 0.93;
+  const size = Math.random() * 0.05 + 0.075;
   particle.setAttribute("width", size.toString());
   particle.setAttribute("height", size.toString());
   container.appendChild(particle);
 
   if (!animating) { return; }
 
-  const velocity = (4 + 2 * Math.random()) * 0.014;
+  const velocity = (4 + 2 * Math.random()) * 0.01;
   const duration = Math.random() * 1000 + 2500;
   let startTime: number = null;
 
@@ -610,7 +611,7 @@ function createParticle(location: Location, container: SVGElement, animating: bo
     }
 
     particle.setAttribute("y", (y - velocity * timeDelta / 1000).toString());
-    particle.setAttribute("opacity", (1 - 0.15 * timeDelta / 1000).toString());
+    particle.setAttribute("opacity", Math.max(0, (opacity - 0.15 * timeDelta / 1000)).toString());
     requestAnimationFrame(animateParticle);
   }
 
