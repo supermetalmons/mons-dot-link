@@ -1,8 +1,8 @@
+import * as MonsWeb from "mons-web";
 import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/models";
 import { colors } from "./helpers/colors";
 import { isModernAndPowerful } from "./helpers/page-tuning";
-import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
 import { playSounds } from "./helpers/sounds";
 
 const assets = (await import("./helpers/assets")).assets;
@@ -44,7 +44,7 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("./helpers/emojis")).emojis;
 
-export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
+export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
   let manaMoves = moveKinds[1];
   let actions = moveKinds[2];
@@ -52,7 +52,7 @@ export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
 
   const total = monMoves + manaMoves + actions + potions;
 
-  const playerSideActive = isFlipped ? color == ColorModel.White : color == ColorModel.Black;
+  const playerSideActive = isFlipped ? color == MonsWeb.Color.White : color == MonsWeb.Color.Black;
 
   const itemsToHide = playerSideActive ? playerMoveStatusItems : opponentMoveStatusItems;
   const itemsToSetup = playerSideActive ? opponentMoveStatusItems : playerMoveStatusItems;
@@ -144,93 +144,93 @@ export function showItemSelection() {
   itemsLayer.appendChild(overlay);
 }
 
-export function putItem(item: ItemModel, location: Location) {
+export function putItem(item: MonsWeb.ItemModel, location: Location) {
   switch (item.kind) {
-    case ItemModelKind.Mon:
-      const isBlack = item.mon.color == ColorModel.Black;
+    case MonsWeb.ItemModelKind.Mon:
+      const isBlack = item.mon.color == MonsWeb.Color.Black;
       const isFainted = item.mon.is_fainted();
       switch (item.mon.kind) {
-        case MonKind.Demon:
+        case MonsWeb.MonKind.Demon:
           placeItem(isBlack ? demonB : demon, location, isFainted);
           break;
-        case MonKind.Drainer:
+        case MonsWeb.MonKind.Drainer:
           placeItem(isBlack ? drainerB : drainer, location, isFainted);
           break;
-        case MonKind.Angel:
+        case MonsWeb.MonKind.Angel:
           placeItem(isBlack ? angelB : angel, location, isFainted);
           break;
-        case MonKind.Spirit:
+        case MonsWeb.MonKind.Spirit:
           placeItem(isBlack ? spiritB : spirit, location, isFainted);
           break;
-        case MonKind.Mystic:
+        case MonsWeb.MonKind.Mystic:
           placeItem(isBlack ? mysticB : mystic, location, isFainted);
           break;
       }
       break;
-    case ItemModelKind.Mana:
+    case MonsWeb.ItemModelKind.Mana:
       switch (item.mana.kind) {
-        case ManaKind.Regular:
-          const isBlack = item.mana.color == ColorModel.Black;
+        case MonsWeb.ManaKind.Regular:
+          const isBlack = item.mana.color == MonsWeb.Color.Black;
           placeItem(isBlack ? manaB : mana, location);
           break;
-        case ManaKind.Supermana:
+        case MonsWeb.ManaKind.Supermana:
           placeItem(supermana, location);
           break;
       }
       break;
-    case ItemModelKind.MonWithMana:
-      const isBlackDrainer = item.mon.color == ColorModel.Black;
-      const isSupermana = item.mana.kind == ManaKind.Supermana;
+    case MonsWeb.ItemModelKind.MonWithMana:
+      const isBlackDrainer = item.mon.color == MonsWeb.Color.Black;
+      const isSupermana = item.mana.kind == MonsWeb.ManaKind.Supermana;
       if (isSupermana) {
         placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
       } else {
-        const isBlackMana = item.mana.color == ColorModel.Black;
+        const isBlackMana = item.mana.color == MonsWeb.Color.Black;
         placeMonWithMana(isBlackDrainer ? drainerB : drainer, isBlackMana ? manaB : mana, location);
       }
       break;
-    case ItemModelKind.MonWithConsumable:
-      const isBlackWithConsumable = item.mon.color == ColorModel.Black;
+    case MonsWeb.ItemModelKind.MonWithConsumable:
+      const isBlackWithConsumable = item.mon.color == MonsWeb.Color.Black;
       switch (item.mon.kind) {
-        case MonKind.Demon:
+        case MonsWeb.MonKind.Demon:
           placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location);
           break;
-        case MonKind.Drainer:
+        case MonsWeb.MonKind.Drainer:
           placeMonWithBomb(isBlackWithConsumable ? drainerB : drainer, location);
           break;
-        case MonKind.Angel:
+        case MonsWeb.MonKind.Angel:
           placeMonWithBomb(isBlackWithConsumable ? angelB : angel, location);
           break;
-        case MonKind.Spirit:
+        case MonsWeb.MonKind.Spirit:
           placeMonWithBomb(isBlackWithConsumable ? spiritB : spirit, location);
           break;
-        case MonKind.Mystic:
+        case MonsWeb.MonKind.Mystic:
           placeMonWithBomb(isBlackWithConsumable ? mysticB : mystic, location);
           break;
       }
       break;
-    case ItemModelKind.Consumable:
+    case MonsWeb.ItemModelKind.Consumable:
       placeItem(bombOrPotion, location, false, true);
       break;
   }
 }
 
-export function setupSquare(square: SquareModel, location: Location) {
-  if (square.kind == SquareModelKind.MonBase) {
-    const isBlack = square.color == ColorModel.Black;
+export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
+  if (square.kind == MonsWeb.SquareModelKind.MonBase) {
+    const isBlack = square.color == MonsWeb.Color.Black;
     switch (square.mon_kind) {
-      case MonKind.Demon:
+      case MonsWeb.MonKind.Demon:
         setBase(isBlack ? demonB : demon, location);
         break;
-      case MonKind.Drainer:
+      case MonsWeb.MonKind.Drainer:
         setBase(isBlack ? drainerB : drainer, location);
         break;
-      case MonKind.Angel:
+      case MonsWeb.MonKind.Angel:
         setBase(isBlack ? angelB : angel, location);
         break;
-      case MonKind.Spirit:
+      case MonsWeb.MonKind.Spirit:
         setBase(isBlack ? spiritB : spirit, location);
         break;
-      case MonKind.Mystic:
+      case MonsWeb.MonKind.Mystic:
         setBase(isBlack ? mysticB : mystic, location);
         break;
     }
