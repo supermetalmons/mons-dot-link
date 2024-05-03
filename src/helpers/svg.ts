@@ -27,6 +27,22 @@ export function setOriginStr(element: SVGElement, x: string, y: string): void {
   element.setAttribute("y", y);
 }
 
+export function circle(centerX: number, centerY: number, radius: number): SVGElement {
+  const circle = document.createElementNS(ns, "circle");
+  circle.setAttribute("cx", centerX.toString());
+  circle.setAttribute("cy", centerY.toString());
+  circle.setAttribute("r", radius.toString());
+  return circle
+}
+
+export function setOpacity(element: SVGElement, opacity: number) {
+  element.setAttribute("opacity", opacity.toString());
+}
+
+export function setFill(element: SVGElement, fill: string = "white") {
+  element.setAttribute("fill", fill);
+}
+
 export function setImage(element: SVGElement, data: string) {
   element.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${data}`);
 }

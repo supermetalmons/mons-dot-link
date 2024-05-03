@@ -389,7 +389,7 @@ export function setupBoard() {
     for (let x = 0; x < 11; x++) {
       const rect = document.createElementNS(SVG.ns, "rect");
       SVG.setFrame(rect, x, y + 1, 1, 1);
-      rect.setAttribute("fill", "rgba(255, 255, 255, 0)"); // TODO: check if it is necessary
+      rect.setAttribute("fill", "transparent");
       rect.classList.add("board-rect");
       itemsLayer.appendChild(rect);
     }
@@ -571,7 +571,7 @@ function createSparklingContainer(location: Location): SVGElement {
 
   const rect = document.createElementNS(SVG.ns, "rect");
   SVG.setFrame(rect, location.j, location.i, 1, 1);
-  rect.setAttribute("fill", "white");
+  SVG.setFill(rect);
 
   mask.appendChild(rect);
   container.appendChild(mask);
@@ -600,7 +600,7 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
   const size = Math.random() * 0.05 + 0.075;
   const opacity = 0.3 + 0.42 * Math.random();
   SVG.setFrame(particle, location.j + Math.random(), y, size, size);
-  particle.setAttribute("opacity", opacity.toString());
+  SVG.setOpacity(particle, opacity);
   container.appendChild(particle);
 
   if (!animating) { return; }
@@ -662,15 +662,9 @@ function highlightSelectedItem(location: Location, color: string) {
   const highlight = document.createElementNS(SVG.ns, "g");
   highlight.style.pointerEvents = "none";
 
-  const circleRadius = 0.56;
-  const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
-
-  const circle = document.createElementNS(SVG.ns, "circle");
-  circle.setAttribute("cx", circleCenter.x.toString());
-  circle.setAttribute("cy", circleCenter.y.toString());
-  circle.setAttribute("r", circleRadius.toString());
-  circle.setAttribute("fill", color);
-
+  const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
+  SVG.setFill(circle, color);  
+  
   const mask = document.createElementNS(SVG.ns, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
   const maskRect = document.createElementNS(SVG.ns, "rect");
