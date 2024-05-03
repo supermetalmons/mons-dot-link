@@ -413,6 +413,7 @@ export function setupBoard() {
 }
 
 export function decorateBoard() {
+  addStars(new Location(5, 5));
   for (const location of [new Location(0, 0), new Location(10, 0), new Location(0, 10), new Location(10, 10)]) {
     addWaves(location);
   }
@@ -565,7 +566,7 @@ function createSparklingContainer(location: Location): SVGElement {
 
   if (!isModernAndPowerful) {
     for (let i = 0; i < 19; i++) {
-      createParticle(location, container, false);
+      createSparkleParticle(location, container, false);
     }
   } else {
     const intervalId = setInterval(() => {
@@ -573,14 +574,14 @@ function createSparklingContainer(location: Location): SVGElement {
         clearInterval(intervalId);
         return;
       }
-      createParticle(location, container);
+      createSparkleParticle(location, container);
     }, 230);
   }
 
   return container;
 }
 
-function createParticle(location: Location, container: SVGElement, animating: boolean = true) {
+function createSparkleParticle(location: Location, container: SVGElement, animating: boolean = true) {
   const particle = sparkle.cloneNode(true) as SVGElement;
 
   const y = (location.i + Math.random());
@@ -822,20 +823,101 @@ function getTraceColors(): string[] {
 
   traceIndex += 1;
 
-  switch (traceIndex) {
-    case 1:
-      return [colors.trace1, colors.trace2];
-    case 2:
-      return [colors.trace2, colors.trace3];
-    case 3:
-      return [colors.trace3, colors.trace4];
-    case 4:
-      return [colors.trace4, colors.trace5];
-    case 5:
-      return [colors.trace5, colors.trace6];
-    case 6:
-      return [colors.trace6, colors.trace7];
+  const a = colors.getTrace(traceIndex.toString());
+  const b = colors.getTrace((traceIndex + 1).toString());
+
+  return [a, b];
+}
+
+function addStars(location: Location) {
+  location = inBoardCoordinates(location);
+
+  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  container.setAttribute("class", "item");
+
+  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  mask.setAttribute("id", `mask-square-${location.toString()}`);
+
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", location.j.toString());
+  rect.setAttribute("y", location.i.toString());
+  rect.setAttribute("width", "1");
+  rect.setAttribute("height", "1");
+  rect.setAttribute("fill", "white");
+
+  mask.appendChild(rect);
+  container.appendChild(mask);
+  container.setAttribute("mask", `url(#mask-square-${location.toString()})`);
+
+  if (!isModernAndPowerful) {
+    for (let i = 0; i < 10; i++) {
+      createStarParticle(location, container, false);
+    }
+  } else {
+    const intervalId = setInterval(() => {
+      if (!container.parentNode.parentNode) {
+        clearInterval(intervalId);
+        return;
+      }
+      createStarParticle(location, container);
+    }, 777);
   }
+
+  board.appendChild(container);
+}
+
+function createStarParticle(location: Location, container: SVGElement, animating: boolean = true) {
+  const particle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  let maxOpacity: number;
+
+
+  if (Math.random() < 0.023) {
+    particle.setAttribute("fill", colors.getTrace((1 + Math.floor(Math.random() * 7)).toString()));
+    maxOpacity = 1;
+  } else {
+    particle.setAttribute("fill", "white");
+    maxOpacity = 0.42 + 0.23 * Math.random();
+  }
+
+  const fontSize = Math.random() * 0.23 + 0.42;
+  particle.setAttribute("font-size", fontSize.toString());
+  particle.setAttribute("font-weight", (Math.random() * 300 + 300).toString());
+  particle.textContent = "*";
+  const x = location.j - 0.13 + (1.13 * Math.random());
+  const y = location.i + Math.random();
+  particle.setAttribute("x", x.toString());
+  particle.setAttribute("y", y.toString());
+  particle.setAttribute("opacity", "0");
+  container.appendChild(particle);
+
+  if (!animating) {
+    particle.setAttribute("opacity", maxOpacity.toString());
+    return;
+  }
+
+  const duration = Math.random() * 1000 + 5500;
+  let startTime: number = null;
+  const velocity = 0.13;
+
+  function animateParticle(time: number) {
+    if (!startTime) { startTime = time; }
+
+    let timeDelta = time - startTime;
+    let progress = timeDelta / duration;
+    if (progress > 1) {
+      container.removeChild(particle);
+      return;
+    } else if (progress < 0.33) {
+      particle.setAttribute("opacity", (maxOpacity * progress / 0.33).toString());
+    } else if (progress > 0.5) {
+      particle.setAttribute("opacity", (maxOpacity * (2 - progress / 0.5)).toString());
+    }
+    particle.setAttribute("y", (y + velocity * timeDelta / 1000).toString());
+    
+    requestAnimationFrame(animateParticle);
+  }
+
+  requestAnimationFrame(animateParticle);
 }
 
 function addWaves(location: Location) {
