@@ -9,7 +9,15 @@ export function tunePage() {
   }
 }
 
+export const isDesktopSafari = (() => {
+  const userAgent = window.navigator.userAgent;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+  const isIos = /iPad|iPhone|iPod/.test(userAgent);
+  return isSafari && !isIos;
+})();
+
 export const isModernAndPowerful = (() => {
+  if (isDesktopSafari) { return true; }
   for (const char of ["⚔︎", "𝕏", "♡", "☆", "↓"]) {
     if (!supportsCharacter(char)) {
       return false;

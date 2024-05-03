@@ -1,9 +1,9 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
 import * as Board from "./board";
-import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/models";
+import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { tunePage } from "./helpers/page-tuning";
+import { tunePage } from "./helpers/browser";
 
 tunePage();
 Board.setupBoard();
