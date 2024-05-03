@@ -565,7 +565,7 @@ function createSparklingContainer(location: Location): SVGElement {
 
   if (!isModernAndPowerful) {
     for (let i = 0; i < 19; i++) {
-      createParticle(location, container, false);
+      createSparkleParticle(location, container, false);
     }
   } else {
     const intervalId = setInterval(() => {
@@ -573,14 +573,14 @@ function createSparklingContainer(location: Location): SVGElement {
         clearInterval(intervalId);
         return;
       }
-      createParticle(location, container);
+      createSparkleParticle(location, container);
     }, 230);
   }
 
   return container;
 }
 
-function createParticle(location: Location, container: SVGElement, animating: boolean = true) {
+function createSparkleParticle(location: Location, container: SVGElement, animating: boolean = true) {
   const particle = sparkle.cloneNode(true) as SVGElement;
 
   const y = (location.i + Math.random());
@@ -822,20 +822,10 @@ function getTraceColors(): string[] {
 
   traceIndex += 1;
 
-  switch (traceIndex) {
-    case 1:
-      return [colors.trace1, colors.trace2];
-    case 2:
-      return [colors.trace2, colors.trace3];
-    case 3:
-      return [colors.trace3, colors.trace4];
-    case 4:
-      return [colors.trace4, colors.trace5];
-    case 5:
-      return [colors.trace5, colors.trace6];
-    case 6:
-      return [colors.trace6, colors.trace7];
-  }
+  const a = colors.getTrace(traceIndex.toString());
+  const b = colors.getTrace((traceIndex + 1).toString());
+
+  return [a, b];
 }
 
 function addWaves(location: Location) {
