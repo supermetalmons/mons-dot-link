@@ -1,16 +1,16 @@
-import init, { NextInputKind, MonsGameModel, Location as LocationModel, Modifier as ModifierModel, Color as ColorModel, OutputModelKind, EventModelKind, OutputModel, ManaKind } from "mons-web";
-import { setupGameInfoElements, setupBoard, putItem, setupSquare, applyHighlights, removeHighlights, removeItem, hasBasePlaceholder, drawTrace, decorateBoard, showItemSelection, updateScore, updateMoveStatus } from "./board";
+import initMonsWeb, * as MonsWeb from "mons-web";
+import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
 import { tunePage } from "./helpers/page-tuning";
 
 tunePage();
-setupBoard();
-decorateBoard();
+Board.setupBoard();
+Board.decorateBoard();
 
-await init();
-const game = MonsGameModel.new();
+await initMonsWeb();
+const game = MonsWeb.MonsGameModel.new();
 
 const locationsWithContent = game.locations_with_content();
 
@@ -19,12 +19,12 @@ locationsWithContent.forEach((loc) => {
   updateLocation(location);
 });
 
-setupGameInfoElements();
+Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
 export function isPlayerSideTurn(): boolean {
-  return game.active_color() == ColorModel.White;
+  return game.active_color() == MonsWeb.Color.White;
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
@@ -36,22 +36,22 @@ export function didClickSquare(location: Location) {
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  const opponentsTurn = game.active_color() == ColorModel.Black;
+  const opponentsTurn = game.active_color() == MonsWeb.Color.Black;
 
   if (inputLocation) {
     currentInputs.push(inputLocation);
   }
 
-  const gameInput = currentInputs.map((input) => new LocationModel(input.i, input.j));
-  let output: OutputModel;
+  const gameInput = currentInputs.map((input) => new MonsWeb.Location(input.i, input.j));
+  let output: MonsWeb.OutputModel;
   if (inputModifier != InputModifier.None) {
-    let modifier: ModifierModel;
+    let modifier: MonsWeb.Modifier;
     switch (inputModifier) {
       case InputModifier.Bomb:
-        modifier = ModifierModel.SelectBomb;
+        modifier = MonsWeb.Modifier.SelectBomb;
         break;
       case InputModifier.Potion:
-        modifier = ModifierModel.SelectPotion;
+        modifier = MonsWeb.Modifier.SelectPotion;
         break;
       case InputModifier.Cancel:
         currentInputs = [];
@@ -63,28 +63,28 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   }
 
   switch (output.kind) {
-    case OutputModelKind.InvalidInput:
+    case MonsWeb.OutputModelKind.InvalidInput:
       const shouldTryToReselect = assistedInputKind == AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
       const shouldHelpFindOptions = assistedInputKind == AssistedInputKind.None && currentInputs.length == 1;
       currentInputs = [];
-      removeHighlights();
+      Board.removeHighlights();
       if (shouldTryToReselect) {
         processInput(AssistedInputKind.ReselectLastInvalidInput, InputModifier.None, inputLocation);
       } else if (shouldHelpFindOptions) {
         processInput(AssistedInputKind.FindStartLocationsAfterInvalidInput, InputModifier.None);
       }
       break;
-    case OutputModelKind.LocationsToStartFrom:
+    case MonsWeb.OutputModelKind.LocationsToStartFrom:
       const startFromHighlights: Highlight[] = output.locations().map((loc) => new Highlight(new Location(loc.i, loc.j), HighlightKind.StartFromSuggestion, colors.startFromSuggestion));
-      removeHighlights();
-      applyHighlights(startFromHighlights);
+      Board.removeHighlights();
+      Board.applyHighlights(startFromHighlights);
       break;
-    case OutputModelKind.NextInputOptions:
+    case MonsWeb.OutputModelKind.NextInputOptions:
       const nextInputs = output.next_inputs();
 
-      if (nextInputs[0].kind == NextInputKind.SelectConsumable) {
-        removeHighlights();
-        showItemSelection();
+      if (nextInputs[0].kind == MonsWeb.NextInputKind.SelectConsumable) {
+        Board.removeHighlights();
+        Board.showItemSelection();
         return;
       }
 
@@ -93,39 +93,39 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         let color: string;
         let highlightKind: HighlightKind;
         switch (input.kind) {
-          case NextInputKind.MonMove:
-            highlightKind = hasItemAt(location) || hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+          case MonsWeb.NextInputKind.MonMove:
+            highlightKind = hasItemAt(location) || Board.hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
             break;
-          case NextInputKind.ManaMove:
+          case MonsWeb.NextInputKind.ManaMove:
             highlightKind = hasItemAt(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.destination;
             break;
-          case NextInputKind.MysticAction:
+          case MonsWeb.NextInputKind.MysticAction:
             highlightKind = HighlightKind.TargetSuggestion;
             color = colors.attackTarget;
             break;
-          case NextInputKind.DemonAction:
+          case MonsWeb.NextInputKind.DemonAction:
             highlightKind = HighlightKind.TargetSuggestion;
             color = colors.attackTarget;
             break;
-          case NextInputKind.DemonAdditionalStep:
-            highlightKind = hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+          case MonsWeb.NextInputKind.DemonAdditionalStep:
+            highlightKind = Board.hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.attackTarget;
             break;
-          case NextInputKind.SpiritTargetCapture:
+          case MonsWeb.NextInputKind.SpiritTargetCapture:
             highlightKind = HighlightKind.TargetSuggestion;
             color = colors.spiritTarget;
             break;
-          case NextInputKind.SpiritTargetMove:
-            highlightKind = hasItemAt(location) || hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
+          case MonsWeb.NextInputKind.SpiritTargetMove:
+            highlightKind = hasItemAt(location) || Board.hasBasePlaceholder(location) ? HighlightKind.TargetSuggestion : HighlightKind.EmptySquare;
             color = colors.spiritTarget;
             break;
-          case NextInputKind.SelectConsumable:
+          case MonsWeb.NextInputKind.SelectConsumable:
             highlightKind = HighlightKind.TargetSuggestion;
             color = colors.selectedItem;
             break;
-          case NextInputKind.BombAttack:
+          case MonsWeb.NextInputKind.BombAttack:
             highlightKind = HighlightKind.TargetSuggestion;
             color = colors.attackTarget;
             break;
@@ -137,10 +137,10 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         let color: string;
         if (index > 0) {
           switch (nextInputs[nextInputs.length - 1].kind) {
-            case NextInputKind.DemonAdditionalStep:
+            case MonsWeb.NextInputKind.DemonAdditionalStep:
               color = colors.attackTarget;
               break;
-            case NextInputKind.SpiritTargetMove:
+            case MonsWeb.NextInputKind.SpiritTargetMove:
               color = colors.spiritTarget;
               break;
             default:
@@ -153,10 +153,10 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         return new Highlight(input, HighlightKind.Selected, color);
       });
 
-      removeHighlights();
-      applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
+      Board.removeHighlights();
+      Board.applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
-    case OutputModelKind.Events:
+    case MonsWeb.OutputModelKind.Events:
       currentInputs = [];
       const events = output.events();
       let locationsToUpdate: Location[] = [];
@@ -169,20 +169,20 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         const from = event.loc1 ? location(event.loc1) : undefined;
         const to = event.loc2 ? location(event.loc2) : undefined;
         switch (event.kind) {
-          case EventModelKind.MonMove:
+          case MonsWeb.EventModelKind.MonMove:
             sounds.push(Sound.Move);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             mightKeepHighlightOnLocation = to;
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.ManaMove:
+          case MonsWeb.EventModelKind.ManaMove:
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.ManaScored:
-            if (event.mana.kind == ManaKind.Supermana) {
+          case MonsWeb.EventModelKind.ManaScored:
+            if (event.mana.kind == MonsWeb.ManaKind.Supermana) {
               sounds.push(Sound.ScoreSupermana);
             } else {
               sounds.push(Sound.ScoreMana);
@@ -190,74 +190,74 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
             // TODO: based on player side
-            updateScore(game.white_score(), game.black_score());
+            Board.updateScore(game.white_score(), game.black_score());
             break;
-          case EventModelKind.MysticAction:
+          case MonsWeb.EventModelKind.MysticAction:
             sounds.push(Sound.MysticAbility);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.DemonAction:
+          case MonsWeb.EventModelKind.DemonAction:
             sounds.push(Sound.DemonAbility);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.DemonAdditionalStep:
+          case MonsWeb.EventModelKind.DemonAdditionalStep:
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.SpiritTargetMove:
+          case MonsWeb.EventModelKind.SpiritTargetMove:
             sounds.push(Sound.SpiritAbility);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.PickupBomb:
+          case MonsWeb.EventModelKind.PickupBomb:
             sounds.push(Sound.PickupBomb);
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
             break;
-          case EventModelKind.PickupPotion:
+          case MonsWeb.EventModelKind.PickupPotion:
             sounds.push(Sound.PickupPotion);
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
             break;
-          case EventModelKind.PickupMana:
+          case MonsWeb.EventModelKind.PickupMana:
             sounds.push(Sound.ManaPickUp);
             locationsToUpdate.push(from);
             break;
-          case EventModelKind.MonFainted:
+          case MonsWeb.EventModelKind.MonFainted:
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             break;
-          case EventModelKind.ManaDropped:
+          case MonsWeb.EventModelKind.ManaDropped:
             locationsToUpdate.push(from);
             break;
-          case EventModelKind.SupermanaBackToBase:
+          case MonsWeb.EventModelKind.SupermanaBackToBase:
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             break;
-          case EventModelKind.BombAttack:
+          case MonsWeb.EventModelKind.BombAttack:
             sounds.push(Sound.Bomb);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
-          case EventModelKind.MonAwake:
+          case MonsWeb.EventModelKind.MonAwake:
             locationsToUpdate.push(from);
             break;
-          case EventModelKind.BombExplosion:
+          case MonsWeb.EventModelKind.BombExplosion:
             sounds.push(Sound.Bomb);
             locationsToUpdate.push(from);
             break;
-          case EventModelKind.NextTurn:
+          case MonsWeb.EventModelKind.NextTurn:
             sounds.push(Sound.EndTurn);
             // TODO: update for the next turn
             break;
-          case EventModelKind.GameOver:
+          case MonsWeb.EventModelKind.GameOver:
             // TODO: based on player side
             sounds.push(Sound.Victory);
             // sounds.push(Sound.Defeat);
@@ -265,18 +265,18 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
         }
       }
 
-      removeHighlights();
+      Board.removeHighlights();
 
       for (const location of locationsToUpdate) {
         updateLocation(location);
         // TODO: do not update twice – keep a list of uniques
       }
 
-      updateMoveStatus(game.active_color(), game.available_move_kinds());
+      Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
       if (opponentsTurn) {
         for (const trace of traces) {
-          drawTrace(trace);
+          Board.drawTrace(trace);
         }
       }
 
@@ -291,24 +291,24 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 }
 
 function updateLocation(location: Location) {
-  removeItem(location);
-  const item = game.item(new LocationModel(location.i, location.j));
+  Board.removeItem(location);
+  const item = game.item(new MonsWeb.Location(location.i, location.j));
   if (item !== undefined) {
-    putItem(item, location);
+    Board.putItem(item, location);
   } else {
-    const square = game.square(new LocationModel(location.i, location.j));
+    const square = game.square(new MonsWeb.Location(location.i, location.j));
     if (square !== undefined) {
-      setupSquare(square, location);
+      Board.setupSquare(square, location);
     }
   }
 }
 
-function location(locationModel: LocationModel): Location {
+function location(locationModel: MonsWeb.Location): Location {
   return new Location(locationModel.i, locationModel.j);
 }
 
 function hasItemAt(location: Location): boolean {
-  const item = game.item(new LocationModel(location.i, location.j));
+  const item = game.item(new MonsWeb.Location(location.i, location.j));
   if (item !== undefined) {
     return true;
   } else {
