@@ -17,6 +17,8 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+const svgNS = "http://www.w3.org/2000/svg";
+
 let isFlipped = false;
 
 let itemSelectionOverlay: SVGElement | undefined;
@@ -64,16 +66,16 @@ export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
     if (index < total) {
       item.setAttribute("display", "");
       if (manaMoves > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusMana}`);
+        setImage(item, emojis.statusMana);
         manaMoves -= 1;
       } else if (potions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusPotion}`);
+        setImage(item, emojis.statusPotion);
         potions -= 1;
       } else if (actions > 0) {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusAction}`);
+        setImage(item, emojis.statusAction);
         actions -= 1;
       } else {
-        item.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${emojis.statusMove}`);
+        setImage(item, emojis.statusMove);
       }
     } else {
       item.setAttribute("display", "none");
@@ -97,10 +99,10 @@ export function updateScore(player: number, opponent: number) {
 }
 
 export function showItemSelection() {
-  const overlay = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const overlay = document.createElementNS(svgNS, "g");
   itemSelectionOverlay = overlay;
 
-  const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const background = document.createElementNS(svgNS, "rect");
   background.setAttribute("x", "0");
   background.setAttribute("y", "1");
   background.setAttribute("width", "100%");
@@ -109,8 +111,8 @@ export function showItemSelection() {
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
 
-  const bombButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  bombButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.bomb}`);
+  const bombButton = document.createElementNS(svgNS, "image");
+  setImage(bombButton, assets.bomb);
   bombButton.setAttribute("x", "25%");
   bombButton.setAttribute("y", "40%");
   bombButton.setAttribute("width", "20%");
@@ -122,8 +124,8 @@ export function showItemSelection() {
   });
   overlay.appendChild(bombButton);
 
-  const potionButton = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  potionButton.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${assets.potion}`);
+  const potionButton = document.createElementNS(svgNS, "image");
+  setImage(potionButton, assets.potion);
   potionButton.setAttribute("x", "55%");
   potionButton.setAttribute("y", "40%");
   potionButton.setAttribute("width", "20%");
@@ -253,7 +255,7 @@ export async function setupGameInfoElements() {
     const avatarOffsetY = isOpponent ? 0.23 : -0.1;
     const avatarSize = 0.777;
 
-    const numberText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const numberText = document.createElementNS(svgNS, "text");
     numberText.setAttribute("x", (offsetX + avatarSize + 0.21).toString());
     numberText.setAttribute("y", (y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)).toString());
     numberText.setAttribute("fill", "gray");
@@ -311,7 +313,7 @@ export async function setupGameInfoElements() {
         if (!playerSideActive) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
           currentOpponentEmojiId = newId;
-          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
+          setImage(avatar, newEmoji);
           playSounds([Sound.Click]);
         }
 
@@ -326,7 +328,7 @@ export async function setupGameInfoElements() {
         if (playerSideActive) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
           currentPlayerEmojiId = newId;
-          avatar.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${newEmoji}`);
+          setImage(avatar, newEmoji);
           playSounds([Sound.Click]);
         }
 
@@ -400,7 +402,7 @@ export function setupBoard() {
 
   for (let y = 0; y < 11; y++) {
     for (let x = 0; x < 11; x++) {
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      const rect = document.createElementNS(svgNS, "rect");
       rect.setAttribute("x", x.toString());
       rect.setAttribute("y", (y + 1).toString());
       rect.setAttribute("width", "1");
@@ -444,8 +446,8 @@ export function applyHighlights(highlights: Highlight[]) {
 }
 
 function loadImage(data: string) {
-  const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-  image.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${data}`);
+  const image = document.createElementNS(svgNS, "image");
+  setImage(image, data);
   image.setAttribute("width", "1");
   image.setAttribute("height", "1");
   image.setAttribute("class", "item");
@@ -464,7 +466,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   carriedBomb.setAttribute("width", (0.54).toString());
   carriedBomb.setAttribute("height", (0.54).toString());
 
-  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const container = document.createElementNS(svgNS, "g");
   container.appendChild(img);
   container.appendChild(carriedBomb);
 
@@ -484,7 +486,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   carriedMana.setAttribute("width", (0.74).toString());
   carriedMana.setAttribute("height", (0.74).toString());
 
-  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const container = document.createElementNS(svgNS, "g");
   container.appendChild(img);
   container.appendChild(carriedMana);
 
@@ -504,7 +506,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   carriedMana.setAttribute("width", (0.93).toString());
   carriedMana.setAttribute("height", (0.93).toString());
 
-  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const container = document.createElementNS(svgNS, "g");
   container.appendChild(img);
   container.appendChild(carriedMana);
 
@@ -523,13 +525,13 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
   if (fainted) {
     img.setAttribute("x", "0");
     img.setAttribute("y", "0");
-    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const container = document.createElementNS(svgNS, "g");
     container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
     container.appendChild(img);
     itemsLayer.appendChild(container);
     items[key] = container;
   } else if (sparkles) {
-    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const container = document.createElementNS(svgNS, "g");
     const sparkles = createSparklingContainer(location);
     img.setAttribute("x", location.j.toString());
     img.setAttribute("y", location.i.toString());
@@ -546,13 +548,13 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
 }
 
 function createSparklingContainer(location: Location): SVGElement {
-  const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const container = document.createElementNS(svgNS, "g");
   container.setAttribute("class", "item");
 
-  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  const mask = document.createElementNS(svgNS, "mask");
   mask.setAttribute("id", `mask-square-${location.toString()}`);
 
-  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const rect = document.createElementNS(svgNS, "rect");
   rect.setAttribute("x", location.j.toString());
   rect.setAttribute("y", location.i.toString());
   rect.setAttribute("width", "1");
@@ -640,7 +642,7 @@ function setBase(item: SVGElement, location: Location) {
 
 function highlightEmptyDestination(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  const highlight = document.createElementNS(svgNS, "circle");
   highlight.style.pointerEvents = "none";
   const circleRadius = 0.15;
   const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
@@ -653,21 +655,21 @@ function highlightEmptyDestination(location: Location, color: string) {
 
 function highlightSelectedItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const highlight = document.createElementNS(svgNS, "g");
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
   const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
 
-  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  const circle = document.createElementNS(svgNS, "circle");
   circle.setAttribute("cx", circleCenter.x.toString());
   circle.setAttribute("cy", circleCenter.y.toString());
   circle.setAttribute("r", circleRadius.toString());
   circle.setAttribute("fill", color);
 
-  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  const mask = document.createElementNS(svgNS, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
-  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const maskRect = document.createElementNS(svgNS, "rect");
   maskRect.setAttribute("x", location.j.toString());
   maskRect.setAttribute("y", location.i.toString());
   maskRect.setAttribute("width", "1");
@@ -683,13 +685,13 @@ function highlightSelectedItem(location: Location, color: string) {
 
 function highlightStartFromSuggestion(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const highlight = document.createElementNS(svgNS, "g");
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
   const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
 
-  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  const circle = document.createElementNS(svgNS, "circle");
   circle.setAttribute("cx", circleCenter.x.toString());
   circle.setAttribute("cy", circleCenter.y.toString());
   circle.setAttribute("r", circleRadius.toString());
@@ -697,9 +699,9 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   circle.setAttribute("stroke", "#fbbf24");
   circle.setAttribute("stroke-width", "0.023");
 
-  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  const mask = document.createElementNS(svgNS, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
-  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const maskRect = document.createElementNS(svgNS, "rect");
   maskRect.setAttribute("x", location.j.toString());
   maskRect.setAttribute("y", location.i.toString());
   maskRect.setAttribute("width", "1");
@@ -720,23 +722,23 @@ function highlightStartFromSuggestion(location: Location, color: string) {
 
 function highlightDestinationItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const highlight = document.createElementNS(svgNS, "g");
   highlight.style.pointerEvents = "none";
 
   const circleRadius = 0.56;
   const circleCenter = { x: location.j + 0.5, y: location.i + 0.5 };
 
-  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const rect = document.createElementNS(svgNS, "rect");
   rect.setAttribute("x", location.j.toString());
   rect.setAttribute("y", location.i.toString());
   rect.setAttribute("width", "1");
   rect.setAttribute("height", "1");
   rect.setAttribute("fill", color);
 
-  const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+  const mask = document.createElementNS(svgNS, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
 
-  const maskRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const maskRect = document.createElementNS(svgNS, "rect");
   maskRect.setAttribute("x", location.j.toString());
   maskRect.setAttribute("y", location.i.toString());
   maskRect.setAttribute("width", "1");
@@ -744,7 +746,7 @@ function highlightDestinationItem(location: Location, color: string) {
   maskRect.setAttribute("fill", "white");
   mask.appendChild(maskRect);
 
-  const maskCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  const maskCircle = document.createElementNS(svgNS, "circle");
   maskCircle.setAttribute("cx", circleCenter.x.toString());
   maskCircle.setAttribute("cy", circleCenter.y.toString());
   maskCircle.setAttribute("r", circleRadius.toString());
@@ -763,22 +765,22 @@ export function drawTrace(trace: Trace) {
   const from = inBoardCoordinates(trace.from);
   const to = inBoardCoordinates(trace.to);
 
-  const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+  const gradient = document.createElementNS(svgNS, "linearGradient");
   gradient.setAttribute("id", `trace-gradient-${from.toString()}-${to.toString()}`);
   const colors = getTraceColors();
 
-  const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+  const stop1 = document.createElementNS(svgNS, "stop");
   stop1.setAttribute("offset", "0%");
   stop1.setAttribute("stop-color", colors[1]);
   gradient.appendChild(stop1);
 
-  const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+  const stop2 = document.createElementNS(svgNS, "stop");
   stop2.setAttribute("offset", "100%");
   stop2.setAttribute("stop-color", colors[0]);
   gradient.appendChild(stop2);
   board.appendChild(gradient);
 
-  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const rect = document.createElementNS(svgNS, "rect");
   const fromCenter = { x: from.j + 0.5, y: from.i + 0.5 };
   const toCenter = { x: to.j + 0.5, y: to.i + 0.5 };
   const dx = toCenter.x - fromCenter.x;
@@ -830,7 +832,7 @@ function getTraceColors(): string[] {
 
 function addWaves(location: Location) {
   location = inBoardCoordinates(location);
-  const wavesSquareElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const wavesSquareElement = document.createElementNS(svgNS, "g");
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
   wavesSquareElement.setAttribute("opacity", "0.5");
   board.appendChild(wavesSquareElement);
@@ -850,14 +852,14 @@ function getWavesFrame(location: Location, frameIndex: number) {
   const key = location.toString() + frameIndex.toString();
   if (!wavesFrames[key]) {
     if (frameIndex == 0) {
-      const frame = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      const frame = document.createElementNS(svgNS, "g");
       for (let i = 0; i < 10; i++) {
         const width = (Math.floor(Math.random() * 4) + 3) * pixel;
         const x = Math.random() * (1 - width);
         const y = pixel * (2 + i * 3);
         const baseColor = i % 2 == 0 ? "#6666FF" : "#00FCFF";
 
-        const baseBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        const baseBottomRect = document.createElementNS(svgNS, "rect");
         baseBottomRect.setAttribute("x", x.toString());
         baseBottomRect.setAttribute("y", y.toString());
         baseBottomRect.setAttribute("width", width.toString());
@@ -865,7 +867,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
         baseBottomRect.setAttribute("fill", baseColor);
         baseBottomRect.setAttribute("class", "base-bottom-rect");
 
-        const slidingBottomRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        const slidingBottomRect = document.createElementNS(svgNS, "rect");
         slidingBottomRect.setAttribute("x", (x + width).toString());
         slidingBottomRect.setAttribute("y", y.toString());
         slidingBottomRect.setAttribute("width", "0");
@@ -873,7 +875,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
         slidingBottomRect.setAttribute("fill", "#030DF4");
         slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
 
-        const slidingTopRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        const slidingTopRect = document.createElementNS(svgNS, "rect");
         slidingTopRect.setAttribute("x", (x + width).toString());
         slidingTopRect.setAttribute("y", (y - pixel).toString());
         slidingTopRect.setAttribute("width", "0");
@@ -930,6 +932,10 @@ function getWavesFrame(location: Location, frameIndex: number) {
   return wavesFrames[key];
 }
 
+function setImage(element: SVGElement, data: string) {
+  element.setAttributeNS("http://www.w3.org/1999/xlink", "href", `data:image/webp;base64,${data}`);
+}
+
 function inBoardCoordinates(location: Location): Location {
   if (isFlipped) {
     return new Location(12 - (location.i + 1), location.j);
@@ -946,27 +952,27 @@ const isDesktopSafari = (() => {
 })();
 
 const sparkle = (() => {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const svg = document.createElementNS(svgNS, "svg");
   svg.setAttribute("width", "3");
   svg.setAttribute("height", "3");
   svg.setAttribute("viewBox", "0 0 3 3");
   svg.setAttribute("fill", "none");
 
-  const rect1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const rect1 = document.createElementNS(svgNS, "rect");
   rect1.setAttribute("y", "1");
   rect1.setAttribute("width", "3");
   rect1.setAttribute("height", "1");
   rect1.setAttribute("fill", "#FEFEFE");
   svg.appendChild(rect1);
 
-  const rect2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const rect2 = document.createElementNS(svgNS, "rect");
   rect2.setAttribute("x", "1");
   rect2.setAttribute("width", "1");
   rect2.setAttribute("height", "3");
   rect2.setAttribute("fill", "#FEFEFE");
   svg.appendChild(rect2);
 
-  const rect3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  const rect3 = document.createElementNS(svgNS, "rect");
   rect3.setAttribute("x", "1");
   rect3.setAttribute("y", "1");
   rect3.setAttribute("width", "1");
