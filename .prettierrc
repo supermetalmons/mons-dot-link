@@ -5,8 +5,8 @@
     "htmlWhitespaceSensitivity": "css",
     "insertPragma": false,
     "singleAttributePerLine": false,
-    "bracketSameLine": false,
-    "jsxBracketSameLine": false,
+    "bracketSameLine": true,
+    "jsxBracketSameLine": true,
     "jsxSingleQuote": false,
     "proseWrap": "preserve",
     "quoteProps": "as-needed",
@@ -19,5 +19,5 @@
     "embeddedLanguageFormatting": "auto",
     "vueIndentScriptAndStyle": false,
     "parser": "typescript",
-    "printWidth": 699
+    "printWidth": 6999
   }

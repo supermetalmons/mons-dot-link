@@ -1,11 +1,11 @@
 import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
-import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./models";
-import { colors } from "./colors";
-import { isModernAndPowerful } from "./page-tuning";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/models";
+import { colors } from "./helpers/colors";
+import { isModernAndPowerful } from "./helpers/page-tuning";
 import { Color as ColorModel, MonKind, ItemModelKind, ItemModel, SquareModel, ManaKind, SquareModelKind } from "mons-web";
-import { playSounds } from "./sounds";
+import { playSounds } from "./helpers/sounds";
 
-const assets = (await import("./assets")).assets;
+const assets = (await import("./helpers/assets")).assets;
 const board = document.getElementById("monsboard");
 const highlightsLayer = document.getElementById("highlightsLayer");
 const itemsLayer = document.getElementById("itemsLayer");
@@ -42,7 +42,7 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-const emojis = (await import("./emojis")).emojis;
+const emojis = (await import("./helpers/emojis")).emojis;
 
 export function updateMoveStatus(color: ColorModel, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
@@ -583,7 +583,7 @@ function createSparklingContainer(location: Location): SVGElement {
 function createSparkleParticle(location: Location, container: SVGElement, animating: boolean = true) {
   const particle = sparkle.cloneNode(true) as SVGElement;
 
-  const y = (location.i + Math.random());
+  const y = location.i + Math.random();
   particle.setAttribute("x", (location.j + Math.random()).toString());
   particle.setAttribute("y", y.toString());
   const opacity = 0.3 + 0.42 * Math.random();
@@ -610,8 +610,8 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
       return;
     }
 
-    particle.setAttribute("y", (y - velocity * timeDelta / 1000).toString());
-    particle.setAttribute("opacity", Math.max(0, (opacity - 0.15 * timeDelta / 1000)).toString());
+    particle.setAttribute("y", (y - (velocity * timeDelta) / 1000).toString());
+    particle.setAttribute("opacity", Math.max(0, opacity - (0.15 * timeDelta) / 1000).toString());
     requestAnimationFrame(animateParticle);
   }
 
