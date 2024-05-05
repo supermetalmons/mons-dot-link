@@ -22,6 +22,22 @@ Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
+const inviteButton = document.querySelector('.plus-button');
+
+export function createInvite() {
+  console.log("yo");
+  signIn();
+}
+
+if (inviteButton) {
+  inviteButton.addEventListener('click', createInvite);
+}
+
+async function signIn() {
+  const firebaseConnection = (await import("./connection")).firebaseConnection;
+  firebaseConnection.signIn();
+}
+
 export function isPlayerSideTurn(): boolean {
   return game.active_color() == MonsWeb.Color.White;
 }

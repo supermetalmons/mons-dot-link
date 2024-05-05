@@ -11,6 +11,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
+    "firebase": "^10.11.1",
     "mons-web": "^0.1.16"
   }
 }
