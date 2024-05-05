@@ -28,6 +28,11 @@ export function setupPage() {
 }
 
 function didClickInviteButton() {
+  processSignIn();
+
+  const newGameId = generateNewGameId();
+  updatePath(newGameId);
+
   if (inviteButton) {
     inviteButton.innerHTML = "wip";
     setTimeout(() => {
@@ -47,8 +52,8 @@ function processSignIn() {
 
 }
 
-function updatePath() {
-  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
+function updatePath(newGameId: string) {
+  const newPath = `/${generateNewGameId()}`;
   history.pushState({ path: newPath }, "", newPath);
 }
 
@@ -98,4 +103,13 @@ function supportsCharacter(character: string): boolean {
   const characterWidth: number = testElement.clientWidth;
   document.body.removeChild(testElement);
   return initialWidth !== characterWidth;
+}
+
+export function generateNewGameId(): string {
+  const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let id = "";
+  for (let i = 0; i < 10; i++) {
+    id += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+  return id;
 }
