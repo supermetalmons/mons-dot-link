@@ -3,7 +3,7 @@ import * as SVG from "./helpers/svg";
 import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
-import { isDesktopSafari, isModernAndPowerful } from "./helpers/browser";
+import { isDesktopSafari, isModernAndPowerful } from "./helpers/page-setup";
 import { playSounds } from "./helpers/sounds";
 
 const assets = (await import("./helpers/assets")).assets;

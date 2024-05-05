@@ -1,4 +1,22 @@
-export function tunePage() {
+const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
+const inviteButton = document.querySelector(".invite-button");
+const connectWalletButton = document.querySelector(".connect-wallet-button");
+
+export function setupPage() {
+  if (initialPath == "") {
+    // TODO: create invite flow
+  } else {
+    // TODO: connect to the existing game
+  }
+
+  if (inviteButton) {
+    inviteButton.addEventListener("click", didClickInviteButton);
+  }
+  
+  if (connectWalletButton) {
+    connectWalletButton.addEventListener("click", didClickConnectWalletButton);
+  }
+
   if (!isModernAndPowerful) {
     ["github", "app store", "steam", "x"].forEach((key: string) => {
       const link: HTMLAnchorElement | null = document.querySelector(`a[data-key="${key}"]`);
@@ -25,6 +43,32 @@ export const isModernAndPowerful = (() => {
   }
   return true;
 })();
+
+function didClickInviteButton() {
+  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
+  history.pushState({ path: newPath }, "", newPath);
+  signIn();
+  if (inviteButton) {
+    inviteButton.innerHTML = "wip";
+    setTimeout(() => {
+      inviteButton.innerHTML = "+ new invite link";
+    }, 699);
+  }
+}
+
+function didClickConnectWalletButton() {
+  if (connectWalletButton) {
+    connectWalletButton.innerHTML = "soon";
+    setTimeout(() => {
+      connectWalletButton.innerHTML = "connect wallet";
+    }, 699);
+  }
+}
+
+async function signIn() {
+  const firebaseConnection = (await import("../connection")).firebaseConnection;
+  firebaseConnection.signIn();
+}
 
 function supportsCharacter(character: string): boolean {
   const testElement: HTMLSpanElement = document.createElement("span");

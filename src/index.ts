@@ -3,11 +3,10 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { tunePage } from "./helpers/browser";
+import { setupPage } from "./helpers/page-setup";
 
-const initialPath = window.location.pathname.replace(/^\/|\/$/g, ""); // TODO: setup based on the initial path
+setupPage();
 
-tunePage();
 Board.setupBoard();
 
 await initMonsWeb();
@@ -23,43 +22,6 @@ locationsWithContent.forEach((loc) => {
 Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
-
-const inviteButton = document.querySelector(".invite-button");
-const connectWalletButton = document.querySelector(".connect-wallet-button");
-
-export function didClickInviteButton() {
-  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
-  history.pushState({ path: newPath }, "", newPath);
-  signIn();
-  if (inviteButton) {
-    inviteButton.innerHTML = "wip";
-    setTimeout(() => {
-      inviteButton.innerHTML = "+ new invite link";
-    }, 699);
-  }
-}
-
-export function didClickConnectWalletButton() {
-  if (connectWalletButton) {
-    connectWalletButton.innerHTML = "soon";
-    setTimeout(() => {
-      connectWalletButton.innerHTML = "connect wallet";
-    }, 699);
-  }
-}
-
-if (inviteButton) {
-  inviteButton.addEventListener("click", didClickInviteButton);
-}
-
-if (connectWalletButton) {
-  connectWalletButton.addEventListener("click", didClickConnectWalletButton);
-}
-
-async function signIn() {
-  const firebaseConnection = (await import("./connection")).firebaseConnection;
-  firebaseConnection.signIn();
-}
 
 export function isPlayerSideTurn(): boolean {
   return game.active_color() == MonsWeb.Color.White;
