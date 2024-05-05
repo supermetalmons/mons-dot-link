@@ -266,9 +266,13 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       Board.removeHighlights();
 
+      const didUpdate = new Set<string>();
       for (const location of locationsToUpdate) {
-        updateLocation(location);
-        // TODO: do not update twice – keep a list of uniques
+        const key = location.toString();
+        if (!didUpdate.has(key)) {
+          didUpdate.add(key);
+          updateLocation(location);
+        }
       }
 
       Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
