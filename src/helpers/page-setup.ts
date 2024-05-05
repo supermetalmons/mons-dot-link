@@ -12,7 +12,7 @@ export function setupPage() {
   if (inviteButton) {
     inviteButton.addEventListener("click", didClickInviteButton);
   }
-  
+
   if (connectWalletButton) {
     connectWalletButton.addEventListener("click", didClickConnectWalletButton);
   }
@@ -27,33 +27,29 @@ export function setupPage() {
   }
 }
 
-export const isDesktopSafari = (() => {
-  const userAgent = window.navigator.userAgent;
-  const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
-  const isIos = /iPad|iPhone|iPod/.test(userAgent);
-  return isSafari && !isIos;
-})();
-
-export const isModernAndPowerful = (() => {
-  if (isDesktopSafari) { return true; }
-  for (const char of ["⚔︎", "𝕏", "♡", "☆", "↓"]) {
-    if (!supportsCharacter(char)) {
-      return false;
-    }
-  }
-  return true;
-})();
-
 function didClickInviteButton() {
-  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
-  history.pushState({ path: newPath }, "", newPath);
-  signIn();
   if (inviteButton) {
     inviteButton.innerHTML = "wip";
     setTimeout(() => {
       inviteButton.innerHTML = "+ new invite link";
     }, 699);
   }
+}
+
+function processSignIn() {
+  signIn().then((uid) => {
+    if (uid) {
+      console.log("signed in with uid:", uid);
+    } else {
+      console.log("failed to sign in");
+    }
+  });
+
+}
+
+function updatePath() {
+  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
+  history.pushState({ path: newPath }, "", newPath);
 }
 
 function didClickConnectWalletButton() {
@@ -65,10 +61,29 @@ function didClickConnectWalletButton() {
   }
 }
 
-async function signIn() {
+async function signIn(): Promise<string | undefined> {
   const firebaseConnection = (await import("../connection")).firebaseConnection;
-  firebaseConnection.signIn();
+  return firebaseConnection.signIn();
 }
+
+export const isDesktopSafari = (() => {
+  const userAgent = window.navigator.userAgent;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+  const isIos = /iPad|iPhone|iPod/.test(userAgent);
+  return isSafari && !isIos;
+})();
+
+export const isModernAndPowerful = (() => {
+  if (isDesktopSafari) {
+    return true;
+  }
+  for (const char of ["⚔︎", "𝕏", "♡", "☆", "↓"]) {
+    if (!supportsCharacter(char)) {
+      return false;
+    }
+  }
+  return true;
+})();
 
 function supportsCharacter(character: string): boolean {
   const testElement: HTMLSpanElement = document.createElement("span");
