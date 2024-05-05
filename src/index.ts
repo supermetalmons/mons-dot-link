@@ -5,6 +5,8 @@ import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
 import { tunePage } from "./helpers/browser";
 
+const initialPath = window.location.pathname.replace(/^\/|\/$/g, ""); // TODO: setup based on the initial path
+
 tunePage();
 Board.setupBoard();
 
@@ -26,7 +28,8 @@ const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
 
 export function didClickInviteButton() {
-  console.log("yo");
+  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
+  history.pushState({ path: newPath }, "", newPath);
   signIn();
   if (inviteButton) {
     inviteButton.innerHTML = "wip";
@@ -37,7 +40,6 @@ export function didClickInviteButton() {
 }
 
 export function didClickConnectWalletButton() {
-  console.log("yo");
   if (connectWalletButton) {
     connectWalletButton.innerHTML = "soon";
     setTimeout(() => {
