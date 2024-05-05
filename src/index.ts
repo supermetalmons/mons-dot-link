@@ -5,6 +5,8 @@ import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
 import { setupPage } from "./helpers/page-setup";
 
+const isPlayingOnlineGame = false; // TODO: setup
+
 setupPage();
 
 Board.setupBoard();
@@ -278,7 +280,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
-      if (opponentsTurn) {
+      if (opponentsTurn && isPlayingOnlineGame) {
         for (const trace of traces) {
           Board.drawTrace(trace);
         }
