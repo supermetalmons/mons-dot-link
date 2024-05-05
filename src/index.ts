@@ -30,7 +30,7 @@ export function createInvite() {
   if (inviteButton) {
     inviteButton.innerHTML = "wip";
     setTimeout(() => {
-      inviteButton.innerHTML = "+";
+      inviteButton.innerHTML = "+ new invite link";
     }, 699);
   }
 }
