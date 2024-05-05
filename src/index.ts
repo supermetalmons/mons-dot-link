@@ -22,15 +22,21 @@ Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
-const inviteButton = document.querySelector('.plus-button');
+const inviteButton = document.querySelector(".plus-button");
 
 export function createInvite() {
   console.log("yo");
   signIn();
+  if (inviteButton) {
+    inviteButton.innerHTML = "wip";
+    setTimeout(() => {
+      inviteButton.innerHTML = "+";
+    }, 699);
+  }
 }
 
 if (inviteButton) {
-  inviteButton.addEventListener('click', createInvite);
+  inviteButton.addEventListener("click", createInvite);
 }
 
 async function signIn() {
