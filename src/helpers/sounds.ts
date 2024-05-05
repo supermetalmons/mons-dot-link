@@ -60,7 +60,7 @@ export function playSounds(sounds: Sound[]) {
     }
 
     if (!audioCache[name]) {
-      audioCache[name] = new Audio(`./assets/sounds/${name}.wav`);
+      audioCache[name] = new Audio(`/assets/sounds/${name}.wav`);
     }
 
     audioCache[name].play();

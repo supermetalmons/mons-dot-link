@@ -22,6 +22,28 @@ Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
+const inviteButton = document.querySelector(".plus-button");
+
+export function createInvite() {
+  console.log("yo");
+  signIn();
+  if (inviteButton) {
+    inviteButton.innerHTML = "wip";
+    setTimeout(() => {
+      inviteButton.innerHTML = "+";
+    }, 699);
+  }
+}
+
+if (inviteButton) {
+  inviteButton.addEventListener("click", createInvite);
+}
+
+async function signIn() {
+  const firebaseConnection = (await import("./connection")).firebaseConnection;
+  firebaseConnection.signIn();
+}
+
 export function isPlayerSideTurn(): boolean {
   return game.active_color() == MonsWeb.Color.White;
 }
@@ -266,9 +288,13 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       Board.removeHighlights();
 
+      const didUpdate = new Set<string>();
       for (const location of locationsToUpdate) {
-        updateLocation(location);
-        // TODO: do not update twice – keep a list of uniques
+        const key = location.toString();
+        if (!didUpdate.has(key)) {
+          didUpdate.add(key);
+          updateLocation(location);
+        }
       }
 
       Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
