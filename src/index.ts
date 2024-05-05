@@ -22,9 +22,10 @@ Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
 
-const inviteButton = document.querySelector(".plus-button");
+const inviteButton = document.querySelector(".invite-button");
+const connectWalletButton = document.querySelector(".connect-wallet-button");
 
-export function createInvite() {
+export function didClickInviteButton() {
   console.log("yo");
   signIn();
   if (inviteButton) {
@@ -35,8 +36,22 @@ export function createInvite() {
   }
 }
 
+export function didClickConnectWalletButton() {
+  console.log("yo");
+  if (connectWalletButton) {
+    connectWalletButton.innerHTML = "soon";
+    setTimeout(() => {
+      connectWalletButton.innerHTML = "connect wallet";
+    }, 699);
+  }
+}
+
 if (inviteButton) {
-  inviteButton.addEventListener("click", createInvite);
+  inviteButton.addEventListener("click", didClickInviteButton);
+}
+
+if (connectWalletButton) {
+  connectWalletButton.addEventListener("click", didClickConnectWalletButton);
 }
 
 async function signIn() {
