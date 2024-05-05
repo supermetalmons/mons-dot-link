@@ -33,5 +33,6 @@ module.exports = {
     compress: true,
     port: 9000,
     watchFiles: ['src/**/*', './index.html'],
+    historyApiFallback: true,
   },
 };
