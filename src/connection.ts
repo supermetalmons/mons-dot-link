@@ -7,7 +7,7 @@ class FirebaseConnection {
 
   constructor() {
     const firebaseConfig = {
-      apiKey: "AIzaSyC709PHiVSQqIvCqaJwx3h9Mg55ysgBrRg",
+      apiKey: process.env.MONS_FIREBASE_API_KEY || "AIzaSyC709PHiVSQqIvCqaJwx3h9Mg55ysgBrRg",
       authDomain: "mons-e34e5.firebaseapp.com",
       databaseURL: "https://mons-e34e5-default-rtdb.firebaseio.com",
       projectId: "mons-e34e5",
@@ -18,25 +18,19 @@ class FirebaseConnection {
 
     this.app = initializeApp(firebaseConfig);
     this.auth = getAuth(this.app);
-
-    onAuthStateChanged(this.auth, (user) => {
-      if (user) {
-        console.log(user.uid);
-      } else {
-        console.log("no user");
-      }
-    });
   }
 
-  public signIn() {
-    signInAnonymously(this.auth)
-      .then(() => {
-        console.log("did sign in");
-        console.log(this.auth.currentUser.uid);
-      })
-      .catch((error) => {
-        console.log("failed to sign in");
-      });
+  public signIn(): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      signInAnonymously(this.auth)
+        .then(() => {
+          const uid = this.auth.currentUser?.uid;
+          resolve(uid);
+        })
+        .catch(() => {
+          resolve(undefined);
+        });
+    });
   }
 }
 

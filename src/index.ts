@@ -3,9 +3,10 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { tunePage } from "./helpers/browser";
+import { setupPage } from "./helpers/page-setup";
 
-tunePage();
+setupPage();
+
 Board.setupBoard();
 
 await initMonsWeb();
@@ -21,28 +22,6 @@ locationsWithContent.forEach((loc) => {
 Board.setupGameInfoElements();
 
 var currentInputs: Location[] = [];
-
-const inviteButton = document.querySelector(".plus-button");
-
-export function createInvite() {
-  console.log("yo");
-  signIn();
-  if (inviteButton) {
-    inviteButton.innerHTML = "wip";
-    setTimeout(() => {
-      inviteButton.innerHTML = "+";
-    }, 699);
-  }
-}
-
-if (inviteButton) {
-  inviteButton.addEventListener("click", createInvite);
-}
-
-async function signIn() {
-  const firebaseConnection = (await import("./connection")).firebaseConnection;
-  firebaseConnection.signIn();
-}
 
 export function isPlayerSideTurn(): boolean {
   return game.active_color() == MonsWeb.Color.White;

@@ -119,23 +119,37 @@
 			user-select: none;
 			touch-action: none;
 		}
-		.plus-button {
+		.invite-button {
 			position: absolute;
-			top: 10px;
-			left: 10px;
-			width: 30px;
-			height: 30px;
+			top: 4pt;
+			left: 10pt;
+			width: 130pt;
+			height: 23pt;
 			background-color: transparent;
-			color: gray;
+			color: rgba(128, 128, 128, 0.42);
 			border: none;
-			border-radius: 15px;
-			font-size: 20px;
+			font-size: 12pt;
 			cursor: pointer;
+			text-align: left;
+		}
+		.connect-wallet-button {
+			position: absolute;
+			top: 4pt;
+			right: 10pt;
+			width: 130pt;
+			height: 23pt;
+			background-color: transparent;
+			color: rgba(128, 128, 128, 0.3);
+			border: none;
+			font-size: 12pt;
+			cursor: pointer;
+			text-align: right;
 		}
 	</style>
 </head>
 <body>
-	<button class="plus-button">+</button>
+	<button class="invite-button">+ new invite link</button>
+	<button class="connect-wallet-button">connect wallet</button>
 	<svg xmlns="http://www.w3.org/2000/svg" class="board-svg" viewBox="0 0 11 13.1" shape-rendering="crispEdges" style="touch-action: none; user-select: none; -webkit-touch-callout: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">
 	    <defs>
 	        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
