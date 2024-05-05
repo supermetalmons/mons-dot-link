@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/index.ts',
@@ -35,4 +36,10 @@ module.exports = {
     watchFiles: ['src/**/*', './index.html'],
     historyApiFallback: true,
   },
+
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.MONS_FIREBASE_API_KEY': JSON.stringify(process.env.MONS_FIREBASE_API_KEY || false)
+    })
+  ],
 };

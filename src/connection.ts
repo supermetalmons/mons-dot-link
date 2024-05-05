@@ -7,7 +7,7 @@ class FirebaseConnection {
 
   constructor() {
     const firebaseConfig = {
-      apiKey: "AIzaSyC709PHiVSQqIvCqaJwx3h9Mg55ysgBrRg",
+      apiKey: process.env.MONS_FIREBASE_API_KEY || "AIzaSyC709PHiVSQqIvCqaJwx3h9Mg55ysgBrRg",
       authDomain: "mons-e34e5.firebaseapp.com",
       databaseURL: "https://mons-e34e5-default-rtdb.firebaseio.com",
       projectId: "mons-e34e5",
