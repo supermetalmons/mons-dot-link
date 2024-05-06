@@ -323,7 +323,28 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
+let didConnect = false;
+let whiteProcessedMovesCount = 0;
+let blackProcessedMovesCount = 0;
+
+function didConnectTo(opponentMatch: any) {
+  // TODO: implement
+  // TODO: set opponent's emoji
+  // TODO: set player's side based on color
+  // TODO: process inputs if there already were some for some reason
+
+  // TODO: reset board
+}
+
 export function didUpdateOpponentMatch(match: any) {
+  if (!didConnect) {
+    didConnectTo(match);
+    didConnect = true;
+    return;
+  }
+
+
+
   // TODO: implement
   console.log(`Match data updated:`, match.flatMovesString);
 }
