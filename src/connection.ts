@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, onValue, off } from "firebase/database";
 import { initialFen } from ".";
 
 class FirebaseConnection {
@@ -37,7 +37,7 @@ class FirebaseConnection {
 
   public createInvite(uid: string, inviteId: string) {
     const controllerVersion = 2;
-    const hostColor = "white"; // TODO: make it random
+    const hostColor = "black"; // TODO: make it random
     const emojiId = 1; // TODO: make it random
 
     const invite = {
@@ -71,6 +71,31 @@ class FirebaseConnection {
       .catch((error) => {
         console.error("Error creating player match:", error);
       });
+
+    const inviteRef = ref(db, `invites/${inviteId}`);
+    onValue(inviteRef, (snapshot: any) => {
+      const inviteData = snapshot.val();
+      if (inviteData && inviteData.guestId) {
+        console.log(`Guest ${inviteData.guestId} joined the invite ${inviteId}`);
+        this.observeMatch(inviteData.guestId, inviteId);
+        off(inviteRef);
+      }
+    });
+  }
+
+  observeMatch(playerId: string, matchId: string) {
+    const db = getDatabase(this.app);
+    const matchRef = ref(db, `players/${playerId}/matches/${matchId}`);
+    onValue(
+      matchRef,
+      (snapshot) => {
+        const matchData = snapshot.val();
+        console.log(`Match data updated:`, matchData);
+      },
+      (error) => {
+        console.error("Error observing match data:", error);
+      }
+    );
   }
 }
 

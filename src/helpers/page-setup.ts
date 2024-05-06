@@ -60,7 +60,9 @@ function didClickInviteButton() {
 }
 
 function writeInviteLinkToClipboard() {
-  navigator.clipboard.writeText(window.location.origin + '/' + newGameId);
+  // const link = window.location.origin + '/' + newGameId;
+  const link = 'https://mons.link/' + newGameId; // TODO: tmp hardcode for development
+  navigator.clipboard.writeText(link);
 }
 
 function createNewMatchInvite() {
