@@ -1,9 +1,13 @@
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
+const isCreateNewInviteFlow = initialPath == "";
+
+let newGameId = "";
+let didCreateNewGameInvite = false;
 
 export function setupPage() {
-  if (initialPath == "") {
+  if (isCreateNewInviteFlow) {
     // TODO: create invite flow
   } else {
     // TODO: connect to the existing game
@@ -28,32 +32,53 @@ export function setupPage() {
 }
 
 function didClickInviteButton() {
-  processSignIn();
+  if (!inviteButton) { return; }
 
-  const newGameId = generateNewGameId();
-  updatePath(newGameId);
+  if (didCreateNewGameInvite) {
+    writeInviteLinkToClipboard();
+    showDidCopyInviteLink();
+  } else {
+    newGameId = generateNewGameId();
+    writeInviteLinkToClipboard();
 
-  if (inviteButton) {
-    inviteButton.innerHTML = "wip";
-    setTimeout(() => {
-      inviteButton.innerHTML = "+ new invite link";
-    }, 699);
+    inviteButton.innerHTML = "creating an invite...";
+    (inviteButton as HTMLButtonElement).disabled = true;
+    createNewMatchInvite();
   }
 }
 
-function processSignIn() {
+function writeInviteLinkToClipboard() {
+  navigator.clipboard.writeText(window.location.origin + '/' + newGameId);
+}
+
+function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {
       console.log("signed in with uid:", uid);
+      // TODO: create an invite entry after a sign in
+      didCreateNewGameInvite = true;
+      updatePath(newGameId);
+      showDidCopyInviteLink();
     } else {
+      // TODO: show message that invite was not created
       console.log("failed to sign in");
     }
   });
+}
 
+function showDidCopyInviteLink() {
+  if (inviteButton) {
+    inviteButton.innerHTML = "invite link is copied ✓";
+    (inviteButton as HTMLButtonElement).disabled = true;
+    setTimeout(() => {
+      inviteButton.innerHTML = "copy invite link";
+      (inviteButton as HTMLButtonElement).disabled = false;
+    }, 1300);
+  }
 }
 
 function updatePath(newGameId: string) {
-  const newPath = `/${generateNewGameId()}`;
+  const newPath = `/${newGameId}`;
   history.pushState({ path: newPath }, "", newPath);
 }
 
