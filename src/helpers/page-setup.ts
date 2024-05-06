@@ -10,6 +10,13 @@ let newGameId = "";
 let didCreateNewGameInvite = false;
 let firebaseConnection: any;
 
+export function updateStatus(text: string) {
+  if (text == "") {
+    statusText.innerHTML = "";
+    (statusText as HTMLElement).style.display = "none";
+  }
+}
+
 export function setupPage() {
   if (isCreateNewInviteFlow) {
     // TODO: create invite flow
@@ -72,7 +79,8 @@ function createNewMatchInvite() {
       didCreateNewGameInvite = true;
       updatePath(newGameId);
       statusText.innerHTML = "waiting for someone to join";
-      showDidCopyInviteLink();
+      inviteButton.innerHTML = "copy invite link";
+      (inviteButton as HTMLButtonElement).disabled = false;
     } else {
       // TODO: show message that invite was not created
       console.log("failed to sign in");

@@ -3,21 +3,22 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { setupPage } from "./helpers/page-setup";
+import { setupPage, updateStatus } from "./helpers/page-setup";
 
-const isPlayingOnlineGame = false; // TODO: setup
+let isPlayingOnlineGame = false; // TODO: setup
 
 setupPage();
 
 Board.setupBoard();
 
 await initMonsWeb();
-const game = MonsWeb.MonsGameModel.new();
+
+let playerSideColor = MonsWeb.Color.White;
+
+let game = MonsWeb.MonsGameModel.new();
 export const initialFen = game.fen();
 
-const locationsWithContent = game.locations_with_content();
-
-locationsWithContent.forEach((loc) => {
+game.locations_with_content().forEach((loc) => {
   const location = new Location(loc.i, loc.j);
   updateLocation(location);
 });
@@ -38,33 +39,7 @@ export function didClickSquare(location: Location) {
   processInput(AssistedInputKind.None, InputModifier.None, location);
 }
 
-function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  const opponentsTurn = game.active_color() == MonsWeb.Color.Black;
-
-  if (inputLocation) {
-    currentInputs.push(inputLocation);
-  }
-
-  const gameInput = currentInputs.map((input) => new MonsWeb.Location(input.i, input.j));
-  let output: MonsWeb.OutputModel;
-  if (inputModifier != InputModifier.None) {
-    let modifier: MonsWeb.Modifier;
-    switch (inputModifier) {
-      case InputModifier.Bomb:
-        modifier = MonsWeb.Modifier.SelectBomb;
-        break;
-      case InputModifier.Potion:
-        modifier = MonsWeb.Modifier.SelectPotion;
-        break;
-      case InputModifier.Cancel:
-        currentInputs = [];
-        return;
-    }
-    output = game.process_input(gameInput, modifier);
-  } else {
-    output = game.process_input(gameInput);
-  }
-
+function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assistedInputKind: AssistedInputKind, inputLocation?: Location) {
   switch (output.kind) {
     case MonsWeb.OutputModelKind.InvalidInput:
       const shouldTryToReselect = assistedInputKind == AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
@@ -164,7 +139,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       const events = output.events();
       let locationsToUpdate: Location[] = [];
       let mightKeepHighlightOnLocation: Location | undefined;
-      let mustReleaseHighlight = false;
+      let mustReleaseHighlight = isRemoteInput;
       let sounds: Sound[] = [];
       let traces: Trace[] = [];
 
@@ -281,13 +256,16 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
-      if (opponentsTurn && isPlayingOnlineGame) {
+      if (isRemoteInput) {
         for (const trace of traces) {
           Board.drawTrace(trace);
         }
       }
 
-      playSounds(sounds);
+      if (!isRemoteInput) {
+        // TODO: learn to play sounds for remote inputs
+        playSounds(sounds);
+      }
 
       if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
@@ -295,6 +273,40 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       break;
   }
+}
+
+function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
+  if (isPlayingOnlineGame) {
+    if (game.active_color() != playerSideColor) {
+      return;
+    }
+  }
+
+  if (inputLocation) {
+    currentInputs.push(inputLocation);
+  }
+
+  const gameInput = currentInputs.map((input) => new MonsWeb.Location(input.i, input.j));
+  let output: MonsWeb.OutputModel;
+  if (inputModifier != InputModifier.None) {
+    let modifier: MonsWeb.Modifier;
+    switch (inputModifier) {
+      case InputModifier.Bomb:
+        modifier = MonsWeb.Modifier.SelectBomb;
+        break;
+      case InputModifier.Potion:
+        modifier = MonsWeb.Modifier.SelectPotion;
+        break;
+      case InputModifier.Cancel:
+        currentInputs = [];
+        return;
+    }
+    output = game.process_input(gameInput, modifier);
+  } else {
+    output = game.process_input(gameInput);
+  }
+
+  applyOutput(output, false, assistedInputKind, inputLocation);
 }
 
 function updateLocation(location: Location) {
@@ -328,25 +340,70 @@ let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
 
 function didConnectTo(opponentMatch: any) {
+  updateStatus("");
+
+  playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+
   // TODO: implement
   // TODO: set opponent's emoji
   // TODO: set player's side based on color
   // TODO: process inputs if there already were some for some reason
+  // TODO: both sides moves should not work from now on
 
-  // TODO: reset board
+  // TODO: update game info controls
+
+  // TODO: invite button
+
+  Board.setBoardFlipped(opponentMatch.color == "white");
+
+  game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+  Board.resetForNewGame();
+  isPlayingOnlineGame = true;
+  currentInputs = []; // TODO: better recreate some game controller object completely
+
+  game.locations_with_content().forEach((loc) => {
+    const location = new Location(loc.i, loc.j);
+    updateLocation(location);
+  });
+}
+
+function getProcessedMovesCount(color: string): number {
+  return color == "white" ? whiteProcessedMovesCount : blackProcessedMovesCount;
+}
+
+function setProcessedMovesCountForColor(color: string, count: number) {
+  if (color == "white") {
+    whiteProcessedMovesCount = count;
+  } else {
+    blackProcessedMovesCount = count;
+  }
 }
 
 export function didUpdateOpponentMatch(match: any) {
+  console.log(`didUpdateOpponentMatch`, match);
+
   if (!didConnect) {
     didConnectTo(match);
     didConnect = true;
     return;
   }
 
+  for (let i = whiteProcessedMovesCount; i < match.movesFens.length; i++) {
+    const moveFen = match.movesFens[i];
+    const output = game.process_input_fen(moveFen);
+    applyOutput(output, true, AssistedInputKind.None);
+  }
 
+  setProcessedMovesCountForColor(match.color, match.movesFens.length);
 
-  // TODO: implement
-  console.log(`Match data updated:`, match.flatMovesString);
+  if (match.fen != game.fen()) {
+    // TODO: something is wrong, stop the game
+    console.log("fens do not match");
+  } else {
+    console.log("fens ok");
+  }
+
+  // TODO: handle surrendered match status  
 }
 
 

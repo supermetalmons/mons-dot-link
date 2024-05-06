@@ -95,7 +95,9 @@ class FirebaseConnection {
       matchRef,
       (snapshot) => {
         const matchData = snapshot.val();
-        didUpdateOpponentMatch(matchData);
+        if (matchData) {
+          didUpdateOpponentMatch(matchData);
+        }
       },
       (error) => {
         console.error("Error observing match data:", error);

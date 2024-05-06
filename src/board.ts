@@ -18,6 +18,10 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+export function setBoardFlipped(flipped: boolean) {
+  isFlipped = flipped;
+}
+
 let isFlipped = false;
 let traceIndex = 0;
 
@@ -45,6 +49,26 @@ const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("./helpers/emojis")).emojis;
+
+export function resetForNewGame() {
+  // TODO: reset game info controls as well
+  removeHighlights();
+  for (const key in items) {
+    const element = items[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete items[key];
+  }
+
+  for (const key in basesPlaceholders) {
+    const element = basesPlaceholders[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete basesPlaceholders[key];
+  }
+}
 
 export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
@@ -302,7 +326,9 @@ export async function setupGameInfoElements() {
           playSounds([Sound.Click]);
         }
 
-        if (!isModernAndPowerful) { return; }
+        if (!isModernAndPowerful) {
+          return;
+        }
 
         avatar.style.transition = "transform 0.3s";
         avatar.style.transform = "scale(1.8)";
@@ -317,7 +343,9 @@ export async function setupGameInfoElements() {
           playSounds([Sound.Click]);
         }
 
-        if (!isModernAndPowerful) { return; }
+        if (!isModernAndPowerful) {
+          return;
+        }
 
         if (isDesktopSafari) {
           const scale = 1.8;
@@ -603,14 +631,18 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
   SVG.setOpacity(particle, opacity);
   container.appendChild(particle);
 
-  if (!animating) { return; }
+  if (!animating) {
+    return;
+  }
 
   const velocity = (4 + 2 * Math.random()) * 0.01;
   const duration = Math.random() * 1000 + 2500;
   let startTime: number = null;
 
   function animateParticle(time: number) {
-    if (!startTime) { startTime = time; }
+    if (!startTime) {
+      startTime = time;
+    }
 
     let timeDelta = time - startTime;
     let progress = timeDelta / duration;
@@ -656,8 +688,8 @@ function highlightSelectedItem(location: Location, color: string) {
   highlight.style.pointerEvents = "none";
 
   const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
-  SVG.setFill(circle, color);  
-  
+  SVG.setFill(circle, color);
+
   const mask = document.createElementNS(SVG.ns, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
   const maskRect = document.createElementNS(SVG.ns, "rect");
@@ -678,7 +710,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
 
   const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
   SVG.setFill(circle, color);
-  
+
   circle.setAttribute("stroke", colors.startFromStroke);
   circle.setAttribute("stroke-width", "0.023");
 
@@ -730,7 +762,9 @@ function highlightDestinationItem(location: Location, color: string) {
 }
 
 function getTraceColors(): string[] {
-  if (traceIndex == 6) { traceIndex = 0; }
+  if (traceIndex == 6) {
+    traceIndex = 0;
+  }
 
   traceIndex += 1;
 
@@ -749,7 +783,9 @@ function addWaves(location: Location) {
 
   let frameIndex = 0;
   wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
-  if (!isModernAndPowerful) { return; }
+  if (!isModernAndPowerful) {
+    return;
+  }
   setInterval(() => {
     frameIndex = (frameIndex + 1) % 9;
     wavesSquareElement.innerHTML = "";
@@ -858,7 +894,7 @@ const sparkle = (() => {
   svg.appendChild(rect2);
 
   const rect3 = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(rect3, 1, 1, 1, 1);  
+  SVG.setFrame(rect3, 1, 1, 1, 1);
   SVG.setFill(rect3, colors.sparkleDark);
   svg.appendChild(rect3);
 
