@@ -18,6 +18,14 @@ export function setupPage() {
 
   if (inviteButton) {
     inviteButton.addEventListener("click", didClickInviteButton);
+    if (!isCreateNewInviteFlow) {
+      (inviteButton as HTMLButtonElement).disabled = true;
+      inviteButton.innerHTML = "loading...";
+      statusText.innerHTML = "getting mons game info";
+      // TODO: implement loading and connecting to the existing invite
+    } else {
+      inviteButton.innerHTML = "+ new invite link";
+    }
   }
 
   if (connectWalletButton) {
