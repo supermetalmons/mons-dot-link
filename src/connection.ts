@@ -32,6 +32,11 @@ class FirebaseConnection {
         });
     });
   }
+
+  public createInvite(id: string) {
+    console.log("yo will create invite", id);
+    // TODO: implement
+  }
 }
 
 export const firebaseConnection = new FirebaseConnection();

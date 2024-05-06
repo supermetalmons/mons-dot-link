@@ -8,6 +8,7 @@ const isCreateNewInviteFlow = initialPath == "";
 
 let newGameId = "";
 let didCreateNewGameInvite = false;
+let firebaseConnection: any;
 
 export function setupPage() {
   if (isCreateNewInviteFlow) {
@@ -66,7 +67,7 @@ function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {
       console.log("signed in with uid:", uid);
-      // TODO: create an invite entry after a sign in
+      firebaseConnection.createInvite(newGameId); // TODO: process create invite result
       didCreateNewGameInvite = true;
       updatePath(newGameId);
       statusText.innerHTML = "waiting for someone to join";
@@ -104,7 +105,7 @@ function didClickConnectWalletButton() {
 }
 
 async function signIn(): Promise<string | undefined> {
-  const firebaseConnection = (await import("../connection")).firebaseConnection;
+  firebaseConnection = (await import("../connection")).firebaseConnection;
   return firebaseConnection.signIn();
 }
 
