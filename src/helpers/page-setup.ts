@@ -1,6 +1,9 @@
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
+
 const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
+const statusText = document.querySelector(".status-text");
+
 const isCreateNewInviteFlow = initialPath == "";
 
 let newGameId = "";
@@ -58,6 +61,7 @@ function createNewMatchInvite() {
       // TODO: create an invite entry after a sign in
       didCreateNewGameInvite = true;
       updatePath(newGameId);
+      statusText.innerHTML = "waiting for someone to join";
       showDidCopyInviteLink();
     } else {
       // TODO: show message that invite was not created
