@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off } from "firebase/database";
-import { initialFen } from ".";
+import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from ".";
 
 class FirebaseConnection {
   private app;
@@ -20,6 +20,11 @@ class FirebaseConnection {
 
     this.app = initializeApp(firebaseConfig);
     this.auth = getAuth(this.app);
+  }
+
+  // TODO: should be aware of game id
+  public sendMove(moveFen: string, newBoardFen: string) {
+    // TODO: implement
   }
 
   public signIn(): Promise<string | undefined> {
@@ -90,7 +95,7 @@ class FirebaseConnection {
       matchRef,
       (snapshot) => {
         const matchData = snapshot.val();
-        console.log(`Match data updated:`, matchData);
+        didUpdateOpponentMatch(matchData);
       },
       (error) => {
         console.error("Error observing match data:", error);

@@ -322,3 +322,18 @@ function hasItemAt(location: Location): boolean {
     return false;
   }
 }
+
+export function didUpdateOpponentMatch(match: any) {
+  // TODO: implement
+  console.log(`Match data updated:`, match.flatMovesString);
+}
+
+
+export function didRecoverMyMatch(match: any) {
+  // TODO: implement
+  console.log(`Match data updated:`, match);
+}
+
+export function enterWatchOnlyMode() {
+  // TODO: implement
+}
