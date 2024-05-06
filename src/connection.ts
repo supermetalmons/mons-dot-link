@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
+import { initialFen } from ".";
 
 class FirebaseConnection {
   private app;
@@ -33,9 +35,42 @@ class FirebaseConnection {
     });
   }
 
-  public createInvite(id: string) {
-    console.log("yo will create invite", id);
-    // TODO: implement
+  public createInvite(uid: string, inviteId: string) {
+    const controllerVersion = 2;
+    const hostColor = "white"; // TODO: make it random
+    const emojiId = 1; // TODO: make it random
+
+    const invite = {
+      version: controllerVersion,
+      hostId: uid,
+      hostColor: hostColor,
+      guestId: null as any,
+    };
+
+    const db = getDatabase(this.app);
+    set(ref(db, `invites/${inviteId}`), invite)
+      .then(() => {
+        console.log("Invite created successfully");
+      })
+      .catch((error) => {
+        console.error("Error creating invite:", error);
+      });
+
+    const match = {
+      version: controllerVersion,
+      color: hostColor,
+      emojiId: emojiId,
+      fen: initialFen,
+      status: "waiting",
+    };
+
+    set(ref(db, `players/${uid}/matches/${inviteId}`), match)
+      .then(() => {
+        console.log("Player match created successfully");
+      })
+      .catch((error) => {
+        console.error("Error creating player match:", error);
+      });
   }
 }
 

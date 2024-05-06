@@ -66,8 +66,7 @@ function writeInviteLinkToClipboard() {
 function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {
-      console.log("signed in with uid:", uid);
-      firebaseConnection.createInvite(newGameId); // TODO: process create invite result
+      firebaseConnection.createInvite(uid, newGameId); // TODO: process create invite result
       didCreateNewGameInvite = true;
       updatePath(newGameId);
       statusText.innerHTML = "waiting for someone to join";

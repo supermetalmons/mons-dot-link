@@ -13,6 +13,7 @@ Board.setupBoard();
 
 await initMonsWeb();
 const game = MonsWeb.MonsGameModel.new();
+export const initialFen = game.fen();
 
 const locationsWithContent = game.locations_with_content();
 
