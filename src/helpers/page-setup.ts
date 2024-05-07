@@ -21,7 +21,7 @@ export function setupPage() {
   if (isCreateNewInviteFlow) {
     // TODO: create invite flow
   } else {
-    // TODO: connect to the existing game
+    connectToGame(initialPath);
   }
 
   if (inviteButton) {

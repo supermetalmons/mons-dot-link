@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { getDatabase, ref, set, onValue, off } from "firebase/database";
+import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
 import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from ".";
+
+const controllerVersion = 2;
 
 class FirebaseConnection {
   private app;
@@ -64,11 +66,78 @@ class FirebaseConnection {
   }
 
   public connectToGame(uid: string, inviteId: string) {
-    // TODO: implement
+    this.uid = uid;
+    this.gameId = inviteId;
+
+    const db = getDatabase(this.app);
+    const inviteRef = ref(db, `invites/${inviteId}`);
+    get(inviteRef)
+      .then((snapshot) => {
+        const inviteData = snapshot.val();
+        if (!inviteData) {
+          console.log("got empty invite data");
+          return;
+        }
+        if (!inviteData.guestId && inviteData.hostId != uid) {
+          set(ref(db, `invites/${inviteId}/guestId`), uid)
+            .then(() => {
+              console.log("did join as a guest successfully");
+              this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData);
+            })
+            .catch((error) => {
+              console.error("Error joining as a guest:", error);
+            });
+        } else {
+          console.log("has guest or same host");
+          // TODO: handle watch or reconnect
+        }
+        console.log("Invite data retrieved:", inviteData);
+      })
+      .catch((error) => {
+        console.error("Failed to retrieve invite data:", error);
+      });
+  }
+
+  private getOpponentsMatchAndCreateOwnMatch(gameId: string, invite: any) {
+    const db = getDatabase(this.app);
+    const opponentsMatchRef = ref(db, `players/${invite.hostId}/matches/${gameId}`);
+
+    get(opponentsMatchRef)
+      .then((snapshot) => {
+        const opponentsMatchData = snapshot.val();
+        if (!opponentsMatchData) {
+          console.log("got empty opponent's match data");
+          return;
+        }
+        console.log("got opponent's match:", opponentsMatchData);
+        const emojiId = 1; // TODO: make it random
+        const match = {
+          version: controllerVersion,
+          color: opponentsMatchData.color == "black" ? "white" : "black",
+          emojiId: emojiId,
+          fen: initialFen,
+          status: "playing",
+          flatMovesString: "",
+        };
+    
+        this.myMatch = match;
+    
+        set(ref(db, `players/${this.uid}/matches/${gameId}`), match)
+          .then(() => {
+            console.log("Player match created successfully");
+          })
+          .catch((error) => {
+            console.error("Error creating player match:", error);
+          });
+
+        // TODO: start watching opponent's match
+      })
+      .catch((error) => {
+        console.error("failed to get opponent's match:", error);
+      });
   }
 
   public createInvite(uid: string, inviteId: string) {
-    const controllerVersion = 2;
     const hostColor = Math.random() < 0.5 ? "white" : "black";
     const emojiId = 1; // TODO: make it random
 
