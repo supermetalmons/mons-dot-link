@@ -369,22 +369,13 @@ function hasItemAt(location: Location): boolean {
 function didConnectTo(opponentMatch: any) {
   updateStatus("");
 
+  // TODO: update emoji if needed
+
   if (isWatchOnly) {
-    // TODO: setup emoji
     playerSideColor = MonsWeb.Color.White;
   } else {
     playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
   }
-
-  // TODO: implement
-  // TODO: set opponent's emoji
-  // TODO: set player's side based on color
-  // TODO: process inputs if there already were some for some reason
-  // TODO: both sides moves should not work from now on
-
-  // TODO: update game info controls
-
-  // TODO: invite button
 
   Board.setBoardFlipped(opponentMatch.color == "white");
 
@@ -403,7 +394,7 @@ function didConnectTo(opponentMatch: any) {
   // TODO: updated local processed reactions on reconnect
 
   isOnlineGame = true;
-  currentInputs = []; // TODO: better recreate some game controller object completely
+  currentInputs = [];
 
   setNewBoard();
 }
@@ -453,20 +444,25 @@ export function didUpdateOpponentMatch(match: any) {
     setProcessedMovesCountForColor(match.color, movesCount);
   }
 
-  for (let i = getProcessedMovesCount(match.color); i < movesCount; i++) {
-    const moveFen = match.movesFens[i];
-    const output = game.process_input_fen(moveFen);
-    applyOutput(output, true, AssistedInputKind.None);
+  const processedMovesCount = getProcessedMovesCount(match.color);
+  if (movesCount > processedMovesCount) {
+    for (let i = processedMovesCount; i < movesCount; i++) {
+      const moveFen = match.movesFens[i];
+      const output = game.process_input_fen(moveFen);
+      applyOutput(output, true, AssistedInputKind.None);
+    }
+  
+    setProcessedMovesCountForColor(match.color, movesCount);
+
+    if (match.fen != game.fen()) {
+      // TODO: show something is wrong alert
+      console.log("fens do not match");
+    } else {
+      console.log("fens ok");
+    }
   }
 
-  setProcessedMovesCountForColor(match.color, movesCount);
-
-  if (match.fen != game.fen()) {
-    // TODO: something is wrong, stop the game
-    console.log("fens do not match");
-  } else {
-    console.log("fens ok");
-  }
+  // TODO: update emoji if needed
 
   // TODO: handle surrendered match status
 }
