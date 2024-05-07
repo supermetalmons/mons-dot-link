@@ -1,16 +1,38 @@
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
+
 const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
+const statusText = document.querySelector(".status-text");
+
+export const isCreateNewInviteFlow = initialPath == "";
+
+let newGameId = "";
+let didCreateNewGameInvite = false;
+let firebaseConnection: any;
+
+export function updateStatus(text: string) {
+  if (text == "") {
+    statusText.innerHTML = "";
+    (statusText as HTMLElement).style.display = "none";
+  }
+}
 
 export function setupPage() {
-  if (initialPath == "") {
+  if (isCreateNewInviteFlow) {
     // TODO: create invite flow
   } else {
-    // TODO: connect to the existing game
+    connectToGame(initialPath);
   }
 
   if (inviteButton) {
     inviteButton.addEventListener("click", didClickInviteButton);
+    if (!isCreateNewInviteFlow) {
+      (inviteButton as HTMLButtonElement).disabled = true;
+      inviteButton.innerHTML = "loading mons game...";
+      // TODO: implement loading and connecting to the existing invite
+    } else {
+      inviteButton.innerHTML = "+ new invite link";
+    }
   }
 
   if (connectWalletButton) {
@@ -28,27 +50,74 @@ export function setupPage() {
 }
 
 function didClickInviteButton() {
-  if (inviteButton) {
-    inviteButton.innerHTML = "wip";
-    setTimeout(() => {
-      inviteButton.innerHTML = "+ new invite link";
-    }, 699);
+  if (!inviteButton) { return; }
+
+  if (didCreateNewGameInvite) {
+    writeInviteLinkToClipboard();
+    showDidCopyInviteLink();
+  } else {
+    newGameId = generateNewGameId();
+    writeInviteLinkToClipboard();
+
+    inviteButton.innerHTML = "creating an invite...";
+    (inviteButton as HTMLButtonElement).disabled = true;
+    createNewMatchInvite();
   }
 }
 
-function processSignIn() {
+function writeInviteLinkToClipboard() {
+  // const link = window.location.origin + '/' + newGameId;
+  const link = 'https://mons.link/' + newGameId; // TODO: tmp hardcode for development
+  navigator.clipboard.writeText(link);
+}
+
+// TODO: tmp here as long as we access connection from here
+export function sendMove(moveFen: string, newBoardFen: string) {
+  firebaseConnection.sendMove(moveFen, newBoardFen);
+}
+
+function connectToGame(gameId: string) {
   signIn().then((uid) => {
     if (uid) {
-      console.log("signed in with uid:", uid);
+      firebaseConnection.connectToGame(uid, gameId);
+      // TODO: do not update it too early
+      inviteButton.innerHTML = "connected"; // TODO: gotta be able to copy game link
     } else {
+      // TODO: show message that smth is wrong
+      console.log("failed to get game info");
+    }
+  });
+}
+
+function createNewMatchInvite() {
+  signIn().then((uid) => {
+    if (uid) {
+      firebaseConnection.createInvite(uid, newGameId); // TODO: process create invite result
+      didCreateNewGameInvite = true;
+      updatePath(newGameId);
+      statusText.innerHTML = "waiting for someone to join";
+      inviteButton.innerHTML = "copy invite link";
+      (inviteButton as HTMLButtonElement).disabled = false;
+    } else {
+      // TODO: show message that invite was not created
       console.log("failed to sign in");
     }
   });
-
 }
 
-function updatePath() {
-  const newPath = `/${Math.floor(Math.random() * 1000000000)}`;
+function showDidCopyInviteLink() {
+  if (inviteButton) {
+    inviteButton.innerHTML = "invite link is copied ✓";
+    (inviteButton as HTMLButtonElement).disabled = true;
+    setTimeout(() => {
+      inviteButton.innerHTML = "copy invite link";
+      (inviteButton as HTMLButtonElement).disabled = false;
+    }, 1300);
+  }
+}
+
+function updatePath(newGameId: string) {
+  const newPath = `/${newGameId}`;
   history.pushState({ path: newPath }, "", newPath);
 }
 
@@ -62,7 +131,7 @@ function didClickConnectWalletButton() {
 }
 
 async function signIn(): Promise<string | undefined> {
-  const firebaseConnection = (await import("../connection")).firebaseConnection;
+  firebaseConnection = (await import("../connection")).firebaseConnection;
   return firebaseConnection.signIn();
 }
 
@@ -98,4 +167,13 @@ function supportsCharacter(character: string): boolean {
   const characterWidth: number = testElement.clientWidth;
   document.body.removeChild(testElement);
   return initialWidth !== characterWidth;
+}
+
+export function generateNewGameId(): string {
+  const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let id = "";
+  for (let i = 0; i < 10; i++) {
+    id += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+  return id;
 }

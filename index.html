@@ -132,6 +132,12 @@
 			cursor: pointer;
 			text-align: left;
 		}
+		.status-text {
+			position: absolute;
+			top: 30pt;
+			left: 14pt;
+			font-size: 12pt;
+		}
 		.connect-wallet-button {
 			position: absolute;
 			top: 4pt;
@@ -148,7 +154,8 @@
 	</style>
 </head>
 <body>
-	<button class="invite-button">+ new invite link</button>
+	<button class="invite-button"></button>
+	<div class="status-text"></div>
 	<button class="connect-wallet-button">connect wallet</button>
 	<svg xmlns="http://www.w3.org/2000/svg" class="board-svg" viewBox="0 0 11 13.1" shape-rendering="crispEdges" style="touch-action: none; user-select: none; -webkit-touch-callout: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">
 	    <defs>
