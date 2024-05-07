@@ -65,7 +65,7 @@ class FirebaseConnection {
 
   public createInvite(uid: string, inviteId: string) {
     const controllerVersion = 2;
-    const hostColor = "black"; // TODO: make it random
+    const hostColor = Math.random() < 0.5 ? "white" : "black";
     const emojiId = 1; // TODO: make it random
 
     const invite = {
