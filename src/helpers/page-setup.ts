@@ -4,7 +4,7 @@ const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
 const statusText = document.querySelector(".status-text");
 
-const isCreateNewInviteFlow = initialPath == "";
+export const isCreateNewInviteFlow = initialPath == "";
 
 let newGameId = "";
 let didCreateNewGameInvite = false;

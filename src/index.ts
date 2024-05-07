@@ -3,9 +3,13 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow } from "./helpers/page-setup";
 
-let isPlayingOnlineGame = false; // TODO: setup
+let isOnlineGame = false; // TODO: setup
+let didConnect = false;
+let whiteProcessedMovesCount = 0;
+let blackProcessedMovesCount = 0;
+var currentInputs: Location[] = [];
 
 setupPage();
 
@@ -14,28 +18,35 @@ Board.setupBoard();
 await initMonsWeb();
 
 let playerSideColor = MonsWeb.Color.White;
-
 let game = MonsWeb.MonsGameModel.new();
 export const initialFen = game.fen();
 
-game.locations_with_content().forEach((loc) => {
-  const location = new Location(loc.i, loc.j);
-  updateLocation(location);
-});
+if (isCreateNewInviteFlow) {
+  game.locations_with_content().forEach((loc) => {
+    const location = new Location(loc.i, loc.j);
+    updateLocation(location);
+  });
+} else {
+  isOnlineGame = true;
+}
 
-Board.setupGameInfoElements();
-
-var currentInputs: Location[] = [];
+Board.setupGameInfoElements(!isCreateNewInviteFlow);
 
 export function isPlayerSideTurn(): boolean {
   return game.active_color() == MonsWeb.Color.White;
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
+  if (isOnlineGame && !didConnect) {
+    return;
+  }
   processInput(AssistedInputKind.None, inputModifier);
 }
 
 export function didClickSquare(location: Location) {
+  if (isOnlineGame && !didConnect) {
+    return;
+  }
   processInput(AssistedInputKind.None, InputModifier.None, location);
 }
 
@@ -135,7 +146,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       Board.applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case MonsWeb.OutputModelKind.Events:
-      if (isPlayingOnlineGame && !isRemoteInput) {
+      if (isOnlineGame && !isRemoteInput) {
         const moveFen = output.input_fen();
         const gameFen = game.fen();
         sendMove(moveFen, gameFen);
@@ -281,7 +292,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  if (isPlayingOnlineGame) {
+  if (isOnlineGame) {
     if (game.active_color() != playerSideColor) {
       return;
     }
@@ -340,10 +351,6 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-let didConnect = false;
-let whiteProcessedMovesCount = 0;
-let blackProcessedMovesCount = 0;
-
 function didConnectTo(opponentMatch: any) {
   updateStatus("");
 
@@ -367,7 +374,7 @@ function didConnectTo(opponentMatch: any) {
   Board.updateScore(game.white_score(), game.black_score());
   Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
-  isPlayingOnlineGame = true;
+  isOnlineGame = true;
   currentInputs = []; // TODO: better recreate some game controller object completely
 
   game.locations_with_content().forEach((loc) => {

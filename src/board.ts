@@ -257,7 +257,7 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
   }
 }
 
-export async function setupGameInfoElements() {
+export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove);
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
@@ -279,7 +279,7 @@ export async function setupGameInfoElements() {
     SVG.setOpacity(numberText, 0.69);
     numberText.setAttribute("font-size", "0.5");
     numberText.setAttribute("font-weight", "600");
-    numberText.textContent = "0";
+    numberText.textContent = allHiddenInitially ? "" : "0";
     controlsLayer.append(numberText);
     if (isOpponent) {
       opponentScoreText = numberText;
@@ -302,7 +302,7 @@ export async function setupGameInfoElements() {
 
       const isActiveSide = isFlipped ? isOpponent : !isOpponent;
       if (isActiveSide) {
-        if (x > 4) {
+        if (allHiddenInitially || x > 4) {
           SVG.setHidden(img, true);
         }
       } else {
@@ -314,6 +314,10 @@ export async function setupGameInfoElements() {
     avatar.style.pointerEvents = "auto";
     SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
     controlsLayer.append(avatar);
+
+    if (allHiddenInitially) {
+      SVG.setHidden(avatar, true);
+    }
 
     avatar.addEventListener("click", (event) => {
       event.stopPropagation();
