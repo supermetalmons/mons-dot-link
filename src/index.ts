@@ -173,7 +173,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
-            // TODO: based on player side
             Board.updateScore(game.white_score(), game.black_score());
             break;
           case MonsWeb.EventModelKind.MysticAction:
@@ -364,6 +363,10 @@ function didConnectTo(opponentMatch: any) {
 
   game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
   Board.resetForNewGame();
+
+  Board.updateScore(game.white_score(), game.black_score());
+  Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+
   isPlayingOnlineGame = true;
   currentInputs = []; // TODO: better recreate some game controller object completely
 

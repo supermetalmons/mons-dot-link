@@ -117,7 +117,9 @@ export function removeItem(location: Location) {
   }
 }
 
-export function updateScore(player: number, opponent: number) {
+export function updateScore(white: number, black: number) {
+  const player = isFlipped ? black : white;
+  const opponent = isFlipped ? white : black;
   playerScoreText.textContent = player.toString();
   opponentScoreText.textContent = opponent.toString();
 }
