@@ -28,6 +28,8 @@ let traceIndex = 0;
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
+let opponentAvatar: SVGElement | undefined;
+let playerAvatar: SVGElement | undefined;
 
 let currentPlayerEmojiId = "";
 let currentOpponentEmojiId = "";
@@ -51,7 +53,8 @@ const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("./helpers/emojis")).emojis;
 
 export function resetForNewGame() {
-  // TODO: reset game info controls as well
+  SVG.setHidden(opponentAvatar, false);
+  SVG.setHidden(playerAvatar, false);
   removeHighlights();
   for (const key in items) {
     const element = items[key];
@@ -314,6 +317,11 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     avatar.style.pointerEvents = "auto";
     SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
     controlsLayer.append(avatar);
+    if (isOpponent) {
+      opponentAvatar = avatar;
+    } else {
+      playerAvatar = avatar;
+    }
 
     if (allHiddenInitially) {
       SVG.setHidden(avatar, true);

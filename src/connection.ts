@@ -130,7 +130,7 @@ class FirebaseConnection {
             console.error("Error creating player match:", error);
           });
 
-        // TODO: start watching opponent's match
+        this.observeMatch(invite.hostId, gameId);
       })
       .catch((error) => {
         console.error("failed to get opponent's match:", error);
