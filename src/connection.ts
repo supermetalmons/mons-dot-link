@@ -7,6 +7,10 @@ class FirebaseConnection {
   private app;
   private auth;
 
+  private myMatch: any; // TODO: make these are cleaned up for a new game
+  private uid: string;
+  private gameId: string;
+
   constructor() {
     const firebaseConfig = {
       apiKey: process.env.MONS_FIREBASE_API_KEY || "AIzaSyC709PHiVSQqIvCqaJwx3h9Mg55ysgBrRg",
@@ -22,9 +26,28 @@ class FirebaseConnection {
     this.auth = getAuth(this.app);
   }
 
-  // TODO: should be aware of game id
   public sendMove(moveFen: string, newBoardFen: string) {
-    // TODO: implement
+    this.myMatch.fen = newBoardFen;
+    if (!this.myMatch.movesFens) {
+      this.myMatch.movesFens = [];
+    }
+
+    if (this.myMatch.flatMovesString == "") {
+      this.myMatch.flatMovesString = moveFen;
+    } else {
+      this.myMatch.flatMovesString += "-" + moveFen;
+    }
+
+    this.myMatch.movesFens.push(moveFen);
+
+    const db = getDatabase(this.app);
+    set(ref(db, `players/${this.uid}/matches/${this.gameId}`), this.myMatch)
+      .then(() => {
+        console.log("did send move successfully");
+      })
+      .catch((error) => {
+        console.error("error sending a move", error);
+      });
   }
 
   public signIn(): Promise<string | undefined> {
@@ -67,7 +90,12 @@ class FirebaseConnection {
       emojiId: emojiId,
       fen: initialFen,
       status: "waiting",
+      flatMovesString: "",
     };
+
+    this.myMatch = match;
+    this.uid = uid;
+    this.gameId = inviteId;
 
     set(ref(db, `players/${uid}/matches/${inviteId}`), match)
       .then(() => {
@@ -95,6 +123,7 @@ class FirebaseConnection {
       matchRef,
       (snapshot) => {
         const matchData = snapshot.val();
+        console.log(matchData);
         if (matchData) {
           didUpdateOpponentMatch(matchData);
         }
