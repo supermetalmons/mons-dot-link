@@ -3,7 +3,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { setupPage, updateStatus } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove } from "./helpers/page-setup";
 
 let isPlayingOnlineGame = false; // TODO: setup
 
@@ -135,6 +135,12 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       Board.applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case MonsWeb.OutputModelKind.Events:
+      if (isPlayingOnlineGame && !isRemoteInput) {
+        const moveFen = output.input_fen();
+        const gameFen = game.fen();
+        sendMove(moveFen, gameFen);
+      }
+
       currentInputs = [];
       const events = output.events();
       let locationsToUpdate: Location[] = [];

@@ -72,6 +72,11 @@ function writeInviteLinkToClipboard() {
   navigator.clipboard.writeText(link);
 }
 
+// TODO: tmp here as long as we access connection from here
+export function sendMove(moveFen: string, newBoardFen: string) {
+  firebaseConnection.sendMove(moveFen, newBoardFen);
+}
+
 function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {
