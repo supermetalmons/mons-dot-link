@@ -28,8 +28,7 @@ export function setupPage() {
     inviteButton.addEventListener("click", didClickInviteButton);
     if (!isCreateNewInviteFlow) {
       (inviteButton as HTMLButtonElement).disabled = true;
-      inviteButton.innerHTML = "loading...";
-      statusText.innerHTML = "getting mons game info";
+      inviteButton.innerHTML = "loading mons game...";
       // TODO: implement loading and connecting to the existing invite
     } else {
       inviteButton.innerHTML = "+ new invite link";
