@@ -9,7 +9,7 @@ class FirebaseConnection {
   private app;
   private auth;
 
-  private myMatch: any; // TODO: make these are cleaned up for a new game
+  private myMatch: any;
   private uid: string;
   private gameId: string;
 

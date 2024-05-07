@@ -340,15 +340,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
           playSounds([Sound.Click]);
         }
 
-        if (!isModernAndPowerful) {
-          return;
-        }
-
-        avatar.style.transition = "transform 0.3s";
-        avatar.style.transform = "scale(1.8)";
-        setTimeout(() => {
-          avatar.style.transform = "scale(1)";
-        }, 300);
+        popOpponentsEmoji();
       } else {
         if (playerSideActive) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
@@ -465,6 +457,18 @@ export function applyHighlights(highlights: Highlight[]) {
         break;
     }
   });
+}
+
+export function popOpponentsEmoji() {
+  if (!isModernAndPowerful) {
+    return;
+  }
+
+  opponentAvatar.style.transition = "transform 0.3s";
+  opponentAvatar.style.transform = "scale(1.8)";
+  setTimeout(() => {
+    opponentAvatar.style.transform = "scale(1)";
+  }, 300);
 }
 
 export function drawTrace(trace: Trace) {

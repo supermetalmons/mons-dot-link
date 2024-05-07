@@ -39,7 +39,7 @@ if (isCreateNewInviteFlow) {
 Board.setupGameInfoElements(!isCreateNewInviteFlow);
 
 export function isPlayerSideTurn(): boolean {
-  return game.active_color() == MonsWeb.Color.White;
+  return game.active_color() == playerSideColor;
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
@@ -165,6 +165,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       let mustReleaseHighlight = isRemoteInput;
       let sounds: Sound[] = [];
       let traces: Trace[] = [];
+      let popOpponentsEmoji = false;
 
       for (const event of events) {
         const from = event.loc1 ? location(event.loc1) : undefined;
@@ -255,7 +256,9 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             break;
           case MonsWeb.EventModelKind.NextTurn:
             sounds.push(Sound.EndTurn);
-            // TODO: update for the next turn
+            if (!isWatchOnly && isOnlineGame && isPlayerSideTurn()) {
+              popOpponentsEmoji = true;
+            }
             break;
           case MonsWeb.EventModelKind.GameOver:
             // TODO: based on player side
@@ -287,6 +290,10 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       if (!isRemoteInput) {
         // TODO: learn to play sounds for remote inputs
         playSounds(sounds);
+      }
+
+      if (popOpponentsEmoji) {
+        Board.popOpponentsEmoji();
       }
 
       if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
