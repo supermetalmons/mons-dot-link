@@ -5,11 +5,16 @@ import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
 import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow } from "./helpers/page-setup";
 
+let isWatchOnly = false;
 let isOnlineGame = false; // TODO: setup
 let isReconnect = false; // TODO: use it
 let didConnect = false;
+
 let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
+let didSetWhiteProcessedMovesCount = false;
+let didSetBlackProcessedMovesCount = false;
+
 var currentInputs: Location[] = [];
 
 setupPage();
@@ -38,14 +43,14 @@ export function isPlayerSideTurn(): boolean {
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
-  if (isOnlineGame && !didConnect) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly) {
     return;
   }
   processInput(AssistedInputKind.None, inputModifier);
 }
 
 export function didClickSquare(location: Location) {
-  if (isOnlineGame && !didConnect) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly) {
     return;
   }
   processInput(AssistedInputKind.None, InputModifier.None, location);
@@ -355,7 +360,12 @@ function hasItemAt(location: Location): boolean {
 function didConnectTo(opponentMatch: any) {
   updateStatus("");
 
-  playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+  if (isWatchOnly) {
+    // TODO: setup emoji
+    playerSideColor = MonsWeb.Color.White;
+  } else {
+    playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+  }
 
   // TODO: implement
   // TODO: set opponent's emoji
@@ -369,27 +379,30 @@ function didConnectTo(opponentMatch: any) {
 
   Board.setBoardFlipped(opponentMatch.color == "white");
 
-  if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen))) {
+  if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
     console.log("updating local game with opponent's fen");
     game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
   } else {
     console.log("got opponent's match, but keeping the local fen");
   }
 
-  if (isReconnect) {
+  if (isReconnect || isWatchOnly) {
     const movesCount = opponentMatch.movesFens ? opponentMatch.movesFens.length : 0;
     setProcessedMovesCountForColor(opponentMatch.color, movesCount);
   }
 
   // TODO: updated local processed reactions on reconnect
 
-  Board.resetForNewGame();
-
-  Board.updateScore(game.white_score(), game.black_score());
-  Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
-
   isOnlineGame = true;
   currentInputs = []; // TODO: better recreate some game controller object completely
+
+  setNewBoard();
+}
+
+function setNewBoard() {
+  Board.resetForNewGame();
+  Board.updateScore(game.white_score(), game.black_score());
+  Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
   game.locations_with_content().forEach((loc) => {
     const location = new Location(loc.i, loc.j);
@@ -404,8 +417,10 @@ function getProcessedMovesCount(color: string): number {
 function setProcessedMovesCountForColor(color: string, count: number) {
   if (color == "white") {
     whiteProcessedMovesCount = count;
+    didSetWhiteProcessedMovesCount = true;
   } else {
     blackProcessedMovesCount = count;
+    didSetBlackProcessedMovesCount = true;
   }
 }
 
@@ -418,13 +433,24 @@ export function didUpdateOpponentMatch(match: any) {
     return;
   }
 
-  for (let i = whiteProcessedMovesCount; i < match.movesFens.length; i++) {
+  const movesCount = match.movesFens ? match.movesFens.length : 0;
+  if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
+
+    if (!game.is_later_than(match.fen)) {
+      game = MonsWeb.MonsGameModel.from_fen(match.fen);
+      setNewBoard();
+    }
+
+    setProcessedMovesCountForColor(match.color, movesCount);
+  }
+
+  for (let i = getProcessedMovesCount(match.color); i < movesCount; i++) {
     const moveFen = match.movesFens[i];
     const output = game.process_input_fen(moveFen);
     applyOutput(output, true, AssistedInputKind.None);
   }
 
-  setProcessedMovesCountForColor(match.color, match.movesFens.length);
+  setProcessedMovesCountForColor(match.color, movesCount);
 
   if (match.fen != game.fen()) {
     // TODO: something is wrong, stop the game
@@ -433,9 +459,8 @@ export function didUpdateOpponentMatch(match: any) {
     console.log("fens ok");
   }
 
-  // TODO: handle surrendered match status  
+  // TODO: handle surrendered match status
 }
-
 
 export function didRecoverMyMatch(match: any) {
   isReconnect = true;
@@ -449,5 +474,5 @@ export function didRecoverMyMatch(match: any) {
 }
 
 export function enterWatchOnlyMode() {
-  // TODO: implement
+  isWatchOnly = true;
 }
