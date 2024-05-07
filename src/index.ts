@@ -6,6 +6,7 @@ import { playSounds } from "./helpers/sounds";
 import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow } from "./helpers/page-setup";
 
 let isOnlineGame = false; // TODO: setup
+let isReconnect = false; // TODO: use it
 let didConnect = false;
 let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
@@ -368,7 +369,20 @@ function didConnectTo(opponentMatch: any) {
 
   Board.setBoardFlipped(opponentMatch.color == "white");
 
-  game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+  if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen))) {
+    console.log("updating local game with opponent's fen");
+    game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+  } else {
+    console.log("got opponent's match, but keeping the local fen");
+  }
+
+  if (isReconnect) {
+    const movesCount = opponentMatch.movesFens ? opponentMatch.movesFens.length : 0;
+    setProcessedMovesCountForColor(opponentMatch.color, movesCount);
+  }
+
+  // TODO: updated local processed reactions on reconnect
+
   Board.resetForNewGame();
 
   Board.updateScore(game.white_score(), game.black_score());
@@ -424,8 +438,14 @@ export function didUpdateOpponentMatch(match: any) {
 
 
 export function didRecoverMyMatch(match: any) {
-  // TODO: implement
-  console.log(`Match data updated:`, match);
+  isReconnect = true;
+
+  playerSideColor = match.color == "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
+  game = MonsWeb.MonsGameModel.from_fen(match.fen);
+  const movesCount = match.movesFens ? match.movesFens.length : 0;
+  setProcessedMovesCountForColor(match.color, movesCount);
+  // TODO: update emoji
+  console.log(`didRecoverMyMatch:`, match);
 }
 
 export function enterWatchOnlyMode() {

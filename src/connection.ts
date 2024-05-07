@@ -106,13 +106,59 @@ class FirebaseConnection {
 
   private reconnectAsGuest(gameId: string, invite: any) {
     console.log("will reconnect as guest");
-    // TODO: implement
+
+    const db = getDatabase(this.app);
+    const myMatchRef = ref(db, `players/${invite.guestId}/matches/${gameId}`);
+
+    get(myMatchRef)
+    .then((snapshot) => {
+      const myMatchData = snapshot.val();
+      if (!myMatchData) {
+        console.log("got empty my match data");
+        return;
+      }
+      console.log("got my match:", myMatchData);
+      this.myMatch = myMatchData;
+      didRecoverMyMatch(myMatchData);
+      this.observeMatch(invite.hostId, gameId);
+    })
+    .catch((error) => {
+      console.error("failed to get my match:", error);
+    });
   }
 
   private reconnectAsHost(gameId: string, invite: any) {
     console.log("will reconnect as host");
-    // TODO: implement
-    // TODO: invite might be accepted or not
+    const db = getDatabase(this.app);
+    const myMatchRef = ref(db, `players/${invite.hostId}/matches/${gameId}`);
+    get(myMatchRef)
+    .then((snapshot) => {
+      const myMatchData = snapshot.val();
+      if (!myMatchData) {
+        console.log("got empty my match data");
+        return;
+      }
+      console.log("got my match:", myMatchData);
+      this.myMatch = myMatchData;
+      didRecoverMyMatch(myMatchData);
+      
+      if (invite.guestId && invite.guestId != "") {
+        this.observeMatch(invite.guestId, gameId);
+      } else {
+        const inviteRef = ref(db, `invites/${gameId}`);
+        onValue(inviteRef, (snapshot: any) => {
+          const inviteData = snapshot.val();
+          if (inviteData && inviteData.guestId) {
+            console.log(`Guest ${inviteData.guestId} joined the invite ${gameId}`);
+            this.observeMatch(inviteData.guestId, gameId);
+            off(inviteRef);
+          }
+        });
+      }
+    })
+    .catch((error) => {
+      console.error("failed to get my match:", error);
+    });
   }
 
   private enterWatchOnlyMode(gameId: string, hostId: string, guestId: string) {
@@ -132,25 +178,26 @@ class FirebaseConnection {
           return;
         }
         console.log("got opponent's match:", opponentsMatchData);
+
         const emojiId = 1; // TODO: make it random
-        const match = {
-          version: controllerVersion,
-          color: opponentsMatchData.color == "black" ? "white" : "black",
-          emojiId: emojiId,
-          fen: initialFen,
-          status: "playing",
-          flatMovesString: "",
-        };
+          const match = {
+            version: controllerVersion,
+            color: opponentsMatchData.color == "black" ? "white" : "black",
+            emojiId: emojiId,
+            fen: initialFen,
+            status: "playing",
+            flatMovesString: "",
+          };
     
-        this.myMatch = match;
+          this.myMatch = match;
     
-        set(ref(db, `players/${this.uid}/matches/${gameId}`), match)
-          .then(() => {
-            console.log("Player match created successfully");
-          })
-          .catch((error) => {
-            console.error("Error creating player match:", error);
-          });
+          set(ref(db, `players/${this.uid}/matches/${gameId}`), match)
+            .then(() => {
+              console.log("Player match created successfully");
+            })
+            .catch((error) => {
+              console.error("Error creating player match:", error);
+            });
 
         this.observeMatch(invite.hostId, gameId);
       })
