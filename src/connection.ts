@@ -78,6 +78,7 @@ class FirebaseConnection {
           console.log("got empty invite data");
           return;
         }
+        console.log("Invite data retrieved:", inviteData);
         if (!inviteData.guestId && inviteData.hostId != uid) {
           set(ref(db, `invites/${inviteId}/guestId`), uid)
             .then(() => {
@@ -89,33 +90,32 @@ class FirebaseConnection {
             });
         } else {
           console.log("has guest or same host");
-          if (inviteData.guestId != uid && inviteData.hostId != uid) {
-            this.enterWatchOnlyMode();
-          } else if (inviteData.hostId == uid) {
-            this.reconnectAsHost();
+          if (inviteData.hostId == uid) {
+            this.reconnectAsHost(inviteId, inviteData);
           } else if (inviteData.guestId == uid) {
-            this.reconnectAsGuest();
+            this.reconnectAsGuest(inviteId, inviteData);
+          } else {
+            this.enterWatchOnlyMode(inviteId, inviteData.hostId, inviteData.guestId);
           }
         }
-        console.log("Invite data retrieved:", inviteData);
       })
       .catch((error) => {
         console.error("Failed to retrieve invite data:", error);
       });
   }
 
-  private reconnectAsGuest() {
+  private reconnectAsGuest(gameId: string, invite: any) {
     console.log("will reconnect as guest");
     // TODO: implement
   }
 
-  private reconnectAsHost() {
+  private reconnectAsHost(gameId: string, invite: any) {
     console.log("will reconnect as host");
     // TODO: implement
     // TODO: invite might be accepted or not
   }
 
-  private enterWatchOnlyMode() {
+  private enterWatchOnlyMode(gameId: string, hostId: string, guestId: string) {
     console.log("will enter watch only mode");
     // TODO: implement
   }
