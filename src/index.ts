@@ -6,8 +6,8 @@ import { playSounds } from "./helpers/sounds";
 import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow } from "./helpers/page-setup";
 
 let isWatchOnly = false;
-let isOnlineGame = false; // TODO: setup
-let isReconnect = false; // TODO: use it
+let isOnlineGame = false;
+let isReconnect = false;
 let didConnect = false;
 
 let whiteProcessedMovesCount = 0;
@@ -261,9 +261,11 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             break;
           case MonsWeb.EventModelKind.GameOver:
-            // TODO: based on player side
-            sounds.push(Sound.Victory);
-            // sounds.push(Sound.Defeat);
+            if (!isOnlineGame || event.color == playerSideColor) {
+              sounds.push(Sound.Victory);
+            } else {
+              sounds.push(Sound.Defeat);
+            }
             break;
         }
       }
