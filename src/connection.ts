@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
 import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from ".";
+import { emojis } from "./helpers/emojis";
 
 const controllerVersion = 2;
 
@@ -181,7 +182,7 @@ class FirebaseConnection {
         }
         console.log("got opponent's match:", opponentsMatchData);
 
-        const emojiId = 1; // TODO: make it random
+        const emojiId = emojis.getRandomEmojiId();
         const match = {
           version: controllerVersion,
           color: opponentsMatchData.color == "black" ? "white" : "black",
@@ -210,7 +211,7 @@ class FirebaseConnection {
 
   public createInvite(uid: string, inviteId: string) {
     const hostColor = Math.random() < 0.5 ? "white" : "black";
-    const emojiId = 1; // TODO: make it random
+    const emojiId = emojis.getRandomEmojiId();
 
     const invite = {
       version: controllerVersion,
