@@ -89,13 +89,35 @@ class FirebaseConnection {
             });
         } else {
           console.log("has guest or same host");
-          // TODO: handle watch or reconnect
+          if (inviteData.guestId != uid && inviteData.hostId != uid) {
+            this.enterWatchOnlyMode();
+          } else if (inviteData.hostId == uid) {
+            this.reconnectAsHost();
+          } else if (inviteData.guestId == uid) {
+            this.reconnectAsGuest();
+          }
         }
         console.log("Invite data retrieved:", inviteData);
       })
       .catch((error) => {
         console.error("Failed to retrieve invite data:", error);
       });
+  }
+
+  private reconnectAsGuest() {
+    console.log("will reconnect as guest");
+    // TODO: implement
+  }
+
+  private reconnectAsHost() {
+    console.log("will reconnect as host");
+    // TODO: implement
+    // TODO: invite might be accepted or not
+  }
+
+  private enterWatchOnlyMode() {
+    console.log("will enter watch only mode");
+    // TODO: implement
   }
 
   private getOpponentsMatchAndCreateOwnMatch(gameId: string, invite: any) {
