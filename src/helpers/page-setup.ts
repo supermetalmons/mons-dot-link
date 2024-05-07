@@ -76,6 +76,19 @@ export function sendMove(moveFen: string, newBoardFen: string) {
   firebaseConnection.sendMove(moveFen, newBoardFen);
 }
 
+function connectToGame(gameId: string) {
+  signIn().then((uid) => {
+    if (uid) {
+      firebaseConnection.connectToGame(uid, gameId);
+      // TODO: do not update it too early
+      inviteButton.innerHTML = "connected"; // TODO: gotta be able to copy game link
+    } else {
+      // TODO: show message that smth is wrong
+      console.log("failed to get game info");
+    }
+  });
+}
+
 function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {

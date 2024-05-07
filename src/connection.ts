@@ -63,6 +63,10 @@ class FirebaseConnection {
     });
   }
 
+  public connectToGame(uid: string, inviteId: string) {
+    // TODO: implement
+  }
+
   public createInvite(uid: string, inviteId: string) {
     const controllerVersion = 2;
     const hostColor = Math.random() < 0.5 ? "white" : "black";
