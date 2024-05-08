@@ -29,6 +29,10 @@ class FirebaseConnection {
     this.auth = getAuth(this.app);
   }
 
+  public updateEmoji(newId: number) {
+    // TODO: implement
+  }
+
   public sendMove(moveFen: string, newBoardFen: string) {
     this.myMatch.fen = newBoardFen;
     if (!this.myMatch.movesFens) {
@@ -67,6 +71,7 @@ class FirebaseConnection {
   }
 
   public connectToGame(uid: string, inviteId: string) {
+    console.log(uid);
     this.uid = uid;
     this.gameId = inviteId;
 

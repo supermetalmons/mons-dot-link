@@ -75,6 +75,11 @@ export function sendMove(moveFen: string, newBoardFen: string) {
   firebaseConnection.sendMove(moveFen, newBoardFen);
 }
 
+// TODO: tmp here as long as we access connection from here
+export function updateEmoji(newId: number) {
+  firebaseConnection.updateEmoji(newId);
+}
+
 function connectToGame(gameId: string) {
   signIn().then((uid) => {
     if (uid) {
