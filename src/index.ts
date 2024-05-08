@@ -15,6 +15,8 @@ let blackProcessedMovesCount = 0;
 let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
+let isGameOver = false;
+
 var currentInputs: Location[] = [];
 
 setupPage();
@@ -291,6 +293,8 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               alert(winnerAlertText);
             }, 420);
 
+            isGameOver = true;
+
             break;
         }
       }
@@ -449,6 +453,10 @@ function setProcessedMovesCountForColor(color: string, count: number) {
 }
 
 export function didUpdateOpponentMatch(match: any) {
+  if (isGameOver) {
+    return;
+  }
+
   console.log(`didUpdateOpponentMatch`, match);
 
   if (!didConnect) {
@@ -489,7 +497,12 @@ export function didUpdateOpponentMatch(match: any) {
   const isOpponentSide = !isWatchOnly || match.color == "black";
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
 
-  // TODO: handle surrendered match status
+  if (match.status == "surrendered") {
+    isGameOver = true;
+    setTimeout(() => {
+      alert(match.color + " left the game");
+    }, 420);
+  }
 }
 
 export function didRecoverMyMatch(match: any) {
