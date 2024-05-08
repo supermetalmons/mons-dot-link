@@ -19,8 +19,22 @@ const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
-  console.log(newEmojiId);
-  // TODO: display new emoij
+  const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
+  if (currentId == newEmojiId) {
+    return;
+  }
+  const newEmojiData = emojis.getEmoji(newEmojiId);
+  if (!newEmojiData) {
+    return;
+  }
+
+  if (isOpponentSide) {
+    currentOpponentEmojiId = newEmojiId;
+    SVG.setImage(opponentAvatar, newEmojiData);
+  } else {
+    currentPlayerEmojiId = newEmojiId;
+    SVG.setImage(playerAvatar, newEmojiData);
+  }
 }
 
 export function getPlayersEmojiId(): number {
