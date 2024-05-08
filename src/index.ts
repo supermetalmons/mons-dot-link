@@ -3,7 +3,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful } from "./helpers/page-setup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -275,11 +275,22 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             break;
           case MonsWeb.EventModelKind.GameOver:
-            if (!isOnlineGame || event.color == playerSideColor) {
+            const isVictory = !isOnlineGame || event.color == playerSideColor;
+            let winnerAlertText = (event.color == MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
+            if (!isModernAndPowerful) {
+              winnerAlertText = (event.color == MonsWeb.Color.White ? "white" : "black") + " wins";
+            }
+
+            if (isVictory) {
               sounds.push(Sound.Victory);
             } else {
               sounds.push(Sound.Defeat);
             }
+
+            setTimeout(() => {
+              alert(winnerAlertText);
+            }, 420);
+
             break;
         }
       }
