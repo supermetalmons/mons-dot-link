@@ -383,7 +383,7 @@ function hasItemAt(location: Location): boolean {
 function didConnectTo(opponentMatch: any) {
   updateStatus("");
 
-  // TODO: update emoji if needed
+  Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color == "black" : true);
 
   if (isWatchOnly) {
     playerSideColor = MonsWeb.Color.White;
@@ -391,7 +391,9 @@ function didConnectTo(opponentMatch: any) {
     playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
   }
 
-  Board.setBoardFlipped(opponentMatch.color == "white");
+  if (!isWatchOnly) {
+    Board.setBoardFlipped(opponentMatch.color == "white");
+  }
 
   if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
     console.log("updating local game with opponent's fen");
@@ -476,7 +478,7 @@ export function didUpdateOpponentMatch(match: any) {
     }
   }
 
-  const isOpponentSide = !isWatchOnly || (match.color == "white" ? MonsWeb.Color.White : MonsWeb.Color.Black) != playerSideColor;
+  const isOpponentSide = !isWatchOnly || match.color == "black";
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
 
   // TODO: handle surrendered match status
@@ -489,7 +491,7 @@ export function didRecoverMyMatch(match: any) {
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
   const movesCount = match.movesFens ? match.movesFens.length : 0;
   setProcessedMovesCountForColor(match.color, movesCount);
-  // TODO: update emoji
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
   console.log(`didRecoverMyMatch:`, match);
 }
 
