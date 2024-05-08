@@ -66,8 +66,7 @@ function didClickInviteButton() {
 }
 
 function writeInviteLinkToClipboard() {
-  // const link = window.location.origin + '/' + newGameId;
-  const link = 'https://mons.link/' + newGameId; // TODO: tmp hardcode for development
+  const link = window.location.origin + '/' + newGameId;
   navigator.clipboard.writeText(link);
 }
 
