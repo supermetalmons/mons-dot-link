@@ -38,6 +38,14 @@ if (isCreateNewInviteFlow) {
 
 Board.setupGameInfoElements(!isCreateNewInviteFlow);
 
+export function canChangeEmoji(opponents: boolean): boolean {
+  if (opponents) {
+    return !isOnlineGame && !isPlayerSideTurn();
+  } else {
+    return !isWatchOnly && isPlayerSideTurn();
+  }
+}
+
 export function isPlayerSideTurn(): boolean {
   return game.active_color() == playerSideColor;
 }

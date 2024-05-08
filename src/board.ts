@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "./helpers/svg";
-import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
+import { didClickSquare, didSelectInputModifier, canChangeEmoji } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { isDesktopSafari, isModernAndPowerful } from "./helpers/page-setup";
@@ -341,10 +341,10 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     avatar.addEventListener("click", (event) => {
       event.stopPropagation();
 
-      const playerSideActive = isFlipped ? !isPlayerSideTurn() : isPlayerSideTurn();
+      const shouldChangeEmoji = canChangeEmoji(isOpponent);
 
       if (isOpponent) {
-        if (!playerSideActive) {
+        if (shouldChangeEmoji) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
           currentOpponentEmojiId = newId;
           SVG.setImage(avatar, newEmoji);
@@ -353,7 +353,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
         popOpponentsEmoji();
       } else {
-        if (playerSideActive) {
+        if (shouldChangeEmoji) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
           currentPlayerEmojiId = newId;
           SVG.setImage(avatar, newEmoji);
