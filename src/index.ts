@@ -303,10 +303,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         }
       }
 
-      if (!isRemoteInput) {
-        // TODO: learn to play sounds for remote inputs
-        playSounds(sounds);
-      }
+      playSounds(sounds);
 
       if (popOpponentsEmoji) {
         Board.popOpponentsEmoji();
