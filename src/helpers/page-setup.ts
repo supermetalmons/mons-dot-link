@@ -50,7 +50,9 @@ export function setupPage() {
 }
 
 function didClickInviteButton() {
-  if (!inviteButton) { return; }
+  if (!inviteButton) {
+    return;
+  }
 
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
@@ -66,7 +68,7 @@ function didClickInviteButton() {
 }
 
 function writeInviteLinkToClipboard() {
-  const link = window.location.origin + '/' + newGameId;
+  const link = window.location.origin + "/" + newGameId;
   navigator.clipboard.writeText(link);
 }
 
@@ -123,6 +125,25 @@ function showDidCopyInviteLink() {
 function updatePath(newGameId: string) {
   const newPath = `/${newGameId}`;
   history.pushState({ path: newPath }, "", newPath);
+}
+
+function addVoiceReactionSelect() {
+  const voiceReactionSelect = document.createElement("select");
+  voiceReactionSelect.id = "voiceReactions";
+  voiceReactionSelect.innerHTML = `
+    <option value="" disabled selected>say</option>
+    <option value="yo">yo</option>
+    <option value="wahoo">wahoo</option>
+    <option value="drop">drop</option>
+    <option value="slurp">slurp</option>
+    <option value="gg">gg</option>
+  `;
+  document.body.appendChild(voiceReactionSelect);
+
+  voiceReactionSelect.addEventListener("change", function () {
+    console.log("says", voiceReactionSelect.value);
+    voiceReactionSelect.selectedIndex = 0;
+  });
 }
 
 function didClickConnectWalletButton() {
