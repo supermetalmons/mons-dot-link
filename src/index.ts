@@ -476,7 +476,8 @@ export function didUpdateOpponentMatch(match: any) {
     }
   }
 
-  // TODO: update emoji if needed
+  const isOpponentSide = !isWatchOnly || (match.color == "white" ? MonsWeb.Color.White : MonsWeb.Color.Black) != playerSideColor;
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
 
   // TODO: handle surrendered match status
 }

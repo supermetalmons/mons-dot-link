@@ -18,6 +18,11 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
+  console.log(newEmojiId);
+  // TODO: display new emoij
+}
+
 export function getPlayersEmojiId(): number {
   return parseInt(currentPlayerEmojiId != "" ? currentPlayerEmojiId : "1");
 }
