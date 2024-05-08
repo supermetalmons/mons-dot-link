@@ -34,6 +34,10 @@ class FirebaseConnection {
     this.sendMatchUpdate();
   }
 
+  public sendVoiceReaction() {
+    // TODO: implement
+  }
+
   public surrender() {
     this.myMatch.status = "surrendered";
     this.sendMatchUpdate();

@@ -16,6 +16,7 @@ let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
 let isGameOver = false;
+const processedVoiceReactions = new Set<string>(); // TODO: use it
 
 var currentInputs: Location[] = [];
 
