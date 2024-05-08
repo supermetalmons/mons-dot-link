@@ -63,7 +63,9 @@ export function playSounds(sounds: Sound[]) {
       audioCache[name] = new Audio(`/assets/sounds/${name}.wav`);
     }
 
-    audioCache[name].play();
+    audioCache[name].play().catch((_: any) => {
+      console.error("error playing sound");
+    });
   }
 }
 

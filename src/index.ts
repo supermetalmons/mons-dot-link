@@ -3,65 +3,74 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { setupPage } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate } from "./helpers/page-setup";
+
+let isWatchOnly = false;
+let isOnlineGame = false;
+let isReconnect = false;
+let didConnect = false;
+
+let whiteProcessedMovesCount = 0;
+let blackProcessedMovesCount = 0;
+let didSetWhiteProcessedMovesCount = false;
+let didSetBlackProcessedMovesCount = false;
+
+var currentInputs: Location[] = [];
 
 setupPage();
 
 Board.setupBoard();
 
 await initMonsWeb();
-const game = MonsWeb.MonsGameModel.new();
 
-const locationsWithContent = game.locations_with_content();
+let playerSideColor = MonsWeb.Color.White;
+let game = MonsWeb.MonsGameModel.new();
+export const initialFen = game.fen();
 
-locationsWithContent.forEach((loc) => {
-  const location = new Location(loc.i, loc.j);
-  updateLocation(location);
-});
+if (isCreateNewInviteFlow) {
+  game.locations_with_content().forEach((loc) => {
+    const location = new Location(loc.i, loc.j);
+    updateLocation(location);
+  });
+} else {
+  isOnlineGame = true;
+}
 
-Board.setupGameInfoElements();
+Board.setupGameInfoElements(!isCreateNewInviteFlow);
 
-var currentInputs: Location[] = [];
+export function canChangeEmoji(opponents: boolean): boolean {
+  if (isOnlineGame) {
+    return opponents ? false : !isWatchOnly;
+  } else {
+    return isPlayerSideTurn() ? !opponents : opponents;
+  }
+}
+
+export function updateEmoji(newId: number) {
+  if (isOnlineGame && !isWatchOnly) {
+    sendEmojiUpdate(newId);
+  }
+}
 
 export function isPlayerSideTurn(): boolean {
-  return game.active_color() == MonsWeb.Color.White;
+  return game.active_color() == playerSideColor;
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly) {
+    return;
+  }
   processInput(AssistedInputKind.None, inputModifier);
 }
 
 export function didClickSquare(location: Location) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly) {
+    return;
+  }
   processInput(AssistedInputKind.None, InputModifier.None, location);
 }
 
-function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  const opponentsTurn = game.active_color() == MonsWeb.Color.Black;
-
-  if (inputLocation) {
-    currentInputs.push(inputLocation);
-  }
-
-  const gameInput = currentInputs.map((input) => new MonsWeb.Location(input.i, input.j));
-  let output: MonsWeb.OutputModel;
-  if (inputModifier != InputModifier.None) {
-    let modifier: MonsWeb.Modifier;
-    switch (inputModifier) {
-      case InputModifier.Bomb:
-        modifier = MonsWeb.Modifier.SelectBomb;
-        break;
-      case InputModifier.Potion:
-        modifier = MonsWeb.Modifier.SelectPotion;
-        break;
-      case InputModifier.Cancel:
-        currentInputs = [];
-        return;
-    }
-    output = game.process_input(gameInput, modifier);
-  } else {
-    output = game.process_input(gameInput);
-  }
-
+function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assistedInputKind: AssistedInputKind, inputLocation?: Location) {
   switch (output.kind) {
     case MonsWeb.OutputModelKind.InvalidInput:
       const shouldTryToReselect = assistedInputKind == AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
@@ -157,13 +166,20 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
       Board.applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case MonsWeb.OutputModelKind.Events:
+      if (isOnlineGame && !isRemoteInput) {
+        const moveFen = output.input_fen();
+        const gameFen = game.fen();
+        sendMove(moveFen, gameFen);
+      }
+
       currentInputs = [];
       const events = output.events();
       let locationsToUpdate: Location[] = [];
       let mightKeepHighlightOnLocation: Location | undefined;
-      let mustReleaseHighlight = false;
+      let mustReleaseHighlight = isRemoteInput;
       let sounds: Sound[] = [];
       let traces: Trace[] = [];
+      let popOpponentsEmoji = false;
 
       for (const event of events) {
         const from = event.loc1 ? location(event.loc1) : undefined;
@@ -189,7 +205,6 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
-            // TODO: based on player side
             Board.updateScore(game.white_score(), game.black_score());
             break;
           case MonsWeb.EventModelKind.MysticAction:
@@ -255,12 +270,16 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
             break;
           case MonsWeb.EventModelKind.NextTurn:
             sounds.push(Sound.EndTurn);
-            // TODO: update for the next turn
+            if (!isWatchOnly && isOnlineGame && isPlayerSideTurn()) {
+              popOpponentsEmoji = true;
+            }
             break;
           case MonsWeb.EventModelKind.GameOver:
-            // TODO: based on player side
-            sounds.push(Sound.Victory);
-            // sounds.push(Sound.Defeat);
+            if (!isOnlineGame || event.color == playerSideColor) {
+              sounds.push(Sound.Victory);
+            } else {
+              sounds.push(Sound.Defeat);
+            }
             break;
         }
       }
@@ -278,7 +297,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
-      if (opponentsTurn) {
+      if (isRemoteInput) {
         for (const trace of traces) {
           Board.drawTrace(trace);
         }
@@ -286,12 +305,50 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
       playSounds(sounds);
 
+      if (popOpponentsEmoji) {
+        Board.popOpponentsEmoji();
+      }
+
       if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
       }
 
       break;
   }
+}
+
+function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
+  if (isOnlineGame) {
+    if (game.active_color() != playerSideColor) {
+      return;
+    }
+  }
+
+  if (inputLocation) {
+    currentInputs.push(inputLocation);
+  }
+
+  const gameInput = currentInputs.map((input) => new MonsWeb.Location(input.i, input.j));
+  let output: MonsWeb.OutputModel;
+  if (inputModifier != InputModifier.None) {
+    let modifier: MonsWeb.Modifier;
+    switch (inputModifier) {
+      case InputModifier.Bomb:
+        modifier = MonsWeb.Modifier.SelectBomb;
+        break;
+      case InputModifier.Potion:
+        modifier = MonsWeb.Modifier.SelectPotion;
+        break;
+      case InputModifier.Cancel:
+        currentInputs = [];
+        return;
+    }
+    output = game.process_input(gameInput, modifier);
+  } else {
+    output = game.process_input(gameInput);
+  }
+
+  applyOutput(output, false, assistedInputKind, inputLocation);
 }
 
 function updateLocation(location: Location) {
@@ -318,4 +375,123 @@ function hasItemAt(location: Location): boolean {
   } else {
     return false;
   }
+}
+
+function didConnectTo(opponentMatch: any) {
+  updateStatus("");
+
+  Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color == "black" : true);
+
+  if (isWatchOnly) {
+    playerSideColor = MonsWeb.Color.White;
+  } else {
+    playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+  }
+
+  if (!isWatchOnly) {
+    Board.setBoardFlipped(opponentMatch.color == "white");
+  }
+
+  if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
+    console.log("updating local game with opponent's fen");
+    game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+  } else {
+    console.log("got opponent's match, but keeping the local fen");
+  }
+
+  if (isReconnect || isWatchOnly) {
+    const movesCount = opponentMatch.movesFens ? opponentMatch.movesFens.length : 0;
+    setProcessedMovesCountForColor(opponentMatch.color, movesCount);
+  }
+
+  // TODO: updated local processed reactions on reconnect
+
+  isOnlineGame = true;
+  currentInputs = [];
+
+  setNewBoard();
+}
+
+function setNewBoard() {
+  Board.resetForNewGame();
+  Board.updateScore(game.white_score(), game.black_score());
+  Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+
+  game.locations_with_content().forEach((loc) => {
+    const location = new Location(loc.i, loc.j);
+    updateLocation(location);
+  });
+}
+
+function getProcessedMovesCount(color: string): number {
+  return color == "white" ? whiteProcessedMovesCount : blackProcessedMovesCount;
+}
+
+function setProcessedMovesCountForColor(color: string, count: number) {
+  if (color == "white") {
+    whiteProcessedMovesCount = count;
+    didSetWhiteProcessedMovesCount = true;
+  } else {
+    blackProcessedMovesCount = count;
+    didSetBlackProcessedMovesCount = true;
+  }
+}
+
+export function didUpdateOpponentMatch(match: any) {
+  console.log(`didUpdateOpponentMatch`, match);
+
+  if (!didConnect) {
+    didConnectTo(match);
+    didConnect = true;
+    return;
+  }
+
+  const movesCount = match.movesFens ? match.movesFens.length : 0;
+  if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
+
+    if (!game.is_later_than(match.fen)) {
+      game = MonsWeb.MonsGameModel.from_fen(match.fen);
+      setNewBoard();
+    }
+
+    setProcessedMovesCountForColor(match.color, movesCount);
+  }
+
+  const processedMovesCount = getProcessedMovesCount(match.color);
+  if (movesCount > processedMovesCount) {
+    for (let i = processedMovesCount; i < movesCount; i++) {
+      const moveFen = match.movesFens[i];
+      const output = game.process_input_fen(moveFen);
+      applyOutput(output, true, AssistedInputKind.None);
+    }
+  
+    setProcessedMovesCountForColor(match.color, movesCount);
+
+    if (match.fen != game.fen()) {
+      // TODO: show something is wrong alert
+      console.log("fens do not match");
+    } else {
+      console.log("fens ok");
+    }
+  }
+
+  const isOpponentSide = !isWatchOnly || match.color == "black";
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
+
+  // TODO: handle surrendered match status
+}
+
+export function didRecoverMyMatch(match: any) {
+  isReconnect = true;
+
+  playerSideColor = match.color == "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
+  game = MonsWeb.MonsGameModel.from_fen(match.fen);
+  const movesCount = match.movesFens ? match.movesFens.length : 0;
+  setProcessedMovesCountForColor(match.color, movesCount);
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
+  console.log(`didRecoverMyMatch:`, match);
+}
+
+export function enterWatchOnlyMode() {
+  isWatchOnly = true;
 }

@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "./helpers/svg";
-import { didClickSquare, didSelectInputModifier, isPlayerSideTurn } from "./index";
+import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { isDesktopSafari, isModernAndPowerful } from "./helpers/page-setup";
@@ -18,12 +18,41 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
+  const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
+  if (currentId == newEmojiId) {
+    return;
+  }
+  const newEmojiData = emojis.getEmoji(newEmojiId);
+  if (!newEmojiData) {
+    return;
+  }
+
+  if (isOpponentSide) {
+    currentOpponentEmojiId = newEmojiId;
+    SVG.setImage(opponentAvatar, newEmojiData);
+  } else {
+    currentPlayerEmojiId = newEmojiId;
+    SVG.setImage(playerAvatar, newEmojiData);
+  }
+}
+
+export function getPlayersEmojiId(): number {
+  return parseInt(currentPlayerEmojiId != "" ? currentPlayerEmojiId : "1");
+}
+
+export function setBoardFlipped(flipped: boolean) {
+  isFlipped = flipped;
+}
+
 let isFlipped = false;
 let traceIndex = 0;
 
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
+let opponentAvatar: SVGElement | undefined;
+let playerAvatar: SVGElement | undefined;
 
 let currentPlayerEmojiId = "";
 let currentOpponentEmojiId = "";
@@ -45,6 +74,27 @@ const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("./helpers/emojis")).emojis;
+
+export function resetForNewGame() {
+  SVG.setHidden(opponentAvatar, false);
+  SVG.setHidden(playerAvatar, false);
+  removeHighlights();
+  for (const key in items) {
+    const element = items[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete items[key];
+  }
+
+  for (const key in basesPlaceholders) {
+    const element = basesPlaceholders[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete basesPlaceholders[key];
+  }
+}
 
 export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
@@ -93,7 +143,9 @@ export function removeItem(location: Location) {
   }
 }
 
-export function updateScore(player: number, opponent: number) {
+export function updateScore(white: number, black: number) {
+  const player = isFlipped ? black : white;
+  const opponent = isFlipped ? white : black;
   playerScoreText.textContent = player.toString();
   opponentScoreText.textContent = opponent.toString();
 }
@@ -231,7 +283,7 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
   }
 }
 
-export async function setupGameInfoElements() {
+export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove);
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
@@ -253,7 +305,7 @@ export async function setupGameInfoElements() {
     SVG.setOpacity(numberText, 0.69);
     numberText.setAttribute("font-size", "0.5");
     numberText.setAttribute("font-weight", "600");
-    numberText.textContent = "0";
+    numberText.textContent = allHiddenInitially ? "" : "0";
     controlsLayer.append(numberText);
     if (isOpponent) {
       opponentScoreText = numberText;
@@ -276,7 +328,7 @@ export async function setupGameInfoElements() {
 
       const isActiveSide = isFlipped ? isOpponent : !isOpponent;
       if (isActiveSide) {
-        if (x > 4) {
+        if (allHiddenInitially || x > 4) {
           SVG.setHidden(img, true);
         }
       } else {
@@ -288,36 +340,43 @@ export async function setupGameInfoElements() {
     avatar.style.pointerEvents = "auto";
     SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
     controlsLayer.append(avatar);
+    if (isOpponent) {
+      opponentAvatar = avatar;
+    } else {
+      playerAvatar = avatar;
+    }
+
+    if (allHiddenInitially) {
+      SVG.setHidden(avatar, true);
+    }
 
     avatar.addEventListener("click", (event) => {
       event.stopPropagation();
 
-      const playerSideActive = isFlipped ? !isPlayerSideTurn() : isPlayerSideTurn();
+      const shouldChangeEmoji = canChangeEmoji(isOpponent);
 
       if (isOpponent) {
-        if (!playerSideActive) {
+        if (shouldChangeEmoji) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
+          updateEmoji(parseInt(newId));
           currentOpponentEmojiId = newId;
           SVG.setImage(avatar, newEmoji);
           playSounds([Sound.Click]);
         }
 
-        if (!isModernAndPowerful) { return; }
-
-        avatar.style.transition = "transform 0.3s";
-        avatar.style.transform = "scale(1.8)";
-        setTimeout(() => {
-          avatar.style.transform = "scale(1)";
-        }, 300);
+        popOpponentsEmoji();
       } else {
-        if (playerSideActive) {
+        if (shouldChangeEmoji) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
+          updateEmoji(parseInt(newId));
           currentPlayerEmojiId = newId;
           SVG.setImage(avatar, newEmoji);
           playSounds([Sound.Click]);
         }
 
-        if (!isModernAndPowerful) { return; }
+        if (!isModernAndPowerful) {
+          return;
+        }
 
         if (isDesktopSafari) {
           const scale = 1.8;
@@ -423,6 +482,18 @@ export function applyHighlights(highlights: Highlight[]) {
         break;
     }
   });
+}
+
+export function popOpponentsEmoji() {
+  if (!isModernAndPowerful) {
+    return;
+  }
+
+  opponentAvatar.style.transition = "transform 0.3s";
+  opponentAvatar.style.transform = "scale(1.8)";
+  setTimeout(() => {
+    opponentAvatar.style.transform = "scale(1)";
+  }, 300);
 }
 
 export function drawTrace(trace: Trace) {
@@ -603,14 +674,18 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
   SVG.setOpacity(particle, opacity);
   container.appendChild(particle);
 
-  if (!animating) { return; }
+  if (!animating) {
+    return;
+  }
 
   const velocity = (4 + 2 * Math.random()) * 0.01;
   const duration = Math.random() * 1000 + 2500;
   let startTime: number = null;
 
   function animateParticle(time: number) {
-    if (!startTime) { startTime = time; }
+    if (!startTime) {
+      startTime = time;
+    }
 
     let timeDelta = time - startTime;
     let progress = timeDelta / duration;
@@ -656,8 +731,8 @@ function highlightSelectedItem(location: Location, color: string) {
   highlight.style.pointerEvents = "none";
 
   const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
-  SVG.setFill(circle, color);  
-  
+  SVG.setFill(circle, color);
+
   const mask = document.createElementNS(SVG.ns, "mask");
   mask.setAttribute("id", `highlight-mask-${location.toString()}`);
   const maskRect = document.createElementNS(SVG.ns, "rect");
@@ -678,7 +753,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
 
   const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
   SVG.setFill(circle, color);
-  
+
   circle.setAttribute("stroke", colors.startFromStroke);
   circle.setAttribute("stroke-width", "0.023");
 
@@ -730,7 +805,9 @@ function highlightDestinationItem(location: Location, color: string) {
 }
 
 function getTraceColors(): string[] {
-  if (traceIndex == 6) { traceIndex = 0; }
+  if (traceIndex == 6) {
+    traceIndex = 0;
+  }
 
   traceIndex += 1;
 
@@ -749,7 +826,9 @@ function addWaves(location: Location) {
 
   let frameIndex = 0;
   wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
-  if (!isModernAndPowerful) { return; }
+  if (!isModernAndPowerful) {
+    return;
+  }
   setInterval(() => {
     frameIndex = (frameIndex + 1) % 9;
     wavesSquareElement.innerHTML = "";
@@ -858,7 +937,7 @@ const sparkle = (() => {
   svg.appendChild(rect2);
 
   const rect3 = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(rect3, 1, 1, 1, 1);  
+  SVG.setFrame(rect3, 1, 1, 1, 1);
   SVG.setFill(rect3, colors.sparkleDark);
   svg.appendChild(rect3);
 
