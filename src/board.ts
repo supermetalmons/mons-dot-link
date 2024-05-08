@@ -18,15 +18,8 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
-export function getEmojiId(playerColor: string): number {
-  let forWhite = playerColor == "white";
-  let currentEmojiId = "";
-  if (isFlipped) {
-    currentEmojiId = forWhite ? currentOpponentEmojiId : currentPlayerEmojiId;
-  } else {
-    currentEmojiId = forWhite ? currentPlayerEmojiId : currentOpponentEmojiId;
-  }
-  return parseInt(currentEmojiId != "" ? currentEmojiId : "1");
+export function getPlayersEmojiId(): number {
+  return parseInt(currentPlayerEmojiId != "" ? currentPlayerEmojiId : "1");
 }
 
 export function setBoardFlipped(flipped: boolean) {
