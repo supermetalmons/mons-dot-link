@@ -76,7 +76,7 @@ export function sendMove(moveFen: string, newBoardFen: string) {
 }
 
 // TODO: tmp here as long as we access connection from here
-export function updateEmoji(newId: number) {
+export function sendEmojiUpdate(newId: number) {
   firebaseConnection.updateEmoji(newId);
 }
 

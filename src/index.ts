@@ -3,7 +3,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, updateEmoji } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate } from "./helpers/page-setup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -43,6 +43,12 @@ export function canChangeEmoji(opponents: boolean): boolean {
     return opponents ? false : !isWatchOnly;
   } else {
     return isPlayerSideTurn() ? !opponents : opponents;
+  }
+}
+
+export function updateEmoji(newId: number) {
+  if (isOnlineGame && !isWatchOnly) {
+    sendEmojiUpdate(newId);
   }
 }
 

@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "./helpers/svg";
-import { didClickSquare, didSelectInputModifier, canChangeEmoji } from "./index";
+import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./index";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { isDesktopSafari, isModernAndPowerful } from "./helpers/page-setup";
@@ -346,6 +346,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       if (isOpponent) {
         if (shouldChangeEmoji) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
+          updateEmoji(parseInt(newId));
           currentOpponentEmojiId = newId;
           SVG.setImage(avatar, newEmoji);
           playSounds([Sound.Click]);
@@ -355,6 +356,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       } else {
         if (shouldChangeEmoji) {
           const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
+          updateEmoji(parseInt(newId));
           currentPlayerEmojiId = newId;
           SVG.setImage(avatar, newEmoji);
           playSounds([Sound.Click]);
