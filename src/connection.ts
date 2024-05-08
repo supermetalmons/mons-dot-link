@@ -30,7 +30,8 @@ class FirebaseConnection {
   }
 
   public updateEmoji(newId: number) {
-    // TODO: implement
+    this.myMatch.emojiId = newId;
+    this.sendMatchUpdate();
   }
 
   public sendMove(moveFen: string, newBoardFen: string) {
@@ -46,14 +47,17 @@ class FirebaseConnection {
     }
 
     this.myMatch.movesFens.push(moveFen);
+    this.sendMatchUpdate();
+  }
 
+  private sendMatchUpdate() {
     const db = getDatabase(this.app);
     set(ref(db, `players/${this.uid}/matches/${this.gameId}`), this.myMatch)
       .then(() => {
-        console.log("did send move successfully");
+        console.log("did send match update successfully");
       })
       .catch((error) => {
-        console.error("error sending a move", error);
+        console.error("error sending a match update", error);
       });
   }
 
