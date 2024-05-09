@@ -2,7 +2,7 @@ import initMonsWeb, * as MonsWeb from "mons-web";
 import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
-import { playSounds } from "./helpers/sounds";
+import { playSounds, playReaction } from "./helpers/sounds";
 import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful } from "./helpers/page-setup";
 
 let isWatchOnly = false;
@@ -16,7 +16,7 @@ let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
 let isGameOver = false;
-const processedVoiceReactions = new Set<string>(); // TODO: use it
+const processedVoiceReactions = new Set<string>();
 
 var currentInputs: Location[] = [];
 
@@ -420,7 +420,9 @@ function didConnectTo(opponentMatch: any) {
     setProcessedMovesCountForColor(opponentMatch.color, movesCount);
   }
 
-  // TODO: updated local processed reactions on reconnect
+  if (opponentMatch.reaction && opponentMatch.reaction.uuid) {
+    processedVoiceReactions.add(opponentMatch.reaction.uuid);
+  }
 
   isOnlineGame = true;
   currentInputs = [];
@@ -506,6 +508,11 @@ export function didUpdateOpponentMatch(match: any) {
     setTimeout(() => {
       alert(match.color + " left the game");
     }, 420);
+  }
+
+  if (match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
+    processedVoiceReactions.add(match.reaction.uuid);
+    playReaction(match.reaction);
   }
 }
 
