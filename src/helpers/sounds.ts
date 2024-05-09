@@ -2,6 +2,33 @@ import { Sound } from "./game-models";
 
 const audioCache: { [key: string]: any } = {};
 
+export function playReaction(reaction: any) {
+  const path = `reactions/${reaction.kind}${reaction.variation}.wav`;
+  play(path);
+}
+
+export function newReactionOfKind(kind: string): any {
+  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+  let variation = 1;
+  switch (kind) {
+    case "yo":
+      variation = Math.floor(Math.random() * 4) + 1;
+      break;
+    case "gg":
+      variation = Math.floor(Math.random() * 2) + 1;
+      break;
+    case "wahoo":
+    case "drop":
+    case "slurp":
+      variation = 1;
+      break;
+  }
+  return {uuid: uuid, variation: variation, kind: kind};
+}
+
 export function playSounds(sounds: Sound[]) {
   const maxSoundPriority = Math.max(...sounds.map((sound) => getSoundPriority(sound)));
   sounds = sounds.filter((sound) => getSoundPriority(sound) === maxSoundPriority || sound === Sound.EndTurn);
@@ -59,14 +86,19 @@ export function playSounds(sounds: Sound[]) {
         break;
     }
 
-    if (!audioCache[name]) {
-      audioCache[name] = new Audio(`/assets/sounds/${name}.wav`);
-    }
-
-    audioCache[name].play().catch((_: any) => {
-      console.error("error playing sound");
-    });
+    const path = `sounds/${name}.wav`;
+    play(path);
   }
+}
+
+function play(path: string) {
+  if (!audioCache[path]) {
+    audioCache[path] = new Audio(`/assets/${path}`);
+  }
+
+  audioCache[path].play().catch((_: any) => {
+    console.error("error playing sound");
+  });
 }
 
 const getSoundPriority = (sound: Sound) => {

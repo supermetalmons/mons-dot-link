@@ -34,6 +34,16 @@ class FirebaseConnection {
     this.sendMatchUpdate();
   }
 
+  public sendVoiceReaction(reaction: any) {
+    this.myMatch.reaction = reaction;
+    this.sendMatchUpdate();
+  }
+
+  public surrender() {
+    this.myMatch.status = "surrendered";
+    this.sendMatchUpdate();
+  }
+
   public sendMove(moveFen: string, newBoardFen: string) {
     this.myMatch.fen = newBoardFen;
     if (!this.myMatch.movesFens) {

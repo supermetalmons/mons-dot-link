@@ -2,8 +2,8 @@ import initMonsWeb, * as MonsWeb from "mons-web";
 import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
-import { playSounds } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate } from "./helpers/page-setup";
+import { playSounds, playReaction } from "./helpers/sounds";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "./helpers/page-setup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -14,6 +14,10 @@ let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
 let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
+
+let lastReactionTime = 0;
+let isGameOver = false;
+const processedVoiceReactions = new Set<string>();
 
 var currentInputs: Location[] = [];
 
@@ -275,11 +279,24 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             break;
           case MonsWeb.EventModelKind.GameOver:
-            if (!isOnlineGame || event.color == playerSideColor) {
+            const isVictory = !isOnlineGame || event.color == playerSideColor;
+            let winnerAlertText = (event.color == MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
+            if (!isModernAndPowerful) {
+              winnerAlertText = (event.color == MonsWeb.Color.White ? "white" : "black") + " wins";
+            }
+
+            if (isVictory) {
               sounds.push(Sound.Victory);
             } else {
               sounds.push(Sound.Defeat);
             }
+
+            setTimeout(() => {
+              alert(winnerAlertText);
+            }, 420);
+
+            isGameOver = true;
+
             break;
         }
       }
@@ -379,6 +396,9 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(opponentMatch: any) {
   updateStatus("");
+  if (!isWatchOnly) {
+    setVoiceReactionSelectHidden(false);
+  }
 
   Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color == "black" : true);
 
@@ -404,7 +424,9 @@ function didConnectTo(opponentMatch: any) {
     setProcessedMovesCountForColor(opponentMatch.color, movesCount);
   }
 
-  // TODO: updated local processed reactions on reconnect
+  if (opponentMatch.reaction && opponentMatch.reaction.uuid) {
+    processedVoiceReactions.add(opponentMatch.reaction.uuid);
+  }
 
   isOnlineGame = true;
   currentInputs = [];
@@ -438,11 +460,18 @@ function setProcessedMovesCountForColor(color: string, count: number) {
 }
 
 export function didUpdateOpponentMatch(match: any) {
+  if (isGameOver) {
+    return;
+  }
+
   console.log(`didUpdateOpponentMatch`, match);
 
   if (!didConnect) {
     didConnectTo(match);
     didConnect = true;
+    if (!isReconnect) {
+      playSounds([Sound.DidConnect]);
+    }
     return;
   }
 
@@ -478,7 +507,22 @@ export function didUpdateOpponentMatch(match: any) {
   const isOpponentSide = !isWatchOnly || match.color == "black";
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
 
-  // TODO: handle surrendered match status
+  if (match.status == "surrendered") {
+    isGameOver = true;
+    setTimeout(() => {
+      alert(match.color + " left the game");
+    }, 420);
+  }
+
+  if (!isWatchOnly && match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
+    processedVoiceReactions.add(match.reaction.uuid);
+    const currentTime = Date.now();
+    if (currentTime - lastReactionTime > 5000) {
+      showVoiceReactionText(match.reaction.kind, true);
+      playReaction(match.reaction);
+      lastReactionTime = currentTime;
+    }
+  }
 }
 
 export function didRecoverMyMatch(match: any) {

@@ -1,8 +1,12 @@
+import { newReactionOfKind, playReaction } from "./sounds";
+
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
 const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
 const statusText = document.querySelector(".status-text");
+const voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
+const rock = document.querySelector(".rock-link") as HTMLElement;
 
 export const isCreateNewInviteFlow = initialPath == "";
 
@@ -18,6 +22,8 @@ export function updateStatus(text: string) {
 }
 
 export function setupPage() {
+  setupVoiceReactionSelect();
+
   if (isCreateNewInviteFlow) {
     // TODO: create invite flow
   } else {
@@ -31,7 +37,7 @@ export function setupPage() {
       inviteButton.innerHTML = "loading mons game...";
       // TODO: implement loading and connecting to the existing invite
     } else {
-      inviteButton.innerHTML = "+ new invite link";
+      inviteButton.innerHTML = "new invite link";
     }
   }
 
@@ -49,8 +55,15 @@ export function setupPage() {
   }
 }
 
+export function setVoiceReactionSelectHidden(hidden: boolean) {
+  voiceReactionSelect.style.display = hidden ? "none" : "";
+  rock.style.display = !hidden ? "none" : "";
+}
+
 function didClickInviteButton() {
-  if (!inviteButton) { return; }
+  if (!inviteButton) {
+    return;
+  }
 
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
@@ -66,7 +79,7 @@ function didClickInviteButton() {
 }
 
 function writeInviteLinkToClipboard() {
-  const link = window.location.origin + '/' + newGameId;
+  const link = window.location.origin + "/" + newGameId;
   navigator.clipboard.writeText(link);
 }
 
@@ -93,6 +106,19 @@ function connectToGame(gameId: string) {
   });
 }
 
+export function showVoiceReactionText(reactionText: string, opponents: boolean) {
+  const textElement = document.querySelector(opponents ? ".opponents-reaction-text" : ".player-reaction-text") as HTMLElement;
+  textElement.innerHTML = reactionText;
+  textElement.style.transition = "";
+  textElement.style.display = "";
+  textElement.style.opacity = "1";
+  
+  setTimeout(() => {
+    textElement.style.transition = "opacity 3s";
+    textElement.style.opacity = "0";
+  }, 0);
+}
+
 function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {
@@ -111,7 +137,7 @@ function createNewMatchInvite() {
 
 function showDidCopyInviteLink() {
   if (inviteButton) {
-    inviteButton.innerHTML = "invite link is copied ✓";
+    inviteButton.innerHTML = "invite link is copied";
     (inviteButton as HTMLButtonElement).disabled = true;
     setTimeout(() => {
       inviteButton.innerHTML = "copy invite link";
@@ -123,6 +149,24 @@ function showDidCopyInviteLink() {
 function updatePath(newGameId: string) {
   const newPath = `/${newGameId}`;
   history.pushState({ path: newPath }, "", newPath);
+}
+
+function setupVoiceReactionSelect() {
+  voiceReactionSelect.addEventListener("change", function () {
+    const reaction = newReactionOfKind(voiceReactionSelect.value);
+    voiceReactionSelect.selectedIndex = 0;
+    firebaseConnection.sendVoiceReaction(reaction);
+    playReaction(reaction);
+    showVoiceReactionText(reaction.kind, false);
+    slowDownVoiceReactions();
+  });
+}
+
+function slowDownVoiceReactions() {
+  setVoiceReactionSelectHidden(true);
+  setTimeout(() => {
+    setVoiceReactionSelectHidden(false);
+  }, 9999);
 }
 
 function didClickConnectWalletButton() {
