@@ -143,7 +143,7 @@ function setupVoiceReactionSelect() {
     const reaction = newReactionOfKind(voiceReactionSelect.value);
     voiceReactionSelect.selectedIndex = 0;
     playReaction(reaction);
-    // TODO: send reaction
+    firebaseConnection.sendVoiceReaction(reaction);
     // TODO: display reaction text
     // TODO: hide reaction select temporarily
   });

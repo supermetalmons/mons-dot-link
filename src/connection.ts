@@ -34,8 +34,9 @@ class FirebaseConnection {
     this.sendMatchUpdate();
   }
 
-  public sendVoiceReaction() {
-    // TODO: implement
+  public sendVoiceReaction(reaction: any) {
+    this.myMatch.reaction = reaction;
+    this.sendMatchUpdate();
   }
 
   public surrender() {
