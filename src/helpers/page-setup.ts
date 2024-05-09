@@ -122,7 +122,7 @@ function createNewMatchInvite() {
 
 function showDidCopyInviteLink() {
   if (inviteButton) {
-    inviteButton.innerHTML = "invite link is copied ✓";
+    inviteButton.innerHTML = "invite link is copied";
     (inviteButton as HTMLButtonElement).disabled = true;
     setTimeout(() => {
       inviteButton.innerHTML = "copy invite link";
