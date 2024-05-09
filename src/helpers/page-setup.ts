@@ -11,8 +11,6 @@ let newGameId = "";
 let didCreateNewGameInvite = false;
 let firebaseConnection: any;
 
-setupVoiceReactionSelect();
-
 export function updateStatus(text: string) {
   if (text == "") {
     statusText.innerHTML = "";
@@ -21,6 +19,8 @@ export function updateStatus(text: string) {
 }
 
 export function setupPage() {
+  setupVoiceReactionSelect();
+
   if (isCreateNewInviteFlow) {
     // TODO: create invite flow
   } else {
@@ -50,6 +50,10 @@ export function setupPage() {
       }
     });
   }
+}
+
+function setVoiceReactionSelectHidden(hidden: boolean) {
+  voiceReactionSelect.style.display = hidden ? "none" : "";
 }
 
 function didClickInviteButton() {
@@ -138,6 +142,8 @@ function setupVoiceReactionSelect() {
 }
 
 function didClickConnectWalletButton() {
+  setVoiceReactionSelectHidden(false); // TODO: remove dev tmp
+
   if (connectWalletButton) {
     connectWalletButton.innerHTML = "soon";
     setTimeout(() => {
