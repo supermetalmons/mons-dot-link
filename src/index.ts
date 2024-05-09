@@ -3,7 +3,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds, playReaction } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden } from "./helpers/page-setup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -395,6 +395,9 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(opponentMatch: any) {
   updateStatus("");
+  if (!isWatchOnly) {
+    setVoiceReactionSelectHidden(false);
+  }
 
   Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color == "black" : true);
 
@@ -510,7 +513,7 @@ export function didUpdateOpponentMatch(match: any) {
     }, 420);
   }
 
-  if (match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
+  if (!isWatchOnly && match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
     processedVoiceReactions.add(match.reaction.uuid);
     playReaction(match.reaction);
   }

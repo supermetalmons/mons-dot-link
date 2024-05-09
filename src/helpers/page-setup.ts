@@ -55,7 +55,7 @@ export function setupPage() {
   }
 }
 
-function setVoiceReactionSelectHidden(hidden: boolean) {
+export function setVoiceReactionSelectHidden(hidden: boolean) {
   voiceReactionSelect.style.display = hidden ? "none" : "";
   rock.style.display = !hidden ? "none" : "";
 }
@@ -150,8 +150,6 @@ function setupVoiceReactionSelect() {
 }
 
 function didClickConnectWalletButton() {
-  setVoiceReactionSelectHidden(false); // TODO: remove dev tmp
-
   if (connectWalletButton) {
     connectWalletButton.innerHTML = "soon";
     setTimeout(() => {
