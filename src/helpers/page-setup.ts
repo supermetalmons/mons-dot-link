@@ -6,6 +6,7 @@ const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
 const statusText = document.querySelector(".status-text");
 const voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
+const rock = document.querySelector(".rock-link") as HTMLElement;
 
 export const isCreateNewInviteFlow = initialPath == "";
 
@@ -56,6 +57,7 @@ export function setupPage() {
 
 function setVoiceReactionSelectHidden(hidden: boolean) {
   voiceReactionSelect.style.display = hidden ? "none" : "";
+  rock.style.display = !hidden ? "none" : "";
 }
 
 function didClickInviteButton() {
