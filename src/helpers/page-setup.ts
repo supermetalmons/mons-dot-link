@@ -144,9 +144,16 @@ function setupVoiceReactionSelect() {
     voiceReactionSelect.selectedIndex = 0;
     playReaction(reaction);
     firebaseConnection.sendVoiceReaction(reaction);
+    slowDownVoiceReactions();
     // TODO: display reaction text
-    // TODO: hide reaction select temporarily
   });
+}
+
+function slowDownVoiceReactions() {
+  setVoiceReactionSelectHidden(true);
+  setTimeout(() => {
+    setVoiceReactionSelectHidden(false);
+  }, 9999);
 }
 
 function didClickConnectWalletButton() {
