@@ -1,3 +1,5 @@
+import { newReactionOfKind, playReaction } from "./sounds";
+
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
 const inviteButton = document.querySelector(".invite-button");
@@ -136,8 +138,12 @@ function updatePath(newGameId: string) {
 
 function setupVoiceReactionSelect() {
   voiceReactionSelect.addEventListener("change", function () {
-    console.log("says", voiceReactionSelect.value);
+    const reaction = newReactionOfKind(voiceReactionSelect.value);
     voiceReactionSelect.selectedIndex = 0;
+    playReaction(reaction);
+    // TODO: send reaction
+    // TODO: display reaction text
+    // TODO: hide reaction select temporarily
   });
 }
 
