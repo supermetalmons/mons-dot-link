@@ -15,6 +15,7 @@ let blackProcessedMovesCount = 0;
 let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
+let lastReactionTime = 0;
 let isGameOver = false;
 const processedVoiceReactions = new Set<string>();
 
@@ -515,7 +516,11 @@ export function didUpdateOpponentMatch(match: any) {
 
   if (!isWatchOnly && match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
     processedVoiceReactions.add(match.reaction.uuid);
-    playReaction(match.reaction);
+    const currentTime = Date.now();
+    if (currentTime - lastReactionTime > 5000) {
+      playReaction(match.reaction);
+      lastReactionTime = currentTime;
+    }
   }
 }
 
