@@ -3,12 +3,15 @@ const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 const inviteButton = document.querySelector(".invite-button");
 const connectWalletButton = document.querySelector(".connect-wallet-button");
 const statusText = document.querySelector(".status-text");
+const voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
 
 export const isCreateNewInviteFlow = initialPath == "";
 
 let newGameId = "";
 let didCreateNewGameInvite = false;
 let firebaseConnection: any;
+
+setupVoiceReactionSelect();
 
 export function updateStatus(text: string) {
   if (text == "") {
@@ -127,19 +130,7 @@ function updatePath(newGameId: string) {
   history.pushState({ path: newPath }, "", newPath);
 }
 
-function addVoiceReactionSelect() {
-  const voiceReactionSelect = document.createElement("select");
-  voiceReactionSelect.id = "voiceReactions";
-  voiceReactionSelect.innerHTML = `
-    <option value="" disabled selected>say</option>
-    <option value="yo">yo</option>
-    <option value="wahoo">wahoo</option>
-    <option value="drop">drop</option>
-    <option value="slurp">slurp</option>
-    <option value="gg">gg</option>
-  `;
-  document.body.appendChild(voiceReactionSelect);
-
+function setupVoiceReactionSelect() {
   voiceReactionSelect.addEventListener("change", function () {
     console.log("says", voiceReactionSelect.value);
     voiceReactionSelect.selectedIndex = 0;
