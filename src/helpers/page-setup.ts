@@ -36,7 +36,7 @@ export function setupPage() {
       inviteButton.innerHTML = "loading mons game...";
       // TODO: implement loading and connecting to the existing invite
     } else {
-      inviteButton.innerHTML = "+ new invite link";
+      inviteButton.innerHTML = "new invite link";
     }
   }
 

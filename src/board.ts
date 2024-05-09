@@ -434,7 +434,7 @@ export function setupBoard() {
       didClickSquare(new Location(y, x));
       event.preventDefault();
       event.stopPropagation();
-    } else if (!target.closest("a, button")) {
+    } else if (!target.closest("a, button, select")) {
       if (itemSelectionOverlay) {
         itemSelectionOverlay.remove();
       }
