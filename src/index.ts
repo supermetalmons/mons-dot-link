@@ -463,6 +463,9 @@ export function didUpdateOpponentMatch(match: any) {
   if (!didConnect) {
     didConnectTo(match);
     didConnect = true;
+    if (!isReconnect) {
+      playSounds([Sound.DidConnect]);
+    }
     return;
   }
 
