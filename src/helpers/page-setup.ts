@@ -106,6 +106,19 @@ function connectToGame(gameId: string) {
   });
 }
 
+export function showVoiceReactionText(reactionText: string, opponents: boolean) {
+  const textElement = document.querySelector(opponents ? ".opponents-reaction-text" : ".player-reaction-text") as HTMLElement;
+  textElement.innerHTML = reactionText;
+  textElement.style.transition = "";
+  textElement.style.display = "";
+  textElement.style.opacity = "1";
+  
+  setTimeout(() => {
+    textElement.style.transition = "opacity 3s";
+    textElement.style.opacity = "0";
+  }, 0);
+}
+
 function createNewMatchInvite() {
   signIn().then((uid) => {
     if (uid) {
@@ -142,10 +155,10 @@ function setupVoiceReactionSelect() {
   voiceReactionSelect.addEventListener("change", function () {
     const reaction = newReactionOfKind(voiceReactionSelect.value);
     voiceReactionSelect.selectedIndex = 0;
-    playReaction(reaction);
     firebaseConnection.sendVoiceReaction(reaction);
+    playReaction(reaction);
+    showVoiceReactionText(reaction.kind, false);
     slowDownVoiceReactions();
-    // TODO: display reaction text
   });
 }
 

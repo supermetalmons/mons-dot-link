@@ -3,7 +3,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/game-models";
 import { colors } from "./helpers/colors";
 import { playSounds, playReaction } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden } from "./helpers/page-setup";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "./helpers/page-setup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -518,6 +518,7 @@ export function didUpdateOpponentMatch(match: any) {
     processedVoiceReactions.add(match.reaction.uuid);
     const currentTime = Date.now();
     if (currentTime - lastReactionTime > 5000) {
+      showVoiceReactionText(match.reaction.kind, true);
       playReaction(match.reaction);
       lastReactionTime = currentTime;
     }
