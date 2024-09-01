@@ -70,7 +70,7 @@ export function playSounds(sounds: Sound[]) {
         name = "scoreMana";
         break;
       case Sound.ScoreSupermana:
-        name = "scoreSupermana";
+        name = "scoreSuperMana";
         break;
       case Sound.SpiritAbility:
         name = "spiritAbility";
