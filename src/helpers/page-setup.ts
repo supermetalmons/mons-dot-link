@@ -171,7 +171,7 @@ function slowDownVoiceReactions() {
 
 function didClickConnectWalletButton() {
   if (connectWalletButton) {
-    connectWalletButton.innerHTML = "soon";
+    connectWalletButton.innerHTML = "wip";
     setTimeout(() => {
       connectWalletButton.innerHTML = "connect wallet";
     }, 699);
