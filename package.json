@@ -15,6 +15,8 @@
     "@tanstack/react-query": "^5.56.2",
     "firebase": "^10.11.1",
     "mons-web": "^0.1.16",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "viem": "^2.21.9",
     "wagmi": "^2.12.12"
   }
