@@ -13,8 +13,6 @@ frontend:
       - 'index.html'
       - 'dist/**/*'
       - 'assets/**/*'
-      - 'mons/**/*'
-      - '.well-known/**/*'
   cache:
     paths:
       - node_modules/**/*
