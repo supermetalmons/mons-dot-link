@@ -3,4 +3,4 @@ frontend:
   artifacts:
     baseDirectory: /
     files:
-      - 'mons/**/*'
+      - 'gen2/**/*'
