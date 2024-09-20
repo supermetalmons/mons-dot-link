@@ -5,6 +5,12 @@
   --text-color-dark: #e0e0e0;
   --link-color-light: #0071F9;
   --link-color-dark: #009AFF;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-callout: none;
+  -webkit-highlight: none;
 }
 
 html,
@@ -43,9 +49,9 @@ body {
 }
 
 .connect-button-container {
-  display: flex;
-  justify-content: flex-end;
-  padding: 12px;
+  position: absolute;
+  top: 9pt;
+  right: 9pt;
 }
 
 .board-svg {
@@ -152,7 +158,7 @@ img {
 
 .invite-button {
   position: absolute;
-  top: 4pt;
+  top: 7pt;
   left: 12pt;
   width: 155pt;
   height: 23pt;
