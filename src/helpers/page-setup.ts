@@ -151,7 +151,7 @@ function showDidCopyInviteLink() {
 
 function updatePath(newGameId: string) {
   const newPath = `/${newGameId}`;
-  // history.pushState({ path: newPath }, "", newPath); // TODO: update for react
+  window.history.pushState({ path: newPath }, "", newPath);
 }
 
 function setupVoiceReactionSelect() {
