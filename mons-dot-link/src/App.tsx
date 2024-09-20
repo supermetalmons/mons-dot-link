@@ -6,7 +6,7 @@ const App: React.FC = () => {
   return (
     <div className="app-container">
       <div className="connect-button-container">
-        <ConnectButton />
+        <ConnectButton showBalance={false} />
       </div>
       <BoardComponent />
     </div>

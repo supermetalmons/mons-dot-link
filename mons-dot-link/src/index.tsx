@@ -5,21 +5,19 @@ import { colors } from "./helpers/colors";
 import { playSounds, playReaction } from "./helpers/sounds";
 import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "./helpers/page-setup";
 
-import '@rainbow-me/rainbowkit/styles.css';
-import './index.css';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import "@rainbow-me/rainbowkit/styles.css";
+import "./index.css";
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider } from 'wagmi';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 
-import App from './App';
-import { config } from './wagmi';
+import App from "./App";
+import { config } from "./wagmi";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 const queryClient = new QueryClient();
 
@@ -47,7 +45,12 @@ root.render(
   <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider modalSize="compact">
+        <RainbowKitProvider
+          modalSize="compact"
+          theme={{
+            lightMode: lightTheme(),
+            darkMode: darkTheme(),
+          }}>
           <App />
         </RainbowKitProvider>
       </QueryClientProvider>
@@ -372,8 +375,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  console.log(inputLocation);
-
   if (isOnlineGame) {
     if (game.active_color() != playerSideColor) {
       return;
@@ -516,7 +517,6 @@ export function didUpdateOpponentMatch(match: any) {
 
   const movesCount = match.movesFens ? match.movesFens.length : 0;
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
-
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
       setNewBoard();
@@ -532,7 +532,7 @@ export function didUpdateOpponentMatch(match: any) {
       const output = game.process_input_fen(moveFen);
       applyOutput(output, true, AssistedInputKind.None);
     }
-  
+
     setProcessedMovesCountForColor(match.color, movesCount);
 
     if (match.fen != game.fen()) {
