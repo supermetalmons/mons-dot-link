@@ -68,12 +68,13 @@ const App: React.FC = () => {
       
       <footer>
         <div id="link-container" style={{
+          position: 'absolute',
+          bottom: '10pt',
+          left: '12pt',
           display: 'flex',
           justifyContent: 'left',
           gap: '20px',
           alignItems: 'baseline',
-          marginLeft: '12pt',
-          marginBottom: '-3pt',
           padding: 0,
         }}>
           <a href="https://github.com/supermetalmons/mons-dot-link" className="footer-link" data-key="github" data-text="&nbsp;github&nbsp;">github</a>
