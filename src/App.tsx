@@ -6,7 +6,7 @@ const App: React.FC = () => {
   return (
     <div className="app-container">
       <div className="connect-button-container">
-        <ConnectButton showBalance={false} />
+        <ConnectButton showBalance={false} chainStatus="none"/>
       </div>
       <BoardComponent />
       
@@ -39,7 +39,7 @@ const App: React.FC = () => {
         style={{
           position: 'absolute',
           bottom: '10pt',
-          right: '12pt',
+          right: '9pt',
           outline: 'none',
           display: 'none',
           fontSize: '1.23rem',
