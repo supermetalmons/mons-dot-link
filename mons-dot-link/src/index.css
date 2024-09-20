@@ -65,3 +65,11 @@ body {
   max-height: 71vh;
   touch-action: none;
 }
+
+.item {
+  -webkit-tap-highlight-color: transparent;
+      pointer-events: none;
+  touch-action: none;
+  outline: none;
+  transform: translate3d(0, 0, 0);
+  }
