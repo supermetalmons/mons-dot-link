@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import BoardComponent from './BoardComponent';
 
 const App: React.FC = () => {
-  const [playerReaction, setPlayerReaction] = useState('');
-  const [opponentReaction, setOpponentReaction] = useState('');
-  const [showVoiceReaction, setShowVoiceReaction] = useState(false);
-
   return (
     <div className="app-container">
       <div className="connect-button-container">
@@ -16,14 +12,8 @@ const App: React.FC = () => {
       
       <button className="invite-button"></button>
       <div className="status-text"></div>
-      
-      {opponentReaction && (
-        <div className="opponents-reaction-text">{opponentReaction}</div>
-      )}
-      
-      {playerReaction && (
-        <div className="player-reaction-text">{playerReaction}</div>
-      )}
+      <div className="opponents-reaction-text" style={{display: 'none'}}>yo</div>
+      <div className="player-reaction-text" style={{display: 'none'}}>yo</div>
       
       <a
         className="rock-link"
@@ -34,7 +24,7 @@ const App: React.FC = () => {
           position: 'absolute',
           bottom: '10pt',
           right: '12pt',
-          display: showVoiceReaction ? 'none' : 'block',
+          display: '',
         }}
       >
         <img
@@ -51,14 +41,12 @@ const App: React.FC = () => {
           bottom: '10pt',
           right: '12pt',
           outline: 'none',
-          display: showVoiceReaction ? 'block' : 'none',
+          display: 'none',
           fontSize: '1.23rem',
           opacity: 0.81,
         }}
-        onChange={(e) => setPlayerReaction(e.target.value)}
-        value={playerReaction}
       >
-        <option value="" disabled>say</option>
+        <option value="" disabled selected>say</option>
         <option value="yo">yo</option>
         <option value="wahoo">wahoo</option>
         <option value="drop">drop</option>
