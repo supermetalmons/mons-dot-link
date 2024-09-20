@@ -22,7 +22,7 @@ const App: React.FC = () => {
         rel="noopener noreferrer"
         style={{
           position: 'absolute',
-          bottom: '10pt',
+          bottom: '7pt',
           right: '12pt',
           display: '',
         }}
@@ -61,7 +61,7 @@ const App: React.FC = () => {
           left: '12pt',
           display: 'flex',
           justifyContent: 'left',
-          gap: '20px',
+          gap: '12pt',
           alignItems: 'baseline',
           padding: 0,
         }}>
