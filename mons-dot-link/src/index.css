@@ -7,7 +7,8 @@
   --link-color-dark: #009AFF;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -68,8 +69,46 @@ body {
 
 .item {
   -webkit-tap-highlight-color: transparent;
-      pointer-events: none;
+  pointer-events: none;
   touch-action: none;
   outline: none;
   transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
   }
+
+  a {
+    color: var(--link-color-dark);
+  }
+
+  .footer-link {
+    color: rgba(128, 128, 128, 0.69);
+  }
+
+  .invite-button {
+    color: rgba(128, 128, 128, 0.69);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+  }
+
+  a {
+    color: var(--link-color-light);
+  }
+
+  .footer-link {
+    color: rgba(128, 128, 128, 0.42);
+  }
+
+  .invite-button {
+    color: rgba(128, 128, 128, 0.42);
+  }
+}
