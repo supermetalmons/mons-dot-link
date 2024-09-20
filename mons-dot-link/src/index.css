@@ -1,8 +1,67 @@
-body {
+:root {
+  --background-color-light: white;
+  --text-color-light: black;
+  --background-color-dark: #1E1E1E;
+  --text-color-dark: #e0e0e0;
+  --link-color-light: #0071F9;
+  --link-color-dark: #009AFF;
+}
+
+html, body {
+  height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.connect-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px;
+}
+
+.board-svg {
+  display: block;
+  margin: auto;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: none !important;
+  animation: none !important;
+  transform: translate3d(0, 0, 0);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  -webkit-touch-callout: none;
+  width: 100vw;
+  max-height: 71vh;
+  touch-action: none;
 }

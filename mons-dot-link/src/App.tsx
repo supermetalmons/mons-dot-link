@@ -1,15 +1,14 @@
+import React from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Board from './Board';
 
-const App = () => {
+const App: React.FC = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        padding: 12,
-      }}
-    >
-      <ConnectButton />
+    <div className="app-container">
+      <div className="connect-button-container">
+        <ConnectButton />
+      </div>
+      <Board />
     </div>
   );
 };
