@@ -65,6 +65,10 @@ body {
   width: 100vw;
   max-height: 71vh;
   touch-action: none;
+  position: absolute;
+  top: 48.23%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .item {
