@@ -116,3 +116,88 @@ body {
     color: rgba(128, 128, 128, 0.42);
   }
 }
+
+footer {
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  flex-shrink: 0;
+  -webkit-touch-callout: none;
+}
+
+.footer-link {
+  font-size: 1.23rem;
+  user-select: none;
+  text-decoration: none;
+  vertical-align: baseline;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  transition: text-decoration 0.3s ease;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
+a,
+img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.invite-button {
+  position: absolute;
+  top: 4pt;
+  left: 12pt;
+  width: 155pt;
+  height: 23pt;
+  background-color: transparent;
+  border: none;
+  font-size: 1.23rem;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.status-text {
+  position: absolute;
+  top: 30pt;
+  left: 12pt;
+  font-size: 1rem;
+  color: rgba(128, 128, 128, 0.42);
+}
+
+.opponents-reaction-text {
+  font-size: 1rem;
+  color: rgba(128, 128, 128, 0.69);
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  user-select: none;
+  text-decoration: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  outline: none;
+  cursor: default;
+}
+
+.player-reaction-text {
+  font-size: 1rem;
+  color: rgba(128, 128, 128, 0.69);
+  position: absolute;
+  bottom: 13%;
+  left: 50%;
+  transform: translateX(-50%);
+  user-select: none;
+  text-decoration: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  outline: none;
+  cursor: default;
+}
