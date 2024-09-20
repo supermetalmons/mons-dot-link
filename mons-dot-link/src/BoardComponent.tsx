@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { go } from "./index";
 
-const Board: React.FC = () => {
+const BoardComponent: React.FC = () => {
+  const initializationRef = useRef(false);
+
+  useEffect(() => {
+    if (!initializationRef.current) {
+      go();
+      initializationRef.current = true;
+    }
+  }, []);
+
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 13.1" shapeRendering="crispEdges">
       <defs>
@@ -36,4 +46,4 @@ const Board: React.FC = () => {
   );
 };
 
-export default Board;
+export default BoardComponent;

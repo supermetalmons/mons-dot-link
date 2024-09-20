@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import Board from './Board';
+import BoardComponent from './BoardComponent';
 
 const App: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ const App: React.FC = () => {
       <div className="connect-button-container">
         <ConnectButton />
       </div>
-      <Board />
+      <BoardComponent />
     </div>
   );
 };
