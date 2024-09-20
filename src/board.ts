@@ -7,10 +7,18 @@ import { isDesktopSafari, isModernAndPowerful } from "./helpers/page-setup";
 import { playSounds } from "./helpers/sounds";
 
 const assets = (await import("./helpers/assets")).assets;
-const board = document.getElementById("monsboard");
-const highlightsLayer = document.getElementById("highlightsLayer");
-const itemsLayer = document.getElementById("itemsLayer");
-const controlsLayer = document.getElementById("controlsLayer");
+let board: HTMLElement | null;
+let highlightsLayer: HTMLElement | null;
+let itemsLayer: HTMLElement | null;
+let controlsLayer: HTMLElement | null;
+
+function initializeBoardElements() {
+  board = document.getElementById("monsboard");
+  highlightsLayer = document.getElementById("highlightsLayer");
+  itemsLayer = document.getElementById("itemsLayer");
+  controlsLayer = document.getElementById("controlsLayer");
+}
+
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
 const wavesFrames: { [key: string]: SVGElement } = {};
@@ -423,6 +431,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 }
 
 export function setupBoard() {
+  initializeBoardElements();
+
   document.addEventListener("click", function (event) {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {

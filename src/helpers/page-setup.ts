@@ -2,11 +2,17 @@ import { newReactionOfKind, playReaction } from "./sounds";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
-const inviteButton = document.querySelector(".invite-button");
-const connectWalletButton = document.querySelector(".connect-wallet-button");
-const statusText = document.querySelector(".status-text");
-const voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
-const rock = document.querySelector(".rock-link") as HTMLElement;
+let inviteButton: HTMLElement | null;
+let statusText: HTMLElement | null;
+let voiceReactionSelect: HTMLSelectElement | null;
+let rock: HTMLElement | null;
+
+function initializeElements() {
+  inviteButton = document.querySelector(".invite-button");
+  statusText = document.querySelector(".status-text");
+  voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
+  rock = document.querySelector(".rock-link") as HTMLElement;
+}
 
 export const isCreateNewInviteFlow = initialPath == "";
 
@@ -22,6 +28,7 @@ export function updateStatus(text: string) {
 }
 
 export function setupPage() {
+  initializeElements();
   setupVoiceReactionSelect();
 
   if (isCreateNewInviteFlow) {
@@ -39,10 +46,6 @@ export function setupPage() {
     } else {
       inviteButton.innerHTML = "new invite link";
     }
-  }
-
-  if (connectWalletButton) {
-    connectWalletButton.addEventListener("click", didClickConnectWalletButton);
   }
 
   if (!isModernAndPowerful) {
@@ -148,7 +151,7 @@ function showDidCopyInviteLink() {
 
 function updatePath(newGameId: string) {
   const newPath = `/${newGameId}`;
-  history.pushState({ path: newPath }, "", newPath);
+  // history.pushState({ path: newPath }, "", newPath); // TODO: update for react
 }
 
 function setupVoiceReactionSelect() {
@@ -167,15 +170,6 @@ function slowDownVoiceReactions() {
   setTimeout(() => {
     setVoiceReactionSelectHidden(false);
   }, 9999);
-}
-
-function didClickConnectWalletButton() {
-  if (connectWalletButton) {
-    connectWalletButton.innerHTML = "wip";
-    setTimeout(() => {
-      connectWalletButton.innerHTML = "connect wallet";
-    }, 699);
-  }
 }
 
 async function signIn(): Promise<string | undefined> {
