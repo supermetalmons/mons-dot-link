@@ -57,6 +57,8 @@ let isFlipped = false;
 let traceIndex = 0;
 
 let itemSelectionOverlay: SVGElement | undefined;
+let opponentNameText: SVGElement | undefined;
+let playerNameText: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
 let opponentAvatar: SVGElement | undefined;
@@ -156,6 +158,10 @@ export function updateScore(white: number, black: number) {
   const opponent = isFlipped ? white : black;
   playerScoreText.textContent = player.toString();
   opponentScoreText.textContent = opponent.toString();
+
+  // TODO: setup with actual values
+  playerNameText.textContent = "anonplayer.eth 1000";
+  opponentNameText.textContent = "anonplayer.eth • 1000";
 }
 
 export function showItemSelection() {
@@ -292,8 +298,6 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
 }
 
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
-  // TODO: add players names and ratings
-
   const statusMove = loadImage(emojis.statusMove);
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
@@ -321,6 +325,20 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       opponentScoreText = numberText;
     } else {
       playerScoreText = numberText;
+    }
+
+    const nameText = document.createElementNS(SVG.ns, "text");
+    SVG.setOrigin(nameText, offsetX, (isOpponent ? -0.3 : y + 1.34 - avatarOffsetY));
+    SVG.setFill(nameText, colors.scoreText);
+    SVG.setOpacity(nameText, 0.69);
+    nameText.setAttribute("font-size", "0.33");
+    nameText.setAttribute("font-weight", "230");
+    nameText.textContent = allHiddenInitially ? "" : "anonplayer.eth • 1000"; // TODO: remove tmp placeholder
+    controlsLayer.append(nameText);
+    if (isOpponent) {
+      opponentNameText = nameText;
+    } else {
+      playerNameText = nameText;
     }
 
     const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
