@@ -292,6 +292,8 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
 }
 
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
+  // TODO: add players names and ratings
+
   const statusMove = loadImage(emojis.statusMove);
 
   const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
