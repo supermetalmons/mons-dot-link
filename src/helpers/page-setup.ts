@@ -110,16 +110,7 @@ function connectToGame(gameId: string) {
 }
 
 export function showVoiceReactionText(reactionText: string, opponents: boolean) {
-  const textElement = document.querySelector(opponents ? ".opponents-reaction-text" : ".player-reaction-text") as HTMLElement;
-  textElement.innerHTML = reactionText;
-  textElement.style.transition = "";
-  textElement.style.display = "";
-  textElement.style.opacity = "1";
-  
-  setTimeout(() => {
-    textElement.style.transition = "opacity 3s";
-    textElement.style.opacity = "0";
-  }, 0);
+  // TODO: display within board player / opponent text elements
 }
 
 function createNewMatchInvite() {

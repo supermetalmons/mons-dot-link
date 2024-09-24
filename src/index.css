@@ -177,33 +177,3 @@ img {
   font-size: 1rem;
   color: rgba(128, 128, 128, 0.42);
 }
-
-.opponents-reaction-text {
-  font-size: 1rem;
-  color: rgba(128, 128, 128, 0.69);
-  position: absolute;
-  top: 8%;
-  left: 50%;
-  transform: translateX(-50%);
-  user-select: none;
-  text-decoration: none;
-  -webkit-user-select: none;
-  touch-action: none;
-  outline: none;
-  cursor: default;
-}
-
-.player-reaction-text {
-  font-size: 1rem;
-  color: rgba(128, 128, 128, 0.69);
-  position: absolute;
-  bottom: 13%;
-  left: 50%;
-  transform: translateX(-50%);
-  user-select: none;
-  text-decoration: none;
-  -webkit-user-select: none;
-  touch-action: none;
-  outline: none;
-  cursor: default;
-}

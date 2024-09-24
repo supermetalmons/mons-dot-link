@@ -12,8 +12,6 @@ const App: React.FC = () => {
       
       <button className="invite-button"></button>
       <div className="status-text"></div>
-      <div className="opponents-reaction-text" style={{display: 'none'}}>yo</div>
-      <div className="player-reaction-text" style={{display: 'none'}}>yo</div>
       
       <a
         className="rock-link"
