@@ -72,7 +72,7 @@ body {
   max-height: 71vh;
   touch-action: none;
   position: absolute;
-  top: 48.23%;
+  top: 49.5%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -94,14 +94,6 @@ body {
   a {
     color: var(--link-color-dark);
   }
-
-  .footer-link {
-    color: rgba(128, 128, 128, 0.69);
-  }
-
-  .invite-button {
-    color: rgba(128, 128, 128, 0.69);
-  }
 }
 
 @media (prefers-color-scheme: light) {
@@ -113,37 +105,6 @@ body {
   a {
     color: var(--link-color-light);
   }
-
-  .footer-link {
-    color: rgba(128, 128, 128, 0.42);
-  }
-
-  .invite-button {
-    color: rgba(128, 128, 128, 0.42);
-  }
-}
-
-footer {
-  text-align: center;
-  padding: 20px;
-  width: 100%;
-  flex-shrink: 0;
-  -webkit-touch-callout: none;
-}
-
-.footer-link {
-  font-size: 1.23rem;
-  user-select: none;
-  text-decoration: none;
-  vertical-align: baseline;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  transition: text-decoration 0.3s ease;
-}
-
-.footer-link:hover {
-  text-decoration: underline;
 }
 
 a,
@@ -154,26 +115,4 @@ img {
   -ms-user-select: none;
   user-select: none;
   touch-action: none;
-}
-
-.invite-button {
-  position: absolute;
-  top: 7pt;
-  left: 12pt;
-  width: 155pt;
-  height: 23pt;
-  background-color: transparent;
-  border: none;
-  font-size: 1.23rem;
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-}
-
-.status-text {
-  position: absolute;
-  top: 30pt;
-  left: 12pt;
-  font-size: 1rem;
-  color: rgba(128, 128, 128, 0.42);
 }
