@@ -63,7 +63,7 @@ const App: React.FC = () => {
           alignItems: 'baseline',
           padding: 0,
         }}>
-          <a href="https://github.com/supermetalmons/mons-dot-link" className="footer-link" data-key="github" data-text="&nbsp;github&nbsp;">github</a>
+          <a href="https://github.com/supermetalmons" className="footer-link" data-key="github" data-text="&nbsp;github&nbsp;">github</a>
           <a href="https://apps.apple.com/app/id6446702971" className="footer-link" data-key="app store" data-text="&nbsp;app store&nbsp;">app store</a>
           <a href="https://x.com/supermetalx" className="footer-link" data-key="x" data-text="&nbsp;x&nbsp;">x</a>
           <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" className="footer-link" data-key="steam" data-text="&nbsp;steam&nbsp;">steam</a>
