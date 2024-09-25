@@ -332,8 +332,9 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     SVG.setOrigin(nameText, offsetX, (isOpponent ? -0.3 : y + 1.34 - avatarOffsetY));
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
-    nameText.setAttribute("font-size", "0.33");
-    nameText.setAttribute("font-weight", "230");
+    nameText.setAttribute("font-size", "0.32");
+    nameText.setAttribute("font-weight", "270");
+    nameText.setAttribute("font-style", "italic");
     nameText.textContent = allHiddenInitially ? "" : "anon"; // TODO: remove tmp placeholder
     controlsLayer.append(nameText);
     if (isOpponent) {
