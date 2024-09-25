@@ -2,12 +2,30 @@ import React, { useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import BoardComponent from "./BoardComponent";
 import { logoBase64 } from "./helpers/logo";
+import { didClickInviteButton } from "./helpers/page-setup";
 
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isInviteLoading, setIsInviteLoading] = useState(false);
+  const [didCreateInvite, setDidCreateInvite] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleInviteClick = () => {
+    setIsInviteLoading(true);
+    didClickInviteButton((result) => {
+      if (result) {
+        setIsInviteLoading(false);
+        setDidCreateInvite(true);
+        console.log("Invite created successfully");
+        // TODO: handle invite copy here too
+      } else {
+        setIsInviteLoading(false);
+        console.error("Failed to create invite");
+      }
+    });
   };
 
   return (
@@ -38,7 +56,13 @@ const App: React.FC = () => {
         </div>
         {isMenuOpen && (
           <div className="rock-menu">
-            <button className="new-game-button">new game</button>
+            <button className="new-game-button" onClick={handleInviteClick} disabled={isInviteLoading}>
+              {isInviteLoading ? (
+                <span className="activity-indicator">loading...</span>
+              ) : (
+                <span className="button-text">{didCreateInvite ? "copy invite" : "new game"}</span>
+              )}
+            </button>
             <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">github</a>
             <a href="https://apps.apple.com/app/id6446702971" target="_blank" rel="noopener noreferrer">app store</a>
             <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" target="_blank" rel="noopener noreferrer">steam</a>

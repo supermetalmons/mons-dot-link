@@ -208,8 +208,6 @@ img {
   }
 }
 
-
-
 .new-game-button {
   background-color: #0071F9;
   color: #1E1E1E;
@@ -223,4 +221,12 @@ img {
 
 .new-game-button:hover {
   background-color: #4699ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .voice-reaction-select {
+    background-color: #333;
+    color: #F5F5F5;
+    border: 1px solid #555;
+  }
 }

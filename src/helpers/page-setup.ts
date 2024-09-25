@@ -22,8 +22,9 @@ let firebaseConnection: any;
 
 export function updateStatus(text: string) {
   if (text == "") {
-    statusText.innerHTML = "";
-    (statusText as HTMLElement).style.display = "none";
+    // TODO: new way to show status
+    // statusText.innerHTML = "";
+    // (statusText as HTMLElement).style.display = "none";
   }
 }
 
@@ -60,24 +61,18 @@ export function setupPage() {
 
 export function setVoiceReactionSelectHidden(hidden: boolean) {
   voiceReactionSelect.style.display = hidden ? "none" : "";
-  rock.style.display = !hidden ? "none" : "";
 }
 
-function didClickInviteButton() {
-  if (!inviteButton) {
-    return;
-  }
-
+// TODO: update for a new usage
+export function didClickInviteButton(completion) {
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
     showDidCopyInviteLink();
+    completion(true);
   } else {
     newGameId = generateNewGameId();
     writeInviteLinkToClipboard();
-
-    inviteButton.innerHTML = "creating an invite...";
-    (inviteButton as HTMLButtonElement).disabled = true;
-    createNewMatchInvite();
+    createNewMatchInvite(completion);
   }
 }
 
@@ -101,7 +96,8 @@ function connectToGame(gameId: string) {
     if (uid) {
       firebaseConnection.connectToGame(uid, gameId);
       // TODO: do not update it too early
-      inviteButton.innerHTML = "connected"; // TODO: gotta be able to copy game link
+      // inviteButton.innerHTML = "connected"; // TODO: gotta be able to copy game link
+      // TODO: configure new button differently
     } else {
       // TODO: show message that smth is wrong
       console.log("failed to get game info");
@@ -113,18 +109,16 @@ export function showVoiceReactionText(reactionText: string, opponents: boolean) 
   // TODO: display within board player / opponent text elements
 }
 
-function createNewMatchInvite() {
+function createNewMatchInvite(completion) {
   signIn().then((uid) => {
     if (uid) {
       firebaseConnection.createInvite(uid, newGameId); // TODO: process create invite result
       didCreateNewGameInvite = true;
       updatePath(newGameId);
-      statusText.innerHTML = "waiting for someone to join";
-      inviteButton.innerHTML = "copy invite link";
-      (inviteButton as HTMLButtonElement).disabled = false;
+      completion(true);
     } else {
-      // TODO: show message that invite was not created
       console.log("failed to sign in");
+      completion(false);
     }
   });
 }
