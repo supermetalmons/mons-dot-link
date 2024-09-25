@@ -126,16 +126,22 @@ img {
 
 .rock-button {
   display: block;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #FFF;
   border: none;
-  border-radius: 12px;
-  padding: 6px;
+  border-radius: 10px;
+  padding: 10px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rock-button {
+    background-color: #1A1B1F;
+  }
 }
 
 .rock-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .rock-button img {
@@ -147,16 +153,17 @@ img {
 
 .rock-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 12px);
   left: 0;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #1E1E1E;
   border-radius: 12px;
   padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   min-width: 230px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .rock-menu.open {
@@ -166,9 +173,9 @@ img {
 
 .rock-menu a,
 .rock-menu button {
-  color: #333;
+  color: #F5F5F5;
   text-decoration: none;
-  padding: 6px 12px;
+  padding: 10px 16px;
   border-radius: 8px;
   transition: background-color 0.3s ease;
   text-align: left;
@@ -177,26 +184,20 @@ img {
 
 .rock-menu a:hover,
 .rock-menu button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
 }
 
 .new-game-button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #0071F9;
+  color: #1E1E1E;
   border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
   cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
-@media (max-width: 768px) {
-  .rock-button-container {
-    position: fixed;
-    top: auto;
-    bottom: 9pt;
-    left: 9pt;
-  }
-
-  .rock-menu {
-    bottom: calc(100% + 8px);
-    top: auto;
-  }
+.new-game-button:hover {
+  background-color: #FFC107;
 }
