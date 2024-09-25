@@ -160,8 +160,9 @@ export function updateScore(white: number, black: number) {
   opponentScoreText.textContent = opponent.toString();
 
   // TODO: setup with actual values
-  playerNameText.textContent = "anonplayer.eth 1000";
-  opponentNameText.textContent = "anonplayer.eth • 1000";
+  const template = "anonplayer.eth 1000";
+  playerNameText.textContent = "anon";
+  opponentNameText.textContent = "anon";
 }
 
 export function showItemSelection() {
@@ -333,7 +334,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     SVG.setOpacity(nameText, 0.69);
     nameText.setAttribute("font-size", "0.33");
     nameText.setAttribute("font-weight", "230");
-    nameText.textContent = allHiddenInitially ? "" : "anonplayer.eth • 1000"; // TODO: remove tmp placeholder
+    nameText.textContent = allHiddenInitially ? "" : "anon"; // TODO: remove tmp placeholder
     controlsLayer.append(nameText);
     if (isOpponent) {
       opponentNameText = nameText;
