@@ -116,3 +116,87 @@ img {
   user-select: none;
   touch-action: none;
 }
+
+.rock-button-container {
+  position: absolute;
+  top: 9pt;
+  left: 9pt;
+  z-index: 10;
+}
+
+.rock-button {
+  display: block;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 12px;
+  padding: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.rock-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.rock-button img {
+  width: 1.8rem;
+  height: 1.8rem;
+  opacity: 1;
+  display: block;
+}
+
+.rock-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 230px;
+}
+
+.rock-menu.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.rock-menu a,
+.rock-menu button {
+  color: #333;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  text-align: left;
+  width: 90%;
+}
+
+.rock-menu a:hover,
+.rock-menu button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.new-game-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .rock-button-container {
+    position: fixed;
+    top: auto;
+    bottom: 9pt;
+    left: 9pt;
+  }
+
+  .rock-menu {
+    bottom: calc(100% + 8px);
+    top: auto;
+  }
+}
