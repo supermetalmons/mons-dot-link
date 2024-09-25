@@ -155,7 +155,7 @@ img {
   position: absolute;
   top: calc(100% + 12px);
   left: 0;
-  background-color: #1E1E1E;
+  background-color: #fff;
   border-radius: 12px;
   padding: 8px;
   display: flex;
@@ -166,6 +166,12 @@ img {
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
+@media (prefers-color-scheme: dark) {
+  .rock-menu {
+    background-color: #1E1E1E;
+  }
+}
+
 .rock-menu.open {
   opacity: 1;
   visibility: visible;
@@ -173,19 +179,36 @@ img {
 
 .rock-menu a,
 .rock-menu button {
-  color: #F5F5F5;
+  color: #000;
   text-decoration: none;
   padding: 10px 16px;
   border-radius: 8px;
   transition: background-color 0.3s ease;
   text-align: left;
-  width: 90%;
+  width: 75%;
 }
 
-.rock-menu a:hover,
-.rock-menu button:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
+.rock-menu button {
+  color: #F5F5F5;
+  width: 93%;
 }
+
+.rock-menu a:hover {
+  background-color: #F8F8F8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rock-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .rock-menu a,
+  .rock-menu button {
+    color: #F5F5F5;
+  }
+}
+
+
 
 .new-game-button {
   background-color: #0071F9;
@@ -199,5 +222,5 @@ img {
 }
 
 .new-game-button:hover {
-  background-color: #FFC107;
+  background-color: #4699ff;
 }
