@@ -129,7 +129,7 @@ img {
   background-color: #FFF;
   border: none;
   border-radius: 10px;
-  padding: 10px;
+  padding: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -145,8 +145,8 @@ img {
 }
 
 .rock-button img {
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 30px;
+  height: 30px;
   opacity: 1;
   display: block;
 }
