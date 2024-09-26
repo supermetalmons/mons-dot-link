@@ -297,12 +297,37 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
     }
   }
 }
-
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove);
 
-  const shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
-  const offsetX = shouldOffsetFromBorders ? 0.21 : 0;
+  let shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
+  const minHorizontalOffset = 0.21;
+  const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
+
+  const updateLayout = () => {
+    const newShouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
+    if (newShouldOffsetFromBorders !== shouldOffsetFromBorders) {
+      shouldOffsetFromBorders = newShouldOffsetFromBorders;
+      let delta = shouldOffsetFromBorders ? minHorizontalOffset : -minHorizontalOffset;
+      
+      SVG.offsetX(opponentAvatar, delta);
+      SVG.offsetX(playerAvatar, delta);
+      SVG.offsetX(playerScoreText, delta);
+      SVG.offsetX(opponentScoreText, delta);
+      SVG.offsetX(playerNameText, delta);
+      SVG.offsetX(opponentNameText, delta);
+
+      for (const item of opponentMoveStatusItems) {
+        SVG.offsetX(item, -delta);
+      }
+      for (const item of playerMoveStatusItems) {
+        SVG.offsetX(item, -delta);
+      }
+    }
+  };
+
+  window.addEventListener('resize', updateLayout);
+  
   const [playerEmojiId, playerEmoji] = emojis.getRandomEmoji();
   const [opponentEmojiId, opponentEmoji] = emojis.getRandomEmojiOtherThan(playerEmojiId);
 
