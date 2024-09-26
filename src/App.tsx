@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import BoardComponent from "./BoardComponent";
-import { logoBase64 } from "./helpers/logo";
+import { voiceReactionIconSvg, logoBase64 } from "./helpers/ui-assets";
 import { didClickInviteButton } from "./helpers/page-setup";
 
 const App: React.FC = () => {
@@ -72,6 +72,27 @@ const App: React.FC = () => {
           </div>
         )}
       </div>
+
+      <button
+        className="voice-reaction-button"
+        style={{
+          position: "absolute",
+          bottom: "9pt",
+          right: "9pt",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: "5px",
+          display: "none",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "24px",
+          height: "24px",
+          backgroundColor: "white",
+        }}
+      >
+        <img src={`data:image/svg+xml;utf8,${encodeURIComponent(voiceReactionIconSvg)}`} alt="Voice Chat" width="100%" height="100%" />
+      </button>
 
       <select
         className="voice-reaction-select"
