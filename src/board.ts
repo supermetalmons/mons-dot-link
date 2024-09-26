@@ -297,6 +297,7 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
     }
   }
 }
+
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove);
 
