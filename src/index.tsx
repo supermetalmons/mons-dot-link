@@ -91,7 +91,7 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <RainbowKitAuthenticationProvider
           adapter={authenticationAdapter}
-          status={"unauthenticated"} // TODO: either 'loading' (during initial load), 'unauthenticated' or 'authenticated'
+          status={"authenticated"} // TODO: either 'loading' (during initial load), 'unauthenticated' or 'authenticated'
         >
           <RainbowKitProvider
             modalSize="compact"
