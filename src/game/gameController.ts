@@ -3,7 +3,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
+import { setupPage, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -402,7 +402,6 @@ function hasItemAt(location: Location): boolean {
 }
 
 function didConnectTo(opponentMatch: any) {
-  updateStatus("");
   if (!isWatchOnly) {
     setVoiceReactionSelectHidden(false);
   }

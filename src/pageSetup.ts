@@ -4,11 +4,9 @@ import { newReactionOfKind, playReaction } from "./content/sounds";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
-let inviteButton: HTMLElement | null;
 let voiceReactionSelect: HTMLSelectElement | null;
 
 function initializeElements() {
-  inviteButton = document.querySelector(".invite-button");
   voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
 }
 
@@ -18,42 +16,11 @@ let newGameId = "";
 let didCreateNewGameInvite = false;
 let firebaseConnection: any;
 
-export function updateStatus(text: string) {
-  if (text === "") {
-    // TODO: new way to show status
-    // statusText.innerHTML = "";
-    // (statusText as HTMLElement).style.display = "none";
-  }
-}
-
 export function setupPage() {
   initializeElements();
   setupVoiceReactionSelect();
-
-  if (isCreateNewInviteFlow) {
-    // TODO: create invite flow
-  } else {
+  if (!isCreateNewInviteFlow) {
     connectToGame(initialPath);
-  }
-
-  if (inviteButton) {
-    inviteButton.addEventListener("click", didClickInviteButton);
-    if (!isCreateNewInviteFlow) {
-      (inviteButton as HTMLButtonElement).disabled = true;
-      inviteButton.innerHTML = "loading mons game...";
-      // TODO: implement loading and connecting to the existing invite
-    } else {
-      inviteButton.innerHTML = "new invite link";
-    }
-  }
-
-  if (!isModernAndPowerful) {
-    ["github", "app store", "steam", "x"].forEach((key: string) => {
-      const link: HTMLAnchorElement | null = document.querySelector(`a[data-key="${key}"]`);
-      if (link) {
-        link.textContent = link.getAttribute("data-text") || "";
-      }
-    });
   }
 }
 
@@ -65,7 +32,6 @@ export function setVoiceReactionSelectHidden(hidden: boolean) {
 export function didClickInviteButton(completion) {
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
-    showDidCopyInviteLink();
     completion(true);
   } else {
     newGameId = generateNewGameId();
@@ -121,17 +87,6 @@ function createNewMatchInvite(completion) {
   });
 }
 
-function showDidCopyInviteLink() {
-  if (inviteButton) {
-    inviteButton.innerHTML = "invite link is copied";
-    (inviteButton as HTMLButtonElement).disabled = true;
-    setTimeout(() => {
-      inviteButton.innerHTML = "copy invite link";
-      (inviteButton as HTMLButtonElement).disabled = false;
-    }, 1300);
-  }
-}
-
 function updatePath(newGameId: string) {
   const newPath = `/${newGameId}`;
   window.history.pushState({ path: newPath }, "", newPath);
@@ -171,28 +126,9 @@ export const isModernAndPowerful = (() => {
   if (isDesktopSafari) {
     return true;
   }
-  for (const char of ["⚔︎", "𝕏", "♡", "☆", "↓"]) {
-    if (!supportsCharacter(char)) {
-      return false;
-    }
-  }
+  // TODO: come up with a way to return false when needed to make the game work properly on kindle
   return true;
 })();
-
-function supportsCharacter(character: string): boolean {
-  const testElement: HTMLSpanElement = document.createElement("span");
-  testElement.style.visibility = "hidden";
-  testElement.style.position = "absolute";
-  testElement.style.fontSize = "32px";
-  document.body.appendChild(testElement);
-
-  testElement.textContent = "\uFFFF";
-  const initialWidth: number = testElement.clientWidth;
-  testElement.textContent = character;
-  const characterWidth: number = testElement.clientWidth;
-  document.body.removeChild(testElement);
-  return initialWidth !== characterWidth;
-}
 
 export function generateNewGameId(): string {
   const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

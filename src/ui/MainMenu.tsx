@@ -45,6 +45,8 @@ const MainMenu: React.FC = () => {
             {isInviteLoading ? (
               <span className="activity-indicator">loading...</span>
             ) : (
+              // TODO: explicit responsive state "invite link is copied"
+              // TODO: show "loading mons game..." or similar text when appropriate
               <span className="button-text">{didCreateInvite ? "copy invite" : "new game"}</span>
             )}
           </button>
