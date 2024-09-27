@@ -3,7 +3,7 @@ import * as SVG from "../utils/svg";
 import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
-import { isDesktopSafari, isModernAndPowerful } from "../pageSetup";
+import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 
 const assets = (await import("../content/gameAssets")).gameAssets;

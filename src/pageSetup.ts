@@ -1,6 +1,7 @@
 // TODO: structure, refactor, and remove it
 
 import { newReactionOfKind, playReaction } from "./content/sounds";
+import { generateNewGameId } from "./utils/misc";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
@@ -111,27 +112,6 @@ function slowDownVoiceReactions() {
 }
 
 async function signIn(): Promise<string | undefined> {
-  firebaseConnection = (await import("./game/firebaseConnection")).firebaseConnection;
+  firebaseConnection = (await import("./connection/firebaseConnection")).firebaseConnection;
   return firebaseConnection.signIn();
-}
-
-export const isDesktopSafari = (() => {
-  const userAgent = window.navigator.userAgent;
-  const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
-  const isIos = /iPad|iPhone|iPod/.test(userAgent);
-  return isSafari && !isIos;
-})();
-
-export const isModernAndPowerful = (() => {
-  // TODO: come up with a way to return false when needed to make the game work properly on kindle
-  return true;
-})();
-
-export function generateNewGameId(): string {
-  const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let id = "";
-  for (let i = 0; i < 10; i++) {
-    id += letters.charAt(Math.floor(Math.random() * letters.length));
-  }
-  return id;
 }
