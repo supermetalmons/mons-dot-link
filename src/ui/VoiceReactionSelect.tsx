@@ -1,7 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { voiceReactionIconSvg } from "../content/uiAssets";
+import { newReactionOfKind, playReaction } from "../content/sounds";
+import { sendVoiceReaction } from "../connection/connection";
+
+let setIsSelectVisibleGlobal: React.Dispatch<React.SetStateAction<boolean>> | null = null;
 
 const VoiceReactionSelect: React.FC = () => {
+  const [isSelectVisible, setIsSelectVisible] = useState(false);
+
+  useEffect(() => {
+    setIsSelectVisibleGlobal = setIsSelectVisible;
+    return () => {
+      setIsSelectVisibleGlobal = null;
+    };
+  }, []);
+
+  const handleVoiceReactionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const reaction = newReactionOfKind(event.target.value);
+    event.target.selectedIndex = 0;
+    sendVoiceReaction(reaction);
+    playReaction(reaction);
+    showVoiceReactionText(reaction.kind, false);
+    setIsSelectVisible(false);
+    setTimeout(() => {
+      setIsSelectVisible(true);
+    }, 9999);
+  };
+
   return (
     <>
       <button
@@ -32,10 +57,12 @@ const VoiceReactionSelect: React.FC = () => {
           bottom: "10pt",
           right: "9pt",
           outline: "none",
-          display: "none",
+          display: isSelectVisible ? "block" : "none",
           fontSize: "1.23rem",
           opacity: 0.81,
-        }}>
+        }}
+        onChange={handleVoiceReactionChange}
+      >
         <option value="" disabled selected>
           say
         </option>
@@ -48,5 +75,15 @@ const VoiceReactionSelect: React.FC = () => {
     </>
   );
 };
+
+export function setVoiceReactionSelectHidden(hidden: boolean) {
+  if (setIsSelectVisibleGlobal) {
+    setIsSelectVisibleGlobal(!hidden);
+  }
+}
+
+export function showVoiceReactionText(reactionText: string, opponents: boolean) {
+  // TODO: display within board player / opponent text elements
+}
 
 export default VoiceReactionSelect;

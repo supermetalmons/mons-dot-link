@@ -3,8 +3,8 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { setupPage, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
 import { isModernAndPowerful } from "../utils/misc";
+import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/VoiceReactionSelect"
 import { sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
 let isWatchOnly = false;
@@ -29,7 +29,6 @@ var currentInputs: Location[] = [];
 
 // TODO: it was called immediatelly before, now it's called after the board component is created, not sure if it's ok
 export async function go() {
-  setupPage();
   setupConnection();
 
   Board.setupBoard();
