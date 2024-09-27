@@ -13,6 +13,8 @@ import VoiceReactionSelect from "./ui/VoiceReactionSelect";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 
+import { verifyEthAddress } from "./connection/connection";
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -44,6 +46,9 @@ const App = () => {
     },
 
     verify: async ({ message, signature }) => {
+      // TODO: pass message in an appropriate format
+      verifyEthAddress("hello", signature);
+
       // TODO: implement actual verify
       // const verifyRes = await fetch('/api/verify', {
       //   method: 'POST',

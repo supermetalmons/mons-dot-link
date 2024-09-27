@@ -42,6 +42,11 @@ export function sendEmojiUpdate(newId: number) {
   firebaseConnection.updateEmoji(newId);
 }
 
+export async function verifyEthAddress(message: string, signature: string): Promise<any> {
+  // TODO: it might not be there yet - rn connection is created only when game is started
+  firebaseConnection.verifyEthAddress(message, signature);
+}
+
 function connectToGame(gameId: string) {
   signIn().then((uid) => {
     if (uid) {
