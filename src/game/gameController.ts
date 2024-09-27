@@ -3,9 +3,9 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { setupPage, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
+import { setupPage, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
 import { isModernAndPowerful } from "../utils/misc";
-import { setupConnection } from "../connection/connection";
+import { sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
