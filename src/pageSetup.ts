@@ -111,7 +111,7 @@ function slowDownVoiceReactions() {
 }
 
 async function signIn(): Promise<string | undefined> {
-  firebaseConnection = (await import("./game/connection")).firebaseConnection;
+  firebaseConnection = (await import("./game/firebaseConnection")).firebaseConnection;
   return firebaseConnection.signIn();
 }
 
@@ -123,9 +123,6 @@ export const isDesktopSafari = (() => {
 })();
 
 export const isModernAndPowerful = (() => {
-  if (isDesktopSafari) {
-    return true;
-  }
   // TODO: come up with a way to return false when needed to make the game work properly on kindle
   return true;
 })();
