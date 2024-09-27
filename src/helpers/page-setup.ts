@@ -3,25 +3,21 @@ import { newReactionOfKind, playReaction } from "./sounds";
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
 let inviteButton: HTMLElement | null;
-let statusText: HTMLElement | null;
 let voiceReactionSelect: HTMLSelectElement | null;
-let rock: HTMLElement | null;
 
 function initializeElements() {
   inviteButton = document.querySelector(".invite-button");
-  statusText = document.querySelector(".status-text");
   voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
-  rock = document.querySelector(".rock-link") as HTMLElement;
 }
 
-export const isCreateNewInviteFlow = initialPath == "";
+export const isCreateNewInviteFlow = initialPath === "";
 
 let newGameId = "";
 let didCreateNewGameInvite = false;
 let firebaseConnection: any;
 
 export function updateStatus(text: string) {
-  if (text == "") {
+  if (text === "") {
     // TODO: new way to show status
     // statusText.innerHTML = "";
     // (statusText as HTMLElement).style.display = "none";

@@ -12,7 +12,7 @@ export class Location {
   }
 
   equals(other: Location): boolean {
-    return this.i == other.i && this.j == other.j;
+    return this.i === other.i && this.j === other.j;
   }
 }
 

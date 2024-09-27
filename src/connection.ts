@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
+import { getAuth, signInAnonymously } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
 import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from ".";
 import { getPlayersEmojiId } from "./board";
@@ -50,7 +50,7 @@ class FirebaseConnection {
       this.myMatch.movesFens = [];
     }
 
-    if (this.myMatch.flatMovesString == "") {
+    if (this.myMatch.flatMovesString === "") {
       this.myMatch.flatMovesString = moveFen;
     } else {
       this.myMatch.flatMovesString += "-" + moveFen;
@@ -99,7 +99,7 @@ class FirebaseConnection {
           return;
         }
         console.log("Invite data retrieved:", inviteData);
-        if (!inviteData.guestId && inviteData.hostId != uid) {
+        if (!inviteData.guestId && inviteData.hostId !== uid) {
           set(ref(db, `invites/${inviteId}/guestId`), uid)
             .then(() => {
               console.log("did join as a guest successfully");
@@ -110,9 +110,9 @@ class FirebaseConnection {
             });
         } else {
           console.log("has guest or same host");
-          if (inviteData.hostId == uid) {
+          if (inviteData.hostId === uid) {
             this.reconnectAsHost(inviteId, inviteData);
-          } else if (inviteData.guestId == uid) {
+          } else if (inviteData.guestId === uid) {
             this.reconnectAsGuest(inviteId, inviteData);
           } else {
             this.enterWatchOnlyMode(inviteId, inviteData.hostId, inviteData.guestId);
@@ -162,7 +162,7 @@ class FirebaseConnection {
         this.myMatch = myMatchData;
         didRecoverMyMatch(myMatchData);
 
-        if (invite.guestId && invite.guestId != "") {
+        if (invite.guestId && invite.guestId !== "") {
           this.observeMatch(invite.guestId, gameId);
         } else {
           const inviteRef = ref(db, `invites/${gameId}`);
@@ -201,7 +201,7 @@ class FirebaseConnection {
         }
         console.log("got opponent's match:", opponentsMatchData);
 
-        const color = opponentsMatchData.color == "black" ? "white" : "black";
+        const color = opponentsMatchData.color === "black" ? "white" : "black";
         const emojiId = getPlayersEmojiId();
         const match = {
           version: controllerVersion,
