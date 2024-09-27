@@ -309,7 +309,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     if (newShouldOffsetFromBorders !== shouldOffsetFromBorders) {
       shouldOffsetFromBorders = newShouldOffsetFromBorders;
       let delta = shouldOffsetFromBorders ? minHorizontalOffset : -minHorizontalOffset;
-      
+
       SVG.offsetX(opponentAvatar, delta);
       SVG.offsetX(playerAvatar, delta);
       SVG.offsetX(playerScoreText, delta);
@@ -326,8 +326,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
   };
 
-  window.addEventListener('resize', updateLayout);
-  
+  window.addEventListener("resize", updateLayout);
+
   const [playerEmojiId, playerEmoji] = emojis.getRandomEmoji();
   const [opponentEmojiId, opponentEmoji] = emojis.getRandomEmojiOtherThan(playerEmojiId);
 
@@ -354,7 +354,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(nameText, offsetX, (isOpponent ? -0.3 : y + 1.34 - avatarOffsetY));
+    SVG.setOrigin(nameText, offsetX, isOpponent ? -0.3 : y + 1.34 - avatarOffsetY);
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
     nameText.setAttribute("font-size", "0.32");
@@ -412,20 +412,14 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
       if (isOpponent) {
         if (shouldChangeEmoji) {
-          const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
-          updateEmoji(parseInt(newId));
-          currentOpponentEmojiId = newId;
-          SVG.setImage(avatar, newEmoji);
+          pickAndDisplayDifferentEmoji(avatar, isOpponent);
           playSounds([Sound.Click]);
         }
 
         popOpponentsEmoji();
       } else {
         if (shouldChangeEmoji) {
-          const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
-          updateEmoji(parseInt(newId));
-          currentPlayerEmojiId = newId;
-          SVG.setImage(avatar, newEmoji);
+          pickAndDisplayDifferentEmoji(avatar, isOpponent);
           playSounds([Sound.Click]);
         }
 
@@ -474,6 +468,20 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
         }
       }
     });
+  }
+}
+
+function pickAndDisplayDifferentEmoji(avatar: SVGElement, isOpponent: boolean) {
+  if (isOpponent) {
+    const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
+    updateEmoji(parseInt(newId));
+    currentOpponentEmojiId = newId;
+    SVG.setImage(avatar, newEmoji);
+  } else {
+    const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
+    updateEmoji(parseInt(newId));
+    currentPlayerEmojiId = newId;
+    SVG.setImage(avatar, newEmoji);
   }
 }
 
