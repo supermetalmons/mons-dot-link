@@ -25,6 +25,7 @@ const App = () => {
       const randomBytes = new Uint8Array(32);
       crypto.getRandomValues(randomBytes);
       return Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+      // TODO: get nonce from firebase?
     },
 
     createMessage: ({ nonce, address, chainId }) => {
@@ -59,11 +60,7 @@ const App = () => {
       return isVerified;
     },
 
-    signOut: async () => {
-      // TODO: implement actual logout
-      // await fetch('/api/logout');
-      // setAuthStatus("unauthenticated");
-    },
+    signOut: async () => {},
   });
 
   return (
