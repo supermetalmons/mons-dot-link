@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
-import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from ".";
+import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "./game-controller";
 import { getPlayersEmojiId } from "./board";
 
 const controllerVersion = 2;
