@@ -90,6 +90,8 @@ function updatePath(newGameId: string) {
 }
 
 async function signIn(): Promise<string | undefined> {
-  firebaseConnection = (await import("./firebaseConnection")).firebaseConnection;
+  if (!firebaseConnection) {
+    firebaseConnection = (await import("./firebaseConnection")).firebaseConnection;
+  }
   return firebaseConnection.signIn();
 }
