@@ -47,21 +47,15 @@ const App = () => {
 
     verify: async ({ message, signature }) => {
       // TODO: pass message in an appropriate format
-      verifyEthAddress("hello", signature);
-
-      // TODO: implement actual verify
-      // const verifyRes = await fetch('/api/verify', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ message, signature }),
-      // });
-      // const isVerified = Boolean(verifyRes.ok);
-
-      const isVerified = true; // Simulating successful verification
-      if (isVerified) {
+      // JSON.stringify({ message, signature })
+      const res = await verifyEthAddress("hello", signature);
+      if (res && res.ok === true) {
         setAuthStatus("authenticated");
+        return true;
+      } else {
+        setAuthStatus("unauthenticated");
+        return false;
       }
-      return isVerified;
     },
 
     signOut: async () => {},

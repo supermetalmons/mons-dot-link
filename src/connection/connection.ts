@@ -44,16 +44,12 @@ export function sendEmojiUpdate(newId: number) {
 
 export async function verifyEthAddress(message: string, signature: string): Promise<any> {
   if (!firebaseConnection) {
-    signIn().then((uid) => {
-      if (uid) {
-        firebaseConnection.verifyEthAddress(message, signature);
-      } else {
-        throw new Error("Failed to authenticate user");
-      }
-    });
-  } else {
-    firebaseConnection.verifyEthAddress(message, signature);
+    const uid = await signIn();
+    if (!uid) {
+      throw new Error("Failed to authenticate user");
+    }
   }
+  return firebaseConnection.verifyEthAddress(message, signature);
 }
 
 function connectToGame(gameId: string) {
