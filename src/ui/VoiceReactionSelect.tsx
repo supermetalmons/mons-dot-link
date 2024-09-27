@@ -1,5 +1,5 @@
 import React from 'react';
-import { voiceReactionIconSvg } from "./helpers/uiAssets";
+import { voiceReactionIconSvg } from "../content/uiAssets";
 
 const VoiceReactionSelect: React.FC = () => {
   return (

@@ -1,12 +1,12 @@
 import * as MonsWeb from "mons-web";
-import * as SVG from "./helpers/svg";
+import * as SVG from "../utils/svg";
 import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./gameController";
-import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/gameModels";
-import { colors } from "./helpers/colors";
-import { isDesktopSafari, isModernAndPowerful } from "./helpers/pageSetup";
-import { playSounds } from "./helpers/sounds";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
+import { colors } from "../content/colors";
+import { isDesktopSafari, isModernAndPowerful } from "../pageSetup";
+import { playSounds } from "../content/sounds";
 
-const assets = (await import("./helpers/assets")).assets;
+const assets = (await import("../content/gameAssets")).gameAssets;
 let board: HTMLElement | null;
 let highlightsLayer: HTMLElement | null;
 let itemsLayer: HTMLElement | null;
@@ -83,7 +83,7 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
-const emojis = (await import("./helpers/emojis")).emojis;
+const emojis = (await import("../content/emojis")).emojis;
 
 export function resetForNewGame() {
   SVG.setHidden(opponentAvatar, false);

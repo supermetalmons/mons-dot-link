@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { logoBase64 } from "./helpers/uiAssets";
-import { didClickInviteButton } from "./helpers/pageSetup";
+import { logoBase64 } from "../content/uiAssets";
+import { didClickInviteButton } from "../pageSetup";
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -8,10 +8,10 @@ import { WagmiProvider } from "wagmi";
 import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
 
-import BoardComponent from "./BoardComponent";
-import VoiceReactionSelect from "./VoiceReactionSelect";
-import MainMenu from "./MainMenu";
-import { config } from "./wagmi";
+import BoardComponent from "./game/BoardComponent";
+import VoiceReactionSelect from "./ui/VoiceReactionSelect";
+import MainMenu from "./ui/MainMenu";
+import { config } from "./utils/wagmi";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 

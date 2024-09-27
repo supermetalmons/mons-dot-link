@@ -1,4 +1,6 @@
-import { newReactionOfKind, playReaction } from "./sounds";
+// TODO: structure, refactor, and remove it
+
+import { newReactionOfKind, playReaction } from "./content/sounds";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 
@@ -154,7 +156,7 @@ function slowDownVoiceReactions() {
 }
 
 async function signIn(): Promise<string | undefined> {
-  firebaseConnection = (await import("../connection")).firebaseConnection;
+  firebaseConnection = (await import("./game/connection")).firebaseConnection;
   return firebaseConnection.signIn();
 }
 

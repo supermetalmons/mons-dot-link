@@ -1,9 +1,9 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
 import * as Board from "./board";
-import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "./helpers/gameModels";
-import { colors } from "./helpers/colors";
-import { playSounds, playReaction } from "./helpers/sounds";
-import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "./helpers/pageSetup";
+import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
+import { colors } from "../content/colors";
+import { playSounds, playReaction } from "../content/sounds";
+import { setupPage, updateStatus, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, isModernAndPowerful, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
