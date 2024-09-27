@@ -25,14 +25,13 @@ const App = () => {
       const randomBytes = new Uint8Array(32);
       crypto.getRandomValues(randomBytes);
       return Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-      // TODO: get nonce from firebase?
     },
 
     createMessage: ({ nonce, address, chainId }) => {
       return new SiweMessage({
         domain: window.location.host,
         address,
-        statement: "mons ftw",
+        statement: "mons ftw", // TODO: add firebase user id in the message somehow
         uri: window.location.origin,
         version: "1",
         chainId,
