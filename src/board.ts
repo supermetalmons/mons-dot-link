@@ -28,7 +28,7 @@ const playerMoveStatusItems: SVGElement[] = [];
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
-  if (currentId == newEmojiId) {
+  if (currentId === newEmojiId) {
     return;
   }
   const newEmojiData = emojis.getEmoji(newEmojiId);
@@ -46,7 +46,7 @@ export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean)
 }
 
 export function getPlayersEmojiId(): number {
-  return parseInt(currentPlayerEmojiId != "" ? currentPlayerEmojiId : "1");
+  return parseInt(currentPlayerEmojiId !== "" ? currentPlayerEmojiId : "1");
 }
 
 export function setBoardFlipped(flipped: boolean) {
@@ -114,7 +114,7 @@ export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
 
   const total = monMoves + manaMoves + actions + potions;
 
-  const playerSideActive = isFlipped ? color == MonsWeb.Color.White : color == MonsWeb.Color.Black;
+  const playerSideActive = isFlipped ? color === MonsWeb.Color.White : color === MonsWeb.Color.Black;
 
   const itemsToHide = playerSideActive ? playerMoveStatusItems : opponentMoveStatusItems;
   const itemsToSetup = playerSideActive ? opponentMoveStatusItems : playerMoveStatusItems;
@@ -160,7 +160,6 @@ export function updateScore(white: number, black: number) {
   opponentScoreText.textContent = opponent.toString();
 
   // TODO: setup with actual values
-  const template = "anonplayer.eth 1000";
   playerNameText.textContent = "anon";
   opponentNameText.textContent = "anon";
 }
@@ -208,7 +207,7 @@ export function showItemSelection() {
 export function putItem(item: MonsWeb.ItemModel, location: Location) {
   switch (item.kind) {
     case MonsWeb.ItemModelKind.Mon:
-      const isBlack = item.mon.color == MonsWeb.Color.Black;
+      const isBlack = item.mon.color === MonsWeb.Color.Black;
       const isFainted = item.mon.is_fainted();
       switch (item.mon.kind) {
         case MonsWeb.MonKind.Demon:
@@ -231,7 +230,7 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
     case MonsWeb.ItemModelKind.Mana:
       switch (item.mana.kind) {
         case MonsWeb.ManaKind.Regular:
-          const isBlack = item.mana.color == MonsWeb.Color.Black;
+          const isBlack = item.mana.color === MonsWeb.Color.Black;
           placeItem(isBlack ? manaB : mana, location);
           break;
         case MonsWeb.ManaKind.Supermana:
@@ -240,17 +239,17 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       }
       break;
     case MonsWeb.ItemModelKind.MonWithMana:
-      const isBlackDrainer = item.mon.color == MonsWeb.Color.Black;
-      const isSupermana = item.mana.kind == MonsWeb.ManaKind.Supermana;
+      const isBlackDrainer = item.mon.color === MonsWeb.Color.Black;
+      const isSupermana = item.mana.kind === MonsWeb.ManaKind.Supermana;
       if (isSupermana) {
         placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
       } else {
-        const isBlackMana = item.mana.color == MonsWeb.Color.Black;
+        const isBlackMana = item.mana.color === MonsWeb.Color.Black;
         placeMonWithMana(isBlackDrainer ? drainerB : drainer, isBlackMana ? manaB : mana, location);
       }
       break;
     case MonsWeb.ItemModelKind.MonWithConsumable:
-      const isBlackWithConsumable = item.mon.color == MonsWeb.Color.Black;
+      const isBlackWithConsumable = item.mon.color === MonsWeb.Color.Black;
       switch (item.mon.kind) {
         case MonsWeb.MonKind.Demon:
           placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location);
@@ -276,8 +275,8 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
 }
 
 export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
-  if (square.kind == MonsWeb.SquareModelKind.MonBase) {
-    const isBlack = square.color == MonsWeb.Color.Black;
+  if (square.kind === MonsWeb.SquareModelKind.MonBase) {
+    const isBlack = square.color === MonsWeb.Color.Black;
     switch (square.mon_kind) {
       case MonsWeb.MonKind.Demon:
         setBase(isBlack ? demonB : demon, location);
@@ -863,7 +862,7 @@ function highlightDestinationItem(location: Location, color: string) {
 }
 
 function getTraceColors(): string[] {
-  if (traceIndex == 6) {
+  if (traceIndex === 6) {
     traceIndex = 0;
   }
 
@@ -898,13 +897,13 @@ function getWavesFrame(location: Location, frameIndex: number) {
   const pixel = 1 / 32;
   const key = location.toString() + frameIndex.toString();
   if (!wavesFrames[key]) {
-    if (frameIndex == 0) {
+    if (frameIndex === 0) {
       const frame = document.createElementNS(SVG.ns, "g");
       for (let i = 0; i < 10; i++) {
         const width = (Math.floor(Math.random() * 4) + 3) * pixel;
         const x = Math.random() * (1 - width);
         const y = pixel * (2 + i * 3);
-        const baseColor = i % 2 == 0 ? colors.wave1 : colors.wave2;
+        const baseColor = i % 2 === 0 ? colors.wave1 : colors.wave2;
 
         const baseBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(baseBottomRect, x, y, width, pixel);

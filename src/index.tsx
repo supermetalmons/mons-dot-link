@@ -146,7 +146,7 @@ export function updateEmoji(newId: number) {
 }
 
 export function isPlayerSideTurn(): boolean {
-  return game.active_color() == playerSideColor;
+  return game.active_color() === playerSideColor;
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
@@ -166,8 +166,8 @@ export function didClickSquare(location: Location) {
 function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assistedInputKind: AssistedInputKind, inputLocation?: Location) {
   switch (output.kind) {
     case MonsWeb.OutputModelKind.InvalidInput:
-      const shouldTryToReselect = assistedInputKind == AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
-      const shouldHelpFindOptions = assistedInputKind == AssistedInputKind.None && currentInputs.length == 1;
+      const shouldTryToReselect = assistedInputKind === AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
+      const shouldHelpFindOptions = assistedInputKind === AssistedInputKind.None && currentInputs.length === 1;
       currentInputs = [];
       Board.removeHighlights();
       if (shouldTryToReselect) {
@@ -184,7 +184,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
     case MonsWeb.OutputModelKind.NextInputOptions:
       const nextInputs = output.next_inputs();
 
-      if (nextInputs[0].kind == MonsWeb.NextInputKind.SelectConsumable) {
+      if (nextInputs[0].kind === MonsWeb.NextInputKind.SelectConsumable) {
         Board.removeHighlights();
         Board.showItemSelection();
         return;
@@ -291,7 +291,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.ManaScored:
-            if (event.mana.kind == MonsWeb.ManaKind.Supermana) {
+            if (event.mana.kind === MonsWeb.ManaKind.Supermana) {
               sounds.push(Sound.ScoreSupermana);
             } else {
               sounds.push(Sound.ScoreMana);
@@ -368,10 +368,10 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             break;
           case MonsWeb.EventModelKind.GameOver:
-            const isVictory = !isOnlineGame || event.color == playerSideColor;
-            let winnerAlertText = (event.color == MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
+            const isVictory = !isOnlineGame || event.color === playerSideColor;
+            let winnerAlertText = (event.color === MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
             if (!isModernAndPowerful) {
-              winnerAlertText = (event.color == MonsWeb.Color.White ? "white" : "black") + " wins";
+              winnerAlertText = (event.color === MonsWeb.Color.White ? "white" : "black") + " wins";
             }
 
             if (isVictory) {
@@ -415,7 +415,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         Board.popOpponentsEmoji();
       }
 
-      if (mightKeepHighlightOnLocation != undefined && !mustReleaseHighlight) {
+      if (mightKeepHighlightOnLocation !== undefined && !mustReleaseHighlight) {
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
       }
 
@@ -425,7 +425,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
   if (isOnlineGame) {
-    if (game.active_color() != playerSideColor) {
+    if (game.active_color() !== playerSideColor) {
       return;
     }
   }
@@ -436,7 +436,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
 
   const gameInput = currentInputs.map((input) => new MonsWeb.Location(input.i, input.j));
   let output: MonsWeb.OutputModel;
-  if (inputModifier != InputModifier.None) {
+  if (inputModifier !== InputModifier.None) {
     let modifier: MonsWeb.Modifier;
     switch (inputModifier) {
       case InputModifier.Bomb:
@@ -489,16 +489,16 @@ function didConnectTo(opponentMatch: any) {
     setVoiceReactionSelectHidden(false);
   }
 
-  Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color == "black" : true);
+  Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color === "black" : true);
 
   if (isWatchOnly) {
     playerSideColor = MonsWeb.Color.White;
   } else {
-    playerSideColor = opponentMatch.color == "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+    playerSideColor = opponentMatch.color === "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
   }
 
   if (!isWatchOnly) {
-    Board.setBoardFlipped(opponentMatch.color == "white");
+    Board.setBoardFlipped(opponentMatch.color === "white");
   }
 
   if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
@@ -535,11 +535,11 @@ function setNewBoard() {
 }
 
 function getProcessedMovesCount(color: string): number {
-  return color == "white" ? whiteProcessedMovesCount : blackProcessedMovesCount;
+  return color === "white" ? whiteProcessedMovesCount : blackProcessedMovesCount;
 }
 
 function setProcessedMovesCountForColor(color: string, count: number) {
-  if (color == "white") {
+  if (color === "white") {
     whiteProcessedMovesCount = count;
     didSetWhiteProcessedMovesCount = true;
   } else {
@@ -584,7 +584,7 @@ export function didUpdateOpponentMatch(match: any) {
 
     setProcessedMovesCountForColor(match.color, movesCount);
 
-    if (match.fen != game.fen()) {
+    if (match.fen !== game.fen()) {
       // TODO: show something is wrong alert
       console.log("fens do not match");
     } else {
@@ -592,10 +592,10 @@ export function didUpdateOpponentMatch(match: any) {
     }
   }
 
-  const isOpponentSide = !isWatchOnly || match.color == "black";
+  const isOpponentSide = !isWatchOnly || match.color === "black";
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
 
-  if (match.status == "surrendered") {
+  if (match.status === "surrendered") {
     isGameOver = true;
     setTimeout(() => {
       alert(match.color + " left the game");
@@ -616,7 +616,7 @@ export function didUpdateOpponentMatch(match: any) {
 export function didRecoverMyMatch(match: any) {
   isReconnect = true;
 
-  playerSideColor = match.color == "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
+  playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
   const movesCount = match.movesFens ? match.movesFens.length : 0;
   setProcessedMovesCountForColor(match.color, movesCount);
