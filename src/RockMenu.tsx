@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { logoBase64 } from "./helpers/uiAssets";
 import { didClickInviteButton } from "./helpers/pageSetup";
 
-const MainMenu: React.FC = () => {
+const RockMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isInviteLoading, setIsInviteLoading] = useState(false);
   const [didCreateInvite, setDidCreateInvite] = useState(false);
@@ -60,4 +60,4 @@ const MainMenu: React.FC = () => {
   );
 };
 
-export default MainMenu;
+export default RockMenu;

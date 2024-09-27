@@ -1,4 +1,4 @@
-import { Sound } from "./game-models";
+import { Sound } from "./gameModels";
 
 const audioCache: { [key: string]: any } = {};
 

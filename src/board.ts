@@ -1,9 +1,9 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "./helpers/svg";
-import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./game-controller";
-import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/game-models";
+import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./gameController";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "./helpers/gameModels";
 import { colors } from "./helpers/colors";
-import { isDesktopSafari, isModernAndPowerful } from "./helpers/page-setup";
+import { isDesktopSafari, isModernAndPowerful } from "./helpers/pageSetup";
 import { playSounds } from "./helpers/sounds";
 
 const assets = (await import("./helpers/assets")).assets;
