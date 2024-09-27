@@ -5,10 +5,12 @@ import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
+import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
 
-import App from "./App";
+import BoardComponent from "./BoardComponent";
+import VoiceReactionSelect from "./VoiceReactionSelect";
+import MainMenu from "./MainMenu";
 import { config } from "./wagmi";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
@@ -72,7 +74,21 @@ root.render(
               lightMode: lightTheme(),
               darkMode: darkTheme(),
             }}>
-            <App />
+            <div className="app-container">
+              <div className="connect-button-container">
+                <ConnectButton
+                  showBalance={false}
+                  chainStatus="none"
+                  accountStatus={{
+                    smallScreen: "avatar",
+                    largeScreen: "full",
+                  }}
+                />
+              </div>
+              <BoardComponent />
+              <MainMenu />
+              <VoiceReactionSelect />
+            </div>
           </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>
       </QueryClientProvider>
