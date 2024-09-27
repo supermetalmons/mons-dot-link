@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,61 +13,63 @@ import VoiceReactionSelect from "./ui/VoiceReactionSelect";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
-
 const queryClient = new QueryClient();
 
-const authenticationAdapter = createAuthenticationAdapter({
-  getNonce: async () => {
-    const randomBytes = new Uint8Array(32);
-    crypto.getRandomValues(randomBytes);
-    return Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-  },
+const App = () => {
 
-  createMessage: ({ nonce, address, chainId }) => {
-    return new SiweMessage({
-      domain: window.location.host,
-      address,
-      statement: "mons ftw",
-      uri: window.location.origin,
-      version: "1",
-      chainId,
-      nonce,
-    });
-  },
+  // TODO: correctly setup initial status based on previous login
+  const [authStatus, setAuthStatus] = useState<"loading" | "unauthenticated" | "authenticated">("unauthenticated");
 
-  getMessageBody: ({ message }) => {
-    return message.prepareMessage();
-  },
+  const authenticationAdapter = createAuthenticationAdapter({
+    getNonce: async () => {
+      const randomBytes = new Uint8Array(32);
+      crypto.getRandomValues(randomBytes);
+      return Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    },
 
-  verify: async ({ message, signature }) => {
-    return true; // TODO: implement actual verify
-    // const verifyRes = await fetch('/api/verify', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ message, signature }),
-    // });
+    createMessage: ({ nonce, address, chainId }) => {
+      return new SiweMessage({
+        domain: window.location.host,
+        address,
+        statement: "mons ftw",
+        uri: window.location.origin,
+        version: "1",
+        chainId,
+        nonce,
+      });
+    },
 
-    // return Boolean(verifyRes.ok);
-  },
+    getMessageBody: ({ message }) => {
+      return message.prepareMessage();
+    },
 
-  signOut: async () => {
-    // TODO: implement actual logout
-    // await fetch('/api/logout');
-  },
-});
+    verify: async ({ message, signature }) => {
+      // TODO: implement actual verify
+      // const verifyRes = await fetch('/api/verify', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ message, signature }),
+      // });
+      // const isVerified = Boolean(verifyRes.ok);
 
-// TODO: You'll need to resolve AUTHENTICATION_STATUS here
-// https://www.rainbowkit.com/docs/custom-authentication
+      const isVerified = true; // Simulating successful verification
+      if (isVerified) {
+        setAuthStatus("authenticated");
+      }
+      return isVerified;
+    },
 
-root.render(
-  <React.StrictMode>
+    signOut: async () => {
+      // TODO: implement actual logout
+      // await fetch('/api/logout');
+      // setAuthStatus("unauthenticated");
+    },
+  });
+
+  return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitAuthenticationProvider
-          adapter={authenticationAdapter}
-          status={"authenticated"} // TODO: either 'loading' (during initial load), 'unauthenticated' or 'authenticated'
-        >
+        <RainbowKitAuthenticationProvider adapter={authenticationAdapter} status={authStatus}>
           <RainbowKitProvider
             modalSize="compact"
             theme={{
@@ -93,5 +95,13 @@ root.render(
         </RainbowKitAuthenticationProvider>
       </QueryClientProvider>
     </WagmiProvider>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+root.render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>
 );
