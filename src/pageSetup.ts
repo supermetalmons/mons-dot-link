@@ -1,35 +1,24 @@
 // TODO: structure, refactor, and remove it
 
-import { newReactionOfKind, playReaction } from "./content/sounds";
 import { generateNewGameId } from "./utils/misc";
 
+import { newReactionOfKind, playReaction } from "./content/sounds";
+
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
-
-let voiceReactionSelect: HTMLSelectElement | null;
-
-function initializeElements() {
-  voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
-}
-
 export const isCreateNewInviteFlow = initialPath === "";
-
 let newGameId = "";
 let didCreateNewGameInvite = false;
 let firebaseConnection: any;
 
 export function setupPage() {
-  initializeElements();
-  setupVoiceReactionSelect();
   if (!isCreateNewInviteFlow) {
     connectToGame(initialPath);
   }
+
+  initializeElements();
+  setupVoiceReactionSelect();
 }
 
-export function setVoiceReactionSelectHidden(hidden: boolean) {
-  voiceReactionSelect.style.display = hidden ? "none" : "";
-}
-
-// TODO: update for a new usage
 export function didClickInviteButton(completion) {
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
@@ -70,10 +59,6 @@ function connectToGame(gameId: string) {
   });
 }
 
-export function showVoiceReactionText(reactionText: string, opponents: boolean) {
-  // TODO: display within board player / opponent text elements
-}
-
 function createNewMatchInvite(completion) {
   signIn().then((uid) => {
     if (uid) {
@@ -91,6 +76,19 @@ function createNewMatchInvite(completion) {
 function updatePath(newGameId: string) {
   const newPath = `/${newGameId}`;
   window.history.pushState({ path: newPath }, "", newPath);
+}
+
+async function signIn(): Promise<string | undefined> {
+  firebaseConnection = (await import("./connection/firebaseConnection")).firebaseConnection;
+  return firebaseConnection.signIn();
+}
+
+// MARK: - legacy voice reaction logic
+
+let voiceReactionSelect: HTMLSelectElement | null;
+
+function initializeElements() {
+  voiceReactionSelect = document.querySelector(".voice-reaction-select") as HTMLSelectElement;
 }
 
 function setupVoiceReactionSelect() {
@@ -111,7 +109,10 @@ function slowDownVoiceReactions() {
   }, 9999);
 }
 
-async function signIn(): Promise<string | undefined> {
-  firebaseConnection = (await import("./connection/firebaseConnection")).firebaseConnection;
-  return firebaseConnection.signIn();
+export function showVoiceReactionText(reactionText: string, opponents: boolean) {
+  // TODO: display within board player / opponent text elements
+}
+
+export function setVoiceReactionSelectHidden(hidden: boolean) {
+  voiceReactionSelect.style.display = hidden ? "none" : "";
 }

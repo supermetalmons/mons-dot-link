@@ -5,6 +5,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { setupPage, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setVoiceReactionSelectHidden, showVoiceReactionText } from "../pageSetup";
 import { isModernAndPowerful } from "../utils/misc";
+import { setupConnection } from "../connection/connection";
 
 let isWatchOnly = false;
 let isOnlineGame = false;
@@ -29,6 +30,7 @@ var currentInputs: Location[] = [];
 // TODO: it was called immediatelly before, now it's called after the board component is created, not sure if it's ok
 export async function go() {
   setupPage();
+  setupConnection();
 
   Board.setupBoard();
 
