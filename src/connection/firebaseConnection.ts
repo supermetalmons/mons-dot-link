@@ -29,6 +29,26 @@ class FirebaseConnection {
     this.auth = getAuth(this.app);
   }
 
+  public async verifyEthAddress(message: string, signature: string): Promise<any> {
+    try {
+      if (!this.auth.currentUser) {
+        const uid = await this.signIn();
+        if (!uid) {
+          throw new Error("Failed to authenticate user");
+        }
+      }
+      const { getFunctions, httpsCallable } = await import("firebase/functions");
+      const functions = getFunctions(this.app);
+      const verifyEthAddressFunction = httpsCallable(functions, 'verifyEthAddress');
+      const response = await verifyEthAddressFunction({ message, signature });
+      console.log("verifyEthAddress response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error verifying Ethereum address:", error);
+      throw error;
+    }
+  }
+
   public updateEmoji(newId: number) {
     this.myMatch.emojiId = newId;
     this.sendMatchUpdate();
