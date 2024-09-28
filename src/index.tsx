@@ -6,7 +6,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
-import { SiweMessage } from "siwe";
+import { generateNonce, SiweMessage } from "siwe";
 
 import BoardComponent from "./game/BoardComponent";
 import VoiceReactionSelect from "./ui/VoiceReactionSelect";
@@ -24,9 +24,7 @@ const App = () => {
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
-      const randomBytes = new Uint8Array(32);
-      crypto.getRandomValues(randomBytes);
-      return Array.from(randomBytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+      return generateNonce();
     },
 
     createMessage: ({ nonce, address, chainId }) => {
@@ -45,10 +43,8 @@ const App = () => {
       return message.prepareMessage();
     },
 
-    verify: async ({ message, signature }) => {
-      // TODO: pass message in an appropriate format
-      // JSON.stringify({ message, signature })
-      const res = await verifyEthAddress("hello", signature);
+    verify: async ({ message, signature }) => {      
+      const res = await verifyEthAddress(message.toMessage(), signature);
       if (res && res.ok === true) {
         setAuthStatus("authenticated");
         return true;
