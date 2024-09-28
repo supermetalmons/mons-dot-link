@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
+import { signIn } from "./connection/connection";
 
 import BoardComponent from "./game/BoardComponent";
 import VoiceReactionSelect from "./ui/VoiceReactionSelect";
@@ -19,12 +20,12 @@ const queryClient = new QueryClient();
 
 const App = () => {
 
-  // TODO: correctly setup initial status based on previous login
+  // TODO: start with loading and resolve it. authenticated == there is 
   const [authStatus, setAuthStatus] = useState<"loading" | "unauthenticated" | "authenticated">("unauthenticated");
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
-      return ""; // TODO: use the actual firebase user id
+      return await signIn(); // TODO: call it earlier. once the "connect wallet" button is clicked? or when resolving authStatus?
     },
 
     createMessage: ({ nonce, address, chainId }) => {

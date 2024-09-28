@@ -85,7 +85,7 @@ function updatePath(newGameId: string) {
   window.history.pushState({ path: newPath }, "", newPath);
 }
 
-async function signIn(): Promise<string | undefined> {
+export async function signIn(): Promise<string | undefined> {
   if (!firebaseConnection) {
     firebaseConnection = (await import("./firebaseConnection")).firebaseConnection;
   }
