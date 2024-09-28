@@ -6,7 +6,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
-import { generateNonce, SiweMessage } from "siwe";
+import { SiweMessage } from "siwe";
 
 import BoardComponent from "./game/BoardComponent";
 import VoiceReactionSelect from "./ui/VoiceReactionSelect";
@@ -24,14 +24,14 @@ const App = () => {
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
-      return generateNonce();
+      return ""; // TODO: use the actual firebase user id
     },
 
     createMessage: ({ nonce, address, chainId }) => {
       return new SiweMessage({
         domain: window.location.host,
         address,
-        statement: "mons ftw", // TODO: add firebase user id in the message somehow
+        statement: "mons ftw",
         uri: window.location.origin,
         version: "1",
         chainId,
