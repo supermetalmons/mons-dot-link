@@ -38,6 +38,10 @@
             },
             ".validate": "!data.exists() || ((!data.child('flatMovesString').exists() || (data.child('flatMovesString').exists() && (data.child('fen').val() === newData.child('fen').val() || (data.child('fen').val() != newData.child('fen').val() && data.child('flatMovesString').val() != newData.child('flatMovesString').val())))) && (data.child('flatMovesString').exists() || data.child('fen').exists() && !data.child('flatMovesString').exists() && !newData.child('flatMovesString').exists()))"
           }
+        },
+        "ethAddress": {
+          ".write": "auth != null && auth.token.admin === true && !data.exists()",
+          ".validate": "newData.isString() && newData.val().length > 0"
         }
       }
     }
