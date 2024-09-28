@@ -8,7 +8,7 @@ import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/Voice
 import { sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
 let isWatchOnly = false;
-let isOnlineGame = false;
+export let isOnlineGame = false;
 let isReconnect = false;
 let didConnect = false;
 

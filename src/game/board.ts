@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
-import { didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./gameController";
+import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
@@ -25,6 +25,9 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
+
+let playerDisplayNameString = "anon";
+let opponentDisplayNameString = "anon";
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
@@ -85,7 +88,21 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
+export function didGetPlayerEthAddress(address: string) {
+  if (!isOnlineGame) {
+    const cropped = address.slice(0, 4) + "..." + address.slice(-4);
+    playerDisplayNameString = cropped;
+    opponentDisplayNameString = cropped;
+  }
+  updateDisplayedPlayersAddresses();
+}
+
 export function resetForNewGame() {
+  // TODO: setup correct player names
+  playerDisplayNameString = "anon";
+  opponentDisplayNameString = "anon";
+  updateDisplayedPlayersAddresses();
+
   SVG.setHidden(opponentAvatar, false);
   SVG.setHidden(playerAvatar, false);
   removeHighlights();
@@ -153,15 +170,17 @@ export function removeItem(location: Location) {
   }
 }
 
+function updateDisplayedPlayersAddresses() {
+  playerNameText.textContent = playerDisplayNameString;
+  opponentNameText.textContent = opponentDisplayNameString;
+}
+
 export function updateScore(white: number, black: number) {
   const player = isFlipped ? black : white;
   const opponent = isFlipped ? white : black;
   playerScoreText.textContent = player.toString();
   opponentScoreText.textContent = opponent.toString();
-
-  // TODO: setup with actual values
-  playerNameText.textContent = "anon";
-  opponentNameText.textContent = "anon";
+  updateDisplayedPlayersAddresses();
 }
 
 export function showItemSelection() {
@@ -360,7 +379,6 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     nameText.setAttribute("font-size", "0.32");
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
-    nameText.textContent = allHiddenInitially ? "" : "anon"; // TODO: remove tmp placeholder
     controlsLayer.append(nameText);
     if (isOpponent) {
       opponentNameText = nameText;
@@ -468,6 +486,10 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
         }
       }
     });
+  }
+
+  if (!allHiddenInitially) {
+    updateDisplayedPlayersAddresses();
   }
 }
 

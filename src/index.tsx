@@ -8,6 +8,7 @@ import { WagmiProvider } from "wagmi";
 import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
 import { signIn } from "./connection/connection";
+import { didGetPlayerEthAddress } from "./game/board";
 
 import BoardComponent from "./game/BoardComponent";
 import VoiceReactionSelect from "./ui/VoiceReactionSelect";
@@ -47,6 +48,7 @@ const App = () => {
     verify: async ({ message, signature }) => {      
       const res = await verifyEthAddress(message.toMessage(), signature);
       if (res && res.ok === true) {
+        didGetPlayerEthAddress(res.address);
         setAuthStatus("authenticated");
         return true;
       } else {
