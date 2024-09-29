@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import React from "react";
+import React, { useState, useCallback } from "react";
 import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,12 +12,21 @@ import VoiceReactionSelect from "./ui/VoiceReactionSelect";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from './connection/authentication';
+import { signIn } from './connection/connection';
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { authStatus, setAuthStatus } = useAuthStatus();
   const authenticationAdapter = createAuthAdapter(setAuthStatus);
+  const [hasClickedConnect, setHasClickedConnect] = useState(false);
+
+  const handleConnectClick = useCallback(() => {
+    if (!hasClickedConnect) {
+      signIn();
+      setHasClickedConnect(true);
+    }
+  }, [hasClickedConnect]);
 
   return (
     <WagmiProvider config={config}>
@@ -30,7 +39,7 @@ const App = () => {
               darkMode: darkTheme(),
             }}>
             <div className="app-container">
-              <div className="connect-button-container">
+              <div className="connect-button-container" onClick={handleConnectClick}>
                 <ConnectButton
                   showBalance={false}
                   chainStatus="none"
