@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,8 +20,16 @@ import { verifyEthAddress } from "./connection/connection";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // TODO: start with loading and resolve it. authenticated == there is
-  const [authStatus, setAuthStatus] = useState<"loading" | "unauthenticated" | "authenticated">("unauthenticated");
+  const [authStatus, setAuthStatus] = useState<"loading" | "unauthenticated" | "authenticated">("loading");
+
+  useEffect(() => {
+    // TODO: resolve an actual auth status
+    const timer = setTimeout(() => {
+      setAuthStatus("unauthenticated");
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
