@@ -40,7 +40,6 @@ function writeInviteLinkToClipboard() {
   navigator.clipboard.writeText(link);
 }
 
-// TODO: tmp here as long as we access connection from here
 export function sendMove(moveFen: string, newBoardFen: string) {
   firebaseConnection.sendMove(moveFen, newBoardFen);
 }
@@ -49,7 +48,6 @@ export function sendVoiceReaction(reaction: any) {
   firebaseConnection.sendVoiceReaction(reaction);
 }
 
-// TODO: tmp here as long as we access connection from here
 export function sendEmojiUpdate(newId: number) {
   firebaseConnection.updateEmoji(newId);
 }

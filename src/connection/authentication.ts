@@ -29,7 +29,7 @@ export function useAuthStatus() {
 export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =>
   createAuthenticationAdapter({
     getNonce: async () => {
-      return await signIn(); // TODO: call it earlier. once the "connect wallet" button is clicked? or when resolving authStatus?
+      return await signIn();
     },
 
     createMessage: ({ nonce, address, chainId }) => {
