@@ -1,5 +1,6 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
 import * as Board from "./board";
+import { setupPlayerId } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
@@ -403,7 +404,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(opponentMatch: any) {
+function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
   if (!isWatchOnly) {
     setVoiceReactionSelectHidden(false);
   }
@@ -412,8 +413,10 @@ function didConnectTo(opponentMatch: any) {
 
   if (isWatchOnly) {
     playerSideColor = MonsWeb.Color.White;
+    setupPlayerId(matchPlayerUid, opponentMatch.color === "black");
   } else {
     playerSideColor = opponentMatch.color === "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+    setupPlayerId(matchPlayerUid, true);
   }
 
   if (!isWatchOnly) {
@@ -467,7 +470,7 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
-export function didUpdateOpponentMatch(match: any) {
+export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
   if (isGameOver) {
     return;
   }
@@ -475,7 +478,7 @@ export function didUpdateOpponentMatch(match: any) {
   console.log(`didUpdateOpponentMatch`, match);
 
   if (!didConnect) {
-    didConnectTo(match);
+    didConnectTo(match, matchPlayerUid);
     didConnect = true;
     if (!isReconnect) {
       playSounds([Sound.DidConnect]);
@@ -513,6 +516,7 @@ export function didUpdateOpponentMatch(match: any) {
 
   const isOpponentSide = !isWatchOnly || match.color === "black";
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
+  setupPlayerId(matchPlayerUid, isOpponentSide);
 
   if (match.status === "surrendered") {
     isGameOver = true;

@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
 import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
-import { getPlayersEmojiId } from "../game/board";
+import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 
 const controllerVersion = 2;
 
@@ -310,17 +310,32 @@ class FirebaseConnection {
   observeMatch(playerId: string, matchId: string) {
     const db = getDatabase(this.app);
     const matchRef = ref(db, `players/${playerId}/matches/${matchId}`);
+    const ethAddressRef = ref(db, `players/${playerId}/ethAddress`);
+
     onValue(
       matchRef,
       (snapshot) => {
         const matchData = snapshot.val();
         console.log(matchData);
         if (matchData) {
-          didUpdateOpponentMatch(matchData);
+          didUpdateOpponentMatch(matchData, playerId);
         }
       },
       (error) => {
         console.error("Error observing match data:", error);
+      }
+    );
+
+    onValue(
+      ethAddressRef,
+      (snapshot) => {
+        const ethAddress = snapshot.val();
+        if (ethAddress) {
+          didGetEthAddress(ethAddress, playerId);
+        }
+      },
+      (error) => {
+        console.error("Error observing ETH address:", error);
       }
     );
   }

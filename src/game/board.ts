@@ -88,6 +88,14 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
+export function didGetEthAddress(address: string, uid: string) {
+  // TODO: implement
+}
+
+export function setupPlayerId(uid: string, opponent: boolean) {
+  // TODO: implement
+}
+
 export function didGetPlayerEthAddress(address: string) {
   const cropped = address.slice(0, 4) + "..." + address.slice(-4);
   if (!isOnlineGame) {
