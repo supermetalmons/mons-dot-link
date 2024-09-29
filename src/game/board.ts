@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
-import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji } from "./gameController";
+import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
@@ -26,8 +26,8 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
-let playerDisplayNameString = "anon";
-let opponentDisplayNameString = "anon";
+let playerDisplayNameString = "";
+let opponentDisplayNameString = "";
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
@@ -89,18 +89,21 @@ const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
 export function didGetPlayerEthAddress(address: string) {
+  const cropped = address.slice(0, 4) + "..." + address.slice(-4);
   if (!isOnlineGame) {
-    const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     playerDisplayNameString = cropped;
     opponentDisplayNameString = cropped;
+  } else if (!isWatchOnly) {
+    playerDisplayNameString = cropped;
   }
   updateDisplayedPlayersAddresses();
 }
 
 export function resetForNewGame() {
-  // TODO: setup correct player names
-  playerDisplayNameString = "anon";
-  opponentDisplayNameString = "anon";
+  if (isWatchOnly) {
+    playerDisplayNameString = "";
+  }
+  opponentDisplayNameString = "";
   updateDisplayedPlayersAddresses();
 
   SVG.setHidden(opponentAvatar, false);
@@ -171,8 +174,9 @@ export function removeItem(location: Location) {
 }
 
 function updateDisplayedPlayersAddresses() {
-  playerNameText.textContent = playerDisplayNameString;
-  opponentNameText.textContent = opponentDisplayNameString;
+  const placeholderName = "anon";
+  playerNameText.textContent = playerDisplayNameString === "" ? placeholderName : playerDisplayNameString;
+  opponentNameText.textContent = opponentDisplayNameString === "" ? placeholderName : opponentDisplayNameString;
 }
 
 export function updateScore(white: number, black: number) {

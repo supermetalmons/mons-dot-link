@@ -7,7 +7,7 @@ import { isModernAndPowerful } from "../utils/misc";
 import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/VoiceReactionSelect";
 import { sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
-let isWatchOnly = false;
+export let isWatchOnly = false;
 export let isOnlineGame = false;
 let isReconnect = false;
 let didConnect = false;
