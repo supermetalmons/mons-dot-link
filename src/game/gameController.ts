@@ -4,7 +4,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/VoiceReactionSelect"
+import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/VoiceReactionSelect";
 import { sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
 let isWatchOnly = false;

@@ -20,8 +20,7 @@ import { verifyEthAddress } from "./connection/connection";
 const queryClient = new QueryClient();
 
 const App = () => {
-
-  // TODO: start with loading and resolve it. authenticated == there is 
+  // TODO: start with loading and resolve it. authenticated == there is
   const [authStatus, setAuthStatus] = useState<"loading" | "unauthenticated" | "authenticated">("unauthenticated");
 
   const authenticationAdapter = createAuthenticationAdapter({
@@ -45,7 +44,7 @@ const App = () => {
       return message.prepareMessage();
     },
 
-    verify: async ({ message, signature }) => {      
+    verify: async ({ message, signature }) => {
       const res = await verifyEthAddress(message.toMessage(), signature);
       if (res && res.ok === true) {
         didGetPlayerEthAddress(res.address);

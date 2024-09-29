@@ -29,6 +29,19 @@ class FirebaseConnection {
     this.auth = getAuth(this.app);
   }
 
+  public signIn(): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      signInAnonymously(this.auth)
+        .then(() => {
+          const uid = this.auth.currentUser?.uid;
+          resolve(uid);
+        })
+        .catch(() => {
+          resolve(undefined);
+        });
+    });
+  }
+
   public async verifyEthAddress(message: string, signature: string): Promise<any> {
     try {
       if (!this.auth.currentUser) {
@@ -39,7 +52,7 @@ class FirebaseConnection {
       }
       const { getFunctions, httpsCallable } = await import("firebase/functions");
       const functions = getFunctions(this.app);
-      const verifyEthAddressFunction = httpsCallable(functions, 'verifyEthAddress');
+      const verifyEthAddressFunction = httpsCallable(functions, "verifyEthAddress");
       const response = await verifyEthAddressFunction({ message, signature });
       console.log("verifyEthAddress response:", response.data);
       return response.data;
@@ -89,19 +102,6 @@ class FirebaseConnection {
       .catch((error) => {
         console.error("error sending a match update", error);
       });
-  }
-
-  public signIn(): Promise<string | undefined> {
-    return new Promise((resolve) => {
-      signInAnonymously(this.auth)
-        .then(() => {
-          const uid = this.auth.currentUser?.uid;
-          resolve(uid);
-        })
-        .catch(() => {
-          resolve(undefined);
-        });
-    });
   }
 
   public connectToGame(uid: string, inviteId: string) {

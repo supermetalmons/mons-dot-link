@@ -36,7 +36,7 @@ export function circle(centerX: number, centerY: number, radius: number): SVGEle
   circle.setAttribute("cx", centerX.toString());
   circle.setAttribute("cy", centerY.toString());
   circle.setAttribute("r", radius.toString());
-  return circle
+  return circle;
 }
 
 export function setOpacity(element: SVGElement, opacity: number) {

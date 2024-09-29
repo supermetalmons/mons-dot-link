@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { voiceReactionIconSvg } from "../content/uiAssets";
 import { newReactionOfKind, playReaction } from "../content/sounds";
 import { sendVoiceReaction } from "../connection/connection";
@@ -45,8 +45,7 @@ const VoiceReactionSelect: React.FC = () => {
           width: "24px",
           height: "24px",
           backgroundColor: "white",
-        }}
-      >
+        }}>
         <img src={`data:image/svg+xml;utf8,${encodeURIComponent(voiceReactionIconSvg)}`} alt="Voice Chat" width="100%" height="100%" />
       </button>
 
@@ -61,8 +60,7 @@ const VoiceReactionSelect: React.FC = () => {
           fontSize: "1.23rem",
           opacity: 0.81,
         }}
-        onChange={handleVoiceReactionChange}
-      >
+        onChange={handleVoiceReactionChange}>
         <option value="" disabled selected>
           say
         </option>

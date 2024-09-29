@@ -50,12 +50,24 @@ const MainMenu: React.FC = () => {
               <span className="button-text">{didCreateInvite ? "copy invite" : "new game"}</span>
             )}
           </button>
-          <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">github</a>
-          <a href="https://apps.apple.com/app/id6446702971" target="_blank" rel="noopener noreferrer">app store</a>
-          <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" target="_blank" rel="noopener noreferrer">steam</a>
-          <a href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">x</a>
-          <a href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">mons gen1</a>
-          <a href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">mons gen2</a>
+          <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
+            github
+          </a>
+          <a href="https://apps.apple.com/app/id6446702971" target="_blank" rel="noopener noreferrer">
+            app store
+          </a>
+          <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" target="_blank" rel="noopener noreferrer">
+            steam
+          </a>
+          <a href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
+            x
+          </a>
+          <a href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
+            mons gen1
+          </a>
+          <a href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
+            mons gen2
+          </a>
         </div>
       )}
     </div>

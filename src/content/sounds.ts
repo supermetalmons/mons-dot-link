@@ -8,8 +8,9 @@ export function playReaction(reaction: any) {
 }
 
 export function newReactionOfKind(kind: string): any {
-  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : ((r & 0x3) | 0x8);
+  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
   let variation = 1;
@@ -26,7 +27,7 @@ export function newReactionOfKind(kind: string): any {
       variation = 1;
       break;
   }
-  return {uuid: uuid, variation: variation, kind: kind};
+  return { uuid: uuid, variation: variation, kind: kind };
 }
 
 export function playSounds(sounds: Sound[]) {
