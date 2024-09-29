@@ -4,7 +4,7 @@ const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 export const isCreateNewInviteFlow = initialPath === "";
 let newGameId = "";
 let didCreateNewGameInvite = false;
-let firebaseConnection: any;
+let currentUid: string | null = null;
 
 export function setupConnection() {
   if (!isCreateNewInviteFlow) {
@@ -85,9 +85,32 @@ function updatePath(newGameId: string) {
   window.history.pushState({ path: newPath }, "", newPath);
 }
 
+let firebaseConnection: any;
+
 export async function signIn(): Promise<string | undefined> {
   if (!firebaseConnection) {
     firebaseConnection = (await import("./firebaseConnection")).firebaseConnection;
   }
   return firebaseConnection.signIn();
+}
+
+export function subscribeToAuthChanges(callback: (uid: string | null) => void) {
+  if (!firebaseConnection) {
+    import("./firebaseConnection").then(({ firebaseConnection: fc }) => {
+      firebaseConnection = fc;
+      firebaseConnection.subscribeToAuthChanges((newUid: string | null) => {
+        if (newUid !== currentUid) {
+          currentUid = newUid;
+          callback(newUid);
+        }
+      });
+    });
+  } else {
+    firebaseConnection.subscribeToAuthChanges((newUid: string | null) => {
+      if (newUid !== currentUid) {
+        currentUid = newUid;
+        callback(newUid);
+      }
+    });
+  }
 }

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
 import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
 import { getPlayersEmojiId } from "../game/board";
@@ -29,6 +29,13 @@ class FirebaseConnection {
     this.auth = getAuth(this.app);
   }
 
+  public subscribeToAuthChanges(callback: (uid: string | null) => void) {
+    onAuthStateChanged(this.auth, (user) => {
+      callback(user ? user.uid : null);
+    });
+  }
+
+  // TODO: clean it up and use subscribeToAuthChanges instead?
   public checkExistingAuth(): Promise<string | undefined> {
     return new Promise((resolve) => {
       const unsubscribe = this.auth.onAuthStateChanged((user) => {
