@@ -29,6 +29,19 @@ class FirebaseConnection {
     this.auth = getAuth(this.app);
   }
 
+  public checkExistingAuth(): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      const unsubscribe = this.auth.onAuthStateChanged((user) => {
+        unsubscribe();
+        if (user) {
+          resolve(user.uid);
+        } else {
+          resolve(undefined);
+        }
+      });
+    });
+  }
+
   public signIn(): Promise<string | undefined> {
     return new Promise((resolve) => {
       signInAnonymously(this.auth)
