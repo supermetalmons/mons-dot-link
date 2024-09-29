@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
-import { signIn, verifyEthAddress } from "./connection";
+import { subscribeToAuthChanges, signIn, verifyEthAddress } from "./connection";
 import { didGetPlayerEthAddress } from "../game/board";
 
 export type AuthStatus = "loading" | "unauthenticated" | "authenticated";
@@ -10,6 +10,11 @@ export function useAuthStatus() {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("loading");
 
   useEffect(() => {
+    subscribeToAuthChanges((uid) => {
+      // TODO: handle further changes
+      console.log('auth changed', uid);
+    });
+
     // TODO: resolve an actual auth status
     const timer = setTimeout(() => {
       setAuthStatus("unauthenticated");

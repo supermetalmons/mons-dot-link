@@ -6,7 +6,7 @@ export const isCreateNewInviteFlow = initialPath === "";
 let firebaseConnection: any;
 let newGameId = "";
 let didCreateNewGameInvite = false;
-let currentUid: string | null = null;
+let currentUid: string | null = "";
 
 export async function subscribeToAuthChanges(callback: (uid: string | null) => void) {
   const connection = await getFirebaseConnection();
