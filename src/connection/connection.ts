@@ -2,9 +2,21 @@ import { generateNewGameId } from "../utils/misc";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 export const isCreateNewInviteFlow = initialPath === "";
+
+let firebaseConnection: any;
 let newGameId = "";
 let didCreateNewGameInvite = false;
 let currentUid: string | null = null;
+
+export async function subscribeToAuthChanges(callback: (uid: string | null) => void) {
+  const connection = await getFirebaseConnection();
+  connection.subscribeToAuthChanges((newUid: string | null) => {
+    if (newUid !== currentUid) {
+      currentUid = newUid;
+      callback(newUid);
+    }
+  });
+}
 
 export function setupConnection() {
   if (!isCreateNewInviteFlow) {
@@ -85,32 +97,14 @@ function updatePath(newGameId: string) {
   window.history.pushState({ path: newPath }, "", newPath);
 }
 
-let firebaseConnection: any;
-
-export async function signIn(): Promise<string | undefined> {
+async function getFirebaseConnection() {
   if (!firebaseConnection) {
     firebaseConnection = (await import("./firebaseConnection")).firebaseConnection;
   }
-  return firebaseConnection.signIn();
+  return firebaseConnection;
 }
 
-export function subscribeToAuthChanges(callback: (uid: string | null) => void) {
-  if (!firebaseConnection) {
-    import("./firebaseConnection").then(({ firebaseConnection: fc }) => {
-      firebaseConnection = fc;
-      firebaseConnection.subscribeToAuthChanges((newUid: string | null) => {
-        if (newUid !== currentUid) {
-          currentUid = newUid;
-          callback(newUid);
-        }
-      });
-    });
-  } else {
-    firebaseConnection.subscribeToAuthChanges((newUid: string | null) => {
-      if (newUid !== currentUid) {
-        currentUid = newUid;
-        callback(newUid);
-      }
-    });
-  }
+export async function signIn(): Promise<string | undefined> {
+  const connection = await getFirebaseConnection();
+  return connection.signIn();
 }
