@@ -10,22 +10,26 @@ export function useAuthStatus() {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("loading");
 
   useEffect(() => {
+    let didPerformInitialSetup = false;
     subscribeToAuthChanges((uid) => {
-      // TODO: handle further changes
-      console.log('auth changed', uid);
+      if (didPerformInitialSetup) { return; }
+      didPerformInitialSetup = true;
+      if (uid !== null) {
+        const storedAddress = getStoredEthAddress(uid);
+        if (storedAddress) {
+          didGetPlayerEthAddress(storedAddress);
+          setAuthStatus("authenticated");
+        } else {
+          setAuthStatus("unauthenticated");
+        }
+      } else {
+        setAuthStatus("unauthenticated");
+      }
     });
-
-    // TODO: resolve an actual auth status
-    const timer = setTimeout(() => {
-      setAuthStatus("unauthenticated");
-    }, 500);
-
-    return () => clearTimeout(timer);
   }, []);
 
   return { authStatus, setAuthStatus };
 }
-
 export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =>
   createAuthenticationAdapter({
     getNonce: async () => {
@@ -52,6 +56,7 @@ export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =
       const res = await verifyEthAddress(message.toMessage(), signature);
       if (res && res.ok === true) {
         didGetPlayerEthAddress(res.address);
+        saveEthAddress(res.uid, res.address);
         setAuthStatus("authenticated");
         return true;
       } else {
@@ -62,3 +67,11 @@ export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =
 
     signOut: async () => {},
   });
+
+export const saveEthAddress = (uid: string, address: string): void => {
+  localStorage.setItem(`ethAddress_${uid}`, address);
+};
+
+export const getStoredEthAddress = (uid: string): string | null => {
+  return localStorage.getItem(`ethAddress_${uid}`);
+};
