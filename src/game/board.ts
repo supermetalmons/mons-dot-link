@@ -88,12 +88,37 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
+const ethAddresses: { [key: string]: string } = {};
+let playerSideUid = "";
+let opponentSideUid = "";
+
 export function didGetEthAddress(address: string, uid: string) {
-  // TODO: implement
+  ethAddresses[uid] = address;
+  displayEthAddressIfPossible();
 }
 
 export function setupPlayerId(uid: string, opponent: boolean) {
-  // TODO: implement
+  if (opponent) {
+    opponentSideUid = uid;
+  } else {
+    playerSideUid = uid;
+  }
+  displayEthAddressIfPossible();
+}
+
+function displayEthAddressIfPossible() {
+  if (ethAddresses[playerSideUid] && playerDisplayNameString === "") {
+    const address = ethAddresses[playerSideUid];
+    const cropped = address.slice(0, 4) + "..." + address.slice(-4);
+    playerDisplayNameString = cropped;
+  }
+  
+  if (ethAddresses[opponentSideUid] && opponentDisplayNameString === "") {
+    const address = ethAddresses[opponentSideUid];
+    const cropped = address.slice(0, 4) + "..." + address.slice(-4);
+    opponentDisplayNameString = cropped;
+  }
+  updateDisplayedPlayersAddresses();
 }
 
 export function didGetPlayerEthAddress(address: string) {
