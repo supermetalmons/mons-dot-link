@@ -1,71 +1,23 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { ConnectButton, createAuthenticationAdapter, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
-import { SiweMessage } from "siwe";
-import { signIn } from "./connection/connection";
-import { didGetPlayerEthAddress } from "./game/board";
+import { ConnectButton, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 
 import BoardComponent from "./game/BoardComponent";
 import VoiceReactionSelect from "./ui/VoiceReactionSelect";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
-
-import { verifyEthAddress } from "./connection/connection";
+import { useAuthStatus, createAuthAdapter } from './connection/authentication';
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [authStatus, setAuthStatus] = useState<"loading" | "unauthenticated" | "authenticated">("loading");
-
-  useEffect(() => {
-    // TODO: resolve an actual auth status
-    const timer = setTimeout(() => {
-      setAuthStatus("unauthenticated");
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const authenticationAdapter = createAuthenticationAdapter({
-    getNonce: async () => {
-      return await signIn(); // TODO: call it earlier. once the "connect wallet" button is clicked? or when resolving authStatus?
-    },
-
-    createMessage: ({ nonce, address, chainId }) => {
-      return new SiweMessage({
-        domain: window.location.host,
-        address,
-        statement: "mons ftw",
-        uri: window.location.origin,
-        version: "1",
-        chainId,
-        nonce,
-      });
-    },
-
-    getMessageBody: ({ message }) => {
-      return message.prepareMessage();
-    },
-
-    verify: async ({ message, signature }) => {
-      const res = await verifyEthAddress(message.toMessage(), signature);
-      if (res && res.ok === true) {
-        didGetPlayerEthAddress(res.address);
-        setAuthStatus("authenticated");
-        return true;
-      } else {
-        setAuthStatus("unauthenticated");
-        return false;
-      }
-    },
-
-    signOut: async () => {},
-  });
+  const { authStatus, setAuthStatus } = useAuthStatus();
+  const authenticationAdapter = createAuthAdapter(setAuthStatus);
 
   return (
     <WagmiProvider config={config}>
