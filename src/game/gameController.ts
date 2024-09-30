@@ -363,7 +363,6 @@ function suggestSavingOnchainRating() {
         saveOnchainRating(res);
       })
       .catch(() => {});  
-    alert("soon");
   }
 }
 
