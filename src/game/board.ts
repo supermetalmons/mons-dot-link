@@ -438,8 +438,9 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     });
 
     nameText.addEventListener("mouseenter", () => {
-      // TODO: do not highlight if there is no address yet
-      SVG.setFill(nameText, "#0071F9");
+      if (canRedirectToEthAddress(isOpponent)) {
+        SVG.setFill(nameText, "#0071F9");
+      }
     });
 
     nameText.addEventListener("mouseleave", () => {
@@ -557,6 +558,11 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   if (!allHiddenInitially) {
     updateDisplayedPlayersAddresses();
   }
+}
+
+function canRedirectToEthAddress(opponent: boolean) {
+  let address = opponent ? opponentEthAddress : playerEthAddress;
+  return address !== "";
 }
 
 function redirectToEthAddress(opponent: boolean) {
