@@ -12,7 +12,7 @@ const BoardComponent: React.FC = () => {
   }, []);
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 13.1" shapeRendering="crispEdges" overflow="visible">
+    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 14.1" shapeRendering="crispEdges" overflow="visible">
       <defs>
         <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
           <rect width="1" height="1" fill="#BEBEBE" />

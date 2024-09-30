@@ -69,10 +69,10 @@ body {
   outline: none;
   -webkit-touch-callout: none;
   width: 100vw;
-  max-height: 71vh;
+  max-height: 77vh;
   touch-action: none;
   position: absolute;
-  top: 50%;
+  top: 52.5%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
