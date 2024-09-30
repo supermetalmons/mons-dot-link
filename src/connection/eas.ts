@@ -1,14 +1,18 @@
-export async function sendEasTx(txData) {
-    console.log("yo going to send eas tx", txData);
-    return;
-    
+import { EAS, SchemaEncoder, TransactionSigner, TransactionProvider } from "@ethereum-attestation-service/eas-sdk";
+import { ethers } from "ethers";
+
+function getSigner(): TransactionSigner | TransactionProvider {
+    const privateKey = ethers.Wallet.createRandom().privateKey;
+    const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
+    const signer = new ethers.Wallet(privateKey, provider);
+    return signer;
+}
+
+export async function sendEasTx(txData) {    
     const signatures = txData.signatures;
     const attester = txData.attester;
-  
-    const { EAS, SchemaEncoder } = await import("@ethereum-attestation-service/eas-sdk");
     const eas = new EAS("0x4200000000000000000000000000000000000021");
-  
-    // eas.connect(sender); // TODO: connect wallet
+    eas.connect(getSigner());
     const schemaEncoder = new SchemaEncoder("uint64 gameId, uint64 points, bool isWin");
     const encodedData = schemaEncoder.encodeData([ // TODO: get encoded data with signatures instead of preparing it here
       { name: "gameId", value: 0, type: "uint64" },
