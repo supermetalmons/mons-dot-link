@@ -303,7 +303,9 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
 
             if (isVictory && !isWatchOnly && hasBothEthAddresses()) {
-              suggestSavingOnchainRating();
+              setTimeout(() => {
+                suggestSavingOnchainRating();
+              }, 420);
             } else {
               setTimeout(() => {
                 alert(winnerAlertText);
