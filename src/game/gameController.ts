@@ -360,11 +360,16 @@ function suggestSavingOnchainRating() {
     const gameId = getCurrentGameId();
     prepareOnchainVictoryTx(gameId)
       .then((res) => {
-        console.log("time to request a tx", res);
+        saveOnchainRating(res);
       })
       .catch(() => {});  
     alert("soon");
   }
+}
+
+async function saveOnchainRating(txData) {
+  const { sendEasTx } = await import('../connection/eas');
+  sendEasTx(txData);
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
