@@ -26,8 +26,11 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
+// TODO: refactor these into a model
 let playerDisplayNameString = "";
 let opponentDisplayNameString = "";
+let playerEthAddress = "";
+let opponentEthAddress = "";
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
@@ -106,37 +109,47 @@ export function setupPlayerId(uid: string, opponent: boolean) {
   displayEthAddressIfPossible();
 }
 
+// TODO: refactor
 function displayEthAddressIfPossible() {
   if (ethAddresses[playerSideUid] && playerDisplayNameString === "") {
     const address = ethAddresses[playerSideUid];
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     playerDisplayNameString = cropped;
+    playerEthAddress = address;
   }
   
   if (ethAddresses[opponentSideUid] && opponentDisplayNameString === "") {
     const address = ethAddresses[opponentSideUid];
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     opponentDisplayNameString = cropped;
+    opponentEthAddress = address;
   }
   updateDisplayedPlayersAddresses();
 }
 
+// TODO: refactor
 export function didGetPlayerEthAddress(address: string) {
   const cropped = address.slice(0, 4) + "..." + address.slice(-4);
   if (!isOnlineGame) {
     playerDisplayNameString = cropped;
     opponentDisplayNameString = cropped;
+    playerEthAddress = address;
+    opponentEthAddress = address;
   } else if (!isWatchOnly) {
+    playerEthAddress = address;
     playerDisplayNameString = cropped;
   }
   updateDisplayedPlayersAddresses();
 }
 
 export function resetForNewGame() {
+  // TODO: refactor names / addresses
   if (isWatchOnly) {
     playerDisplayNameString = "";
+    playerEthAddress = "";
   }
   opponentDisplayNameString = "";
+  opponentEthAddress = "";
   updateDisplayedPlayersAddresses();
 
   SVG.setHidden(opponentAvatar, false);
@@ -416,26 +429,22 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     nameText.setAttribute("font-size", "0.32");
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
+    nameText.style.cursor = "pointer";
     controlsLayer.append(nameText);
 
-    /// TODO: dev tmp hover handling
-    const nameRect = document.createElementNS(SVG.ns, "rect");
-    SVG.setFrame(nameRect, offsetX - 0.1, isOpponent ? -0.6 : y + 1.05 - avatarOffsetY, 1.1, 0.4);
-    SVG.setFill(nameRect, "transparent");
-    controlsLayer.append(nameRect);
-
-    nameRect.addEventListener("click", () => {
-      console.log(nameText.textContent);
+    nameText.addEventListener("click", (event) => {
+      event.stopPropagation();
+      redirectToEthAddress(isOpponent);
     });
 
-    nameRect.addEventListener("mouseenter", () => {
-      SVG.setFill(nameRect, "rgba(0, 0, 255, 0.023)");
+    nameText.addEventListener("mouseenter", () => {
+      // TODO: do not highlight if there is no address yet
+      SVG.setFill(nameText, "#0071F9");
     });
 
-    nameRect.addEventListener("mouseleave", () => {
-      SVG.setFill(nameRect, "transparent");
+    nameText.addEventListener("mouseleave", () => {
+      SVG.setFill(nameText, colors.scoreText);
     });
-    ///
 
     if (isOpponent) {
       opponentNameText = nameText;
@@ -547,6 +556,16 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
   if (!allHiddenInitially) {
     updateDisplayedPlayersAddresses();
+  }
+}
+
+function redirectToEthAddress(opponent: boolean) {
+  console.log("want to redirect to address, opponent: ", opponent);
+  let address = opponent ? opponentEthAddress : playerEthAddress;
+  if (address !== "") {
+    const etherscanBaseUrl = "https://etherscan.io/address/";
+    const etherscanUrl = etherscanBaseUrl + address;
+    window.open(etherscanUrl, '_blank', 'noopener,noreferrer');
   }
 }
 
