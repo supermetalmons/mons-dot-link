@@ -18,6 +18,10 @@ export async function subscribeToAuthChanges(callback: (uid: string | null) => v
   });
 }
 
+export function getCurrentGameId(): string {
+  return firebaseConnection.gameId;
+}
+
 export function setupConnection() {
   if (!isCreateNewInviteFlow) {
     connectToGame(initialPath);
@@ -60,6 +64,10 @@ export async function verifyEthAddress(message: string, signature: string): Prom
     }
   }
   return firebaseConnection.verifyEthAddress(message, signature);
+}
+
+export async function prepareOnchainVictoryTx(gameId: string): Promise<any> {
+  return firebaseConnection.prepareOnchainVictoryTx(gameId);
 }
 
 function connectToGame(gameId: string) {

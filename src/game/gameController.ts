@@ -7,7 +7,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/VoiceReactionSelect";
-import { sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
+import { prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -357,7 +357,12 @@ function hasBothEthAddresses(): boolean {
 function suggestSavingOnchainRating() {
   const shouldSave = global.confirm("🎉 you win\n\n💾 log victory onchain");
   if (shouldSave) {
-    // TODO: prepare and send attestation tx
+    const gameId = getCurrentGameId();
+    prepareOnchainVictoryTx(gameId)
+      .then((res) => {
+        console.log("time to request a tx", res);
+      })
+      .catch(() => {});  
     alert("soon");
   }
 }

@@ -12,7 +12,7 @@ class FirebaseConnection {
 
   private myMatch: any;
   private uid: string;
-  private gameId: string;
+  public gameId: string;
 
   constructor() {
     const firebaseConfig = {
@@ -46,6 +46,20 @@ class FirebaseConnection {
           resolve(undefined);
         });
     });
+  }
+
+  public async prepareOnchainVictoryTx(gameId: string): Promise<any> {
+    try {
+      const { getFunctions, httpsCallable } = await import("firebase/functions");
+      const functions = getFunctions(this.app);
+      const attestVictoryFunction = httpsCallable(functions, "attestVictory");
+      const response = await attestVictoryFunction({ gameId });
+      console.log("attestVictory response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error preparing onchain victory tx:", error);
+      throw error;
+    }
   }
 
   public async verifyEthAddress(message: string, signature: string): Promise<any> {
