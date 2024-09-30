@@ -74,4 +74,6 @@ const MainMenu: React.FC = () => {
   );
 };
 
+// TODO: add emojipack when the layout is compact enough https://opensea.io/collection/theemojipack
+
 export default MainMenu;
