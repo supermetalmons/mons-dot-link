@@ -301,12 +301,15 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               sounds.push(Sound.Defeat);
             }
 
-            setTimeout(() => {
-              alert(winnerAlertText);
-            }, 420);
+            if (isVictory && !isWatchOnly) {
+              suggestSavingOnchainRating();
+            } else {
+              setTimeout(() => {
+                alert(winnerAlertText);
+              }, 420);
+            }
 
             isGameOver = true;
-
             break;
         }
       }
@@ -341,6 +344,14 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       }
 
       break;
+  }
+}
+
+function suggestSavingOnchainRating() {
+  const shouldSave = global.confirm("🎉 you win\n\n💾 log victory onchain");
+  if (shouldSave) {
+    // TODO: prepare and send attestation tx
+    alert("soon");
   }
 }
 
