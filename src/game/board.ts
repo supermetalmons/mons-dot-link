@@ -29,8 +29,8 @@ const playerMoveStatusItems: SVGElement[] = [];
 // TODO: refactor these into a model
 let playerDisplayNameString = "";
 let opponentDisplayNameString = "";
-let playerEthAddress = "";
-let opponentEthAddress = "";
+export let playerEthAddress = "";
+export let opponentEthAddress = "";
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;

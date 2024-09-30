@@ -1,4 +1,5 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
+import { playerEthAddress, opponentEthAddress } from "./board";
 import * as Board from "./board";
 import { setupPlayerId } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
@@ -301,7 +302,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               sounds.push(Sound.Defeat);
             }
 
-            if (isVictory && !isWatchOnly) {
+            if (isVictory && !isWatchOnly && hasBothEthAddresses()) {
               suggestSavingOnchainRating();
             } else {
               setTimeout(() => {
@@ -345,6 +346,10 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
       break;
   }
+}
+
+function hasBothEthAddresses(): boolean {
+  return playerEthAddress !== "" && opponentEthAddress !== "" && playerEthAddress !== opponentEthAddress;
 }
 
 function suggestSavingOnchainRating() {
