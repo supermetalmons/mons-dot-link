@@ -434,7 +434,10 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
     nameText.addEventListener("click", (event) => {
       event.stopPropagation();
-      redirectToEthAddress(isOpponent);
+      if (canRedirectToEthAddress(isOpponent)) {
+        redirectToEthAddress(isOpponent);
+        SVG.setFill(nameText, colors.scoreText);
+      }
     });
 
     nameText.addEventListener("mouseenter", () => {
@@ -445,6 +448,12 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
     nameText.addEventListener("mouseleave", () => {
       SVG.setFill(nameText, colors.scoreText);
+    });
+
+    nameText.addEventListener("touchend", () => {
+      setTimeout(() => {
+        SVG.setFill(nameText, colors.scoreText);
+      }, 100);
     });
 
     if (isOpponent) {
