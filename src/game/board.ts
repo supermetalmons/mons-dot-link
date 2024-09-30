@@ -417,6 +417,26 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
     controlsLayer.append(nameText);
+
+    /// TODO: dev tmp hover handling
+    const nameRect = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(nameRect, offsetX - 0.1, isOpponent ? -0.6 : y + 1.05 - avatarOffsetY, 1.1, 0.4);
+    SVG.setFill(nameRect, "transparent");
+    controlsLayer.append(nameRect);
+
+    nameRect.addEventListener("click", () => {
+      console.log(nameText.textContent);
+    });
+
+    nameRect.addEventListener("mouseenter", () => {
+      SVG.setFill(nameRect, "rgba(0, 0, 255, 0.023)");
+    });
+
+    nameRect.addEventListener("mouseleave", () => {
+      SVG.setFill(nameRect, "transparent");
+    });
+    ///
+
     if (isOpponent) {
       opponentNameText = nameText;
     } else {
