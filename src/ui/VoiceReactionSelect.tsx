@@ -34,7 +34,7 @@ const VoiceReactionSelect: React.FC = () => {
         style={{
           position: "absolute",
           bottom: "9pt",
-          right: "9pt",
+          left: "9pt",
           background: "none",
           border: "none",
           cursor: "pointer",
@@ -54,7 +54,7 @@ const VoiceReactionSelect: React.FC = () => {
         style={{
           position: "absolute",
           bottom: "10pt",
-          right: "9pt",
+          left: "9pt",
           outline: "none",
           display: isSelectVisible ? "block" : "none",
           fontSize: "1.23rem",

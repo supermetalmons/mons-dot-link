@@ -13,6 +13,8 @@ import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from './connection/authentication';
 import { signIn } from './connection/connection';
+import BottomControls from "./ui/BottomControls";
+import { useBottomControlsActions } from "./ui/BottomControlsActions";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +22,7 @@ const App = () => {
   const { authStatus, setAuthStatus } = useAuthStatus();
   const authenticationAdapter = createAuthAdapter(setAuthStatus);
   const [hasClickedConnect, setHasClickedConnect] = useState(false);
+  const bottomControlsActions = useBottomControlsActions();
 
   const handleConnectClick = useCallback(() => {
     if (!hasClickedConnect) {
@@ -52,6 +55,7 @@ const App = () => {
               <BoardComponent />
               <MainMenu />
               <VoiceReactionSelect />
+              <BottomControls actions={bottomControlsActions} />
             </div>
           </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>
