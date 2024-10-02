@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaMicrophone } from 'react-icons/fa';
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt } from 'react-icons/fa';
 import { BottomControlsActionsInterface } from './BottomControlsActions';
 
 interface BottomControlsProps {
@@ -65,7 +65,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         <FaFlag />
       </ControlButton>
       <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction">
-        <FaMicrophone />
+        <FaCommentAlt />
       </ControlButton>
     </ControlsContainer>
   );
