@@ -9,15 +9,15 @@ interface BottomControlsProps {
 
 const ControlsContainer = styled.div`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 10px;
+  right: 10px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
 `;
 
 const ControlButton = styled.button`
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background-color: #f0f0f0;
   border: none;
@@ -32,8 +32,8 @@ const ControlButton = styled.button`
   }
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     color: #333;
   }
 
