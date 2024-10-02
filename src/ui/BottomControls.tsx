@@ -58,14 +58,14 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <ControlButton onClick={handleUndo} aria-label="Undo">
         <FaUndo />
       </ControlButton>
-      <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
-        {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-      </ControlButton>
       <ControlButton onClick={handleResign} aria-label="Resign">
         <FaFlag />
       </ControlButton>
       <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction">
         <FaCommentAlt />
+      </ControlButton>
+      <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
+        {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
     </ControlsContainer>
   );
