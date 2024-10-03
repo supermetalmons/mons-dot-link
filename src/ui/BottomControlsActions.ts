@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
@@ -8,8 +8,15 @@ export interface BottomControlsActionsInterface {
   handleVoiceReaction: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
+let globalIsMuted = localStorage.getItem('isMuted') === 'true';
+
 export const useBottomControlsActions = (): BottomControlsActionsInterface => {
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(globalIsMuted);
+
+  useEffect(() => {
+    localStorage.setItem('isMuted', isMuted.toString());
+    globalIsMuted = isMuted;
+  }, [isMuted]);
 
   const handleUndo = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -19,7 +26,6 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleMuteToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    // TODO: implement
     setIsMuted(prev => !prev);
   }, []);
 
@@ -43,3 +49,5 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     handleVoiceReaction,
   };
 };
+
+export const getIsMuted = (): boolean => globalIsMuted;

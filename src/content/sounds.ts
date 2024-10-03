@@ -1,8 +1,13 @@
 import { Sound } from "../utils/gameModels";
+import { getIsMuted } from "../ui/BottomControlsActions";
 
 const audioCache: { [key: string]: any } = {};
 
 export function playReaction(reaction: any) {
+  if (getIsMuted()) {
+    return;
+  }
+  
   const path = `reactions/${reaction.kind}${reaction.variation}.wav`;
   play(path);
 }
@@ -31,6 +36,10 @@ export function newReactionOfKind(kind: string): any {
 }
 
 export function playSounds(sounds: Sound[]) {
+  if (getIsMuted()) {
+    return;
+  }
+
   const maxSoundPriority = Math.max(...sounds.map((sound) => getSoundPriority(sound)));
   sounds = sounds.filter((sound) => getSoundPriority(sound) === maxSoundPriority || sound === Sound.EndTurn);
 
