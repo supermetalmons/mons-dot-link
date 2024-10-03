@@ -26,9 +26,16 @@ const ControlButton = styled.button`
   align-items: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover {
-    background-color: #e0e0e0;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+
+  &:active {
+    background-color: #d0d0d0;
   }
 
   svg {
@@ -40,8 +47,14 @@ const ControlButton = styled.button`
   @media (prefers-color-scheme: dark) {
     background-color: #333;
     
-    &:hover {
-      background-color: #444;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #444;
+      }
+    }
+
+    &:active {
+      background-color: #555;
     }
 
     svg {
