@@ -6,7 +6,6 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { setVoiceReactionSelectHidden, showVoiceReactionText } from "../ui/VoiceReactionSelect";
 import { prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 
 export let isWatchOnly = false;
@@ -433,7 +432,8 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
   if (!isWatchOnly) {
-    setVoiceReactionSelectHidden(false);
+    // TODO: update new voice reaction control
+    // setVoiceReactionSelectHidden(false);
   }
 
   Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color === "black" : true);
@@ -556,7 +556,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
     processedVoiceReactions.add(match.reaction.uuid);
     const currentTime = Date.now();
     if (currentTime - lastReactionTime > 5000) {
-      showVoiceReactionText(match.reaction.kind, true);
+      // TODO: show voice reaction text
+      // showVoiceReactionText(match.reaction.kind, true);
       playReaction(match.reaction);
       lastReactionTime = currentTime;
     }

@@ -8,7 +8,6 @@ import { WagmiProvider } from "wagmi";
 import { ConnectButton, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 
 import BoardComponent from "./game/BoardComponent";
-import VoiceReactionSelect from "./ui/VoiceReactionSelect";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from './connection/authentication';
@@ -54,7 +53,6 @@ const App = () => {
               </div>
               <BoardComponent />
               <MainMenu />
-              <VoiceReactionSelect />
               <BottomControls actions={bottomControlsActions} />
             </div>
           </RainbowKitProvider>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt } from 'react-icons/fa';
 import { BottomControlsActionsInterface } from './BottomControlsActions';
@@ -63,8 +63,69 @@ const ControlButton = styled.button`
   }
 `;
 
+const ReactionPicker = styled.div`
+  position: absolute;
+  bottom: 40px;
+  right: 10px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #333;
+  }
+`;
+
+const ReactionButton = styled.button`
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  text-align: left;
+  color: #333;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #f0f0f0;
+
+    &:hover {
+      background-color: #444;
+    }
+  }
+`;
+
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
-  const { isMuted, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction } = actions;
+  const { 
+    isMuted, 
+    isReactionPickerVisible, 
+    handleUndo, 
+    handleMuteToggle, 
+    handleResign, 
+    handleVoiceReaction,
+    handleReactionSelect,
+    hideReactionPicker
+  } = actions;
+
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        hideReactionPicker();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [hideReactionPicker]);
 
   return (
     <ControlsContainer>
@@ -80,6 +141,15 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
+      {isReactionPickerVisible && (
+        <ReactionPicker ref={pickerRef}>
+          <ReactionButton onClick={() => handleReactionSelect('yo')}>yo</ReactionButton>
+          <ReactionButton onClick={() => handleReactionSelect('wahoo')}>wahoo</ReactionButton>
+          <ReactionButton onClick={() => handleReactionSelect('drop')}>drop</ReactionButton>
+          <ReactionButton onClick={() => handleReactionSelect('slurp')}>slurp</ReactionButton>
+          <ReactionButton onClick={() => handleReactionSelect('gg')}>gg</ReactionButton>
+        </ReactionPicker>
+      )}
     </ControlsContainer>
   );
 };
