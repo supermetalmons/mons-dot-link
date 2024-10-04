@@ -47,15 +47,15 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   }, []);
 
   const handleReactionSelect = useCallback((reaction: string) => {
+    setIsReactionPickerVisible(false);
     const reactionObj = newReactionOfKind(reaction);
     sendVoiceReaction(reactionObj);
     playReaction(reactionObj);
     // TODO: show voice reaction text
     // showVoiceReactionText(reaction, false);
-    setIsReactionPickerVisible(false);
     // TODO: disable or hide voice reaction button itself
   }, []);
-  
+
   const hideReactionPicker = useCallback(() => {
     setIsReactionPickerVisible(false);
   }, []);

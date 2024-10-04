@@ -116,6 +116,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      event.stopPropagation();
       if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
         hideReactionPicker();
       }
