@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt } from 'react-icons/fa';
 import { BottomControlsActionsInterface } from './BottomControlsActions';
@@ -100,7 +100,10 @@ const ReactionButton = styled.button`
   }
 `;
 
+let showGameRelatedBottomControls: () => void;
+
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
+  const [showOtherControls, setShowOtherControls] = useState(false);
   const { 
     isMuted, 
     isReactionPickerVisible, 
@@ -128,17 +131,23 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, [hideReactionPicker]);
 
+  showGameRelatedBottomControls = () => setShowOtherControls(true);
+
   return (
     <ControlsContainer>
-      <ControlButton onClick={handleUndo} aria-label="Undo">
-        <FaUndo />
-      </ControlButton>
-      <ControlButton onClick={handleResign} aria-label="Resign">
-        <FaFlag />
-      </ControlButton>
-      <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction">
-        <FaCommentAlt />
-      </ControlButton>
+      {showOtherControls && (
+        <>
+          <ControlButton onClick={handleUndo} aria-label="Undo">
+            <FaUndo />
+          </ControlButton>
+          <ControlButton onClick={handleResign} aria-label="Resign">
+            <FaFlag />
+          </ControlButton>
+          <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction">
+            <FaCommentAlt />
+          </ControlButton>
+        </>
+      )}
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
@@ -155,4 +164,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export default BottomControls;
+export { BottomControls as default, showGameRelatedBottomControls };

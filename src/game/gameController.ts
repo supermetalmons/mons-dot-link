@@ -6,6 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
+import { showGameRelatedBottomControls } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -431,9 +432,7 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
   if (!isWatchOnly) {
-    // TODO: btw there are more controls to update now
-    // TODO: update new voice reaction control
-    // setVoiceReactionSelectHidden(false);
+    showGameRelatedBottomControls();
   }
 
   Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color === "black" : true);
