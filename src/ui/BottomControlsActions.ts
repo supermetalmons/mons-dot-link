@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { newReactionOfKind, playReaction } from "../content/sounds";
 import { sendVoiceReaction } from "../connection/connection";
+import { showVoiceReactionText } from "../game/board";
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
@@ -51,8 +52,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     const reactionObj = newReactionOfKind(reaction);
     sendVoiceReaction(reactionObj);
     playReaction(reactionObj);
-    // TODO: show voice reaction text
-    // showVoiceReactionText(reaction, false);
+    showVoiceReactionText(reaction, false);
     // TODO: disable or hide voice reaction button itself
   }, []);
 
@@ -71,9 +71,5 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     hideReactionPicker,
   };
 };
-
-function showVoiceReactionText(reactionText: string, opponents: boolean) {
-  // TODO: display within board player / opponent text elements
-}
 
 export const getIsMuted = (): boolean => globalIsMuted;

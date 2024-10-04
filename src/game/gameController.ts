@@ -1,7 +1,6 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
-import { playerEthAddress, opponentEthAddress } from "./board";
+import { playerEthAddress, opponentEthAddress, showVoiceReactionText, setupPlayerId } from "./board";
 import * as Board from "./board";
-import { setupPlayerId } from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
@@ -432,6 +431,7 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
   if (!isWatchOnly) {
+    // TODO: btw there are more controls to update now
     // TODO: update new voice reaction control
     // setVoiceReactionSelectHidden(false);
   }
@@ -556,8 +556,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
     processedVoiceReactions.add(match.reaction.uuid);
     const currentTime = Date.now();
     if (currentTime - lastReactionTime > 5000) {
-      // TODO: show voice reaction text
-      // showVoiceReactionText(match.reaction.kind, true);
+      showVoiceReactionText(match.reaction.kind, true);
       playReaction(match.reaction);
       lastReactionTime = currentTime;
     }

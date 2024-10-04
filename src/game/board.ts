@@ -127,6 +127,10 @@ function displayEthAddressIfPossible() {
   updateDisplayedPlayersAddresses();
 }
 
+export function showVoiceReactionText(reactionText: string, opponents: boolean) {
+  // TODO: show text within players names labels
+}
+
 // TODO: refactor
 export function didGetPlayerEthAddress(address: string) {
   const cropped = address.slice(0, 4) + "..." + address.slice(-4);
