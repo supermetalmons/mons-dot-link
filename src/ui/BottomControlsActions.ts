@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 import { newReactionOfKind, playReaction } from "../content/sounds";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
@@ -12,16 +12,18 @@ export interface BottomControlsActionsInterface {
   handleVoiceReaction: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleReactionSelect: (reaction: string) => void;
   hideReactionPicker: () => void;
+  isVoiceReactionDisabled: boolean;
 }
 
-let globalIsMuted = localStorage.getItem('isMuted') === 'true';
+let globalIsMuted = localStorage.getItem("isMuted") === "true";
 
 export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const [isMuted, setIsMuted] = useState(globalIsMuted);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
+  const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('isMuted', isMuted.toString());
+    localStorage.setItem("isMuted", isMuted.toString());
     globalIsMuted = isMuted;
   }, [isMuted]);
 
@@ -33,7 +35,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleMuteToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    setIsMuted(prev => !prev);
+    setIsMuted((prev) => !prev);
   }, []);
 
   const handleResign = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,7 +46,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleVoiceReaction = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    setIsReactionPickerVisible(prev => !prev);
+    setIsReactionPickerVisible((prev) => !prev);
   }, []);
 
   const handleReactionSelect = useCallback((reaction: string) => {
@@ -53,7 +55,10 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     sendVoiceReaction(reactionObj);
     playReaction(reactionObj);
     showVoiceReactionText(reaction, false);
-    // TODO: disable or hide voice reaction button itself
+    setIsVoiceReactionDisabled(true);
+    setTimeout(() => {
+      setIsVoiceReactionDisabled(false);
+    }, 9999);
   }, []);
 
   const hideReactionPicker = useCallback(() => {
@@ -69,6 +74,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     handleVoiceReaction,
     handleReactionSelect,
     hideReactionPicker,
+    isVoiceReactionDisabled,
   };
 };
 
