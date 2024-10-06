@@ -3,6 +3,13 @@ import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 
+let latestModalOutsideTapDismissDate = Date.now();
+
+export function didNotDismissAnythingWithOutsideTapJustNow(): boolean {
+  let delta = Date.now() - latestModalOutsideTapDismissDate;
+  return delta >= 42;
+}
+
 interface BottomControlsProps {
   actions: BottomControlsActionsInterface;
 }
@@ -113,6 +120,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     const handleClickOutside = (event: MouseEvent) => {
       event.stopPropagation();
       if (pickerRef.current && !pickerRef.current.contains(event.target as Node) && !voiceReactionButtonRef.current?.contains(event.target as Node)) {
+        latestModalOutsideTapDismissDate = Date.now();
         hideReactionPicker();
       }
     };

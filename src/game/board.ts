@@ -5,6 +5,7 @@ import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from 
 import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
+import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
 
 const assets = (await import("../content/gameAssets")).gameAssets;
 let board: HTMLElement | null;
@@ -606,6 +607,10 @@ export function setupBoard() {
   initializeBoardElements();
 
   document.addEventListener("click", function (event) {
+    if (!didNotDismissAnythingWithOutsideTapJustNow()) {
+      return;
+    }
+
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
       const x = parseInt(target.getAttribute("x") || "-1");
