@@ -22,7 +22,7 @@ const ControlsContainer = styled.div`
   gap: 8px;
 `;
 
-const ControlButton = styled.button`
+const ControlButton = styled.button<{ disabled?: boolean }>`
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -31,24 +31,24 @@ const ControlButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? "default" : "pointer")};
   transition: background-color 0.3s ease;
   -webkit-tap-highlight-color: transparent;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #e0e0e0;
+      background-color: ${(props) => (props.disabled ? "#f0f0f0" : "#e0e0e0")};
     }
   }
 
   &:active {
-    background-color: #d0d0d0;
+    background-color: ${(props) => (props.disabled ? "#f0f0f0" : "#d0d0d0")};
   }
 
   svg {
     width: 16px;
     height: 16px;
-    color: #333;
+    color: ${(props) => (props.disabled ? "#aaa" : "#333")};
   }
 
   @media (prefers-color-scheme: dark) {
@@ -56,16 +56,16 @@ const ControlButton = styled.button`
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #444;
+        background-color: ${(props) => (props.disabled ? "#333" : "#444")};
       }
     }
 
     &:active {
-      background-color: #555;
+      background-color: ${(props) => (props.disabled ? "#333" : "#555")};
     }
 
     svg {
-      color: #f0f0f0;
+      color: ${(props) => (props.disabled ? "#777" : "#f0f0f0")};
     }
   }
 `;
@@ -111,6 +111,7 @@ let showGameRelatedBottomControls: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
+  const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
   const { isMuted, isReactionPickerVisible, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction, handleReactionSelect, hideReactionPicker } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -131,19 +132,21 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, [hideReactionPicker]);
 
-  showGameRelatedBottomControls = () => setShowOtherControls(true);
+  showGameRelatedBottomControls = () => {
+    setShowOtherControls(true);
+  };
 
   return (
     <ControlsContainer>
       {showOtherControls && (
         <>
-          <ControlButton onClick={handleUndo} aria-label="Undo">
+          <ControlButton onClick={handleUndo} aria-label="Undo" disabled={true}>
             <FaUndo />
           </ControlButton>
-          <ControlButton onClick={handleResign} aria-label="Resign">
+          <ControlButton onClick={handleResign} aria-label="Resign" disabled={true}>
             <FaFlag />
           </ControlButton>
-          <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction" ref={voiceReactionButtonRef}>
+          <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
             <FaCommentAlt />
           </ControlButton>
         </>
