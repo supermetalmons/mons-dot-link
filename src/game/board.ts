@@ -93,7 +93,7 @@ export function didGetEthAddress(address: string, uid: string) {
 }
 
 function renderPlayersNamesLabels() {
-  if (!isOnlineGame) {
+  if (!isOnlineGame || opponentSideMetadata.uid === "") {
     playerNameText.textContent = "";
     opponentNameText.textContent = "";
   } else {
