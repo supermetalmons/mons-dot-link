@@ -195,6 +195,8 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       let traces: Trace[] = [];
       let popOpponentsEmoji = false;
 
+      // TODO: handle undo event
+
       for (const event of events) {
         const from = event.loc1 ? location(event.loc1) : undefined;
         const to = event.loc2 ? location(event.loc2) : undefined;
