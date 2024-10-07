@@ -84,17 +84,15 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
-// TODO: refactor names and addresses logic below
-
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
 
 export function didGetEthAddress(address: string, uid: string) {
   resolveEthAddress(address, uid);
-  displayEthAddressIfPossible();
+  recalculateDisplayNames();
 }
 
-function updateDisplayedPlayersAddresses() {
+function renderPlayersNamesLabels() {
   if (!isOnlineGame) {
     playerNameText.textContent = "";
     opponentNameText.textContent = "";
@@ -105,21 +103,14 @@ function updateDisplayedPlayersAddresses() {
   }
 }
 
-export function didGetPlayerEthAddress(address: string) {
-  const cropped = address.slice(0, 4) + "..." + address.slice(-4);
-  if (!isOnlineGame) {
-    playerSideMetadata.displayName = cropped;
-    opponentSideMetadata.displayName = cropped;
-    playerSideMetadata.ethAddress = address;
-    opponentSideMetadata.ethAddress = address;
-  } else if (!isWatchOnly) {
-    playerSideMetadata.ethAddress = address;
-    playerSideMetadata.displayName = cropped;
+export function setupLoggedInPlayerEthAddress(address: string, uid: string) {
+  if (!isWatchOnly) {
+    setupPlayerId(uid, false);
+    didGetEthAddress(address, uid);
   }
-  updateDisplayedPlayersAddresses();
 }
 
-function displayEthAddressIfPossible() {
+function recalculateDisplayNames() {
   if (getStashedPlayerAddress(playerSideMetadata.uid) && playerSideMetadata.displayName === undefined) {
     const address = getStashedPlayerAddress(playerSideMetadata.uid);
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
@@ -133,7 +124,7 @@ function displayEthAddressIfPossible() {
     opponentSideMetadata.displayName = cropped;
     opponentSideMetadata.ethAddress = address;
   }
-  updateDisplayedPlayersAddresses();
+  renderPlayersNamesLabels();
 }
 
 export function showVoiceReactionText(reactionText: string, opponents: boolean) {
@@ -146,7 +137,7 @@ export function setupPlayerId(uid: string, opponent: boolean) {
   } else {
     playerSideMetadata.uid = uid;
   }
-  displayEthAddressIfPossible();
+  recalculateDisplayNames();
 }
 
 function canRedirectToEthAddress(opponent: boolean) {
@@ -161,8 +152,6 @@ function redirectToEthAddress(opponent: boolean) {
   }
 }
 
-// TODO: complete names and addresses logic refactor above
-
 export function resetForNewGame() {
   if (isWatchOnly) {
     playerSideMetadata.displayName = undefined;
@@ -172,7 +161,7 @@ export function resetForNewGame() {
   opponentSideMetadata.displayName = undefined;
   opponentSideMetadata.ethAddress = undefined;
   opponentSideMetadata.uid = "";
-  updateDisplayedPlayersAddresses();
+  renderPlayersNamesLabels();
 
   SVG.setHidden(opponentAvatar, false);
   SVG.setHidden(playerAvatar, false);
@@ -246,7 +235,7 @@ export function updateScore(white: number, black: number) {
   const opponent = isFlipped ? white : black;
   playerScoreText.textContent = player.toString();
   opponentScoreText.textContent = opponent.toString();
-  updateDisplayedPlayersAddresses();
+  renderPlayersNamesLabels();
 }
 
 export function showItemSelection() {
@@ -581,7 +570,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   }
 
   if (!allHiddenInitially) {
-    updateDisplayedPlayersAddresses();
+    renderPlayersNamesLabels();
   }
 }
 

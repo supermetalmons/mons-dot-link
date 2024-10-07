@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
 import { subscribeToAuthChanges, signIn, verifyEthAddress } from "./connection";
-import { didGetPlayerEthAddress } from "../game/board";
+import { setupLoggedInPlayerEthAddress } from "../game/board";
 
 export type AuthStatus = "loading" | "unauthenticated" | "authenticated";
 
@@ -17,7 +17,7 @@ export function useAuthStatus() {
       if (uid !== null) {
         const storedAddress = getStoredEthAddress(uid);
         if (storedAddress) {
-          didGetPlayerEthAddress(storedAddress);
+          setupLoggedInPlayerEthAddress(storedAddress, uid);
           setAuthStatus("authenticated");
         } else {
           setAuthStatus("unauthenticated");
@@ -55,7 +55,7 @@ export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =
     verify: async ({ message, signature }) => {
       const res = await verifyEthAddress(message.toMessage(), signature);
       if (res && res.ok === true) {
-        didGetPlayerEthAddress(res.address);
+        setupLoggedInPlayerEthAddress(res.address, res.uid);
         saveEthAddress(res.uid, res.address);
         setAuthStatus("authenticated");
         return true;
