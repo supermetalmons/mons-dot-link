@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
-import { PlayerMetadata } from "../utils/playerMetadata";
+import { newEmptyPlayerMetadata } from "../utils/playerMetadata";
 
 const assets = (await import("../content/gameAssets")).gameAssets;
 let board: HTMLElement | null;
@@ -29,7 +29,7 @@ const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
-  const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
+  const currentId = isOpponentSide ? opponentSideMetadata.emojiId : playerSideMetadata.emojiId;
   if (currentId === newEmojiId) {
     return;
   }
@@ -39,16 +39,16 @@ export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean)
   }
 
   if (isOpponentSide) {
-    currentOpponentEmojiId = newEmojiId;
+    opponentSideMetadata.emojiId = newEmojiId;
     SVG.setImage(opponentAvatar, newEmojiData);
   } else {
-    currentPlayerEmojiId = newEmojiId;
+    playerSideMetadata.emojiId = newEmojiId;
     SVG.setImage(playerAvatar, newEmojiData);
   }
 }
 
 export function getPlayersEmojiId(): number {
-  return parseInt(currentPlayerEmojiId !== "" ? currentPlayerEmojiId : "1");
+  return parseInt(playerSideMetadata.emojiId !== "" ? playerSideMetadata.emojiId : "1");
 }
 
 export function setBoardFlipped(flipped: boolean) {
@@ -65,11 +65,6 @@ let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
 let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
-
-let currentPlayerEmojiId = "";
-let currentOpponentEmojiId = "";
-let playerSideUid = "";
-let opponentSideUid = "";
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
@@ -92,19 +87,8 @@ const emojis = (await import("../content/emojis")).emojis;
 // TODO: refactor names and addresses logic
 // TODO: use new metadata models, clean up old definitions for these
 
-let playerMetadata: PlayerMetadata = {
-  uid: undefined,
-  displayName: undefined,
-  ethAddress: undefined,
-  emojiId: undefined,
-};
-
-let opponentMetadata: PlayerMetadata = {
-  uid: undefined,
-  displayName: undefined,
-  ethAddress: undefined,
-  emojiId: undefined,
-};
+let playerSideMetadata = newEmptyPlayerMetadata();
+let opponentSideMetadata = newEmptyPlayerMetadata();
 
 let playerDisplayNameString = "";
 let opponentDisplayNameString = "";
@@ -139,15 +123,15 @@ export function didGetPlayerEthAddress(address: string) {
 }
 
 function displayEthAddressIfPossible() {
-  if (ethAddresses[playerSideUid] && playerDisplayNameString === "") {
-    const address = ethAddresses[playerSideUid];
+  if (ethAddresses[playerSideMetadata.uid] && playerDisplayNameString === "") {
+    const address = ethAddresses[playerSideMetadata.uid];
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     playerDisplayNameString = cropped;
     playerEthAddress = address;
   }
   
-  if (ethAddresses[opponentSideUid] && opponentDisplayNameString === "") {
-    const address = ethAddresses[opponentSideUid];
+  if (ethAddresses[opponentSideMetadata.uid] && opponentDisplayNameString === "") {
+    const address = ethAddresses[opponentSideMetadata.uid];
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     opponentDisplayNameString = cropped;
     opponentEthAddress = address;
@@ -161,9 +145,9 @@ export function showVoiceReactionText(reactionText: string, opponents: boolean) 
 
 export function setupPlayerId(uid: string, opponent: boolean) {
   if (opponent) {
-    opponentSideUid = uid;
+    opponentSideMetadata.uid = uid;
   } else {
-    playerSideUid = uid;
+    playerSideMetadata.uid = uid;
   }
   displayEthAddressIfPossible();
 }
@@ -438,8 +422,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const [playerEmojiId, playerEmoji] = emojis.getRandomEmoji();
   const [opponentEmojiId, opponentEmoji] = emojis.getRandomEmojiOtherThan(playerEmojiId);
 
-  currentPlayerEmojiId = playerEmojiId;
-  currentOpponentEmojiId = opponentEmojiId;
+  playerSideMetadata.emojiId = playerEmojiId;
+  opponentSideMetadata.emojiId = opponentEmojiId;
 
   for (const isOpponent of [true, false]) {
     const y = isOpponent ? 0.333 : 12.169;
@@ -609,14 +593,14 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
 function pickAndDisplayDifferentEmoji(avatar: SVGElement, isOpponent: boolean) {
   if (isOpponent) {
-    const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentOpponentEmojiId);
+    const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(opponentSideMetadata.emojiId);
     updateEmoji(parseInt(newId));
-    currentOpponentEmojiId = newId;
+    opponentSideMetadata.emojiId = newId;
     SVG.setImage(avatar, newEmoji);
   } else {
-    const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(currentPlayerEmojiId);
+    const [newId, newEmoji] = emojis.getRandomEmojiOtherThan(playerSideMetadata.emojiId);
     updateEmoji(parseInt(newId));
-    currentPlayerEmojiId = newId;
+    playerSideMetadata.emojiId = newId;
     SVG.setImage(avatar, newEmoji);
   }
 }

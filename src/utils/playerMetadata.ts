@@ -1,6 +1,13 @@
 export type PlayerMetadata = {
-  uid: string | undefined;
+  uid: string;
   displayName: string | undefined;
   ethAddress: string | undefined;
-  emojiId: string | undefined;
+  emojiId: string;
 };
+
+export const newEmptyPlayerMetadata = (): PlayerMetadata => ({
+  uid: "",
+  displayName: undefined,
+  ethAddress: undefined,
+  emojiId: "",
+});
