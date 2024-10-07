@@ -99,11 +99,20 @@ function renderPlayersNamesLabels() {
   } else {
     const placeholderName = "anon";
 
-    const playerNameString = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
-    const opponentNameString = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+    let playerNameString = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
+    let opponentNameString = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
 
-    // const currentTime = Date.now();
-    // TODO: add voiceReactionText if voiceReactionDate is still fresh
+    const currentTime = Date.now();
+    const thresholdDelta = 2500;
+    const prefix = " ~ ";
+
+    if (playerSideMetadata.voiceReactionDate !== undefined && currentTime - playerSideMetadata.voiceReactionDate < thresholdDelta) {
+      playerNameString += prefix + playerSideMetadata.voiceReactionText;
+    }
+
+    if (opponentSideMetadata.voiceReactionDate !== undefined && currentTime - opponentSideMetadata.voiceReactionDate < thresholdDelta) {
+      opponentNameString += prefix + opponentSideMetadata.voiceReactionText;
+    }
 
     playerNameText.textContent = playerNameString;
     opponentNameText.textContent = opponentNameString;

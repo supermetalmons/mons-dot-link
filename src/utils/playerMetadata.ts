@@ -3,7 +3,7 @@ export type PlayerMetadata = {
   displayName: string | undefined;
   ethAddress: string | undefined;
   emojiId: string;
-  voiceReactionText: string | undefined;
+  voiceReactionText: string;
   voiceReactionDate: number | undefined;
 };
 
@@ -12,7 +12,7 @@ export const newEmptyPlayerMetadata = (): PlayerMetadata => ({
   displayName: undefined,
   ethAddress: undefined,
   emojiId: "",
-  voiceReactionText: undefined,
+  voiceReactionText: "",
   voiceReactionDate: undefined,
 });
 
