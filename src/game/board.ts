@@ -27,12 +27,6 @@ const wavesFrames: { [key: string]: SVGElement } = {};
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
 
-// TODO: refactor these into a model
-let playerDisplayNameString = "";
-let opponentDisplayNameString = "";
-export let playerEthAddress = "";
-export let opponentEthAddress = "";
-
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? currentOpponentEmojiId : currentPlayerEmojiId;
   if (currentId === newEmojiId) {
@@ -73,6 +67,8 @@ let playerAvatar: SVGElement | undefined;
 
 let currentPlayerEmojiId = "";
 let currentOpponentEmojiId = "";
+let playerSideUid = "";
+let opponentSideUid = "";
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
@@ -92,25 +88,40 @@ const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
+// TODO: refactor names and addresses logic
+
+let playerDisplayNameString = "";
+let opponentDisplayNameString = "";
+export let playerEthAddress = "";
+export let opponentEthAddress = "";
+
 const ethAddresses: { [key: string]: string } = {};
-let playerSideUid = "";
-let opponentSideUid = "";
 
 export function didGetEthAddress(address: string, uid: string) {
   ethAddresses[uid] = address;
   displayEthAddressIfPossible();
 }
 
-export function setupPlayerId(uid: string, opponent: boolean) {
-  if (opponent) {
-    opponentSideUid = uid;
-  } else {
-    playerSideUid = uid;
-  }
-  displayEthAddressIfPossible();
+function updateDisplayedPlayersAddresses() {
+  const placeholderName = "anon";
+  playerNameText.textContent = playerDisplayNameString === "" ? placeholderName : playerDisplayNameString;
+  opponentNameText.textContent = opponentDisplayNameString === "" ? placeholderName : opponentDisplayNameString;
 }
 
-// TODO: refactor
+export function didGetPlayerEthAddress(address: string) {
+  const cropped = address.slice(0, 4) + "..." + address.slice(-4);
+  if (!isOnlineGame) {
+    playerDisplayNameString = cropped;
+    opponentDisplayNameString = cropped;
+    playerEthAddress = address;
+    opponentEthAddress = address;
+  } else if (!isWatchOnly) {
+    playerEthAddress = address;
+    playerDisplayNameString = cropped;
+  }
+  updateDisplayedPlayersAddresses();
+}
+
 function displayEthAddressIfPossible() {
   if (ethAddresses[playerSideUid] && playerDisplayNameString === "") {
     const address = ethAddresses[playerSideUid];
@@ -132,23 +143,35 @@ export function showVoiceReactionText(reactionText: string, opponents: boolean) 
   // TODO: show text within players names labels
 }
 
-// TODO: refactor
-export function didGetPlayerEthAddress(address: string) {
-  const cropped = address.slice(0, 4) + "..." + address.slice(-4);
-  if (!isOnlineGame) {
-    playerDisplayNameString = cropped;
-    opponentDisplayNameString = cropped;
-    playerEthAddress = address;
-    opponentEthAddress = address;
-  } else if (!isWatchOnly) {
-    playerEthAddress = address;
-    playerDisplayNameString = cropped;
+export function setupPlayerId(uid: string, opponent: boolean) {
+  if (opponent) {
+    opponentSideUid = uid;
+  } else {
+    playerSideUid = uid;
   }
-  updateDisplayedPlayersAddresses();
+  displayEthAddressIfPossible();
 }
 
+function canRedirectToEthAddress(opponent: boolean) {
+  let address = opponent ? opponentEthAddress : playerEthAddress;
+  return address !== "";
+}
+
+function redirectToEthAddress(opponent: boolean) {
+  console.log("want to redirect to address, opponent: ", opponent);
+  let address = opponent ? opponentEthAddress : playerEthAddress;
+  if (address !== "") {
+    const etherscanBaseUrl = "https://etherscan.io/address/";
+    const etherscanUrl = etherscanBaseUrl + address;
+    window.open(etherscanUrl, '_blank', 'noopener,noreferrer');
+  }
+}
+
+// TODO: complete names and addresses logic refactor
+
 export function resetForNewGame() {
-  // TODO: refactor names / addresses
+  // TODO: refactor names / addresses / uids
+  // TODO: make sure everything is cleaned up properly
   if (isWatchOnly) {
     playerDisplayNameString = "";
     playerEthAddress = "";
@@ -222,12 +245,6 @@ export function removeItem(location: Location) {
     toRemove.remove();
     delete items[locationKey];
   }
-}
-
-function updateDisplayedPlayersAddresses() {
-  const placeholderName = "anon";
-  playerNameText.textContent = playerDisplayNameString === "" ? placeholderName : playerDisplayNameString;
-  opponentNameText.textContent = opponentDisplayNameString === "" ? placeholderName : opponentDisplayNameString;
 }
 
 export function updateScore(white: number, black: number) {
@@ -571,21 +588,6 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
   if (!allHiddenInitially) {
     updateDisplayedPlayersAddresses();
-  }
-}
-
-function canRedirectToEthAddress(opponent: boolean) {
-  let address = opponent ? opponentEthAddress : playerEthAddress;
-  return address !== "";
-}
-
-function redirectToEthAddress(opponent: boolean) {
-  console.log("want to redirect to address, opponent: ", opponent);
-  let address = opponent ? opponentEthAddress : playerEthAddress;
-  if (address !== "") {
-    const etherscanBaseUrl = "https://etherscan.io/address/";
-    const etherscanUrl = etherscanBaseUrl + address;
-    window.open(etherscanUrl, '_blank', 'noopener,noreferrer');
   }
 }
 
