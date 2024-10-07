@@ -87,15 +87,13 @@ const emojis = (await import("../content/emojis")).emojis;
 // TODO: refactor names and addresses logic
 // TODO: use new metadata models, clean up old definitions for these
 
-let playerSideMetadata = newEmptyPlayerMetadata();
-let opponentSideMetadata = newEmptyPlayerMetadata();
+export let playerSideMetadata = newEmptyPlayerMetadata();
+export let opponentSideMetadata = newEmptyPlayerMetadata();
 
 let playerDisplayNameString = "";
 let opponentDisplayNameString = "";
-export let playerEthAddress = "";
-export let opponentEthAddress = "";
 
-const ethAddresses: { [key: string]: string } = {};
+const ethAddresses: { [key: string]: string } = {}; // TODO: move into playerMetadata file
 
 export function didGetEthAddress(address: string, uid: string) {
   ethAddresses[uid] = address;
@@ -113,10 +111,10 @@ export function didGetPlayerEthAddress(address: string) {
   if (!isOnlineGame) {
     playerDisplayNameString = cropped;
     opponentDisplayNameString = cropped;
-    playerEthAddress = address;
-    opponentEthAddress = address;
+    playerSideMetadata.ethAddress = address;
+    opponentSideMetadata.ethAddress = address;
   } else if (!isWatchOnly) {
-    playerEthAddress = address;
+    playerSideMetadata.ethAddress = address;
     playerDisplayNameString = cropped;
   }
   updateDisplayedPlayersAddresses();
@@ -127,14 +125,14 @@ function displayEthAddressIfPossible() {
     const address = ethAddresses[playerSideMetadata.uid];
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     playerDisplayNameString = cropped;
-    playerEthAddress = address;
+    playerSideMetadata.ethAddress = address;
   }
   
   if (ethAddresses[opponentSideMetadata.uid] && opponentDisplayNameString === "") {
     const address = ethAddresses[opponentSideMetadata.uid];
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     opponentDisplayNameString = cropped;
-    opponentEthAddress = address;
+    opponentSideMetadata.ethAddress = address;
   }
   updateDisplayedPlayersAddresses();
 }
@@ -153,14 +151,14 @@ export function setupPlayerId(uid: string, opponent: boolean) {
 }
 
 function canRedirectToEthAddress(opponent: boolean) {
-  let address = opponent ? opponentEthAddress : playerEthAddress;
-  return address !== "";
+  let address = opponent ? opponentSideMetadata.ethAddress : playerSideMetadata.ethAddress;
+  return address !== undefined;
 }
 
 function redirectToEthAddress(opponent: boolean) {
   console.log("want to redirect to address, opponent: ", opponent);
-  let address = opponent ? opponentEthAddress : playerEthAddress;
-  if (address !== "") {
+  let address = opponent ? opponentSideMetadata.ethAddress : playerSideMetadata.ethAddress;
+  if (address !== undefined) {
     const etherscanBaseUrl = "https://etherscan.io/address/";
     const etherscanUrl = etherscanBaseUrl + address;
     window.open(etherscanUrl, '_blank', 'noopener,noreferrer');
@@ -174,10 +172,10 @@ export function resetForNewGame() {
   // TODO: make sure everything is cleaned up properly
   if (isWatchOnly) {
     playerDisplayNameString = "";
-    playerEthAddress = "";
+    playerSideMetadata.ethAddress = undefined;
   }
   opponentDisplayNameString = "";
-  opponentEthAddress = "";
+  opponentSideMetadata.ethAddress = undefined;
   updateDisplayedPlayersAddresses();
 
   SVG.setHidden(opponentAvatar, false);

@@ -1,5 +1,5 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
-import { playerEthAddress, opponentEthAddress, showVoiceReactionText, setupPlayerId } from "./board";
+import { playerSideMetadata, opponentSideMetadata, showVoiceReactionText, setupPlayerId } from "./board";
 import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
@@ -350,7 +350,9 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 }
 
 function hasBothEthAddresses(): boolean {
-  return playerEthAddress !== "" && opponentEthAddress !== "" && playerEthAddress !== opponentEthAddress;
+  const playerSide = playerSideMetadata.ethAddress;
+  const opponentSide = opponentSideMetadata.ethAddress;
+  return playerSide !== undefined && opponentSide !== undefined && playerSide !== opponentSide;
 }
 
 function suggestSavingOnchainRating() {
