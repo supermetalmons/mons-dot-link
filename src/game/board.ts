@@ -6,6 +6,7 @@ import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
+import { PlayerMetadata } from "../utils/playerMetadata";
 
 const assets = (await import("../content/gameAssets")).gameAssets;
 let board: HTMLElement | null;
@@ -89,6 +90,21 @@ const supermanaSimple = loadImage(assets.supermanaSimple);
 const emojis = (await import("../content/emojis")).emojis;
 
 // TODO: refactor names and addresses logic
+// TODO: use new metadata models, clean up old definitions for these
+
+let playerMetadata: PlayerMetadata = {
+  uid: undefined,
+  displayName: undefined,
+  ethAddress: undefined,
+  emojiId: undefined,
+};
+
+let opponentMetadata: PlayerMetadata = {
+  uid: undefined,
+  displayName: undefined,
+  ethAddress: undefined,
+  emojiId: undefined,
+};
 
 let playerDisplayNameString = "";
 let opponentDisplayNameString = "";
