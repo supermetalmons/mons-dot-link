@@ -3,6 +3,8 @@ export type PlayerMetadata = {
   displayName: string | undefined;
   ethAddress: string | undefined;
   emojiId: string;
+  voiceReactionText: string | undefined;
+  voiceReactionDate: number | undefined;
 };
 
 export const newEmptyPlayerMetadata = (): PlayerMetadata => ({
@@ -10,6 +12,8 @@ export const newEmptyPlayerMetadata = (): PlayerMetadata => ({
   displayName: undefined,
   ethAddress: undefined,
   emojiId: "",
+  voiceReactionText: undefined,
+  voiceReactionDate: undefined,
 });
 
 export function openEthAddress(address: string) {

@@ -98,8 +98,15 @@ function renderPlayersNamesLabels() {
     opponentNameText.textContent = "";
   } else {
     const placeholderName = "anon";
-    playerNameText.textContent = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
-    opponentNameText.textContent = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+
+    const playerNameString = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
+    const opponentNameString = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+
+    // const currentTime = Date.now();
+    // TODO: add voiceReactionText if voiceReactionDate is still fresh
+
+    playerNameText.textContent = playerNameString;
+    opponentNameText.textContent = opponentNameString;
   }
 }
 
@@ -124,11 +131,25 @@ function recalculateDisplayNames() {
     opponentSideMetadata.displayName = cropped;
     opponentSideMetadata.ethAddress = address;
   }
+
   renderPlayersNamesLabels();
 }
 
 export function showVoiceReactionText(reactionText: string, opponents: boolean) {
-  // TODO: show text within players names labels
+  const currentTime = Date.now();
+
+  if (opponents) {
+    opponentSideMetadata.voiceReactionText = reactionText;
+    opponentSideMetadata.voiceReactionDate = currentTime;
+  } else {
+    playerSideMetadata.voiceReactionText = reactionText;
+    playerSideMetadata.voiceReactionDate = currentTime;
+  }
+
+  renderPlayersNamesLabels();
+  setTimeout(() => {
+    renderPlayersNamesLabels();
+  }, 3000);
 }
 
 export function setupPlayerId(uid: string, opponent: boolean) {
