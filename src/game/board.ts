@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
-import { newEmptyPlayerMetadata } from "../utils/playerMetadata";
+import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress } from "../utils/playerMetadata";
 
 const assets = (await import("../content/gameAssets")).gameAssets;
 let board: HTMLElement | null;
@@ -89,10 +89,8 @@ const emojis = (await import("../content/emojis")).emojis;
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
 
-const ethAddresses: { [key: string]: string } = {}; // TODO: move into playerMetadata file
-
 export function didGetEthAddress(address: string, uid: string) {
-  ethAddresses[uid] = address;
+  resolveEthAddress(address, uid);
   displayEthAddressIfPossible();
 }
 
@@ -122,15 +120,15 @@ export function didGetPlayerEthAddress(address: string) {
 }
 
 function displayEthAddressIfPossible() {
-  if (ethAddresses[playerSideMetadata.uid] && playerSideMetadata.displayName === undefined) {
-    const address = ethAddresses[playerSideMetadata.uid];
+  if (getStashedPlayerAddress(playerSideMetadata.uid) && playerSideMetadata.displayName === undefined) {
+    const address = getStashedPlayerAddress(playerSideMetadata.uid);
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     playerSideMetadata.displayName = cropped;
     playerSideMetadata.ethAddress = address;
   }
   
-  if (ethAddresses[opponentSideMetadata.uid] && opponentSideMetadata.displayName === undefined) {
-    const address = ethAddresses[opponentSideMetadata.uid];
+  if (getStashedPlayerAddress(opponentSideMetadata.uid) && opponentSideMetadata.displayName === undefined) {
+    const address = getStashedPlayerAddress(opponentSideMetadata.uid);
     const cropped = address.slice(0, 4) + "..." + address.slice(-4);
     opponentSideMetadata.displayName = cropped;
     opponentSideMetadata.ethAddress = address;
@@ -157,12 +155,9 @@ function canRedirectToEthAddress(opponent: boolean) {
 }
 
 function redirectToEthAddress(opponent: boolean) {
-  console.log("want to redirect to address, opponent: ", opponent);
   let address = opponent ? opponentSideMetadata.ethAddress : playerSideMetadata.ethAddress;
   if (address !== undefined) {
-    const etherscanBaseUrl = "https://etherscan.io/address/";
-    const etherscanUrl = etherscanBaseUrl + address;
-    window.open(etherscanUrl, '_blank', 'noopener,noreferrer');
+    openEthAddress(address);
   }
 }
 
