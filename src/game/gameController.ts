@@ -433,6 +433,10 @@ function hasItemAt(location: Location): boolean {
 }
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
+  Board.resetForNewGame();
+  isOnlineGame = true;
+  currentInputs = [];
+
   if (!isWatchOnly) {
     showGameRelatedBottomControls();
   }
@@ -467,14 +471,10 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
     processedVoiceReactions.add(opponentMatch.reaction.uuid);
   }
 
-  isOnlineGame = true;
-  currentInputs = [];
-
   setNewBoard();
 }
 
 function setNewBoard() {
-  Board.resetForNewGame();
   Board.updateScore(game.white_score(), game.black_score());
   Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
 
