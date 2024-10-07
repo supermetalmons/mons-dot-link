@@ -97,9 +97,14 @@ export function didGetEthAddress(address: string, uid: string) {
 }
 
 function updateDisplayedPlayersAddresses() {
-  const placeholderName = "anon";
-  playerNameText.textContent = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
-  opponentNameText.textContent = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+  if (!isOnlineGame) {
+    playerNameText.textContent = "";
+    opponentNameText.textContent = "";
+  } else {
+    const placeholderName = "anon";
+    playerNameText.textContent = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
+    opponentNameText.textContent = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+  }
 }
 
 export function didGetPlayerEthAddress(address: string) {
