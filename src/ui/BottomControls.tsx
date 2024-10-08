@@ -137,11 +137,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      <ControlButton onClick={handleUndo} aria-label="Undo" disabled={true}>
+        <FaUndo />
+      </ControlButton>
       {showOtherControls && (
         <>
-          <ControlButton onClick={handleUndo} aria-label="Undo" disabled={true}>
-            <FaUndo />
-          </ControlButton>
           <ControlButton onClick={handleResign} aria-label="Resign" disabled={true}>
             <FaFlag />
           </ControlButton>
