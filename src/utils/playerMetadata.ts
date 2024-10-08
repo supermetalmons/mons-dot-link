@@ -2,6 +2,7 @@ export type PlayerMetadata = {
   uid: string;
   displayName: string | undefined;
   ethAddress: string | undefined;
+  ens: string | undefined;
   emojiId: string;
   voiceReactionText: string;
   voiceReactionDate: number | undefined;
@@ -11,6 +12,7 @@ export const newEmptyPlayerMetadata = (): PlayerMetadata => ({
   uid: "",
   displayName: undefined,
   ethAddress: undefined,
+  ens: undefined,
   emojiId: "",
   voiceReactionText: "",
   voiceReactionDate: undefined,
@@ -26,7 +28,7 @@ export function getStashedPlayerAddress(uid: string) {
   return ethAddresses[uid];
 }
 
-export function resolveEthAddress(address: string, uid: string) {
+export function resolveEthAddress(address: string, uid: string, onSuccess: () => void) {
   ethAddresses[uid] = address;
   if (!ensDict[address]) {
     fetch(`https://api.ensideas.com/ens/resolve/${address}`)
@@ -42,10 +44,15 @@ export function resolveEthAddress(address: string, uid: string) {
             name: data.name,
             avatar: data.avatar,
           };
+          onSuccess();
         }
       })
       .catch(() => {});
   }
+}
+
+export function getEnsName(address: string): string | undefined {
+  return ensDict[address]?.name;
 }
 
 const ethAddresses: { [key: string]: string } = {};
