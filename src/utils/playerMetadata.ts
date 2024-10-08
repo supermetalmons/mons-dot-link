@@ -28,7 +28,25 @@ export function getStashedPlayerAddress(uid: string) {
 
 export function resolveEthAddress(address: string, uid: string) {
   ethAddresses[uid] = address;
-  // TODO: resolve ens if it's not there yet
+  if (!ensDict[address]) {
+    fetch(`https://api.ensideas.com/ens/resolve/${address}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        return null;
+      })
+      .then((data) => {
+        if (data && data.name && data.name.trim() !== "") {
+          ensDict[address] = {
+            name: data.name,
+            avatar: data.avatar,
+          };
+        }
+      })
+      .catch(() => {});
+  }
 }
 
 const ethAddresses: { [key: string]: string } = {};
+const ensDict: { [key: string]: { name: string; avatar: string } } = {};
