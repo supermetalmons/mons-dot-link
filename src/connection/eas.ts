@@ -26,7 +26,7 @@ export async function sendEasTxWip(txData) {
   const signatures = txData.signatures;
   const attester = txData.attester;
 
-  const newProxy = new EIP712Proxy("0xF095fE4b23958b08D38e52d5d5674bBF0C03cbF6", { signer: signer });
+  const newProxy = new EIP712Proxy("0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae", { signer: signer });
   const eas = new EAS("0x4200000000000000000000000000000000000021", {
     proxy: newProxy,
     signer: signer,
@@ -51,7 +51,7 @@ export async function sendEasTxWip(txData) {
       schema: "0xb6cdeca57cf4618b9e6f619771b9ca43febd99de294a8de229aa4938405f2efa",
       data: [
         {
-          recipient: "0xE26067c76fdbe877F48b0a8400cf5Db8B47aF0fE",
+          recipient: "0xE4790DD79c334e3f848904975272ec17f9F70366",
           expirationTime: 0n,
           revocable: false,
           refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -59,7 +59,7 @@ export async function sendEasTxWip(txData) {
           value: 0n,
         },
         {
-          recipient: "0xFD50b031E778fAb33DfD2Fc3Ca66a1EeF0652165",
+          recipient: "0x2bB97367fF26b701a60aedc213640C34F469cf38",
           expirationTime: 0n,
           revocable: false,
           refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
