@@ -186,6 +186,8 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         sendMove(moveFen, gameFen);
       }
 
+      // TODO: store move and fen before to be able to undo / replay it?
+
       currentInputs = [];
       const events = output.events();
       let locationsToUpdate: Location[] = [];
@@ -406,6 +408,9 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   } else {
     output = game.process_input(gameInput);
   }
+
+  // TODO: pass previous fen in there for the undos?
+  // or should we just log moves — for parity with online game — and checkpoint fens
 
   applyOutput(output, false, assistedInputKind, inputLocation);
 }
