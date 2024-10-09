@@ -15,6 +15,10 @@ export async function sendEasTx(txData) {
 export async function sendEasTxWip(txData) {
   const signer = await getSigner();
 
+  const easAddress = txData.easAddress;
+  const proxyAddress = txData.proxyAddress;
+  const schema = txData.schema;
+
   const baseChainId = 8453;
   const network = await signer.provider.getNetwork();
 
@@ -26,8 +30,8 @@ export async function sendEasTxWip(txData) {
   const signatures = txData.signatures;
   const attester = txData.attester;
 
-  const newProxy = new EIP712Proxy("0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae", { signer: signer });
-  const eas = new EAS("0x4200000000000000000000000000000000000021", {
+  const newProxy = new EIP712Proxy(proxyAddress, { signer: signer });
+  const eas = new EAS(easAddress, {
     proxy: newProxy,
     signer: signer,
   });
@@ -48,7 +52,7 @@ export async function sendEasTxWip(txData) {
 
   const multiTxAll = await eas.multiAttestByDelegationProxy([
     {
-      schema: "0xb6cdeca57cf4618b9e6f619771b9ca43febd99de294a8de229aa4938405f2efa",
+      schema: schema,
       data: [
         {
           recipient: "0xE4790DD79c334e3f848904975272ec17f9F70366",
