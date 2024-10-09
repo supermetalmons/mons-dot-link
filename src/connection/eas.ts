@@ -1,4 +1,4 @@
-import { EAS, SchemaEncoder, EIP712Proxy } from "@ethereum-attestation-service/eas-sdk";
+import { EAS, EIP712Proxy } from "@ethereum-attestation-service/eas-sdk";
 import { ethers } from "ethers";
 
 async function getSigner(): Promise<any> {
@@ -15,10 +15,6 @@ export async function sendEasTx(txData) {
 export async function sendEasTxWip(txData) {
   const signer = await getSigner();
 
-  const easAddress = txData.easAddress;
-  const proxyAddress = txData.proxyAddress;
-  const schema = txData.schema;
-
   const baseChainId = 8453;
   const network = await signer.provider.getNetwork();
 
@@ -27,52 +23,35 @@ export async function sendEasTxWip(txData) {
     throw new Error("Please switch to the Base network");
   }
 
-  const signatures = txData.signatures;
-  const attester = txData.attester;
-
-  const newProxy = new EIP712Proxy(proxyAddress, { signer: signer });
-  const eas = new EAS(easAddress, {
+  const newProxy = new EIP712Proxy(txData.proxyAddress, { signer: signer });
+  const eas = new EAS(txData.easAddress, {
     proxy: newProxy,
     signer: signer,
   });
 
-  const schemaEncoder = new SchemaEncoder("uint64 gameId, uint64 points, bool isWin");
-
-  const encodedData1 = schemaEncoder.encodeData([
-    { name: "gameId", value: 0, type: "uint64" },
-    { name: "points", value: 1000, type: "uint64" },
-    { name: "isWin", value: true, type: "bool" },
-  ]);
-
-  const encodedData2 = schemaEncoder.encodeData([
-    { name: "gameId", value: 0, type: "uint64" },
-    { name: "points", value: 1000, type: "uint64" },
-    { name: "isWin", value: false, type: "bool" },
-  ]);
-
   const multiTxAll = await eas.multiAttestByDelegationProxy([
     {
-      schema: schema,
+      schema: txData.schema,
       data: [
         {
-          recipient: "0xE4790DD79c334e3f848904975272ec17f9F70366",
+          recipient: txData.recipient1,
           expirationTime: 0n,
           revocable: false,
-          refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
-          data: encodedData1,
+          refUID: txData.refUID1,
+          data: txData.encodedData1,
           value: 0n,
         },
         {
-          recipient: "0x2bB97367fF26b701a60aedc213640C34F469cf38",
+          recipient: txData.recipient2,
           expirationTime: 0n,
           revocable: false,
-          refUID: "0x0000000000000000000000000000000000000000000000000000000000000000",
-          data: encodedData2,
+          refUID: txData.refUID2,
+          data: txData.encodedData2,
           value: 0n,
         },
       ],
-      signatures: signatures,
-      attester: attester,
+      signatures: txData.signatures,
+      attester: txData.attester,
       deadline: 0n,
     },
   ]);
