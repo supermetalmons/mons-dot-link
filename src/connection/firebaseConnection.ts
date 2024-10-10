@@ -99,17 +99,11 @@ class FirebaseConnection {
 
   public sendMove(moveFen: string, newBoardFen: string) {
     this.myMatch.fen = newBoardFen;
-    if (!this.myMatch.movesFens) {
-      this.myMatch.movesFens = [];
-    }
-
     if (this.myMatch.flatMovesString === "") {
       this.myMatch.flatMovesString = moveFen;
     } else {
       this.myMatch.flatMovesString += "-" + moveFen;
     }
-
-    this.myMatch.movesFens.push(moveFen);
     this.sendMatchUpdate();
   }
 

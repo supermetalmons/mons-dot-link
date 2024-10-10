@@ -367,12 +367,12 @@ function suggestSavingOnchainRating() {
       .then((res) => {
         saveOnchainRating(res);
       })
-      .catch(() => {});  
+      .catch(() => {});
   }
 }
 
 async function saveOnchainRating(txData) {
-  const { sendEasTx } = await import('../connection/eas');
+  const { sendEasTx } = await import("../connection/eas");
   sendEasTx(txData);
 }
 
@@ -472,7 +472,7 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
   }
 
   if (isReconnect || isWatchOnly) {
-    const movesCount = opponentMatch.movesFens ? opponentMatch.movesFens.length : 0;
+    const movesCount = movesCountOfMatch(opponentMatch);
     setProcessedMovesCountForColor(opponentMatch.color, movesCount);
   }
 
@@ -523,7 +523,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
     return;
   }
 
-  const movesCount = match.movesFens ? match.movesFens.length : 0;
+  const movesCount = movesCountOfMatch(match);
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
@@ -535,8 +535,9 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
 
   const processedMovesCount = getProcessedMovesCount(match.color);
   if (movesCount > processedMovesCount) {
+    const movesFens = movesFensArray(match);
     for (let i = processedMovesCount; i < movesCount; i++) {
-      const moveFen = match.movesFens[i];
+      const moveFen = movesFens[i];
       const output = game.process_input_fen(moveFen);
       applyOutput(output, true, AssistedInputKind.None);
     }
@@ -578,7 +579,7 @@ export function didRecoverMyMatch(match: any) {
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
-  const movesCount = match.movesFens ? match.movesFens.length : 0;
+  const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
   Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
   console.log(`didRecoverMyMatch:`, match);
@@ -586,4 +587,26 @@ export function didRecoverMyMatch(match: any) {
 
 export function enterWatchOnlyMode() {
   isWatchOnly = true;
+}
+
+function movesFensArray(match: any): string[] {
+  const flatMovesString = match.flatMovesString;
+  if (!flatMovesString || flatMovesString === "") {
+    return [];
+  }
+  return flatMovesString.split("-");
+}
+
+function movesCountOfMatch(match: any): number {
+  const flatMovesString = match.flatMovesString;
+  if (!flatMovesString || flatMovesString === "") {
+    return 0;
+  }
+  let count = 1;
+  for (let i = 0; i < flatMovesString.length; i++) {
+    if (flatMovesString[i] === "-") {
+      count++;
+    }
+  }
+  return count;
 }
