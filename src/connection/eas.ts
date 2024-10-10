@@ -50,7 +50,7 @@ export async function sendEasTx(txData) {
       ],
       signatures: txData.signatures,
       attester: txData.attester,
-      deadline: 0n,
+      deadline: BigInt(txData.deadline),
     },
   ]);
 
