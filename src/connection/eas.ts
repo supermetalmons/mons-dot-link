@@ -8,19 +8,17 @@ async function getSigner(): Promise<any> {
 }
 
 export async function sendEasTx(txData) {
-  // sendEasTxWip(txData);
-  alert("soon");
-}
-
-export async function sendEasTxWip(txData) {
   const signer = await getSigner();
 
   const baseChainId = 8453;
   const network = await signer.provider.getNetwork();
 
-  // TODO: switch to base explicitly if needed
   if (network.chainId !== BigInt(baseChainId)) {
-    throw new Error("Please switch to the Base network");
+    try {
+      await signer.provider.send('wallet_switchEthereumChain', [{ chainId: `0x${baseChainId.toString(16)}` }]);
+    } catch (switchError) {
+      throw new Error("Failed to switch to the Base network");
+    }
   }
 
   const newProxy = new EIP712Proxy(txData.proxyAddress, { signer: signer });
@@ -58,5 +56,5 @@ export async function sendEasTxWip(txData) {
 
   const newAttestationUID = await multiTxAll.wait();
   console.log(newAttestationUID);
-  // TODO: communicate to a player
+  return newAttestationUID;
 }
