@@ -58,7 +58,7 @@ export function getEnsName(address: string): string | undefined {
 const ethAddresses: { [key: string]: string } = {};
 const ensDict: { [key: string]: { name: string; avatar: string } } = {};
 
-const getLatestAttestations = async (recipient1, recipient2) => {
+export const getLatestAttestations = async (recipient1: string, recipient2: string) => {
   const proxyAddress = "0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae";
   const schema = "0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32";
 
@@ -119,7 +119,7 @@ const getLatestAttestations = async (recipient1, recipient2) => {
   return [targetAttestation1, targetAttestation2];
 };
 
-const processAllRawAttestations = (rawAttestations) => {
+const processAllRawAttestations = (rawAttestations: any) => {
   let targetAttestation = processAttestation(rawAttestations.length > 0 ? rawAttestations[0] : null);
   const maxNonce = targetAttestation.nonce;
   let requireAtLeastOneWithLowerNonce = false;
@@ -144,7 +144,7 @@ const processAllRawAttestations = (rawAttestations) => {
   return targetAttestation;
 };
 
-const processAttestation = (targetAttestation) => {
+const processAttestation = (targetAttestation: any) => {
   const result = {
     id: "0x0000000000000000000000000000000000000000000000000000000000000000",
     nonce: 0,
@@ -158,14 +158,14 @@ const processAttestation = (targetAttestation) => {
 
     const decodedData = JSON.parse(targetAttestation.decodedDataJson);
 
-    const nonceItem = decodedData.find((item) => item.name === "nonce");
+    const nonceItem = decodedData.find((item: any) => item.name === "nonce");
     if (nonceItem && typeof nonceItem.value.value === "number") {
       result.nonce = nonceItem.value.value + 1;
     } else {
       throw new Error("Invalid nonce value in previous attestation");
     }
 
-    const ratingItem = decodedData.find((item) => item.name === "newRating");
+    const ratingItem = decodedData.find((item: any) => item.name === "newRating");
     if (ratingItem && typeof ratingItem.value.value === "number") {
       result.rating = ratingItem.value.value;
     } else {
