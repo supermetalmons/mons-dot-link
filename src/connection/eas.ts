@@ -7,7 +7,7 @@ async function getSigner(): Promise<any> {
   return signer;
 }
 
-export async function sendEasTx(txData) {
+export async function sendEasTx(txData: any) {
   const signer = await getSigner();
 
   const baseChainId = 8453;
@@ -54,7 +54,7 @@ export async function sendEasTx(txData) {
     },
   ]);
 
-  const newAttestationUID = await multiTxAll.wait();
-  console.log(newAttestationUID);
-  return newAttestationUID;
+  const newAttestationsUIDs = await multiTxAll.wait();
+  console.log(newAttestationsUIDs);
+  return multiTxAll.receipt.hash;
 }
