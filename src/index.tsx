@@ -35,6 +35,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <RainbowKitAuthenticationProvider adapter={authenticationAdapter} status={authStatus}>
           <RainbowKitProvider
+            showRecentTransactions={true}
             modalSize="compact"
             theme={{
               lightMode: lightTheme(),
