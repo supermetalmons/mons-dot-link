@@ -58,7 +58,7 @@ export function getEnsName(address: string): string | undefined {
 const ethAddresses: { [key: string]: string } = {};
 const ensDict: { [key: string]: { name: string; avatar: string } } = {};
 
-export const getRatings = async (recipient1: string, recipient2: string) => {
+export const getRatings = async (recipients: string[]) => {
   const ratingsDict: { [key: string]: { numberOfGames: number; rating: number; } } = {};
 
   const proxyAddress = "0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae";
@@ -67,13 +67,13 @@ export const getRatings = async (recipient1: string, recipient2: string) => {
   const easQuery = `
     query Attestation {
       attestations(
-        take: 2,
+        take: ${recipients.length},
         skip: 0,
         orderBy: { data: desc },
         where: { 
           schemaId: { equals: "${schema}" }, 
           attester: { equals: "${proxyAddress}" },
-          recipient: { in: ["${recipient1}", "${recipient2}"] },
+          recipient: { in: ${JSON.stringify(recipients)} },
           revoked: { equals: false },
         },
         distinct: [recipient]
