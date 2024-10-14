@@ -104,6 +104,14 @@ function renderPlayersNamesLabels() {
     let playerNameString = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
     let opponentNameString = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
 
+    const ratingPrefix = " • ";
+    if (playerSideMetadata.rating !== undefined) {
+      playerNameString += ratingPrefix + `${playerSideMetadata.rating}`;
+    }
+    if (opponentSideMetadata.rating !== undefined) {
+      opponentNameString += ratingPrefix + `${opponentSideMetadata.rating}`;
+    }
+
     const currentTime = Date.now();
     const thresholdDelta = 2500;
     const prefix = " ~ ";
