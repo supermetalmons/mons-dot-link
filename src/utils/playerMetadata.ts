@@ -58,14 +58,10 @@ export function getEnsName(address: string): string | undefined {
 const ethAddresses: { [key: string]: string } = {};
 const ensDict: { [key: string]: { name: string; avatar: string } } = {};
 
-// TODO: implement getting players ratings
+const getLatestAttestations = async (recipient1, recipient2) => {
+  const proxyAddress = "0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae";
+  const schema = "0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32";
 
-/** 
-
-const proxyAddress = "0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae";
-const schema = "0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32";
-
-const getLatestAttestations = async (schema, proxyAddress, recipient1, recipient2) => {
   const easQuery = `
     query Attestation {
       firstRecipientAttestations: attestations(
@@ -114,7 +110,7 @@ const getLatestAttestations = async (schema, proxyAddress, recipient1, recipient
   });
 
   if (!easResponse.ok) {
-    throw new HttpsError("internal", "Failed to fetch attestations");
+    throw new Error("Failed to fetch attestations");
   }
 
   const easResponseJson = await easResponse.json();
@@ -131,7 +127,7 @@ const processAllRawAttestations = (rawAttestations) => {
   for (let i = 1; i < rawAttestations.length; i++) {
     const attestation = processAttestation(rawAttestations[i]);
     if (attestation.nonce > maxNonce) {
-      throw new HttpsError("internal", "Unexpected order of attestations");
+      throw new Error("Unexpected order of attestations");
     } else if (attestation.nonce === maxNonce) {
       if (attestation.time < targetAttestation.time) {
         targetAttestation = attestation;
@@ -143,7 +139,7 @@ const processAllRawAttestations = (rawAttestations) => {
   }
 
   if (requireAtLeastOneWithLowerNonce && maxNonce > 0) {
-    throw new HttpsError("internal", "Could not find the earliest attestation with max nonce");
+    throw new Error("Could not find the earliest attestation with max nonce");
   }
   return targetAttestation;
 };
@@ -166,17 +162,16 @@ const processAttestation = (targetAttestation) => {
     if (nonceItem && typeof nonceItem.value.value === "number") {
       result.nonce = nonceItem.value.value + 1;
     } else {
-      throw new HttpsError("internal", "Invalid nonce value in previous attestation");
+      throw new Error("Invalid nonce value in previous attestation");
     }
 
     const ratingItem = decodedData.find((item) => item.name === "newRating");
     if (ratingItem && typeof ratingItem.value.value === "number") {
       result.rating = ratingItem.value.value;
     } else {
-      throw new HttpsError("internal", "Invalid rating value in previous attestation");
+      throw new Error("Invalid rating value in previous attestation");
     }
   }
 
   return result;
 };
-*/
