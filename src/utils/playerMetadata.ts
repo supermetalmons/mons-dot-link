@@ -33,6 +33,14 @@ export function getStashedPlayerAddress(uid: string) {
 export function resolveEthAddress(address: string, uid: string, onSuccess: () => void) {
   ethAddresses[uid] = address;
   if (!ensDict[address]) {
+    getRatings([address]).then((ratingsDict) => {
+      const rating = ratingsDict[address];
+      if (rating !== undefined) {
+        allRatingsDict[address] = rating;
+        onSuccess();
+      }
+    }).catch(() => {});
+
     fetch(`https://api.ensideas.com/ens/resolve/${address}`)
       .then((response) => {
         if (response.ok) {
@@ -53,14 +61,19 @@ export function resolveEthAddress(address: string, uid: string, onSuccess: () =>
   }
 }
 
+export function getRating(address: string): number | undefined {
+  return allRatingsDict[address]?.rating;
+}
+
 export function getEnsName(address: string): string | undefined {
   return ensDict[address]?.name;
 }
 
 const ethAddresses: { [key: string]: string } = {};
 const ensDict: { [key: string]: { name: string; avatar: string } } = {};
+const allRatingsDict: { [key: string]: { numberOfGames: number; rating: number; } } = {};
 
-export const getRatings = async (recipients: string[]) => {
+async function getRatings(recipients: string[]) {
   const ratingsDict: { [key: string]: { numberOfGames: number; rating: number; } } = {};
 
   const proxyAddress = "0x6D132b7cDC2b5A5F7C4DFd6C84C0A776062C58Ae";
@@ -118,4 +131,4 @@ export const getRatings = async (recipients: string[]) => {
     }
   });
   return ratingsDict;  
-};
+}

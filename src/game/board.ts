@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
-import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName } from "../utils/playerMetadata";
+import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 
 const assets = (await import("../content/gameAssets")).gameAssets;
 let board: HTMLElement | null;
@@ -164,6 +164,20 @@ function recalculateDisplayNames() {
     if (ens !== undefined) {
       opponentSideMetadata.ens = ens;
       opponentSideMetadata.displayName = ens;
+    }
+  }
+
+  if (playerSideMetadata.rating === undefined && playerSideMetadata.ethAddress) {
+    const rating = getRating(playerSideMetadata.ethAddress);
+    if (rating !== undefined) {
+      playerSideMetadata.rating = rating;
+    }
+  }
+
+  if (opponentSideMetadata.rating === undefined && opponentSideMetadata.ethAddress) {
+    const rating = getRating(opponentSideMetadata.ethAddress);
+    if (rating !== undefined) {
+      opponentSideMetadata.rating = rating;
     }
   }
 
