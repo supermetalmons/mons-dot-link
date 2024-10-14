@@ -36,6 +36,10 @@
             "flatMovesString": {
               ".validate": "newData.isString() && (!data.exists() || newData.val().contains(data.val()))"
             },
+            "nonce": {
+              ".write": "auth != null && auth.uid === $userId && !data.exists()",
+              ".validate": "newData.isString() && newData.val().length > 0"
+            },
             ".validate": "!data.exists() || ((!data.child('flatMovesString').exists() || (data.child('flatMovesString').exists() && (data.child('fen').val() === newData.child('fen').val() || (data.child('fen').val() != newData.child('fen').val() && data.child('flatMovesString').val() != newData.child('flatMovesString').val())))) && (data.child('flatMovesString').exists() || data.child('fen').exists() && !data.child('flatMovesString').exists() && !newData.child('flatMovesString').exists()))"
           }
         },
