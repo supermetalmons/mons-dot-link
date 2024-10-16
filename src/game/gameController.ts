@@ -56,8 +56,13 @@ export function didClickResignButton() {
   // TODO: implement
 }
 
-export function didClickUndoButton() {
+export function canHandleUndo(): boolean {
   // TODO: implement
+  return false;
+}
+
+export function didClickUndoButton() {
+  // TODO: implement undo
   playSounds([Sound.Undo]);
 }
 

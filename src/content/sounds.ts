@@ -134,6 +134,7 @@ const getSoundPriority = (sound: Sound) => {
     case Sound.ScoreSupermana:
     case Sound.Victory:
     case Sound.Defeat:
+    case Sound.Undo:
       return 2;
   }
 };

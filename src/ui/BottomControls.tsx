@@ -111,7 +111,7 @@ let showGameRelatedBottomControls: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
-  const { isMuted, isReactionPickerVisible, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction, handleReactionSelect, hideReactionPicker, isVoiceReactionDisabled } = actions;
+  const { isMuted, isReactionPickerVisible, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction, handleReactionSelect, hideReactionPicker, isVoiceReactionDisabled, isUndoDisabled } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -137,7 +137,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      <ControlButton onClick={handleUndo} aria-label="Undo" disabled={true}>
+      <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
         <FaUndo />
       </ControlButton>
       {showOtherControls && (
