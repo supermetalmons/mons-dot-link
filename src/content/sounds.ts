@@ -94,6 +94,9 @@ export function playSounds(sounds: Sound[]) {
       case Sound.DidConnect:
         name = "didConnect";
         break;
+      case Sound.Undo:
+        name = "undo";
+        break;
     }
 
     const path = `sounds/${name}.wav`;

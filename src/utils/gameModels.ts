@@ -59,6 +59,7 @@ export enum Sound {
   Victory,
   Defeat,
   DidConnect,
+  Undo,
 }
 
 export enum InputModifier {

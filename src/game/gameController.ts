@@ -52,6 +52,15 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
+export function didClickResignButton() {
+  // TODO: implement
+}
+
+export function didClickUndoButton() {
+  // TODO: implement
+  playSounds([Sound.Undo]);
+}
+
 export function canChangeEmoji(opponents: boolean): boolean {
   if (isOnlineGame) {
     return opponents ? false : !isWatchOnly;

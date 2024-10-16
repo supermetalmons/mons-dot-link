@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { newReactionOfKind, playReaction } from "../content/sounds";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
+import { didClickUndoButton, didClickResignButton } from "../game/gameController";
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
@@ -29,8 +30,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleUndo = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    // TODO: Implement undo logic
-    console.log("Undo");
+    didClickUndoButton();
   }, []);
 
   const handleMuteToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,8 +40,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleResign = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    // TODO: Implement resign logic
-    console.log("Resign");
+    didClickResignButton();
   }, []);
 
   const handleVoiceReaction = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
