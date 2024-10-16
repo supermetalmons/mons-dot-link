@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
-import { showGameRelatedBottomControls } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -63,6 +63,7 @@ export function canHandleUndo(): boolean {
 
 export function didClickUndoButton() {
   // TODO: implement undo
+  // use setUndoEnabled(true); to toggle undo button state
   playSounds([Sound.Undo]);
 }
 

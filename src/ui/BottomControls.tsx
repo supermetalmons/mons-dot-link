@@ -108,10 +108,11 @@ const ReactionButton = styled.button`
 `;
 
 let showGameRelatedBottomControls: () => void;
+let setUndoEnabled: (enabled: boolean) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
-  const { isMuted, isReactionPickerVisible, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction, handleReactionSelect, hideReactionPicker, isVoiceReactionDisabled, isUndoDisabled } = actions;
+  const { isMuted, isReactionPickerVisible, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction, handleReactionSelect, hideReactionPicker, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -133,6 +134,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   showGameRelatedBottomControls = () => {
     setShowOtherControls(true);
+  };
+
+  setUndoEnabled = (enabled: boolean) => {
+    setIsUndoDisabled(!enabled);
   };
 
   return (
@@ -166,4 +171,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled };

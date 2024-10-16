@@ -13,6 +13,7 @@ export interface BottomControlsActionsInterface {
   handleVoiceReaction: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleReactionSelect: (reaction: string) => void;
   hideReactionPicker: () => void;
+  setIsUndoDisabled: (disabled: boolean) => void;
   isVoiceReactionDisabled: boolean;
   isUndoDisabled: boolean;
 }
@@ -76,6 +77,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     handleVoiceReaction,
     handleReactionSelect,
     hideReactionPicker,
+    setIsUndoDisabled,
     isVoiceReactionDisabled,
     isUndoDisabled,
   };
