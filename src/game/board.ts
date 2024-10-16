@@ -222,6 +222,30 @@ function redirectToEthAddress(opponent: boolean) {
   }
 }
 
+export function removeItemsNotPresentIn(locations: Location[]) {
+  const locationSet = new Set(locations.map(location => inBoardCoordinates(location).toString()));
+
+  for (const key in items) {
+    if (!locationSet.has(key)) {
+      const element = items[key];
+      if (element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+      delete items[key];
+    }
+  }
+
+  for (const key in basesPlaceholders) {
+    if (!locationSet.has(key)) {
+      const element = basesPlaceholders[key];
+      if (element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+      delete basesPlaceholders[key];
+    }
+  }
+}
+
 export function resetForNewGame() {
   if (isWatchOnly) {
     playerSideMetadata.displayName = undefined;
@@ -306,6 +330,12 @@ export function updateScore(white: number, black: number) {
   playerScoreText.textContent = player.toString();
   opponentScoreText.textContent = opponent.toString();
   renderPlayersNamesLabels();
+}
+
+export function hideItemSelection() {
+  if (itemSelectionOverlay) {
+    itemSelectionOverlay.remove();
+  }
 }
 
 export function showItemSelection() {

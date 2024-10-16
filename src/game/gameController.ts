@@ -27,6 +27,7 @@ let isGameOver = false;
 const processedVoiceReactions = new Set<string>();
 
 var currentInputs: Location[] = [];
+var undoFens: string[] = [];
 
 // TODO: it was called immediatelly before, now it's called after the board component is created, not sure if it's ok
 export async function go() {
@@ -39,6 +40,7 @@ export async function go() {
   playerSideColor = MonsWeb.Color.White;
   game = MonsWeb.MonsGameModel.new();
   initialFen = game.fen();
+  undoFens.push(initialFen);
 
   if (isCreateNewInviteFlow) {
     game.locations_with_content().forEach((loc) => {
@@ -57,14 +59,20 @@ export function didClickResignButton() {
 }
 
 export function canHandleUndo(): boolean {
-  // TODO: implement
-  return false;
+  return !isOnlineGame && undoFens.length > 1;
 }
 
 export function didClickUndoButton() {
-  // TODO: implement undo
-  // use setUndoEnabled(true); to toggle undo button state
-  playSounds([Sound.Undo]);
+  if (canHandleUndo()) {
+    undoFens.pop();
+    const undoTargetFen = undoFens[undoFens.length - 1];
+    game = MonsWeb.MonsGameModel.from_fen(undoTargetFen);
+    setNewBoard();
+    playSounds([Sound.Undo]);
+    Board.removeHighlights();
+    Board.hideItemSelection();
+    currentInputs = [];
+  }  
 }
 
 export function canChangeEmoji(opponents: boolean): boolean {
@@ -195,13 +203,17 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       Board.applyHighlights([...selectedItemsHighlights, ...nextInputHighlights]);
       break;
     case MonsWeb.OutputModelKind.Events:
+      const moveFen = output.input_fen();
+      const gameFen = game.fen();
+
       if (isOnlineGame && !isRemoteInput) {
-        const moveFen = output.input_fen();
-        const gameFen = game.fen();
         sendMove(moveFen, gameFen);
       }
 
-      // TODO: store move and fen before to be able to undo / replay it?
+      if (!isOnlineGame) {
+        undoFens.push(gameFen);
+        setUndoEnabled(true);
+      }
 
       currentInputs = [];
       const events = output.events();
@@ -211,8 +223,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       let sounds: Sound[] = [];
       let traces: Trace[] = [];
       let popOpponentsEmoji = false;
-
-      // TODO: handle undo event
 
       for (const event of events) {
         const from = event.loc1 ? location(event.loc1) : undefined;
@@ -302,12 +312,22 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             locationsToUpdate.push(from);
             break;
           case MonsWeb.EventModelKind.NextTurn:
+            if (!isOnlineGame) {
+              undoFens = [gameFen];
+              setUndoEnabled(false);
+            }
+
             sounds.push(Sound.EndTurn);
             if (!isWatchOnly && isOnlineGame && isPlayerSideTurn()) {
               popOpponentsEmoji = true;
             }
             break;
           case MonsWeb.EventModelKind.GameOver:
+            if (!isOnlineGame) {
+              undoFens = [gameFen];
+              setUndoEnabled(false);
+            }
+
             const isVictory = !isOnlineGame || event.color === playerSideColor;
             let winnerAlertText = (event.color === MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
             if (!isModernAndPowerful) {
@@ -423,10 +443,6 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   } else {
     output = game.process_input(gameInput);
   }
-
-  // TODO: pass previous fen in there for the undos?
-  // or should we just log moves — for parity with online game — and checkpoint fens
-
   applyOutput(output, false, assistedInputKind, inputLocation);
 }
 
@@ -457,6 +473,9 @@ function hasItemAt(location: Location): boolean {
 }
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
+  undoFens = [initialFen];
+  setUndoEnabled(false);
+
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -501,8 +520,9 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
 function setNewBoard() {
   Board.updateScore(game.white_score(), game.black_score());
   Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
-
-  game.locations_with_content().forEach((loc) => {
+  const locationsWithContent = game.locations_with_content();
+  Board.removeItemsNotPresentIn(locationsWithContent);
+  locationsWithContent.forEach((loc) => {
     const location = new Location(loc.i, loc.j);
     updateLocation(location);
   });
