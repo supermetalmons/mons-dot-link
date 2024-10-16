@@ -45,15 +45,11 @@ export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =
         version: "1",
         chainId,
         nonce,
-      });
-    },
-
-    getMessageBody: ({ message }) => {
-      return message.prepareMessage();
+      }).prepareMessage();
     },
 
     verify: async ({ message, signature }) => {
-      const res = await verifyEthAddress(message.toMessage(), signature);
+      const res = await verifyEthAddress(message, signature);
       if (res && res.ok === true) {
         setupLoggedInPlayerEthAddress(res.address, res.uid);
         saveEthAddress(res.uid, res.address);
