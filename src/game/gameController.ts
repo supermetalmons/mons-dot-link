@@ -27,9 +27,7 @@ let isGameOver = false;
 const processedVoiceReactions = new Set<string>();
 
 var currentInputs: Location[] = [];
-var undoFens: string[] = [];
 
-// TODO: it was called immediatelly before, now it's called after the board component is created, not sure if it's ok
 export async function go() {
   setupConnection();
 
@@ -40,7 +38,6 @@ export async function go() {
   playerSideColor = MonsWeb.Color.White;
   game = MonsWeb.MonsGameModel.new();
   initialFen = game.fen();
-  undoFens.push(initialFen);
 
   if (isCreateNewInviteFlow) {
     game.locations_with_content().forEach((loc) => {
@@ -59,14 +56,13 @@ export function didClickResignButton() {
 }
 
 export function canHandleUndo(): boolean {
-  return !isOnlineGame && undoFens.length > 1;
+  return !isOnlineGame && game.can_takeback();
 }
 
 export function didClickUndoButton() {
   if (canHandleUndo()) {
-    undoFens.pop();
-    const undoTargetFen = undoFens[undoFens.length - 1];
-    game = MonsWeb.MonsGameModel.from_fen(undoTargetFen);
+    game.takeback();
+    // TODO: handle takeback event within apply output?
     setNewBoard();
     playSounds([Sound.Undo]);
     Board.removeHighlights();
@@ -212,8 +208,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       }
 
       if (!isOnlineGame) {
-        undoFens.push(gameFen);
-        setUndoEnabled(true);
+        setUndoEnabled(canHandleUndo());
       }
 
       currentInputs = [];
@@ -314,7 +309,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             break;
           case MonsWeb.EventModelKind.NextTurn:
             if (!isOnlineGame) {
-              undoFens = [gameFen];
               setUndoEnabled(false);
             }
 
@@ -325,7 +319,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             break;
           case MonsWeb.EventModelKind.GameOver:
             if (!isOnlineGame) {
-              undoFens = [gameFen];
               setUndoEnabled(false);
             }
 
@@ -472,7 +465,6 @@ function hasItemAt(location: Location): boolean {
 }
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
-  undoFens = [initialFen];
   setUndoEnabled(false);
 
   Board.resetForNewGame();
