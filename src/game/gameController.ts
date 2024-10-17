@@ -412,8 +412,6 @@ async function saveOnchainRating(txData) {
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  // TODO: handle undo input
-
   if (isOnlineGame) {
     if (game.active_color() !== playerSideColor) {
       return;
