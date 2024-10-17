@@ -56,18 +56,13 @@ export function didClickResignButton() {
 }
 
 export function canHandleUndo(): boolean {
-  return !isOnlineGame && game.can_takeback();
+  return game.can_takeback();
 }
 
 export function didClickUndoButton() {
   if (canHandleUndo()) {
-    game.takeback();
-    // TODO: handle takeback event within apply output?
-    setNewBoard();
-    playSounds([Sound.Undo]);
-    Board.removeHighlights();
-    Board.hideItemSelection();
-    currentInputs = [];
+    const output = game.takeback();
+    applyOutput(output, false, AssistedInputKind.None);
   }  
 }
 
@@ -309,6 +304,13 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               popOpponentsEmoji = true;
             }
             break;
+          case MonsWeb.EventModelKind.Takeback:
+            setNewBoard();
+            playSounds([Sound.Undo]);
+            Board.removeHighlights();
+            Board.hideItemSelection();
+            updateUndoButtonBasedOnGameState();
+            return;
           case MonsWeb.EventModelKind.GameOver:
             const isVictory = !isOnlineGame || event.color === playerSideColor;
             let winnerAlertText = (event.color === MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
