@@ -207,6 +207,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       const gameFen = game.fen();
 
       if (isOnlineGame && !isRemoteInput) {
+        // TODO: use sendMove to send undo actions
         sendMove(moveFen, gameFen);
       }
 
