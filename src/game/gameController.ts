@@ -207,10 +207,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         sendMove(moveFen, gameFen);
       }
 
-      if (!isOnlineGame) {
-        setUndoEnabled(canHandleUndo());
-      }
-
       currentInputs = [];
       const events = output.events();
       let locationsToUpdate: Location[] = [];
@@ -308,20 +304,12 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             locationsToUpdate.push(from);
             break;
           case MonsWeb.EventModelKind.NextTurn:
-            if (!isOnlineGame) {
-              setUndoEnabled(false);
-            }
-
             sounds.push(Sound.EndTurn);
             if (!isWatchOnly && isOnlineGame && isPlayerSideTurn()) {
               popOpponentsEmoji = true;
             }
             break;
           case MonsWeb.EventModelKind.GameOver:
-            if (!isOnlineGame) {
-              setUndoEnabled(false);
-            }
-
             const isVictory = !isOnlineGame || event.color === playerSideColor;
             let winnerAlertText = (event.color === MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
             if (!isModernAndPowerful) {
@@ -378,6 +366,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
       }
 
+      updateUndoButtonBasedOnGameState();
       break;
   }
 }
@@ -465,8 +454,6 @@ function hasItemAt(location: Location): boolean {
 }
 
 function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
-  setUndoEnabled(false);
-
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -506,6 +493,11 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
   }
 
   setNewBoard();
+  updateUndoButtonBasedOnGameState();
+}
+
+function updateUndoButtonBasedOnGameState() {
+  setUndoEnabled(game.can_takeback());
 }
 
 function setNewBoard() {
