@@ -56,6 +56,8 @@ export function didClickResignButton() {
 }
 
 export function canHandleUndo(): boolean {
+  if (isOnlineGame) { return false; } // TODO: dev tmp, enable online undo after recreating takeback fens for reloaded games
+
   if (isWatchOnly) {
     return false;
   } else if (isOnlineGame) {
