@@ -56,7 +56,13 @@ export function didClickResignButton() {
 }
 
 export function canHandleUndo(): boolean {
-  return game.can_takeback();
+  if (isWatchOnly) {
+    return false;
+  } else if (isOnlineGame) {
+    return game.can_takeback(playerSideColor);
+  } else {
+    return game.can_takeback(game.active_color());
+  }
 }
 
 export function didClickUndoButton() {
@@ -499,7 +505,7 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
 }
 
 function updateUndoButtonBasedOnGameState() {
-  setUndoEnabled(game.can_takeback());
+  setUndoEnabled(canHandleUndo());
 }
 
 function setNewBoard() {
