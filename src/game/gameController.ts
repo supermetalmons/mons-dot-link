@@ -390,7 +390,7 @@ function hasBothEthAddresses(): boolean {
 }
 
 function verifyMovesIfNeeded(gameId: string, flatMovesString: string, color: string) {
-  if (isWatchOnly || (currentGameModelId === gameId && game.is_moves_verified())) {
+  if (currentGameModelId === gameId && game.is_moves_verified()) {
     return;
   }
 
@@ -580,10 +580,10 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
-      verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
       setNewBoard();
     }
 
+    verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
     setProcessedMovesCountForColor(match.color, movesCount);
   }
 
