@@ -19,6 +19,7 @@ let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
 export let initialFen = "";
+let currentGameModelId = "";
 let game;
 let playerSideColor;
 
@@ -486,6 +487,8 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
   if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
     console.log("updating local game with opponent's fen");
     game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+    // TODO: compare gameId with currentGameModelId to see if moves history should be copied over
+    currentGameModelId = gameId;
   } else {
     console.log("got opponent's match, but keeping the local fen");
   }
@@ -552,6 +555,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
+      // TODO: compare gameId with currentGameModelId to see if moves history should be copied over
+      currentGameModelId = gameId;
       setNewBoard();
     }
 
@@ -604,6 +609,8 @@ export function didRecoverMyMatch(match: any, gameId: string) {
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
+  // TODO: compare gameId with currentGameModelId to see if moves history should be copied over
+  currentGameModelId = gameId;
   const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
   Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
