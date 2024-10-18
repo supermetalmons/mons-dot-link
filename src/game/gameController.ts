@@ -19,7 +19,11 @@ let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
 export let initialFen = "";
-let currentGameModelId = "";
+
+let currentGameModelId: string | null = null;
+let whiteFlatMovesString: string | null = null;
+let blackFlatMovesString: string | null = null;
+
 let game;
 let playerSideColor;
 
@@ -385,6 +389,32 @@ function hasBothEthAddresses(): boolean {
   return playerSide !== undefined && opponentSide !== undefined && playerSide !== opponentSide;
 }
 
+function verifyMovesIfNeeded(gameId: string, flatMovesString: string, color: string) {
+  if (isWatchOnly || (currentGameModelId === gameId && game.is_moves_verified())) {
+    return;
+  }
+
+  if (currentGameModelId !== gameId) {
+    currentGameModelId = gameId;
+    whiteFlatMovesString = null;
+    blackFlatMovesString = null;
+  }
+
+  if (color === "white") {
+    whiteFlatMovesString = flatMovesString;
+  } else {
+    blackFlatMovesString = flatMovesString;
+  }
+
+  if (whiteFlatMovesString !== null && blackFlatMovesString !== null) {
+    let result = game.verify_moves(whiteFlatMovesString, blackFlatMovesString);
+    if (result) {
+      whiteFlatMovesString = null;
+      blackFlatMovesString = null;
+    }
+  }
+}
+
 function suggestSavingOnchainRating() {
   const shouldSave = global.confirm("🎉 you win\n\n💾 log victory onchain");
   if (shouldSave) {
@@ -485,13 +515,10 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
   }
 
   if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
-    console.log("updating local game with opponent's fen");
     game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
-    // TODO: compare gameId with currentGameModelId to see if moves history should be copied over
-    currentGameModelId = gameId;
-  } else {
-    console.log("got opponent's match, but keeping the local fen");
   }
+
+  verifyMovesIfNeeded(gameId, opponentMatch.flatMovesString, opponentMatch.color);
 
   if (isReconnect || isWatchOnly) {
     const movesCount = movesCountOfMatch(opponentMatch);
@@ -540,8 +567,6 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
     return;
   }
 
-  console.log(`didUpdateOpponentMatch`, match);
-
   if (!didConnect) {
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
@@ -555,8 +580,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
-      // TODO: compare gameId with currentGameModelId to see if moves history should be copied over
-      currentGameModelId = gameId;
+      verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
       setNewBoard();
     }
 
@@ -577,8 +601,6 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
     if (match.fen !== game.fen()) {
       // TODO: show something is wrong alert
       console.log("fens do not match");
-    } else {
-      console.log("fens ok");
     }
   }
 
@@ -609,12 +631,10 @@ export function didRecoverMyMatch(match: any, gameId: string) {
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
-  // TODO: compare gameId with currentGameModelId to see if moves history should be copied over
-  currentGameModelId = gameId;
+  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
   const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
   Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
-  console.log(`didRecoverMyMatch:`, match);
 }
 
 export function enterWatchOnlyMode() {
