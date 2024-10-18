@@ -611,6 +611,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (match.status === "surrendered") {
     isGameOver = true;
     setTimeout(() => {
+      // TODO: tune resign alert.
+      // TODO: make it work correctly together with victory attestation
       alert(match.color + " left the game");
     }, 420);
   }
