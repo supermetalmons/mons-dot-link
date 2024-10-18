@@ -56,8 +56,6 @@ export function didClickResignButton() {
 }
 
 export function canHandleUndo(): boolean {
-  if (isOnlineGame) { return false; } // TODO: dev tmp, enable online undo after recreating takeback fens for reloaded games
-
   if (isWatchOnly) {
     return false;
   } else if (isOnlineGame) {
@@ -462,7 +460,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(opponentMatch: any, matchPlayerUid: string) {
+function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string) {
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -534,7 +532,7 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
-export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
+export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameId: string) {
   if (isGameOver) {
     return;
   }
@@ -542,7 +540,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
   console.log(`didUpdateOpponentMatch`, match);
 
   if (!didConnect) {
-    didConnectTo(match, matchPlayerUid);
+    didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
     if (!isReconnect) {
       playSounds([Sound.DidConnect]);
@@ -601,7 +599,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string) {
   }
 }
 
-export function didRecoverMyMatch(match: any) {
+export function didRecoverMyMatch(match: any, gameId: string) {
   isReconnect = true;
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;

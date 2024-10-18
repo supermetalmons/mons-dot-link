@@ -173,7 +173,7 @@ class FirebaseConnection {
         }
         console.log("got my match:", myMatchData);
         this.myMatch = myMatchData;
-        didRecoverMyMatch(myMatchData);
+        didRecoverMyMatch(myMatchData, gameId);
         this.observeMatch(invite.hostId, gameId);
       })
       .catch((error) => {
@@ -194,7 +194,7 @@ class FirebaseConnection {
         }
         console.log("got my match:", myMatchData);
         this.myMatch = myMatchData;
-        didRecoverMyMatch(myMatchData);
+        didRecoverMyMatch(myMatchData, gameId);
 
         if (invite.guestId && invite.guestId !== "") {
           this.observeMatch(invite.guestId, gameId);
@@ -326,7 +326,7 @@ class FirebaseConnection {
         const matchData = snapshot.val();
         console.log(matchData);
         if (matchData) {
-          didUpdateOpponentMatch(matchData, playerId);
+          didUpdateOpponentMatch(matchData, playerId, matchId);
         }
       },
       (error) => {
