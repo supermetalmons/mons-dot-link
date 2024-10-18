@@ -130,5 +130,15 @@ async function getRatings(recipients: string[]) {
       };
     }
   });
+
+  recipients.forEach((recipient) => {
+    if (!ratingsDict[recipient]) {
+      ratingsDict[recipient] = {
+        numberOfGames: 0,
+        rating: 1500
+      };
+    }
+  });
+
   return ratingsDict;  
 }
