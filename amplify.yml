@@ -4,3 +4,4 @@ frontend:
     baseDirectory: /
     files:
       - 'gen2/**/*'
+      - 'music/**/*'
