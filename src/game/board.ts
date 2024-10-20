@@ -326,8 +326,8 @@ export function removeItem(location: Location) {
 
 export function updateScore(white: number, black: number) {
   // TODO: use suffixes when appropriate
-  const victorySuffix = " 🏅";
-  const surrenderSuffix = " 🏳️";
+  // const victorySuffix = " 🏅";
+  // const surrenderSuffix = " 🏳️";
 
   const player = isFlipped ? black : white;
   const opponent = isFlipped ? white : black;

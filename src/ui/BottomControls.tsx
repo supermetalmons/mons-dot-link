@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt } from "react-icons/fa";
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 
 let latestModalOutsideTapDismissDate = Date.now();
@@ -73,7 +73,7 @@ const ControlButton = styled.button<{ disabled?: boolean }>`
 const ReactionPicker = styled.div`
   position: absolute;
   bottom: 40px;
-  right: 10px;
+  right: 63px;
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -112,7 +112,21 @@ let setUndoEnabled: (enabled: boolean) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
-  const { isMuted, isReactionPickerVisible, handleUndo, handleMuteToggle, handleResign, handleVoiceReaction, handleReactionSelect, hideReactionPicker, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled } = actions;
+  const { 
+    isMuted, 
+    isReactionPickerVisible, 
+    handleUndo, 
+    handleMuteToggle, 
+    handleResign, 
+    handleVoiceReaction, 
+    handleReactionSelect, 
+    hideReactionPicker, 
+    setIsUndoDisabled, 
+    isVoiceReactionDisabled, 
+    isUndoDisabled,
+    isMusicPlaying,
+    handleMusicToggle
+  } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -155,6 +169,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           </ControlButton>
         </>
       )}
+      <ControlButton onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
+        {isMusicPlaying ? <FaStop /> : <FaMusic />}
+      </ControlButton>
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>

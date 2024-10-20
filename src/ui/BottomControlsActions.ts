@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { newReactionOfKind, playReaction } from "../content/sounds";
+import { startPlayingMusic, stopPlayingMusic } from "../content/music";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
 import { didClickUndoButton, didClickResignButton, canHandleUndo } from "../game/gameController";
@@ -16,6 +17,8 @@ export interface BottomControlsActionsInterface {
   setIsUndoDisabled: (disabled: boolean) => void;
   isVoiceReactionDisabled: boolean;
   isUndoDisabled: boolean;
+  isMusicPlaying: boolean;
+  handleMusicToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 let globalIsMuted = localStorage.getItem("isMuted") === "true";
@@ -25,6 +28,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
   const [isUndoDisabled, setIsUndoDisabled] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("isMuted", isMuted.toString());
@@ -68,6 +72,19 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     setIsReactionPickerVisible(false);
   }, []);
 
+  const handleMusicToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsMusicPlaying((prev) => {
+      if (prev) {
+        stopPlayingMusic();
+        return false;
+      } else {
+        startPlayingMusic();
+        return true;
+      }
+    });
+  }, []);
+
   return {
     isMuted,
     isReactionPickerVisible,
@@ -80,6 +97,8 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     setIsUndoDisabled,
     isVoiceReactionDisabled,
     isUndoDisabled,
+    isMusicPlaying,
+    handleMusicToggle,
   };
 };
 

@@ -30,7 +30,37 @@ const tracks = [
   "whale2"
 ];
 
-export function getRandomTrackUrl(): string {
+let audioElement: HTMLAudioElement | null = null;
+
+export function startPlayingMusic(): void {
+  if (!audioElement) {
+    audioElement = new Audio(getRandomTrackUrl());
+    audioElement.addEventListener('ended', playNextTrack);
+  }
+  audioElement.play().catch((error) => {
+    console.error("Error playing audio:", error);
+  });
+}
+
+export function stopPlayingMusic(): void {
+  if (audioElement) {
+    audioElement.pause();
+    audioElement.currentTime = 0;
+    audioElement.removeEventListener('ended', playNextTrack);
+    audioElement = null;
+  }
+}
+
+function playNextTrack(): void {
+  if (audioElement) {
+    audioElement.src = getRandomTrackUrl();
+    audioElement.play().catch((error) => {
+      console.error("Error playing next track:", error);
+    });
+  }
+}
+
+function getRandomTrackUrl(): string {
   const randomIndex = Math.floor(Math.random() * tracks.length);
   const randomTrack = tracks[randomIndex];
   return `https://assets.mons.link/music/${randomTrack}.aac`;
