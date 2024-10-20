@@ -49,21 +49,19 @@ const App = () => {
                 src="https://live.artblocks.io/random/0x68c01cb4733a82a58d5e7bb31bddbff26a3a35d5/18?useCustomViewParams=true&showText=false&backgroundColor=000000&width=100vw&height=100vh"
                 title="background"
               ></iframe> */}
-              <div className="content-container">
-                <div className="connect-button-container" onClick={handleConnectClick}>
-                  <ConnectButton
-                    showBalance={false}
-                    chainStatus="none"
-                    accountStatus={{
-                      smallScreen: "avatar",
-                      largeScreen: "full",
-                    }}
-                  />
-                </div>
-                <BoardComponent />
-                <MainMenu />
-                <BottomControls actions={bottomControlsActions} />
+              <div className="connect-button-container" onClick={handleConnectClick}>
+                <ConnectButton
+                  showBalance={false}
+                  chainStatus="none"
+                  accountStatus={{
+                    smallScreen: "avatar",
+                    largeScreen: "full",
+                  }}
+                />
               </div>
+              <BoardComponent />
+              <MainMenu />
+              <BottomControls actions={bottomControlsActions} />
             </div>
           </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>

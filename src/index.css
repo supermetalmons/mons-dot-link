@@ -46,7 +46,6 @@ body {
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  position: relative;
 }
 
 .background-iframe {
@@ -62,15 +61,6 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-}
-
-.content-container {
-  position: relative;
-  z-index: 1;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .connect-button-container {
