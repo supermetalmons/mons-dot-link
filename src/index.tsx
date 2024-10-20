@@ -42,7 +42,9 @@ const App = () => {
               darkMode: darkTheme(),
             }}>
             <div className="app-container">
-              {/* <iframe
+              {/* use a custom ab renderer if we ever release these. the default one starts with a text loader and twitches on window resize.*/}
+              {/* 
+              <iframe
                 className="background-iframe"
                 src="https://live.artblocks.io/random/0x68c01cb4733a82a58d5e7bb31bddbff26a3a35d5/18?useCustomViewParams=true&showText=false&backgroundColor=000000&width=100vw&height=100vh"
                 title="background"
