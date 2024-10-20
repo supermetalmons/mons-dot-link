@@ -32,6 +32,7 @@ const MainMenu: React.FC = () => {
         className="rock-button"
         onClick={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           toggleMenu();
         }}
         onMouseEnter={() => setIsMenuOpen(true)}
