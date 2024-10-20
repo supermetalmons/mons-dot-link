@@ -107,11 +107,38 @@ const ReactionButton = styled.button`
   }
 `;
 
+const ResignConfirmation = styled(ReactionPicker)`
+  right: 90px;
+  bottom: 40px;
+  padding: 12px;
+`;
+
+const ResignButton = styled(ReactionButton)`
+  background-color: #ff4136;
+  color: white;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: bold;
+
+  &:hover {
+    background-color: #e60000;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #cc0000;
+
+    &:hover {
+      background-color: #b30000;
+    }
+  }
+`;
+
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
+  const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
   const { 
     isMuted, 
     isReactionPickerVisible, 
@@ -131,13 +158,19 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
+  const resignButtonRef = useRef<HTMLButtonElement>(null);
+  const resignConfirmRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       event.stopPropagation();
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node) && !voiceReactionButtonRef.current?.contains(event.target as Node)) {
+      if (
+        (pickerRef.current && !pickerRef.current.contains(event.target as Node) && !voiceReactionButtonRef.current?.contains(event.target as Node)) ||
+        (resignConfirmRef.current && !resignConfirmRef.current.contains(event.target as Node) && !resignButtonRef.current?.contains(event.target as Node))
+      ) {
         latestModalOutsideTapDismissDate = Date.now();
         hideReactionPicker();
+        setIsResignConfirmVisible(false);
       }
     };
 
@@ -155,6 +188,17 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoDisabled(!enabled);
   };
 
+  const handleResignClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsResignConfirmVisible(!isResignConfirmVisible);
+  };
+
+  const handleConfirmResign = () => {
+    const event = new MouseEvent('click') as unknown as React.MouseEvent<HTMLButtonElement>;
+    setIsResignConfirmVisible(false);
+    handleResign(event);
+  };
+
   return (
     <ControlsContainer>
       <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
@@ -162,7 +206,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       </ControlButton>
       {showOtherControls && (
         <>
-          <ControlButton onClick={handleResign} aria-label="Resign" disabled={isResignDisabled}>
+          <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
             <FaFlag />
           </ControlButton>
           <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
@@ -184,6 +228,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           <ReactionButton onClick={() => handleReactionSelect("slurp")}>slurp</ReactionButton>
           <ReactionButton onClick={() => handleReactionSelect("gg")}>gg</ReactionButton>
         </ReactionPicker>
+      )}
+      {isResignConfirmVisible && (
+        <ResignConfirmation ref={resignConfirmRef}>
+          <ResignButton onClick={handleConfirmResign}>Resign</ResignButton>
+        </ResignConfirmation>
       )}
     </ControlsContainer>
   );

@@ -3,14 +3,14 @@ import { newReactionOfKind, playReaction } from "../content/sounds";
 import { startPlayingMusic, stopPlayingMusic } from "../content/music";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
-import { didClickUndoButton, didClickResignButton, canHandleUndo } from "../game/gameController";
+import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
   isReactionPickerVisible: boolean;
   handleUndo: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleMuteToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  handleResign: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleResign: (event: MouseEvent | React.MouseEvent<HTMLButtonElement>) => void;
   handleVoiceReaction: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleReactionSelect: (reaction: string) => void;
   hideReactionPicker: () => void;
@@ -49,12 +49,10 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     setIsMuted((prev) => !prev);
   }, []);
 
-  const handleResign = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleResign = useCallback((event: MouseEvent | React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    didClickResignButton();
-    // TODO: handle resign properly
     setIsResignDisabled(true);
-    alert("resign is not implemented yet");
+    didClickConfirmResignButton();
   }, []);
 
   const handleVoiceReaction = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {

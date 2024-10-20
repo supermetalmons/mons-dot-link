@@ -56,7 +56,8 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
-export function didClickResignButton() {
+export function didClickConfirmResignButton() {
+  alert("resign is not implemented yet");
   // TODO: send resign status
   // TODO: disable resign button
   // TODO: add victory / resign icons to the score labels
