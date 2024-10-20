@@ -15,8 +15,10 @@ export interface BottomControlsActionsInterface {
   handleReactionSelect: (reaction: string) => void;
   hideReactionPicker: () => void;
   setIsUndoDisabled: (disabled: boolean) => void;
+  setIsResignDisabled: (disabled: boolean) => void;
   isVoiceReactionDisabled: boolean;
   isUndoDisabled: boolean;
+  isResignDisabled: boolean;
   isMusicPlaying: boolean;
   handleMusicToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -28,6 +30,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
   const [isUndoDisabled, setIsUndoDisabled] = useState(true);
+  const [isResignDisabled, setIsResignDisabled] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   useEffect(() => {
@@ -49,6 +52,9 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const handleResign = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     didClickResignButton();
+    // TODO: handle resign properly
+    setIsResignDisabled(true);
+    alert("resign is not implemented yet");
   }, []);
 
   const handleVoiceReaction = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -95,8 +101,10 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     handleReactionSelect,
     hideReactionPicker,
     setIsUndoDisabled,
+    setIsResignDisabled,
     isVoiceReactionDisabled,
     isUndoDisabled,
+    isResignDisabled,
     isMusicPlaying,
     handleMusicToggle,
   };

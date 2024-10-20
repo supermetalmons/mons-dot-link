@@ -57,7 +57,9 @@ export async function go() {
 }
 
 export function didClickResignButton() {
-  // TODO: implement
+  // TODO: send resign status
+  // TODO: disable resign button
+  // TODO: add victory / resign icons to the score labels
 }
 
 export function canHandleUndo(): boolean {

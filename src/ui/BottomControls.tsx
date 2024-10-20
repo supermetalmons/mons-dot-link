@@ -121,9 +121,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     handleVoiceReaction, 
     handleReactionSelect, 
     hideReactionPicker, 
-    setIsUndoDisabled, 
+    setIsUndoDisabled,
     isVoiceReactionDisabled, 
     isUndoDisabled,
+    isResignDisabled,
     isMusicPlaying,
     handleMusicToggle
   } = actions;
@@ -161,7 +162,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       </ControlButton>
       {showOtherControls && (
         <>
-          <ControlButton onClick={handleResign} aria-label="Resign" disabled={true}>
+          <ControlButton onClick={handleResign} aria-label="Resign" disabled={isResignDisabled}>
             <FaFlag />
           </ControlButton>
           <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
