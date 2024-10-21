@@ -44,6 +44,10 @@ function writeInviteLinkToClipboard() {
   navigator.clipboard.writeText(link);
 }
 
+export function sendResignStatus() {
+  firebaseConnection.surrender();
+}
+
 export function sendMove(moveFen: string, newBoardFen: string) {
   firebaseConnection.sendMove(moveFen, newBoardFen);
 }

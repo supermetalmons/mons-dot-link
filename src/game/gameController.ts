@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
+import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
@@ -57,10 +57,10 @@ export async function go() {
 }
 
 export function didClickConfirmResignButton() {
-  alert("resign is not implemented yet");
-  // TODO: send resign status
+  sendResignStatus();
   // TODO: disable resign button
   // TODO: add victory / resign icons to the score labels
+  // TODO: play game over music
 }
 
 export function canHandleUndo(): boolean {
@@ -614,9 +614,13 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (match.status === "surrendered") {
     isGameOver = true;
     setTimeout(() => {
-      // TODO: tune resign alert.
-      // TODO: make it work correctly together with victory attestation
-      alert(match.color + " left the game");
+      // TODO: make it work correctly with the following victory attestation
+      
+      // TODO: disable resign button
+      // TODO: add victory / resign icons to the score labels
+      // TODO: play victory music
+      const emoji = match.color === "white" ? "⚪️" : "⚫️";
+      alert(emoji + " resigned");
     }, 420);
   }
 
