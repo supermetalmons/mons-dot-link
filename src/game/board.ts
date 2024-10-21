@@ -324,16 +324,37 @@ export function removeItem(location: Location) {
   }
 }
 
-export function updateScore(white: number, black: number) {
-  // TODO: use suffixes when appropriate
-  // const victorySuffix = " 🏅";
-  // const surrenderSuffix = " 🏳️";
+export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
+  const victorySuffix = " 🏅";
+  const surrenderSuffix = " 🏳️";
   // const outOfTimeSuffix = " ⌛️";
 
-  const player = isFlipped ? black : white;
-  const opponent = isFlipped ? white : black;
-  playerScoreText.textContent = player.toString();
-  opponentScoreText.textContent = opponent.toString();
+  let whiteSuffix = "";
+  let blackSuffix = "";
+
+  if (resignedColor !== null && resignedColor !== undefined) {
+    if (resignedColor === MonsWeb.Color.Black) {
+      blackSuffix = surrenderSuffix;
+    } else {
+      whiteSuffix = surrenderSuffix;
+    }
+  } else if (winnerColor !== null && winnerColor !== undefined) {
+    if (winnerColor === MonsWeb.Color.Black) {
+      blackSuffix = victorySuffix;
+    } else {
+      whiteSuffix = victorySuffix;
+    }
+  }
+
+  const playerScore = isFlipped ? black : white;
+  const opponentScore = isFlipped ? white : black;
+
+  const playerSuffix = isFlipped ? blackSuffix : whiteSuffix;
+  const opponentSuffix = isFlipped ? whiteSuffix : blackSuffix;
+
+  playerScoreText.textContent = playerScore.toString() + playerSuffix;
+  opponentScoreText.textContent = opponentScore.toString() + opponentSuffix;
+
   renderPlayersNamesLabels();
 }
 

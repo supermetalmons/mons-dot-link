@@ -26,6 +26,7 @@ let blackFlatMovesString: string | null = null;
 
 let game;
 let playerSideColor;
+let resignedColor;
 
 let lastReactionTime = 0;
 let isGameOver = false;
@@ -246,7 +247,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
-            Board.updateScore(game.white_score(), game.black_score());
+            Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
             break;
           case MonsWeb.EventModelKind.MysticAction:
             sounds.push(Sound.MysticAbility);
@@ -346,6 +347,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
 
             isGameOver = true;
+            disableUndoAndResignControls();
             break;
         }
       }
@@ -517,6 +519,9 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
 
   if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
     game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+    if (game.winner_color() !== undefined) {
+      disableUndoAndResignControls();
+    }
   }
 
   verifyMovesIfNeeded(gameId, opponentMatch.flatMovesString, opponentMatch.color);
@@ -543,7 +548,7 @@ function updateUndoButtonBasedOnGameState() {
 }
 
 function setNewBoard() {
-  Board.updateScore(game.white_score(), game.black_score());
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
   Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
   const locationsWithContent = game.locations_with_content();
   Board.removeItemsNotPresentIn(locationsWithContent);
@@ -571,6 +576,12 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   const justConfirmedResignYourself = resignSenderColor === "";
   isGameOver = true;
 
+  if (justConfirmedResignYourself) {
+    resignedColor = playerSideColor;
+  } else {
+    resignedColor = resignSenderColor === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
+  }
+
   if (!onConnect && !justConfirmedResignYourself) {
     playSounds([Sound.Victory]);
 
@@ -585,9 +596,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 
   Board.removeHighlights();
   Board.hideItemSelection();
-  
-  // TODO: add victory / resign icons to the score labels
-  // TODO: if it is onConnect, there is a chance that one of the players matches is not loaded yet  
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
 }
 
 export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameId: string) {
@@ -608,6 +617,9 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
+      if (game.winner_color() !== undefined) {
+        disableUndoAndResignControls();
+      }
       setNewBoard();
     }
 
@@ -656,6 +668,9 @@ export function didRecoverMyMatch(match: any, gameId: string) {
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
+  if (game.winner_color() !== undefined) {
+    disableUndoAndResignControls();
+  }
   verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
   const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
