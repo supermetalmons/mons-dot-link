@@ -582,6 +582,10 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   }
 
   disableUndoAndResignControls();
+
+  Board.removeHighlights();
+  Board.hideItemSelection();
+  
   // TODO: add victory / resign icons to the score labels
   // TODO: if it is onConnect, there is a chance that one of the players matches is not loaded yet  
 }
