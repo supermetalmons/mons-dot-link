@@ -328,6 +328,7 @@ export function updateScore(white: number, black: number) {
   // TODO: use suffixes when appropriate
   // const victorySuffix = " 🏅";
   // const surrenderSuffix = " 🏳️";
+  // const outOfTimeSuffix = " ⌛️";
 
   const player = isFlipped ? black : white;
   const opponent = isFlipped ? white : black;
