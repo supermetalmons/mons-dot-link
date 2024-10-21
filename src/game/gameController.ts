@@ -338,7 +338,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
             if (isVictory && !isWatchOnly && hasBothEthAddresses()) {
               setTimeout(() => {
-                suggestSavingOnchainRating();
+                suggestSavingOnchainRating(false);
               }, 420);
             } else {
               setTimeout(() => {
@@ -422,8 +422,9 @@ function verifyMovesIfNeeded(gameId: string, flatMovesString: string, color: str
   }
 }
 
-function suggestSavingOnchainRating() {
-  const shouldSave = global.confirm("🎉 you win\n\n💾 log victory onchain");
+function suggestSavingOnchainRating(onResign: boolean) {
+  const reason = onResign ? "🫡 opponent resigned" : "🎉 you win";
+  const shouldSave = global.confirm(reason + "\n\n💾 save victory onchain");
   if (shouldSave) {
     const gameId = getCurrentGameId();
     prepareOnchainVictoryTx(gameId)
@@ -592,12 +593,14 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 
   if (!onConnect && !justConfirmedResignYourself) {
     playSounds([Sound.Victory]);
-
-    setTimeout(() => {
-      // TODO: make it work correctly with the following victory attestation
-      const emoji = resignSenderColor === "white" ? "⚪️" : "⚫️";
-      alert(emoji + " resigned");
-    }, 420);
+    if (!isWatchOnly && hasBothEthAddresses()) {
+      suggestSavingOnchainRating(true);
+    } else {
+      setTimeout(() => {
+        const emoji = resignSenderColor === "white" ? "⚪️" : "⚫️";
+        alert(emoji + " resigned");
+      }, 420);
+    }
   }
 
   disableUndoAndResignControls();
