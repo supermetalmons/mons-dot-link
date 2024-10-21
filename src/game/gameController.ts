@@ -636,8 +636,10 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
     return;
   }
 
+  let didNotHaveBothMatchesSetupBeforeThisUpdate = false;
   const movesCount = movesCountOfMatch(match);
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
+    didNotHaveBothMatchesSetupBeforeThisUpdate = true;
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
       if (game.winner_color() !== undefined) {
@@ -668,7 +670,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   }
 
   if (match.status === "surrendered") {
-    handleResignStatus(false, match.color);
+    handleResignStatus(didNotHaveBothMatchesSetupBeforeThisUpdate, match.color);
   }
 }
 
