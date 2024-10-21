@@ -277,6 +277,11 @@ export function resetForNewGame() {
   }
 }
 
+export function hideAllMoveStatuses() {
+  const allMoveStatusItems = [...opponentMoveStatusItems, ...playerMoveStatusItems];
+  allMoveStatusItems.forEach(item => SVG.setHidden(item, true));
+}
+
 export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
   let manaMoves = moveKinds[1];

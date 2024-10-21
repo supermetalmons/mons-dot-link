@@ -1,5 +1,5 @@
 import initMonsWeb, * as MonsWeb from "mons-web";
-import { playerSideMetadata, opponentSideMetadata, showVoiceReactionText, setupPlayerId } from "./board";
+import { playerSideMetadata, opponentSideMetadata, showVoiceReactionText, setupPlayerId, hideAllMoveStatuses } from "./board";
 import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
@@ -363,7 +363,11 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         }
       }
 
-      Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+      if (game.winner_color() !== undefined || resignedColor !== undefined) {
+        hideAllMoveStatuses();
+      } else {
+        Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+      }
 
       if (isRemoteInput) {
         for (const trace of traces) {
@@ -549,7 +553,11 @@ function updateUndoButtonBasedOnGameState() {
 
 function setNewBoard() {
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
-  Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+  if (game.winner_color() !== undefined || resignedColor !== undefined) {
+    hideAllMoveStatuses();
+  } else {
+    Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+  }
   const locationsWithContent = game.locations_with_content();
   Board.removeItemsNotPresentIn(locationsWithContent);
   locationsWithContent.forEach((loc) => {
@@ -593,6 +601,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   }
 
   disableUndoAndResignControls();
+  hideAllMoveStatuses();
 
   Board.removeHighlights();
   Board.hideItemSelection();
