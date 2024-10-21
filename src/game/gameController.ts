@@ -609,16 +609,30 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 }
 
 export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameId: string) {
-  if (isGameOver && didConnect) {
-    return;
-  }
-
   if (!didConnect) {
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
     if (!isReconnect && !isGameOver) {
       playSounds([Sound.DidConnect]);
     }
+    return;
+  }
+
+  const isOpponentSide = !isWatchOnly || match.color === "black";
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
+  setupPlayerId(matchPlayerUid, isOpponentSide);
+
+  if (!isWatchOnly && match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
+    processedVoiceReactions.add(match.reaction.uuid);
+    const currentTime = Date.now();
+    if (currentTime - lastReactionTime > 5000) {
+      showVoiceReactionText(match.reaction.kind, true);
+      playReaction(match.reaction);
+      lastReactionTime = currentTime;
+    }
+  }
+
+  if (isGameOver) {
     return;
   }
 
@@ -653,22 +667,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
     }
   }
 
-  const isOpponentSide = !isWatchOnly || match.color === "black";
-  Board.updateEmojiIfNeeded(match.emojiId.toString(), isOpponentSide);
-  setupPlayerId(matchPlayerUid, isOpponentSide);
-
   if (match.status === "surrendered") {
     handleResignStatus(false, match.color);
-  }
-
-  if (!isWatchOnly && match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
-    processedVoiceReactions.add(match.reaction.uuid);
-    const currentTime = Date.now();
-    if (currentTime - lastReactionTime > 5000) {
-      showVoiceReactionText(match.reaction.kind, true);
-      playReaction(match.reaction);
-      lastReactionTime = currentTime;
-    }
   }
 }
 
