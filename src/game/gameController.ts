@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -58,13 +58,11 @@ export async function go() {
 
 export function didClickConfirmResignButton() {
   sendResignStatus();
-  // TODO: disable resign button
-  // TODO: add victory / resign icons to the score labels
-  // TODO: play game over music
+  handleResignStatus(false, "");
 }
 
 export function canHandleUndo(): boolean {
-  if (isWatchOnly) {
+  if (isWatchOnly || isGameOver) {
     return false;
   } else if (isOnlineGame) {
     return game.can_takeback(playerSideColor);
@@ -99,14 +97,14 @@ export function isPlayerSideTurn(): boolean {
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
-  if ((isOnlineGame && !didConnect) || isWatchOnly) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver) {
     return;
   }
   processInput(AssistedInputKind.None, inputModifier);
 }
 
 export function didClickSquare(location: Location) {
-  if ((isOnlineGame && !didConnect) || isWatchOnly) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver) {
     return;
   }
   processInput(AssistedInputKind.None, InputModifier.None, location);
@@ -534,6 +532,10 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
 
   setNewBoard();
   updateUndoButtonBasedOnGameState();
+
+  if (opponentMatch.status === "surrendered") {
+    handleResignStatus(true, opponentMatch.color);
+  }
 }
 
 function updateUndoButtonBasedOnGameState() {
@@ -565,15 +567,34 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
+function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
+  const justConfirmedResignYourself = resignSenderColor === "";
+  isGameOver = true;
+
+  if (!onConnect && !justConfirmedResignYourself) {
+    playSounds([Sound.Victory]);
+
+    setTimeout(() => {
+      // TODO: make it work correctly with the following victory attestation
+      const emoji = resignSenderColor === "white" ? "⚪️" : "⚫️";
+      alert(emoji + " resigned");
+    }, 420);
+  }
+
+  disableUndoAndResignControls();
+  // TODO: add victory / resign icons to the score labels
+  // TODO: if it is onConnect, there is a chance that one of the players matches is not loaded yet  
+}
+
 export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameId: string) {
-  if (isGameOver) {
+  if (isGameOver && didConnect) {
     return;
   }
 
   if (!didConnect) {
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
-    if (!isReconnect) {
+    if (!isReconnect && !isGameOver) {
       playSounds([Sound.DidConnect]);
     }
     return;
@@ -612,16 +633,7 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   setupPlayerId(matchPlayerUid, isOpponentSide);
 
   if (match.status === "surrendered") {
-    isGameOver = true;
-    setTimeout(() => {
-      // TODO: make it work correctly with the following victory attestation
-      
-      // TODO: disable resign button
-      // TODO: add victory / resign icons to the score labels
-      // TODO: play victory music
-      const emoji = match.color === "white" ? "⚪️" : "⚫️";
-      alert(emoji + " resigned");
-    }, 420);
+    handleResignStatus(false, match.color);
   }
 
   if (!isWatchOnly && match.reaction && match.reaction.uuid && !processedVoiceReactions.has(match.reaction.uuid)) {
@@ -644,6 +656,10 @@ export function didRecoverMyMatch(match: any, gameId: string) {
   const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
   Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
+
+  if (match.status === "surrendered") {
+    handleResignStatus(true, match.color);
+  }
 }
 
 export function enterWatchOnlyMode() {

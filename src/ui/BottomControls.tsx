@@ -135,6 +135,7 @@ const ResignButton = styled(ReactionButton)`
 
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
+let disableUndoAndResignControls: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
@@ -188,6 +189,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoDisabled(!enabled);
   };
 
+  disableUndoAndResignControls = () => {
+    setIsUndoDisabled(true);
+    actions.setIsResignDisabled(true);
+  };
+
   const handleResignClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setIsResignConfirmVisible(!isResignConfirmVisible);
@@ -238,4 +244,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls };
