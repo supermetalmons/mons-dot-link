@@ -1,15 +1,64 @@
 import { Sound } from "../utils/gameModels";
 import { getIsMuted } from "../ui/BottomControlsActions";
 
-const audioCache: { [key: string]: any } = {};
+const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+const audioBuffers: { [key: string]: AudioBuffer } = {};
+const playingSounds: { [key: string]: AudioBufferSourceNode } = {};
+const loadingPromises: { [key: string]: Promise<AudioBuffer> } = {};
 
-export function playReaction(reaction: any) {
+async function loadAudio(path: string): Promise<AudioBuffer> {
+  if (audioBuffers[path]) {
+    return audioBuffers[path];
+  }
+
+  if (loadingPromises[path]) {
+    return loadingPromises[path];
+  }
+
+  loadingPromises[path] = fetch(`/assets/${path}`)
+    .then((response) => response.arrayBuffer())
+    .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
+    .then((audioBuffer) => {
+      audioBuffers[path] = audioBuffer;
+      delete loadingPromises[path];
+      return audioBuffer;
+    });
+
+  return loadingPromises[path];
+}
+
+// TODO: try using it to make it work on ios
+function legacyPlay(path: string) {
+  let a = new Audio(`/assets/${path}`);
+  a.play().catch((_: any) => {
+    console.error("error playing sound");
+  });
+}
+
+function playSound(path: string) {
+  if (playingSounds[path]) {
+    playingSounds[path].stop();
+  }
+
+  const source = audioContext.createBufferSource();
+  source.buffer = audioBuffers[path];
+  source.connect(audioContext.destination);
+  source.start(0);
+  playingSounds[path] = source;
+
+  source.onended = () => {
+    delete playingSounds[path];
+  };
+}
+
+export async function playReaction(reaction: any) {
   if (getIsMuted()) {
     return;
   }
-  
+
   const path = `reactions/${reaction.kind}${reaction.variation}.wav`;
-  play(path);
+  await loadAudio(path);
+  playSound(path);
 }
 
 export function newReactionOfKind(kind: string): any {
@@ -35,7 +84,7 @@ export function newReactionOfKind(kind: string): any {
   return { uuid: uuid, variation: variation, kind: kind };
 }
 
-export function playSounds(sounds: Sound[]) {
+export async function playSounds(sounds: Sound[]) {
   if (getIsMuted()) {
     return;
   }
@@ -100,18 +149,9 @@ export function playSounds(sounds: Sound[]) {
     }
 
     const path = `sounds/${name}.wav`;
-    play(path);
+    await loadAudio(path);
+    playSound(path);
   }
-}
-
-function play(path: string) {
-  if (!audioCache[path]) {
-    audioCache[path] = new Audio(`/assets/${path}`);
-  }
-
-  audioCache[path].play().catch((_: any) => {
-    console.error("error playing sound");
-  });
 }
 
 const getSoundPriority = (sound: Sound) => {
