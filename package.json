@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^2.6.1",
-    "@rainbow-me/rainbowkit": "^2.1.6",
+    "@rainbow-me/rainbowkit": "latest",
     "@tanstack/react-query": "^5.56.2",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.108",
