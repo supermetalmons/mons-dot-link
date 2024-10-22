@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,15 +20,11 @@ const queryClient = new QueryClient();
 const App = () => {
   const { authStatus, setAuthStatus } = useAuthStatus();
   const authenticationAdapter = createAuthAdapter(setAuthStatus);
-  const [hasClickedConnect, setHasClickedConnect] = useState(false);
   const bottomControlsActions = useBottomControlsActions();
 
   const handleConnectClick = useCallback(() => {
-    if (!hasClickedConnect) {
-      signIn();
-      setHasClickedConnect(true);
-    }
-  }, [hasClickedConnect]);
+    signIn();
+  }, []);
 
   return (
     <WagmiProvider config={config}>
