@@ -55,32 +55,10 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   @media (prefers-color-scheme: dark) {
     background-color: #1e1e1e;
   }
-
-  a {
-    color: #000;
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    text-align: left;
-    width: 75%;
-
-    @media (prefers-color-scheme: dark) {
-      color: #f5f5f5;
-    }
-
-    &:hover {
-      background-color: #f8f8f8;
-
-      @media (prefers-color-scheme: dark) {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-    }
-  }
 `;
 
 const NewGameButton = styled.button`
-  background-color: #0071f9;
+  background-color: #0E76FD;
   height: 55px;
   text-align: left;
   color: #ffffff;
@@ -93,7 +71,15 @@ const NewGameButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #0056c1;
+    background-color: #0c66db;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #3898FF;
+
+    &:hover {
+      background-color: #4ca5ff;
+    }
   }
 `;
 
@@ -101,6 +87,20 @@ const IconRow = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 8px;
+
+  a {
+    color: #000;
+    text-decoration: none;
+    padding: 32px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    text-align: left;
+    width: 75%;
+
+    @media (prefers-color-scheme: dark) {
+      color: #f5f5f5;
+    }
+  }
 `;
 
 const IconLink = styled.a`
@@ -128,6 +128,38 @@ const IconLink = styled.a`
   img {
     width: 24px;
     height: 24px;
+  }
+`;
+
+const LinkRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+`;
+
+const LinkButton = styled.a`
+  flex: 1;
+  padding: 32px 0px;
+  text-align: center;
+  font-size: 0.55rem;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+
+    &:hover {
+      background-color: #3a3a3a;
+    }
   }
 `;
 
@@ -202,12 +234,17 @@ const MainMenu: React.FC = () => {
             </svg>
           </IconLink>
         </IconRow>
-        <a href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
-          mons gen1
-        </a>
-        <a href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
-          mons gen2
-        </a>
+        <LinkRow>
+          <LinkButton href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
+            gen 1
+          </LinkButton>
+          <LinkButton href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
+            gen 2
+          </LinkButton>
+          <LinkButton href="https://supermetalmons.com" target="_blank" rel="noopener noreferrer">
+            irl
+          </LinkButton>
+        </LinkRow>
       </RockMenu>
     </RockButtonContainer>
   );
