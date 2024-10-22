@@ -2,6 +2,103 @@ import React, { useState, useEffect, useRef } from "react";
 import { logoBase64 } from "../content/uiAssets";
 import { didClickInviteButton } from "../connection/connection";
 import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
+import styled from "styled-components";
+
+const RockButtonContainer = styled.div`
+  position: absolute;
+  top: 9pt;
+  left: 9pt;
+  z-index: 10;
+`;
+
+const RockButton = styled.div`
+  display: block;
+  background-color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1a1b1f;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 30px;
+    height: 30px;
+    opacity: 1;
+    display: block;
+  }
+`;
+
+const RockMenu = styled.div<{ isOpen: boolean }>`
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  min-width: 230px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  opacity: ${(props) => (props.isOpen ? 1 : 0)};
+  visibility: ${(props) => (props.isOpen ? "visible" : "hidden")};
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1e1e1e;
+  }
+
+  a,
+  button {
+    color: #000;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    text-align: left;
+    width: 75%;
+
+    @media (prefers-color-scheme: dark) {
+      color: #f5f5f5;
+    }
+
+    &:hover {
+      background-color: #f8f8f8;
+
+      @media (prefers-color-scheme: dark) {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  button {
+    color: #f5f5f5;
+    width: 93%;
+  }
+`;
+
+const NewGameButton = styled.button`
+  background-color: #0071f9;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+
+  &:hover {
+    background-color: #4699ff;
+  }
+`;
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,52 +139,46 @@ const MainMenu: React.FC = () => {
   }, [isMenuOpen]);
 
   return (
-    <div className="rock-button-container" ref={menuRef}>
-      <div
-        className="rock-button"
+    <RockButtonContainer ref={menuRef}>
+      <RockButton
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           toggleMenu();
         }}
-        onMouseEnter={() => setIsMenuOpen(true)}
-      >
+        onMouseEnter={() => setIsMenuOpen(true)}>
         <img src={logoBase64} alt="Rock" />
-      </div>
-      {isMenuOpen && (
-        <div className="rock-menu">
-          <button className="new-game-button" onClick={handleInviteClick} disabled={isInviteLoading}>
-            {isInviteLoading ? (
-              <span className="activity-indicator">loading...</span>
-            ) : (
-              // TODO: explicit responsive state "invite link is copied"
-              // TODO: show "loading mons game..." or similar text when appropriate
-              <span className="button-text" style={{ fontWeight: 777 }}>
-                {didCreateInvite ? "Copy Invite" : "New Game"}
-              </span>
-            )}
-          </button>
-          <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
-            github
-          </a>
-          <a href="https://apps.apple.com/app/id6446702971" target="_blank" rel="noopener noreferrer">
-            app store
-          </a>
-          <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" target="_blank" rel="noopener noreferrer">
-            steam
-          </a>
-          <a href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
-            x
-          </a>
-          <a href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
-            mons gen1
-          </a>
-          <a href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
-            mons gen2
-          </a>
-        </div>
-      )}
-    </div>
+      </RockButton>
+      <RockMenu isOpen={isMenuOpen}>
+        <NewGameButton onClick={handleInviteClick} disabled={isInviteLoading}>
+          {isInviteLoading ? (
+            <span className="activity-indicator">loading...</span>
+          ) : (
+            <span className="button-text" style={{ fontWeight: 777 }}>
+              {didCreateInvite ? "Copy Invite" : "New Game"}
+            </span>
+          )}
+        </NewGameButton>
+        <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
+          github
+        </a>
+        <a href="https://apps.apple.com/app/id6446702971" target="_blank" rel="noopener noreferrer">
+          app store
+        </a>
+        <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3210189942" target="_blank" rel="noopener noreferrer">
+          steam
+        </a>
+        <a href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
+          x
+        </a>
+        <a href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
+          mons gen1
+        </a>
+        <a href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
+          mons gen2
+        </a>
+      </RockMenu>
+    </RockButtonContainer>
   );
 };
 
