@@ -587,6 +587,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 
   if (justConfirmedResignYourself) {
     resignedColor = playerSideColor;
+    playSounds([Sound.Defeat]);
   } else {
     resignedColor = resignSenderColor === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   }
