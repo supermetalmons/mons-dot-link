@@ -62,7 +62,9 @@ const MainMenu: React.FC = () => {
             ) : (
               // TODO: explicit responsive state "invite link is copied"
               // TODO: show "loading mons game..." or similar text when appropriate
-              <span className="button-text">{didCreateInvite ? "Copy Invite" : "New Game"}</span>
+              <span className="button-text" style={{ fontWeight: 777 }}>
+                {didCreateInvite ? "Copy Invite" : "New Game"}
+              </span>
             )}
           </button>
           <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
