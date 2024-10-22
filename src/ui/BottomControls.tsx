@@ -5,6 +5,10 @@ import { BottomControlsActionsInterface } from "./BottomControlsActions";
 
 let latestModalOutsideTapDismissDate = Date.now();
 
+export function didDismissSomethingWithOutsideTapJustNow() {
+  latestModalOutsideTapDismissDate = Date.now();
+}
+
 export function didNotDismissAnythingWithOutsideTapJustNow(): boolean {
   let delta = Date.now() - latestModalOutsideTapDismissDate;
   return delta >= 42;
@@ -169,7 +173,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         (pickerRef.current && !pickerRef.current.contains(event.target as Node) && !voiceReactionButtonRef.current?.contains(event.target as Node)) ||
         (resignConfirmRef.current && !resignConfirmRef.current.contains(event.target as Node) && !resignButtonRef.current?.contains(event.target as Node))
       ) {
-        latestModalOutsideTapDismissDate = Date.now();
+        didDismissSomethingWithOutsideTapJustNow();
         hideReactionPicker();
         setIsResignConfirmVisible(false);
       }

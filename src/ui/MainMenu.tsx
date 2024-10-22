@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { logoBase64 } from "../content/uiAssets";
 import { didClickInviteButton } from "../connection/connection";
+import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,10 +27,10 @@ const MainMenu: React.FC = () => {
       }
     });
   };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        didDismissSomethingWithOutsideTapJustNow();
         setIsMenuOpen(false);
       }
     };
@@ -38,7 +39,7 @@ const MainMenu: React.FC = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isMenuOpen]);
 
   return (
     <div className="rock-button-container" ref={menuRef}>
