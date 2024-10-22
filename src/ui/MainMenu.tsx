@@ -56,8 +56,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
     background-color: #1e1e1e;
   }
 
-  a,
-  button {
+  a {
     color: #000;
     text-decoration: none;
     padding: 10px 16px;
@@ -78,25 +77,22 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
       }
     }
   }
-
-  button {
-    color: #f5f5f5;
-    width: 93%;
-  }
 `;
 
 const NewGameButton = styled.button`
   background-color: #0071f9;
-  color: #1e1e1e;
+  text-align: left;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 10px 16px;
   cursor: pointer;
   font-size: 1.2rem;
   font-weight: 600;
+  transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #4699ff;
+    background-color: #0056c1;
   }
 `;
 
