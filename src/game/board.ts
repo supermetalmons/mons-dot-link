@@ -570,7 +570,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
     nameText.addEventListener("click", (event) => {
       event.stopPropagation();
-      if (canRedirectToEthAddress(isOpponent)) {
+      if (canRedirectToEthAddress(isOpponent) && didNotDismissAnythingWithOutsideTapJustNow()) {
         redirectToEthAddress(isOpponent);
         SVG.setFill(nameText, colors.scoreText);
       }
