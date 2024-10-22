@@ -51,7 +51,6 @@ const MainMenu: React.FC = () => {
           toggleMenu();
         }}
         onMouseEnter={() => setIsMenuOpen(true)}
-        // onMouseLeave={() => setIsMenuOpen(false)} // TODO: auto-close when cursor is far away
       >
         <img src={logoBase64} alt="Rock" />
       </div>
@@ -63,7 +62,7 @@ const MainMenu: React.FC = () => {
             ) : (
               // TODO: explicit responsive state "invite link is copied"
               // TODO: show "loading mons game..." or similar text when appropriate
-              <span className="button-text">{didCreateInvite ? "copy invite" : "new game"}</span>
+              <span className="button-text">{didCreateInvite ? "Copy Invite" : "New Game"}</span>
             )}
           </button>
           <a href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
