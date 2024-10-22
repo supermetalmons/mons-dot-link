@@ -4,16 +4,14 @@ import { startPlayingMusic, stopPlayingMusic } from "../content/music";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
 import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
+import { hideReactionPicker } from "./BottomControls";
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
-  isReactionPickerVisible: boolean;
   handleUndo: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleMuteToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleResign: (event: MouseEvent | React.MouseEvent<HTMLButtonElement>) => void;
-  handleVoiceReaction: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleReactionSelect: (reaction: string) => void;
-  hideReactionPicker: () => void;
   setIsUndoDisabled: (disabled: boolean) => void;
   setIsResignDisabled: (disabled: boolean) => void;
   isVoiceReactionDisabled: boolean;
@@ -27,7 +25,6 @@ let globalIsMuted = localStorage.getItem("isMuted") === "true";
 
 export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const [isMuted, setIsMuted] = useState(globalIsMuted);
-  const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
   const [isUndoDisabled, setIsUndoDisabled] = useState(true);
   const [isResignDisabled, setIsResignDisabled] = useState(false);
@@ -55,13 +52,8 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     didClickConfirmResignButton();
   }, []);
 
-  const handleVoiceReaction = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setIsReactionPickerVisible((prev) => !prev);
-  }, []);
-
   const handleReactionSelect = useCallback((reaction: string) => {
-    setIsReactionPickerVisible(false);
+    hideReactionPicker();
     const reactionObj = newReactionOfKind(reaction);
     sendVoiceReaction(reactionObj);
     playReaction(reactionObj);
@@ -70,10 +62,6 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     setTimeout(() => {
       setIsVoiceReactionDisabled(false);
     }, 9999);
-  }, []);
-
-  const hideReactionPicker = useCallback(() => {
-    setIsReactionPickerVisible(false);
   }, []);
 
   const handleMusicToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -91,13 +79,10 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   return {
     isMuted,
-    isReactionPickerVisible,
     handleUndo,
     handleMuteToggle,
     handleResign,
-    handleVoiceReaction,
     handleReactionSelect,
-    hideReactionPicker,
     setIsUndoDisabled,
     setIsResignDisabled,
     isVoiceReactionDisabled,

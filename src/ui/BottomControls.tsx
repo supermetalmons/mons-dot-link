@@ -140,26 +140,14 @@ const ResignButton = styled(ReactionButton)`
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableUndoAndResignControls: () => void;
+let hideReactionPicker: () => void;
+let toggleReactionPicker: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
+  const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
-  const { 
-    isMuted, 
-    isReactionPickerVisible, 
-    handleUndo, 
-    handleMuteToggle, 
-    handleResign, 
-    handleVoiceReaction, 
-    handleReactionSelect, 
-    hideReactionPicker, 
-    setIsUndoDisabled,
-    isVoiceReactionDisabled, 
-    isUndoDisabled,
-    isResignDisabled,
-    isMusicPlaying,
-    handleMusicToggle
-  } = actions;
+  const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -169,12 +157,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       event.stopPropagation();
-      if (
-        (pickerRef.current && !pickerRef.current.contains(event.target as Node) && !voiceReactionButtonRef.current?.contains(event.target as Node)) ||
-        (resignConfirmRef.current && !resignConfirmRef.current.contains(event.target as Node) && !resignButtonRef.current?.contains(event.target as Node))
-      ) {
+      if ((pickerRef.current && !pickerRef.current.contains(event.target as Node) && !voiceReactionButtonRef.current?.contains(event.target as Node)) || (resignConfirmRef.current && !resignConfirmRef.current.contains(event.target as Node) && !resignButtonRef.current?.contains(event.target as Node))) {
         didDismissSomethingWithOutsideTapJustNow();
-        hideReactionPicker();
+        setIsReactionPickerVisible(false);
         setIsResignConfirmVisible(false);
       }
     };
@@ -183,7 +168,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [hideReactionPicker]);
+  }, []);
 
   showGameRelatedBottomControls = () => {
     setShowOtherControls(true);
@@ -198,13 +183,21 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     actions.setIsResignDisabled(true);
   };
 
+  hideReactionPicker = () => {
+    setIsReactionPickerVisible(false);
+  };
+
+  toggleReactionPicker = () => {
+    setIsReactionPickerVisible(prev => !prev);
+  };
+
   const handleResignClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setIsResignConfirmVisible(!isResignConfirmVisible);
   };
 
   const handleConfirmResign = () => {
-    const event = new MouseEvent('click') as unknown as React.MouseEvent<HTMLButtonElement>;
+    const event = new MouseEvent("click") as unknown as React.MouseEvent<HTMLButtonElement>;
     setIsResignConfirmVisible(false);
     handleResign(event);
   };
@@ -219,7 +212,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
             <FaFlag />
           </ControlButton>
-          <ControlButton onClick={handleVoiceReaction} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
+          <ControlButton onClick={toggleReactionPicker} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
             <FaCommentAlt />
           </ControlButton>
         </>
@@ -248,4 +241,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls, hideReactionPicker };
