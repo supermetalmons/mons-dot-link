@@ -27,14 +27,6 @@ async function loadAudio(path: string): Promise<AudioBuffer> {
   return loadingPromises[path];
 }
 
-// TODO: try using it to make it work on ios
-function legacyPlay(path: string) {
-  let a = new Audio(`/assets/${path}`);
-  a.play().catch((_: any) => {
-    console.error("error playing sound");
-  });
-}
-
 function playSound(path: string) {
   if (playingSounds[path]) {
     playingSounds[path].stop();
