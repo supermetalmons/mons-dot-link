@@ -3,7 +3,7 @@ import { getIsMuted } from "../ui/BottomControlsActions";
 
 const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 const audioBuffers: { [key: string]: AudioBuffer } = {};
-const playingSounds: { [key: string]: AudioBufferSourceNode } = {};
+const playingSounds: { [key: string]: AudioBufferSourceNode[] } = {};
 const loadingPromises: { [key: string]: Promise<AudioBuffer> } = {};
 
 async function loadAudio(path: string): Promise<AudioBuffer> {
@@ -28,18 +28,29 @@ async function loadAudio(path: string): Promise<AudioBuffer> {
 }
 
 function playSound(path: string) {
-  if (playingSounds[path]) {
-    playingSounds[path].stop();
+  if (!playingSounds[path]) {
+    playingSounds[path] = [];
+  }
+
+  if (playingSounds[path].length >= 7) {
+    return;
   }
 
   const source = audioContext.createBufferSource();
   source.buffer = audioBuffers[path];
   source.connect(audioContext.destination);
   source.start(0);
-  playingSounds[path] = source;
+
+  playingSounds[path].push(source);
 
   source.onended = () => {
-    delete playingSounds[path];
+    const index = playingSounds[path].indexOf(source);
+    if (index > -1) {
+      playingSounds[path].splice(index, 1);
+    }
+    if (playingSounds[path].length === 0) {
+      delete playingSounds[path];
+    }
   };
 }
 
