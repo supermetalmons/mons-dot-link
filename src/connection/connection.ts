@@ -70,6 +70,14 @@ export async function verifyEthAddress(message: string, signature: string): Prom
   return firebaseConnection.verifyEthAddress(message, signature);
 }
 
+export async function startTimer(gameId: string): Promise<any> {
+  return firebaseConnection.startTimer(gameId);
+}
+
+export async function claimVictoryByTimer(gameId: string): Promise<any> {
+  return firebaseConnection.claimVictoryByTimer(gameId);
+}
+
 export async function prepareOnchainVictoryTx(gameId: string): Promise<any> {
   return firebaseConnection.prepareOnchainVictoryTx(gameId);
 }

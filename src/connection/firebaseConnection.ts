@@ -48,6 +48,34 @@ class FirebaseConnection {
     });
   }
 
+  public async startTimer(gameId: string): Promise<any> {
+    try {
+      const { getFunctions, httpsCallable } = await import("firebase/functions");
+      const functions = getFunctions(this.app);
+      const startTimerFunction = httpsCallable(functions, "startTimer");
+      const response = await startTimerFunction({ gameId });
+      console.log("startTimer response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error starting a timer", error);
+      throw error;
+    }
+  }
+
+  public async claimVictoryByTimer(gameId: string): Promise<any> {
+    try {
+      const { getFunctions, httpsCallable } = await import("firebase/functions");
+      const functions = getFunctions(this.app);
+      const claimVictoryByTimerFunction = httpsCallable(functions, "claimVictoryByTimer");
+      const response = await claimVictoryByTimerFunction({ gameId });
+      console.log("claimVictoryByTimer response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error claiming victory by timer", error);
+      throw error;
+    }
+  }
+
   public async prepareOnchainVictoryTx(gameId: string): Promise<any> {
     try {
       const { getFunctions, httpsCallable } = await import("firebase/functions");
