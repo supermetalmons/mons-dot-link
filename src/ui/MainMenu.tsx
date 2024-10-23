@@ -66,11 +66,16 @@ const NewGameButton = styled.button`
   cursor: pointer;
   font-size: 1.2rem;
   font-weight: 600;
+  transition: background-color 0.1s ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       background-color: #0c66db;
     }
+  }
+
+  &:active {
+    background-color: #0a56b9;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -80,6 +85,10 @@ const NewGameButton = styled.button`
       &:hover {
         background-color: #4ca5ff;
       }
+    }
+
+    &:active {
+      background-color: #2688f0;
     }
   }
 `;
