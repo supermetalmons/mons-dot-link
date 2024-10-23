@@ -1,6 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import ReactDOM from "react-dom/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -68,8 +68,4 @@ const App = () => {
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+root.render(<App />);
