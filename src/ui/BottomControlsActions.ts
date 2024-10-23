@@ -3,7 +3,7 @@ import { newReactionOfKind, playReaction } from "../content/sounds";
 import { startPlayingMusic, stopPlayingMusic } from "../content/music";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
-import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
+import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo, didClickStartTimerButton } from "../game/gameController";
 import { hideReactionPicker } from "./BottomControls";
 
 export interface BottomControlsActionsInterface {
@@ -43,6 +43,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleMuteToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    // didClickStartTimerButton(); // TODO: dev tmp, call with a timer button handler
     setIsMuted((prev) => !prev);
   }, []);
 

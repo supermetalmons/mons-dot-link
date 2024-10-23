@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection } from "../connection/connection";
+import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls, setTimerControlVisible } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
@@ -57,6 +57,12 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
+export function didClickStartTimerButton() {
+  if (isOnlineGame && !isWatchOnly) {
+    startTimer(getCurrentGameId());
+  }
+}
+
 export function didClickConfirmResignButton() {
   sendResignStatus();
   handleResignStatus(false, "");
@@ -76,7 +82,7 @@ export function didClickUndoButton() {
   if (canHandleUndo()) {
     const output = game.takeback();
     applyOutput(output, false, AssistedInputKind.None);
-  }  
+  }
 }
 
 export function canChangeEmoji(opponents: boolean): boolean {
