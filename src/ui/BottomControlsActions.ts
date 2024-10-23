@@ -43,7 +43,6 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleMuteToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    // didClickStartTimerButton(); // TODO: dev tmp, call with a timer button handler
     setIsMuted((prev) => !prev);
   }, []);
 
