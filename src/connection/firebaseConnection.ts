@@ -84,12 +84,18 @@ class FirebaseConnection {
 
   public updateEmoji(newId: number) {
     this.myMatch.emojiId = newId;
-    this.sendMatchUpdate();
+    const db = getDatabase(this.app);
+    set(ref(db, `players/${this.uid}/matches/${this.gameId}/emojiId`), newId)
+      .then(() => {})
+      .catch(() => {});
   }
 
   public sendVoiceReaction(reaction: any) {
     this.myMatch.reaction = reaction;
-    this.sendMatchUpdate();
+    const db = getDatabase(this.app);
+    set(ref(db, `players/${this.uid}/matches/${this.gameId}/reaction`), reaction)
+      .then(() => {})
+      .catch(() => {});
   }
 
   public surrender() {
