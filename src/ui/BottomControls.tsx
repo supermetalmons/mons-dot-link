@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop } from "react-icons/fa";
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 
 let latestModalOutsideTapDismissDate = Date.now();
@@ -139,11 +139,13 @@ const ResignButton = styled(ReactionButton)`
 
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
+let setTimerControlVisible: (visible: boolean) => void;
 let disableUndoAndResignControls: () => void;
 let hideReactionPicker: () => void;
 let toggleReactionPicker: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
+  const [isTimerControlVisible, setIsTimerControlVisible] = useState(false);
   const [showOtherControls, setShowOtherControls] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
@@ -174,6 +176,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setShowOtherControls(true);
   };
 
+  setTimerControlVisible = (visible: boolean) => {
+    setIsTimerControlVisible(visible);
+  };
+
   setUndoEnabled = (enabled: boolean) => {
     setIsUndoDisabled(!enabled);
   };
@@ -188,7 +194,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   toggleReactionPicker = () => {
-    setIsReactionPickerVisible(prev => !prev);
+    setIsReactionPickerVisible((prev) => !prev);
   };
 
   const handleResignClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -204,9 +210,15 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
-        <FaUndo />
-      </ControlButton>
+      {isTimerControlVisible ? (
+        <ControlButton disabled aria-label="Timer">
+          <FaHourglass />
+        </ControlButton>
+      ) : (
+        <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
+          <FaUndo />
+        </ControlButton>
+      )}
       {showOtherControls && (
         <>
           <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
@@ -241,4 +253,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls, hideReactionPicker };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setTimerControlVisible, disableUndoAndResignControls, hideReactionPicker };
