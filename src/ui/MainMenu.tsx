@@ -24,8 +24,10 @@ const RockButton = styled.div`
     background-color: #1a1b1f;
   }
 
-  &:hover {
-    transform: scale(1.05);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 
   img {
@@ -58,7 +60,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
 `;
 
 const NewGameButton = styled.button`
-  background-color: #0E76FD;
+  background-color: #0e76fd;
   height: 55px;
   text-align: left;
   color: #ffffff;
@@ -70,15 +72,19 @@ const NewGameButton = styled.button`
   font-weight: 600;
   transition: background-color 0.3s ease;
 
-  &:hover {
-    background-color: #0c66db;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #0c66db;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: #3898FF;
+    background-color: #3898ff;
 
-    &:hover {
-      background-color: #4ca5ff;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #4ca5ff;
+      }
     }
   }
 `;
@@ -113,15 +119,18 @@ const IconLink = styled.a`
   background-color: #f0f0f0;
   transition: background-color 0.3s ease;
 
-  &:hover {
-    background-color: #e0e0e0;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #e0e0e0;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
     background-color: #2a2a2a;
 
-    &:hover {
-      background-color: #3a3a3a;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #3a3a3a;
     }
   }
 
@@ -149,16 +158,20 @@ const LinkButton = styled.a`
   text-decoration: none;
   transition: background-color 0.3s ease;
 
-  &:hover {
-    background-color: #e0e0e0;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #e0e0e0;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
     background-color: #2a2a2a;
     color: #f5f5f5;
 
-    &:hover {
-      background-color: #3a3a3a;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #3a3a3a;
+      }
     }
   }
 `;
