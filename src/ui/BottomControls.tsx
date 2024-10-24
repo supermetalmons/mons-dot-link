@@ -183,11 +183,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       setIsTimerButtonDisabled(true);
       timerEnableTimeout = setTimeout(() => {
         setIsTimerButtonDisabled(false);
-      }, 5000);
-      claimVictoryTimeout = setTimeout(() => {
-        setIsClaimVictoryVisible(true);
-        setIsClaimVictoryButtonDisabled(false);
-      }, 15000);
+      }, 90000);
     } else {
       setIsTimerButtonDisabled(true);
       setIsClaimVictoryVisible(false);
@@ -243,9 +239,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     event.stopPropagation();
     didClickStartTimerButton();
     setIsTimerButtonDisabled(true);
-    setTimeout(() => {
-      setIsTimerButtonDisabled(false);
-    }, 15000);
   };
 
   const handleClaimVictoryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
