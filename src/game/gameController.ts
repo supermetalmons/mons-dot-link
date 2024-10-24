@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -625,6 +625,14 @@ function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string) 
       if (game.turn_number() === turnNumber) {
         const delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
         showTimer(timerColor, delta);
+        if (!isWatchOnly && !isPlayerSideTurn()) {
+          // TODO: prevent startTimer getting reenabled when there is ongoing claim timer
+          setTimeout(() => {
+            if (game.turn_number() === turnNumber) {
+              enableTimerVictoryClaim();
+            }
+          }, delta * 1000);
+        }
       }
     }
   }
