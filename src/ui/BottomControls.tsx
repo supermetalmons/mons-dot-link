@@ -152,6 +152,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
   const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(true);
   const [isClaimVictoryVisible, setIsClaimVictoryVisible] = useState(false);
+  const [isClaimVictoryButtonDisabled, setIsClaimVictoryButtonDisabled] = useState(false);
   const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -185,6 +186,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       }, 5000);
       claimVictoryTimeout = setTimeout(() => {
         setIsClaimVictoryVisible(true);
+        setIsClaimVictoryButtonDisabled(false);
       }, 15000);
     } else {
       setIsTimerButtonDisabled(true);
@@ -249,6 +251,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const handleClaimVictoryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     didClickClaimVictoryByTimerButton();
+    setIsClaimVictoryButtonDisabled(true);
   };
 
   const handleConfirmResign = () => {
@@ -262,7 +265,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       {isTimerControlVisible ? (
         <>
           {isClaimVictoryVisible && (
-            <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory">
+            <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
               <FaTrophy />
             </ControlButton>
           )}
