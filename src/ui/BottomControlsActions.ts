@@ -3,7 +3,7 @@ import { newReactionOfKind, playReaction } from "../content/sounds";
 import { startPlayingMusic, stopPlayingMusic } from "../content/music";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
-import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo, didClickStartTimerButton } from "../game/gameController";
+import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
 import { hideReactionPicker } from "./BottomControls";
 
 export interface BottomControlsActionsInterface {

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
+import { didClickStartTimerButton } from "../game/gameController";
 
 let latestModalOutsideTapDismissDate = Date.now();
 
@@ -202,6 +203,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsResignConfirmVisible(!isResignConfirmVisible);
   };
 
+  const handleTimerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    didClickStartTimerButton();
+  };
+
   const handleConfirmResign = () => {
     const event = new MouseEvent("click") as unknown as React.MouseEvent<HTMLButtonElement>;
     setIsResignConfirmVisible(false);
@@ -211,7 +217,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   return (
     <ControlsContainer>
       {isTimerControlVisible ? (
-        <ControlButton disabled aria-label="Timer">
+        <ControlButton onClick={handleTimerClick} aria-label="Timer">
           <FaHourglass />
         </ControlButton>
       ) : (
