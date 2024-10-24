@@ -329,6 +329,14 @@ export function removeItem(location: Location) {
   }
 }
 
+export function showTimer(color: string, remainingSeconds: number) {
+  // TODO: implement
+}
+
+export function hideTimers() {
+  // TODO: implement
+}
+
 export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
   const victorySuffix = " 🏅";
   const surrenderSuffix = " 🏳️";
