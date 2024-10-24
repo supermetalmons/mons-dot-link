@@ -577,7 +577,7 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
 
   if (match.status === "surrendered") {
     handleResignStatus(true, match.color);
-  } else if (!isWatchOnly) {
+  } else if (!isWatchOnly && !isGameOver) {
     setStartTimerVisible(!isPlayerSideTurn());
   }
 
