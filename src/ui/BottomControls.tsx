@@ -140,13 +140,14 @@ const ResignButton = styled(ReactionButton)`
 
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
-let setTimerControlVisible: (visible: boolean) => void;
+let setStartTimerVisible: (visible: boolean) => void;
 let disableUndoResignAndTimerControls: () => void;
 let hideReactionPicker: () => void;
 let toggleReactionPicker: () => void;
+let enableTimerVictoryClaim: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
-  const [isTimerControlVisible, setIsTimerControlVisible] = useState(false);
+  const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [showOtherControls, setShowOtherControls] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
@@ -178,38 +179,36 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   useEffect(() => {
     let timerEnableTimeout: NodeJS.Timeout | null = null;
-    let claimVictoryTimeout: NodeJS.Timeout | null = null;
-    if (isTimerControlVisible) {
-      setIsTimerButtonDisabled(true);
+    setIsTimerButtonDisabled(true);
+    if (isStartTimerVisible) {
       timerEnableTimeout = setTimeout(() => {
         setIsTimerButtonDisabled(false);
       }, 90000);
     } else {
-      setIsTimerButtonDisabled(true);
-      setIsClaimVictoryVisible(false);
       if (timerEnableTimeout) {
         clearTimeout(timerEnableTimeout);
-      }
-      if (claimVictoryTimeout) {
-        clearTimeout(claimVictoryTimeout);
       }
     }
     return () => {
       if (timerEnableTimeout) {
         clearTimeout(timerEnableTimeout);
       }
-      if (claimVictoryTimeout) {
-        clearTimeout(claimVictoryTimeout);
-      }
     };
-  }, [isTimerControlVisible]);
+  }, [isStartTimerVisible]);
 
   showGameRelatedBottomControls = () => {
     setShowOtherControls(true);
   };
 
-  setTimerControlVisible = (visible: boolean) => {
-    setIsTimerControlVisible(visible);
+  setStartTimerVisible = (visible: boolean) => {
+    setIsStartTimerVisible(visible);
+    setIsClaimVictoryVisible(false);
+  };
+
+  enableTimerVictoryClaim = () => {
+    setIsClaimVictoryVisible(true);
+    setIsStartTimerVisible(false);
+    setIsClaimVictoryButtonDisabled(false);
   };
 
   setUndoEnabled = (enabled: boolean) => {
@@ -218,7 +217,8 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   disableUndoResignAndTimerControls = () => {
     setIsUndoDisabled(true);
-    setIsTimerControlVisible(false);
+    setIsStartTimerVisible(false);
+    setIsClaimVictoryVisible(false);
     actions.setIsResignDisabled(true);
   };
 
@@ -255,16 +255,18 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      {isTimerControlVisible ? (
+      {isStartTimerVisible || isClaimVictoryVisible ? (
         <>
           {isClaimVictoryVisible && (
             <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
               <FaTrophy />
             </ControlButton>
           )}
-          <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
-            <FaHourglass />
-          </ControlButton>
+          {isStartTimerVisible && (
+            <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
+              <FaHourglass />
+            </ControlButton>
+          )}
         </>
       ) : (
         <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
@@ -305,4 +307,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setTimerControlVisible, disableUndoResignAndTimerControls, hideReactionPicker };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setStartTimerVisible, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim };

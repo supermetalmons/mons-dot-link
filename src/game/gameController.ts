@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setTimerControlVisible } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -342,7 +342,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               if (playerTurn) {
                 popOpponentsEmoji = true;
               }
-              setTimerControlVisible(!playerTurn);
+              setStartTimerVisible(!playerTurn);
             }
             hideTimers();
             break;
@@ -578,7 +578,7 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   if (match.status === "surrendered") {
     handleResignStatus(true, match.color);
   } else if (!isWatchOnly) {
-    setTimerControlVisible(!isPlayerSideTurn());
+    setStartTimerVisible(!isPlayerSideTurn());
   }
 
   updateDisplayedTimerIfNeeded(true, match);
