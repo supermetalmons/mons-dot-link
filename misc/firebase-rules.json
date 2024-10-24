@@ -37,8 +37,8 @@
               ".validate": "newData.isString() && (!data.exists() || newData.val().contains(data.val()))"
             },
             "timer": {
-              ".write": "(auth != null && auth.uid === $userId && newData.val() === '') || (auth != null && auth.token.admin === true)",
-              ".validate": "newData.isString() && (newData.val() === '' || (auth != null && auth.token.admin === true))"
+              ".write": "(auth != null && auth.uid === $userId && (newData.val() === '' || newData.val() === data.val())) || (auth != null && auth.token.admin === true)",
+              ".validate": "newData.isString() && (newData.val() === '' || newData.val() === data.val() || (auth != null && auth.token.admin === true))"
             },
             ".validate": "!data.exists() || ((!data.child('flatMovesString').exists() || (data.child('flatMovesString').exists() && (data.child('fen').val() === newData.child('fen').val() || (data.child('fen').val() != newData.child('fen').val() && data.child('flatMovesString').val() != newData.child('flatMovesString').val())))) && (data.child('flatMovesString').exists() || data.child('fen').exists() && !data.child('flatMovesString').exists() && !newData.child('flatMovesString').exists()))"
           }

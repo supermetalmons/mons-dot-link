@@ -225,7 +225,7 @@ function redirectToEthAddress(opponent: boolean) {
 }
 
 export function removeItemsNotPresentIn(locations: Location[]) {
-  const locationSet = new Set(locations.map(location => inBoardCoordinates(location).toString()));
+  const locationSet = new Set(locations.map((location) => inBoardCoordinates(location).toString()));
 
   for (const key in items) {
     if (!locationSet.has(key)) {
@@ -281,7 +281,7 @@ export function resetForNewGame() {
 
 export function hideAllMoveStatuses() {
   const allMoveStatusItems = [...opponentMoveStatusItems, ...playerMoveStatusItems];
-  allMoveStatusItems.forEach(item => SVG.setHidden(item, true));
+  allMoveStatusItems.forEach((item) => SVG.setHidden(item, true));
 }
 
 export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
@@ -331,21 +331,50 @@ export function removeItem(location: Location) {
   }
 }
 
+let countdownInterval: NodeJS.Timeout | null = null;
+let activeTimer: SVGElement | null = null;
+
 export function showTimer(color: string, remainingSeconds: number) {
   // TODO: make sure it is called only when the board isFlipped correctly for the game, i.e. when both players matches are processed
+
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
-  if (playerSideTimer) {
-    playerTimer.textContent = remainingSeconds.toString() + "s";
-    SVG.setHidden(playerTimer, false);
-  } else {
-    opponentTimer.textContent = remainingSeconds.toString() + "s";
-    SVG.setHidden(opponentTimer, false);
+  const timerElement = playerSideTimer ? playerTimer : opponentTimer;
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
   }
+
+  if (activeTimer && activeTimer !== timerElement) {
+    SVG.setHidden(activeTimer, true);
+  }
+
+  activeTimer = timerElement;
+  updateTimerDisplay(timerElement, remainingSeconds);
+  SVG.setHidden(timerElement, false);
+
+  countdownInterval = setInterval(() => {
+    remainingSeconds--;
+    if (remainingSeconds <= 0) {
+      clearInterval(countdownInterval!);
+      countdownInterval = null;
+    }
+    updateTimerDisplay(timerElement, remainingSeconds);
+  }, 1000);
+}
+
+function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
+  timerElement.textContent = `${Math.max(0, seconds)}s`;
 }
 
 export function hideTimers() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
   SVG.setHidden(playerTimer, true);
   SVG.setHidden(opponentTimer, true);
+  activeTimer = null;
 }
 
 export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
