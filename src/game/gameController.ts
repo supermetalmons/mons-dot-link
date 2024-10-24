@@ -5,8 +5,8 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls, setTimerControlVisible } from "../ui/BottomControls";
+import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -27,6 +27,7 @@ let blackFlatMovesString: string | null = null;
 let game;
 let playerSideColor;
 let resignedColor;
+let winnerByTimerColor;
 
 let lastReactionTime = 0;
 let isGameOver = false;
@@ -57,9 +58,27 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
-export function didClickStartTimerButton() {
+export function didClickClaimVictoryByTimerButton() {
   if (isOnlineGame && !isWatchOnly) {
-    startTimer(getCurrentGameId());
+    claimVictoryByTimer(getCurrentGameId())
+      .then((res) => {
+        if (res.ok) {
+          handleVictoryByTimer(false, playerSideColor === MonsWeb.Color.White ? "white" : "black", true);
+        }
+      })
+      .catch(() => {});
+  }
+}
+
+export function didClickStartTimerButton() {
+  if (isOnlineGame && !isWatchOnly && !isPlayerSideTurn()) {
+    startTimer(getCurrentGameId())
+      .then((res) => {
+        if (res.ok) {
+          showTimerCountdown(false, res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black");
+        }
+      })
+      .catch(() => {});
   }
 }
 
@@ -253,7 +272,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
-            Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
+            Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
             break;
           case MonsWeb.EventModelKind.MysticAction:
             sounds.push(Sound.MysticAbility);
@@ -323,8 +342,9 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               if (playerTurn) {
                 popOpponentsEmoji = true;
               }
-              setTimerControlVisible(!playerTurn);
+              setStartTimerVisible(!playerTurn);
             }
+            hideTimers();
             break;
           case MonsWeb.EventModelKind.Takeback:
             setNewBoard();
@@ -357,7 +377,8 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
 
             isGameOver = true;
-            disableUndoAndResignControls();
+            disableUndoResignAndTimerControls();
+            hideTimers();
             break;
         }
       }
@@ -509,7 +530,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string) {
+function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -518,45 +539,102 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
     showGameRelatedBottomControls();
   }
 
-  Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color === "black" : true);
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), isWatchOnly ? match.color === "black" : true);
 
   if (isWatchOnly) {
     playerSideColor = MonsWeb.Color.White;
-    setupPlayerId(matchPlayerUid, opponentMatch.color === "black");
+    setupPlayerId(matchPlayerUid, match.color === "black");
   } else {
-    playerSideColor = opponentMatch.color === "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+    playerSideColor = match.color === "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
     setupPlayerId(matchPlayerUid, true);
   }
 
   if (!isWatchOnly) {
-    Board.setBoardFlipped(opponentMatch.color === "white");
+    Board.setBoardFlipped(match.color === "white");
   }
 
-  if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
-    game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+  if (!isReconnect || (isReconnect && !game.is_later_than(match.fen)) || isWatchOnly) {
+    game = MonsWeb.MonsGameModel.from_fen(match.fen);
     if (game.winner_color() !== undefined) {
-      disableUndoAndResignControls();
+      disableUndoResignAndTimerControls();
+      hideTimers();
     }
   }
 
-  verifyMovesIfNeeded(gameId, opponentMatch.flatMovesString, opponentMatch.color);
+  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
 
   if (isReconnect || isWatchOnly) {
-    const movesCount = movesCountOfMatch(opponentMatch);
-    setProcessedMovesCountForColor(opponentMatch.color, movesCount);
+    const movesCount = movesCountOfMatch(match);
+    setProcessedMovesCountForColor(match.color, movesCount);
   }
 
-  if (opponentMatch.reaction && opponentMatch.reaction.uuid) {
-    processedVoiceReactions.add(opponentMatch.reaction.uuid);
+  if (match.reaction && match.reaction.uuid) {
+    processedVoiceReactions.add(match.reaction.uuid);
   }
 
   setNewBoard();
   updateUndoButtonBasedOnGameState();
 
-  if (opponentMatch.status === "surrendered") {
-    handleResignStatus(true, opponentMatch.color);
-  } else if (!isWatchOnly) {
-    setTimerControlVisible(!isPlayerSideTurn());
+  if (match.status === "surrendered") {
+    handleResignStatus(true, match.color);
+  } else if (!isWatchOnly && !isGameOver) {
+    setStartTimerVisible(!isPlayerSideTurn());
+  }
+
+  updateDisplayedTimerIfNeeded(true, match);
+}
+
+let blackTimerStash: string | null = null;
+let whiteTimerStash: string | null = null;
+
+function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
+  if (match.color === "white") {
+    whiteTimerStash = match.timer;
+  } else {
+    blackTimerStash = match.timer;
+  }
+
+  if (isReconnect || isWatchOnly) {
+    if (blackTimerStash === null || whiteTimerStash === null) {
+      return;
+    }
+  }
+
+  let timer = "";
+  let timerColor = "";
+  const activeColor = game.active_color();
+  if (activeColor === MonsWeb.Color.Black) {
+    timer = whiteTimerStash;
+    timerColor = "white";
+  } else if (activeColor === MonsWeb.Color.White) {
+    timer = blackTimerStash;
+    timerColor = "black";
+  } else {
+    return;
+  }
+
+  showTimerCountdown(onConnect, timer, timerColor);
+}
+
+function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string) {
+  if (timer === "gg") {
+    handleVictoryByTimer(onConnect, timerColor, false);
+  } else if (timer && typeof timer === "string") {
+    const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
+    if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
+      if (game.turn_number() === turnNumber) {
+        const delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
+        showTimer(timerColor, delta);
+        if (!isWatchOnly && !isPlayerSideTurn()) {
+          // TODO: prevent startTimer getting reenabled when there is ongoing claim timer
+          setTimeout(() => {
+            if (game.turn_number() === turnNumber) {
+              enableTimerVictoryClaim();
+            }
+          }, delta * 1000);
+        }
+      }
+    }
   }
 }
 
@@ -565,7 +643,7 @@ function updateUndoButtonBasedOnGameState() {
 }
 
 function setNewBoard() {
-  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
   if (game.winner_color() !== undefined || resignedColor !== undefined) {
     hideAllMoveStatuses();
   } else {
@@ -593,6 +671,42 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
+function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaimedByYourself: boolean) {
+  isGameOver = true;
+
+  hideTimers();
+  disableUndoResignAndTimerControls();
+  hideAllMoveStatuses();
+
+  Board.removeHighlights();
+  Board.hideItemSelection();
+
+  winnerByTimerColor = winnerColor === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+
+  if (justClaimedByYourself) {
+    playSounds([Sound.Victory]);
+    if (hasBothEthAddresses()) {
+      setTimeout(() => {
+        suggestSavingOnchainRating(false);
+      }, 420);
+    } else {
+      setTimeout(() => {
+        alert("🎉 you win");
+      }, 420);
+    }
+  } else if (!onConnect) {
+    setTimeout(() => {
+      const emoji = winnerColor === "white" ? "⚪️" : "⚫️";
+      alert(emoji + " wins");
+    }, 420);
+
+    if (!isWatchOnly) {
+      playSounds([Sound.Defeat]);
+    }
+  }
+}
+
 function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   const justConfirmedResignYourself = resignSenderColor === "";
   isGameOver = true;
@@ -616,15 +730,16 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
     }
   }
 
-  disableUndoAndResignControls();
+  hideTimers();
+  disableUndoResignAndTimerControls();
   hideAllMoveStatuses();
 
   Board.removeHighlights();
   Board.hideItemSelection();
-  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
 }
 
-export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameId: string) {
+export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
   if (!didConnect) {
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
@@ -659,7 +774,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
       if (game.winner_color() !== undefined) {
-        disableUndoAndResignControls();
+        disableUndoResignAndTimerControls();
+        hideTimers();
       }
       setNewBoard();
     }
@@ -688,6 +804,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (match.status === "surrendered") {
     handleResignStatus(didNotHaveBothMatchesSetupBeforeThisUpdate, match.color);
   }
+
+  updateDisplayedTimerIfNeeded(didNotHaveBothMatchesSetupBeforeThisUpdate, match);
 }
 
 export function didRecoverMyMatch(match: any, gameId: string) {
@@ -696,7 +814,8 @@ export function didRecoverMyMatch(match: any, gameId: string) {
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
   if (game.winner_color() !== undefined) {
-    disableUndoAndResignControls();
+    disableUndoResignAndTimerControls();
+    hideTimers();
   }
   verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
   const movesCount = movesCountOfMatch(match);
@@ -706,6 +825,8 @@ export function didRecoverMyMatch(match: any, gameId: string) {
   if (match.status === "surrendered") {
     handleResignStatus(true, match.color);
   }
+
+  updateDisplayedTimerIfNeeded(true, match);
 }
 
 export function enterWatchOnlyMode() {

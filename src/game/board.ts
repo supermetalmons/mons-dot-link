@@ -63,6 +63,8 @@ let opponentNameText: SVGElement | undefined;
 let playerNameText: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
+let opponentTimer: SVGElement | undefined;
+let playerTimer: SVGElement | undefined;
 let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
 
@@ -223,7 +225,7 @@ function redirectToEthAddress(opponent: boolean) {
 }
 
 export function removeItemsNotPresentIn(locations: Location[]) {
-  const locationSet = new Set(locations.map(location => inBoardCoordinates(location).toString()));
+  const locationSet = new Set(locations.map((location) => inBoardCoordinates(location).toString()));
 
   for (const key in items) {
     if (!locationSet.has(key)) {
@@ -279,7 +281,7 @@ export function resetForNewGame() {
 
 export function hideAllMoveStatuses() {
   const allMoveStatusItems = [...opponentMoveStatusItems, ...playerMoveStatusItems];
-  allMoveStatusItems.forEach(item => SVG.setHidden(item, true));
+  allMoveStatusItems.forEach((item) => SVG.setHidden(item, true));
 }
 
 export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
@@ -329,18 +331,64 @@ export function removeItem(location: Location) {
   }
 }
 
+let countdownInterval: NodeJS.Timeout | null = null;
+let activeTimer: SVGElement | null = null;
+
 export function showTimer(color: string, remainingSeconds: number) {
-  // TODO: implement
+  const playerSideTimer = isFlipped ? color === "white" : color === "black";
+  const timerElement = playerSideTimer ? playerTimer : opponentTimer;
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
+  if (activeTimer && activeTimer !== timerElement) {
+    SVG.setHidden(activeTimer, true);
+  }
+
+  activeTimer = timerElement;
+  updateTimerDisplay(timerElement, remainingSeconds);
+  SVG.setHidden(timerElement, false);
+
+  const endTime = Date.now() + remainingSeconds * 1000;
+
+  countdownInterval = setInterval(() => {
+    const currentTime = Date.now();
+    remainingSeconds = Math.max(0, Math.round((endTime - currentTime) / 1000));
+    if (remainingSeconds <= 0) {
+      clearInterval(countdownInterval!);
+      countdownInterval = null;
+    }
+    updateTimerDisplay(timerElement, remainingSeconds);
+  }, 1000);
+}
+
+function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
+  const displayValue = Math.max(0, seconds);
+  if (displayValue <= 10) {
+    SVG.setFill(timerElement, "red");
+  } else if (displayValue <= 30) {
+    SVG.setFill(timerElement, "orange");
+  } else {
+    SVG.setFill(timerElement, "green");
+  }
+  timerElement.textContent = `${displayValue}s`;
 }
 
 export function hideTimers() {
-  // TODO: implement
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+  SVG.setHidden(playerTimer, true);
+  SVG.setHidden(opponentTimer, true);
+  activeTimer = null;
 }
 
-export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
+export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color, winByTimerColor?: MonsWeb.Color) {
   const victorySuffix = " 🏅";
   const surrenderSuffix = " 🏳️";
-  // const outOfTimeSuffix = " ⌛️";
 
   let whiteSuffix = "";
   let blackSuffix = "";
@@ -353,6 +401,12 @@ export function updateScore(white: number, black: number, winnerColor?: MonsWeb.
     }
   } else if (winnerColor !== null && winnerColor !== undefined) {
     if (winnerColor === MonsWeb.Color.Black) {
+      blackSuffix = victorySuffix;
+    } else {
+      whiteSuffix = victorySuffix;
+    }
+  } else if (winByTimerColor !== null && winByTimerColor !== undefined) {
+    if (winByTimerColor === MonsWeb.Color.Black) {
       blackSuffix = victorySuffix;
     } else {
       whiteSuffix = victorySuffix;
@@ -529,6 +583,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       SVG.offsetX(opponentScoreText, delta);
       SVG.offsetX(playerNameText, delta);
       SVG.offsetX(opponentNameText, delta);
+      SVG.offsetX(playerTimer, delta);
+      SVG.offsetX(opponentTimer, delta);
 
       for (const item of opponentMoveStatusItems) {
         SVG.offsetX(item, -delta);
@@ -564,6 +620,20 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       opponentScoreText = numberText;
     } else {
       playerScoreText = numberText;
+    }
+
+    const timerText = document.createElementNS(SVG.ns, "text");
+    SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+    SVG.setFill(timerText, "green");
+    SVG.setOpacity(timerText, 0.69);
+    timerText.setAttribute("font-size", "0.5");
+    timerText.setAttribute("font-weight", "600");
+    timerText.textContent = "";
+    controlsLayer.append(timerText);
+    if (isOpponent) {
+      opponentTimer = timerText;
+    } else {
+      playerTimer = timerText;
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");

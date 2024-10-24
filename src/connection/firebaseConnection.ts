@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
-import { didUpdateOpponentMatch, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
+import { didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 
 const controllerVersion = 2;
@@ -54,9 +54,6 @@ class FirebaseConnection {
       const functions = getFunctions(this.app);
       const startTimerFunction = httpsCallable(functions, "startTimer");
       const response = await startTimerFunction({ gameId });
-      console.log("startTimer response:", response.data);
-      const delta = ((response.data as { targetTimestamp: number }).targetTimestamp - Date.now()) / 1000;
-      console.log("time delta", delta);
       return response.data;
     } catch (error) {
       console.error("Error starting a timer", error);
@@ -364,7 +361,7 @@ class FirebaseConnection {
         const matchData = snapshot.val();
         console.log(matchData);
         if (matchData) {
-          didUpdateOpponentMatch(matchData, playerId, matchId);
+          didReceiveMatchUpdate(matchData, playerId, matchId);
         }
       },
       (error) => {
