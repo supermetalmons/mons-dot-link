@@ -83,8 +83,14 @@ export function didClickClaimVictoryByTimerButton() {
 }
 
 export function didClickStartTimerButton() {
-  if (isOnlineGame && !isWatchOnly) {
-    startTimer(getCurrentGameId());
+  if (isOnlineGame && !isWatchOnly && !isPlayerSideTurn()) {
+    startTimer(getCurrentGameId())
+      .then((res) => {
+        if (res.ok) {
+          showTimerCountdown(res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black");
+        }
+      })
+      .catch(() => {});
   }
 }
 
@@ -616,9 +622,13 @@ function updateDisplayedTimerIfNeeded(match: any) {
   } else {
     return;
   }
+  
+  showTimerCountdown(timer, timerColor);
+}
 
-  // TODO: process "win" timer value too
+function showTimerCountdown(timer: any, timerColor: string) {
   // TODO: do nothing when the same timer is already displayed
+  // TODO: process "gg" timer value too
 
   if (timer && typeof timer === "string") {
     const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
@@ -687,7 +697,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
     }
   }
 
-  // TODO: stop and hide timers if any
+  hideTimers();
   disableUndoAndResignControls();
   hideAllMoveStatuses();
 
@@ -781,7 +791,7 @@ export function didRecoverMyMatch(match: any, gameId: string) {
     handleResignStatus(true, match.color);
   }
 
-  updateDisplayedTimerIfNeeded(match); // TODO: might be too early to display a timer. gotta remember if it is there though
+  updateDisplayedTimerIfNeeded(match);
 }
 
 export function enterWatchOnlyMode() {
