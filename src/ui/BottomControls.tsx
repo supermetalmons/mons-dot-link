@@ -174,6 +174,26 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
+  useEffect(() => {
+    let timerEnableTimeout: NodeJS.Timeout | null = null;
+    if (isTimerControlVisible) {
+      setIsTimerButtonDisabled(true);
+      timerEnableTimeout = setTimeout(() => {
+        setIsTimerButtonDisabled(false);
+      }, 5000);
+    } else {
+      setIsTimerButtonDisabled(true);
+      if (timerEnableTimeout) {
+        clearTimeout(timerEnableTimeout);
+      }
+    }
+    return () => {
+      if (timerEnableTimeout) {
+        clearTimeout(timerEnableTimeout);
+      }
+    };
+  }, [isTimerControlVisible]);
+
   showGameRelatedBottomControls = () => {
     setShowOtherControls(true);
   };
