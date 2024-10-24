@@ -280,6 +280,7 @@ class FirebaseConnection {
           fen: initialFen,
           status: "playing",
           flatMovesString: "",
+          timer: "",
         };
 
         this.myMatch = match;
@@ -326,6 +327,7 @@ class FirebaseConnection {
       fen: initialFen,
       status: "waiting",
       flatMovesString: "",
+      timer: "",
     };
 
     this.myMatch = match;
