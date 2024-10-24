@@ -59,7 +59,26 @@ export async function go() {
 
 export function didClickClaimVictoryByTimerButton() {
   if (isOnlineGame && !isWatchOnly) {
-    claimVictoryByTimer(getCurrentGameId());
+    claimVictoryByTimer(getCurrentGameId())
+      .then((res) => {
+        if (res.ok) {
+          // TODO: update ui for the victory – hide some game elements
+          // TODO: play victory sound
+          // TODO: refactor victory code making sure it acts the same for all victory events
+          if (hasBothEthAddresses()) {
+            setTimeout(() => {
+              suggestSavingOnchainRating(false);
+            }, 420);
+          } else {
+            setTimeout(() => {
+              alert("you win"); // TODO: use default victory text
+            }, 420);
+          }
+          isGameOver = true;
+          disableUndoAndResignControls();
+        }
+      })
+      .catch(() => {});
   }
 }
 
@@ -569,7 +588,7 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
   updateDisplayedTimerIfNeeded(opponentMatch);
 }
 
-function updateDisplayedTimerIfNeeded(match: any) {  
+function updateDisplayedTimerIfNeeded(match: any) {
   // TODO: !!! there are all kinds of errors when it is processed too early
   // TODO: make sure not to show anything when it is too early – i.e. did not get both matches yet
 
@@ -577,8 +596,8 @@ function updateDisplayedTimerIfNeeded(match: any) {
   // TODO: might want to use this match value though after receiving another match and confirming timer validity
   // TODO: do nothing when the same timer is already displayed
   const timer = match.timer;
-  if (timer && typeof timer === 'string') {
-    const [turnNumber, targetTimestamp] = timer.split(';').map(Number);
+  if (timer && typeof timer === "string") {
+    const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
     if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
       if (game.turn_number() === turnNumber) {
         const delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
