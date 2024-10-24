@@ -335,9 +335,6 @@ let countdownInterval: NodeJS.Timeout | null = null;
 let activeTimer: SVGElement | null = null;
 
 export function showTimer(color: string, remainingSeconds: number) {
-  // TODO: do nothing when the same timer is already displayed
-  // TODO: make countdown work correctly when walking away from the page and getting back later
-
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
   const timerElement = playerSideTimer ? playerTimer : opponentTimer;
 
@@ -354,8 +351,11 @@ export function showTimer(color: string, remainingSeconds: number) {
   updateTimerDisplay(timerElement, remainingSeconds);
   SVG.setHidden(timerElement, false);
 
+  const endTime = Date.now() + remainingSeconds * 1000;
+
   countdownInterval = setInterval(() => {
-    remainingSeconds--;
+    const currentTime = Date.now();
+    remainingSeconds = Math.max(0, Math.round((endTime - currentTime) / 1000));
     if (remainingSeconds <= 0) {
       clearInterval(countdownInterval!);
       countdownInterval = null;
