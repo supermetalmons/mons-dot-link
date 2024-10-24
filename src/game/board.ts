@@ -364,7 +364,15 @@ export function showTimer(color: string, remainingSeconds: number) {
 }
 
 function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
-  timerElement.textContent = `${Math.max(0, seconds)}s`;
+  const displayValue = Math.max(0, seconds);
+  if (displayValue <= 10) {
+    SVG.setFill(timerElement, "red");
+  } else if (displayValue <= 30) {
+    SVG.setFill(timerElement, "orange");
+  } else {
+    SVG.setFill(timerElement, "green");
+  }
+  timerElement.textContent = `${displayValue}s`;
 }
 
 export function hideTimers() {
