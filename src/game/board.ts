@@ -63,6 +63,8 @@ let opponentNameText: SVGElement | undefined;
 let playerNameText: SVGElement | undefined;
 let opponentScoreText: SVGElement | undefined;
 let playerScoreText: SVGElement | undefined;
+let opponentTimer: SVGElement | undefined;
+let playerTimer: SVGElement | undefined;
 let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
 
@@ -330,11 +332,20 @@ export function removeItem(location: Location) {
 }
 
 export function showTimer(color: string, remainingSeconds: number) {
-  // TODO: implement
+  // TODO: make sure it is called only when the board isFlipped correctly for the game, i.e. when both players matches are processed
+  const playerSideTimer = isFlipped ? color === "white" : color === "black";
+  if (playerSideTimer) {
+    playerTimer.textContent = remainingSeconds.toString() + "s";
+    SVG.setHidden(playerTimer, false);
+  } else {
+    opponentTimer.textContent = remainingSeconds.toString() + "s";
+    SVG.setHidden(opponentTimer, false);
+  }
 }
 
 export function hideTimers() {
-  // TODO: implement
+  SVG.setHidden(playerTimer, true);
+  SVG.setHidden(opponentTimer, true);
 }
 
 export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
@@ -529,6 +540,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       SVG.offsetX(opponentScoreText, delta);
       SVG.offsetX(playerNameText, delta);
       SVG.offsetX(opponentNameText, delta);
+      SVG.offsetX(playerTimer, delta);
+      SVG.offsetX(opponentTimer, delta);
 
       for (const item of opponentMoveStatusItems) {
         SVG.offsetX(item, -delta);
@@ -564,6 +577,20 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       opponentScoreText = numberText;
     } else {
       playerScoreText = numberText;
+    }
+
+    const timerText = document.createElementNS(SVG.ns, "text");
+    SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+    SVG.setFill(timerText, "green");
+    SVG.setOpacity(timerText, 0.69);
+    timerText.setAttribute("font-size", "0.5");
+    timerText.setAttribute("font-weight", "600");
+    timerText.textContent = "";
+    controlsLayer.append(timerText);
+    if (isOpponent) {
+      opponentTimer = timerText;
+    } else {
+      playerTimer = timerText;
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");

@@ -325,6 +325,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               }
               setTimerControlVisible(!playerTurn);
             }
+            hideTimers();
             break;
           case MonsWeb.EventModelKind.Takeback:
             setNewBoard();
@@ -558,6 +559,27 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
   } else if (!isWatchOnly) {
     setTimerControlVisible(!isPlayerSideTurn());
   }
+
+  updateDisplayedTimerIfNeeded(opponentMatch);
+}
+
+function updateDisplayedTimerIfNeeded(match: any) {  
+  // TODO: !!! there are all kinds of errors when it is processed too early
+  // TODO: make sure not to show anything when it is too early – i.e. did not get both matches yet
+
+  // TODO: process "win" timer value too
+  // TODO: might want to use this match value though after receiving another match and confirming timer validity
+  // TODO: do nothing when the same timer is already displayed
+  const timer = match.timer;
+  if (timer && typeof timer === 'string') {
+    const [turnNumber, targetTimestamp] = timer.split(';').map(Number);
+    if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
+      if (game.turn_number() === turnNumber) {
+        const delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
+        showTimer(match.color, delta);
+      }
+    }
+  }
 }
 
 function updateUndoButtonBasedOnGameState() {
@@ -688,6 +710,8 @@ export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameI
   if (match.status === "surrendered") {
     handleResignStatus(didNotHaveBothMatchesSetupBeforeThisUpdate, match.color);
   }
+
+  updateDisplayedTimerIfNeeded(match);
 }
 
 export function didRecoverMyMatch(match: any, gameId: string) {
@@ -706,6 +730,8 @@ export function didRecoverMyMatch(match: any, gameId: string) {
   if (match.status === "surrendered") {
     handleResignStatus(true, match.color);
   }
+
+  updateDisplayedTimerIfNeeded(match);
 }
 
 export function enterWatchOnlyMode() {

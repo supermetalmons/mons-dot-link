@@ -55,8 +55,6 @@ class FirebaseConnection {
       const startTimerFunction = httpsCallable(functions, "startTimer");
       const response = await startTimerFunction({ gameId });
       console.log("startTimer response:", response.data);
-      const delta = ((response.data as { targetTimestamp: number }).targetTimestamp - Date.now()) / 1000;
-      console.log("time delta", delta);
       return response.data;
     } catch (error) {
       console.error("Error starting a timer", error);
