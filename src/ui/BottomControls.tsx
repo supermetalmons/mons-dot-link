@@ -150,6 +150,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
+  const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(false);
   const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -206,6 +207,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const handleTimerClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     didClickStartTimerButton();
+    setIsTimerButtonDisabled(true);
+    setTimeout(() => {
+      setIsTimerButtonDisabled(false);
+    }, 15000);
   };
 
   const handleConfirmResign = () => {
@@ -217,7 +222,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   return (
     <ControlsContainer>
       {isTimerControlVisible ? (
-        <ControlButton onClick={handleTimerClick} aria-label="Timer">
+        <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
           <FaHourglass />
         </ControlButton>
       ) : (
