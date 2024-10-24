@@ -588,20 +588,44 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   updateDisplayedTimerIfNeeded(match);
 }
 
+let blackTimerStash: string | null = null;
+let whiteTimerStash: string | null = null;
+
 function updateDisplayedTimerIfNeeded(match: any) {
-  // TODO: !!! there are all kinds of errors when it is processed too early
-  // TODO: make sure not to show anything when it is too early – i.e. did not get both matches yet
+  if (match.color === "white") {
+    whiteTimerStash = match.timer;
+  } else {
+    blackTimerStash = match.timer;
+  }
+
+  if (isReconnect || isWatchOnly) {
+    if (blackTimerStash === null || whiteTimerStash === null) {
+      return;
+    }
+  }
+
+  let timer = "";
+  let timerColor = "";
+  const activeColor = game.active_color();
+  if (activeColor === MonsWeb.Color.Black) {
+    timer = whiteTimerStash;
+    timerColor = "white";
+  } else if (activeColor === MonsWeb.Color.White) {
+    timer = blackTimerStash;
+    timerColor = "black";
+  } else {
+    return;
+  }
 
   // TODO: process "win" timer value too
-  // TODO: might want to use this match value though after receiving another match and confirming timer validity
   // TODO: do nothing when the same timer is already displayed
-  const timer = match.timer;
+
   if (timer && typeof timer === "string") {
     const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
     if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
       if (game.turn_number() === turnNumber) {
         const delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
-        showTimer(match.color, delta);
+        showTimer(timerColor, delta);
       }
     }
   }

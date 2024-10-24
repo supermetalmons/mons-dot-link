@@ -335,7 +335,6 @@ let countdownInterval: NodeJS.Timeout | null = null;
 let activeTimer: SVGElement | null = null;
 
 export function showTimer(color: string, remainingSeconds: number) {
-  // TODO: make sure it is called only when the board isFlipped correctly for the game, i.e. when both players matches are processed
   // TODO: make countdown work correctly when walking away from the page and getting back later
 
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
