@@ -63,7 +63,7 @@ export function didClickClaimVictoryByTimerButton() {
     claimVictoryByTimer(getCurrentGameId())
       .then((res) => {
         if (res.ok) {
-          handleVictoryByTimer(playerSideColor === MonsWeb.Color.White ? "white" : "black", true);
+          handleVictoryByTimer(false, playerSideColor === MonsWeb.Color.White ? "white" : "black", true);
         }
       })
       .catch(() => {});
@@ -75,7 +75,7 @@ export function didClickStartTimerButton() {
     startTimer(getCurrentGameId())
       .then((res) => {
         if (res.ok) {
-          showTimerCountdown(res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black");
+          showTimerCountdown(false, res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black");
         }
       })
       .catch(() => {});
@@ -581,13 +581,13 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
     setTimerControlVisible(!isPlayerSideTurn());
   }
 
-  updateDisplayedTimerIfNeeded(match);
+  updateDisplayedTimerIfNeeded(true, match);
 }
 
 let blackTimerStash: string | null = null;
 let whiteTimerStash: string | null = null;
 
-function updateDisplayedTimerIfNeeded(match: any) {
+function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
   if (match.color === "white") {
     whiteTimerStash = match.timer;
   } else {
@@ -613,12 +613,12 @@ function updateDisplayedTimerIfNeeded(match: any) {
     return;
   }
 
-  showTimerCountdown(timer, timerColor);
+  showTimerCountdown(onConnect, timer, timerColor);
 }
 
-function showTimerCountdown(timer: any, timerColor: string) {
+function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string) {
   if (timer === "gg") {
-    handleVictoryByTimer(timerColor, false);
+    handleVictoryByTimer(onConnect, timerColor, false);
   } else if (timer && typeof timer === "string") {
     const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
     if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
@@ -663,22 +663,7 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
-function handleVictoryByTimer(winnerColor: string, justClaimedByYourself: boolean) {
-  if (justClaimedByYourself) {
-    if (hasBothEthAddresses()) {
-      setTimeout(() => {
-        suggestSavingOnchainRating(false);
-      }, 420);
-    } else {
-      setTimeout(() => {
-        alert("🎉 you win");
-      }, 420);
-    }
-  }
-
-  // TODO: play victory sounds
-  // TODO: show other necessary victory alerts – not only when justClaimedByYourself
-
+function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaimedByYourself: boolean) {
   isGameOver = true;
 
   hideTimers();
@@ -690,6 +675,28 @@ function handleVictoryByTimer(winnerColor: string, justClaimedByYourself: boolea
 
   winnerByTimerColor = winnerColor === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+
+  if (justClaimedByYourself) {
+    playSounds([Sound.Victory]);
+    if (hasBothEthAddresses()) {
+      setTimeout(() => {
+        suggestSavingOnchainRating(false);
+      }, 420);
+    } else {
+      setTimeout(() => {
+        alert("🎉 you win");
+      }, 420);
+    }
+  } else if (!onConnect) {
+    setTimeout(() => {
+      const emoji = winnerColor === "white" ? "⚪️" : "⚫️";
+      alert(emoji + " wins");
+    }, 420);
+
+    if (!isWatchOnly) {
+      playSounds([Sound.Defeat]);
+    }
+  }
 }
 
 function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
@@ -790,7 +797,7 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
     handleResignStatus(didNotHaveBothMatchesSetupBeforeThisUpdate, match.color);
   }
 
-  updateDisplayedTimerIfNeeded(match);
+  updateDisplayedTimerIfNeeded(didNotHaveBothMatchesSetupBeforeThisUpdate, match);
 }
 
 export function didRecoverMyMatch(match: any, gameId: string) {
@@ -811,7 +818,7 @@ export function didRecoverMyMatch(match: any, gameId: string) {
     handleResignStatus(true, match.color);
   }
 
-  updateDisplayedTimerIfNeeded(match);
+  updateDisplayedTimerIfNeeded(true, match);
 }
 
 export function enterWatchOnlyMode() {
