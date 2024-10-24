@@ -150,7 +150,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [showOtherControls, setShowOtherControls] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
-  const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(false);
+  const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(true);
   const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
