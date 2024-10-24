@@ -335,6 +335,7 @@ let countdownInterval: NodeJS.Timeout | null = null;
 let activeTimer: SVGElement | null = null;
 
 export function showTimer(color: string, remainingSeconds: number) {
+  // TODO: do nothing when the same timer is already displayed
   // TODO: make countdown work correctly when walking away from the page and getting back later
 
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
@@ -385,12 +386,9 @@ export function hideTimers() {
   activeTimer = null;
 }
 
-export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
-  // TODO: handle outOfTimeColor
-
+export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color, winByTimerColor?: MonsWeb.Color) {
   const victorySuffix = " 🏅";
   const surrenderSuffix = " 🏳️";
-  // const outOfTimeSuffix = " ⌛️";
 
   let whiteSuffix = "";
   let blackSuffix = "";
@@ -403,6 +401,12 @@ export function updateScore(white: number, black: number, winnerColor?: MonsWeb.
     }
   } else if (winnerColor !== null && winnerColor !== undefined) {
     if (winnerColor === MonsWeb.Color.Black) {
+      blackSuffix = victorySuffix;
+    } else {
+      whiteSuffix = victorySuffix;
+    }
+  } else if (winByTimerColor !== null && winByTimerColor !== undefined) {
+    if (winByTimerColor === MonsWeb.Color.Black) {
       blackSuffix = victorySuffix;
     } else {
       whiteSuffix = victorySuffix;

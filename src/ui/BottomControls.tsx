@@ -141,7 +141,7 @@ const ResignButton = styled(ReactionButton)`
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let setTimerControlVisible: (visible: boolean) => void;
-let disableUndoAndResignControls: () => void;
+let disableUndoResignAndTimerControls: () => void;
 let hideReactionPicker: () => void;
 let toggleReactionPicker: () => void;
 
@@ -218,8 +218,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoDisabled(!enabled);
   };
 
-  disableUndoAndResignControls = () => {
+  disableUndoResignAndTimerControls = () => {
     setIsUndoDisabled(true);
+    setIsTimerControlVisible(false);
     actions.setIsResignDisabled(true);
   };
 
@@ -308,4 +309,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setTimerControlVisible, disableUndoAndResignControls, hideReactionPicker };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setTimerControlVisible, disableUndoResignAndTimerControls, hideReactionPicker };

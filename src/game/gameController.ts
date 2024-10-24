@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls, setTimerControlVisible } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setTimerControlVisible } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -27,6 +27,7 @@ let blackFlatMovesString: string | null = null;
 let game;
 let playerSideColor;
 let resignedColor;
+let winnerByTimerColor;
 
 let lastReactionTime = 0;
 let isGameOver = false;
@@ -62,20 +63,7 @@ export function didClickClaimVictoryByTimerButton() {
     claimVictoryByTimer(getCurrentGameId())
       .then((res) => {
         if (res.ok) {
-          // TODO: update ui for the victory – hide some game elements
-          // TODO: play victory sound
-          // TODO: refactor victory code making sure it acts the same for all victory events
-          if (hasBothEthAddresses()) {
-            setTimeout(() => {
-              suggestSavingOnchainRating(false);
-            }, 420);
-          } else {
-            setTimeout(() => {
-              alert("you win"); // TODO: use default victory text
-            }, 420);
-          }
-          isGameOver = true;
-          disableUndoAndResignControls();
+          handleVictoryByTimer(playerSideColor === MonsWeb.Color.White ? "white" : "black", true);
         }
       })
       .catch(() => {});
@@ -284,7 +272,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
-            Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
+            Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
             break;
           case MonsWeb.EventModelKind.MysticAction:
             sounds.push(Sound.MysticAbility);
@@ -389,7 +377,8 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
 
             isGameOver = true;
-            disableUndoAndResignControls();
+            disableUndoResignAndTimerControls();
+            hideTimers();
             break;
         }
       }
@@ -567,7 +556,8 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   if (!isReconnect || (isReconnect && !game.is_later_than(match.fen)) || isWatchOnly) {
     game = MonsWeb.MonsGameModel.from_fen(match.fen);
     if (game.winner_color() !== undefined) {
-      disableUndoAndResignControls();
+      disableUndoResignAndTimerControls();
+      hideTimers();
     }
   }
 
@@ -622,15 +612,14 @@ function updateDisplayedTimerIfNeeded(match: any) {
   } else {
     return;
   }
-  
+
   showTimerCountdown(timer, timerColor);
 }
 
 function showTimerCountdown(timer: any, timerColor: string) {
-  // TODO: do nothing when the same timer is already displayed
-  // TODO: process "gg" timer value too
-
-  if (timer && typeof timer === "string") {
+  if (timer === "gg") {
+    handleVictoryByTimer(timerColor, false);
+  } else if (timer && typeof timer === "string") {
     const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
     if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
       if (game.turn_number() === turnNumber) {
@@ -646,7 +635,7 @@ function updateUndoButtonBasedOnGameState() {
 }
 
 function setNewBoard() {
-  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
   if (game.winner_color() !== undefined || resignedColor !== undefined) {
     hideAllMoveStatuses();
   } else {
@@ -674,6 +663,35 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
+function handleVictoryByTimer(winnerColor: string, justClaimedByYourself: boolean) {
+  if (justClaimedByYourself) {
+    if (hasBothEthAddresses()) {
+      setTimeout(() => {
+        suggestSavingOnchainRating(false);
+      }, 420);
+    } else {
+      setTimeout(() => {
+        alert("🎉 you win");
+      }, 420);
+    }
+  }
+
+  // TODO: play victory sounds
+  // TODO: show other necessary victory alerts – not only when justClaimedByYourself
+
+  isGameOver = true;
+
+  hideTimers();
+  disableUndoResignAndTimerControls();
+  hideAllMoveStatuses();
+
+  Board.removeHighlights();
+  Board.hideItemSelection();
+
+  winnerByTimerColor = winnerColor === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+}
+
 function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   const justConfirmedResignYourself = resignSenderColor === "";
   isGameOver = true;
@@ -698,12 +716,12 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   }
 
   hideTimers();
-  disableUndoAndResignControls();
+  disableUndoResignAndTimerControls();
   hideAllMoveStatuses();
 
   Board.removeHighlights();
   Board.hideItemSelection();
-  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
+  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
 }
 
 export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
@@ -741,7 +759,8 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
     if (!game.is_later_than(match.fen)) {
       game = MonsWeb.MonsGameModel.from_fen(match.fen);
       if (game.winner_color() !== undefined) {
-        disableUndoAndResignControls();
+        disableUndoResignAndTimerControls();
+        hideTimers();
       }
       setNewBoard();
     }
@@ -780,7 +799,8 @@ export function didRecoverMyMatch(match: any, gameId: string) {
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   game = MonsWeb.MonsGameModel.from_fen(match.fen);
   if (game.winner_color() !== undefined) {
-    disableUndoAndResignControls();
+    disableUndoResignAndTimerControls();
+    hideTimers();
   }
   verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
   const movesCount = movesCountOfMatch(match);
