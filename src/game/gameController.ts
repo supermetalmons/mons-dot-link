@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer } from "../connection/connection";
+import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoAndResignControls, setTimerControlVisible } from "../ui/BottomControls";
 
 export let isWatchOnly = false;
@@ -55,6 +55,12 @@ export async function go() {
   }
 
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
+}
+
+export function didClickClaimVictoryByTimerButton() {
+  if (isOnlineGame && !isWatchOnly) {
+    claimVictoryByTimer(getCurrentGameId());
+  }
 }
 
 export function didClickStartTimerButton() {

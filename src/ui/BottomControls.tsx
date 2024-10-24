@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass } from "react-icons/fa";
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
-import { didClickStartTimerButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton } from "../game/gameController";
 
 let latestModalOutsideTapDismissDate = Date.now();
 
@@ -151,6 +151,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
   const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(true);
+  const [isClaimVictoryVisible, setIsClaimVictoryVisible] = useState(false);
   const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -176,20 +177,31 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   useEffect(() => {
     let timerEnableTimeout: NodeJS.Timeout | null = null;
+    let claimVictoryTimeout: NodeJS.Timeout | null = null;
     if (isTimerControlVisible) {
       setIsTimerButtonDisabled(true);
       timerEnableTimeout = setTimeout(() => {
         setIsTimerButtonDisabled(false);
       }, 5000);
+      claimVictoryTimeout = setTimeout(() => {
+        setIsClaimVictoryVisible(true);
+      }, 15000);
     } else {
       setIsTimerButtonDisabled(true);
+      setIsClaimVictoryVisible(false);
       if (timerEnableTimeout) {
         clearTimeout(timerEnableTimeout);
+      }
+      if (claimVictoryTimeout) {
+        clearTimeout(claimVictoryTimeout);
       }
     }
     return () => {
       if (timerEnableTimeout) {
         clearTimeout(timerEnableTimeout);
+      }
+      if (claimVictoryTimeout) {
+        clearTimeout(claimVictoryTimeout);
       }
     };
   }, [isTimerControlVisible]);
@@ -233,6 +245,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     }, 15000);
   };
 
+  const handleClaimVictoryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    didClickClaimVictoryByTimerButton();
+  };
+
   const handleConfirmResign = () => {
     const event = new MouseEvent("click") as unknown as React.MouseEvent<HTMLButtonElement>;
     setIsResignConfirmVisible(false);
@@ -242,9 +259,16 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   return (
     <ControlsContainer>
       {isTimerControlVisible ? (
-        <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
-          <FaHourglass />
-        </ControlButton>
+        <>
+          {isClaimVictoryVisible && (
+            <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory">
+              <FaTrophy />
+            </ControlButton>
+          )}
+          <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
+            <FaHourglass />
+          </ControlButton>
+        </>
       ) : (
         <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
           <FaUndo />
