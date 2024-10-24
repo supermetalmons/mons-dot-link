@@ -535,7 +535,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string) {
+function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -544,48 +544,48 @@ function didConnectTo(opponentMatch: any, matchPlayerUid: string, gameId: string
     showGameRelatedBottomControls();
   }
 
-  Board.updateEmojiIfNeeded(opponentMatch.emojiId.toString(), isWatchOnly ? opponentMatch.color === "black" : true);
+  Board.updateEmojiIfNeeded(match.emojiId.toString(), isWatchOnly ? match.color === "black" : true);
 
   if (isWatchOnly) {
     playerSideColor = MonsWeb.Color.White;
-    setupPlayerId(matchPlayerUid, opponentMatch.color === "black");
+    setupPlayerId(matchPlayerUid, match.color === "black");
   } else {
-    playerSideColor = opponentMatch.color === "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
+    playerSideColor = match.color === "white" ? MonsWeb.Color.Black : MonsWeb.Color.White;
     setupPlayerId(matchPlayerUid, true);
   }
 
   if (!isWatchOnly) {
-    Board.setBoardFlipped(opponentMatch.color === "white");
+    Board.setBoardFlipped(match.color === "white");
   }
 
-  if (!isReconnect || (isReconnect && !game.is_later_than(opponentMatch.fen)) || isWatchOnly) {
-    game = MonsWeb.MonsGameModel.from_fen(opponentMatch.fen);
+  if (!isReconnect || (isReconnect && !game.is_later_than(match.fen)) || isWatchOnly) {
+    game = MonsWeb.MonsGameModel.from_fen(match.fen);
     if (game.winner_color() !== undefined) {
       disableUndoAndResignControls();
     }
   }
 
-  verifyMovesIfNeeded(gameId, opponentMatch.flatMovesString, opponentMatch.color);
+  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
 
   if (isReconnect || isWatchOnly) {
-    const movesCount = movesCountOfMatch(opponentMatch);
-    setProcessedMovesCountForColor(opponentMatch.color, movesCount);
+    const movesCount = movesCountOfMatch(match);
+    setProcessedMovesCountForColor(match.color, movesCount);
   }
 
-  if (opponentMatch.reaction && opponentMatch.reaction.uuid) {
-    processedVoiceReactions.add(opponentMatch.reaction.uuid);
+  if (match.reaction && match.reaction.uuid) {
+    processedVoiceReactions.add(match.reaction.uuid);
   }
 
   setNewBoard();
   updateUndoButtonBasedOnGameState();
 
-  if (opponentMatch.status === "surrendered") {
-    handleResignStatus(true, opponentMatch.color);
+  if (match.status === "surrendered") {
+    handleResignStatus(true, match.color);
   } else if (!isWatchOnly) {
     setTimerControlVisible(!isPlayerSideTurn());
   }
 
-  updateDisplayedTimerIfNeeded(opponentMatch);
+  updateDisplayedTimerIfNeeded(match);
 }
 
 function updateDisplayedTimerIfNeeded(match: any) {
@@ -663,6 +663,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
     }
   }
 
+  // TODO: stop and hide timers if any
   disableUndoAndResignControls();
   hideAllMoveStatuses();
 
@@ -671,7 +672,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor);
 }
 
-export function didUpdateOpponentMatch(match: any, matchPlayerUid: string, gameId: string) {
+export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
   if (!didConnect) {
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
@@ -756,7 +757,7 @@ export function didRecoverMyMatch(match: any, gameId: string) {
     handleResignStatus(true, match.color);
   }
 
-  updateDisplayedTimerIfNeeded(match);
+  updateDisplayedTimerIfNeeded(match); // TODO: might be too early to display a timer. gotta remember if it is there though
 }
 
 export function enterWatchOnlyMode() {

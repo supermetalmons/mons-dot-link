@@ -336,6 +336,7 @@ let activeTimer: SVGElement | null = null;
 
 export function showTimer(color: string, remainingSeconds: number) {
   // TODO: make sure it is called only when the board isFlipped correctly for the game, i.e. when both players matches are processed
+  // TODO: make countdown work correctly when walking away from the page and getting back later
 
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
   const timerElement = playerSideTimer ? playerTimer : opponentTimer;
@@ -378,6 +379,8 @@ export function hideTimers() {
 }
 
 export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color) {
+  // TODO: handle outOfTimeColor
+
   const victorySuffix = " 🏅";
   const surrenderSuffix = " 🏳️";
   // const outOfTimeSuffix = " ⌛️";
