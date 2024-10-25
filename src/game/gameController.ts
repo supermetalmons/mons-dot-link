@@ -75,7 +75,7 @@ export function didClickStartTimerButton() {
     startTimer(getCurrentGameId())
       .then((res) => {
         if (res.ok) {
-          showTimerCountdown(false, res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black");
+          showTimerCountdown(false, res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black", res.duration);
         }
       })
       .catch(() => {});
@@ -616,14 +616,17 @@ function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
   showTimerCountdown(onConnect, timer, timerColor);
 }
 
-function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string) {
+function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string, duration?: number) {
   if (timer === "gg") {
     handleVictoryByTimer(onConnect, timerColor, false);
   } else if (timer && typeof timer === "string") {
     const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
     if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
       if (game.turn_number() === turnNumber) {
-        const delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
+        let delta = Math.max(0, Math.floor((targetTimestamp - Date.now()) / 1000));
+        if (duration !== undefined && duration !== null) {
+          delta = Math.min(Math.floor(duration / 1000), delta);
+        }
         showTimer(timerColor, delta);
         if (!isWatchOnly && !isPlayerSideTurn()) {
           // TODO: prevent startTimer getting reenabled when there is ongoing claim timer
