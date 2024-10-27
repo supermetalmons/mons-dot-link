@@ -167,6 +167,7 @@ class FirebaseConnection {
         }
         console.log("Invite data retrieved:", inviteData);
         if (!inviteData.guestId && inviteData.hostId !== uid) {
+          // TODO: do not auto join, show "join game" button instead
           set(ref(db, `invites/${inviteId}/guestId`), uid)
             .then(() => {
               console.log("did join as a guest successfully");
