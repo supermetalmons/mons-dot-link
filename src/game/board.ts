@@ -68,6 +68,11 @@ let playerTimer: SVGElement | undefined;
 let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
 
+let showsPlayerTimer = false;
+let showsOpponentTimer = false;
+let showsPlayerEndOfGameSuffix = false;
+let showsOpponentEndOfGameSuffix = false;
+
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
 const demon = loadImage(assets.demon);
@@ -345,11 +350,22 @@ export function showTimer(color: string, remainingSeconds: number) {
 
   if (activeTimer && activeTimer !== timerElement) {
     SVG.setHidden(activeTimer, true);
+    if (playerSideTimer) {
+      showsOpponentTimer = false;
+    } else {
+      showsPlayerTimer = false;
+    }
   }
 
   activeTimer = timerElement;
   updateTimerDisplay(timerElement, remainingSeconds);
   SVG.setHidden(timerElement, false);
+
+  if (playerSideTimer) {
+    showsPlayerTimer = true;
+  } else {
+    showsOpponentTimer = true;
+  }
 
   const endTime = Date.now() + remainingSeconds * 1000;
 
@@ -362,6 +378,25 @@ export function showTimer(color: string, remainingSeconds: number) {
     }
     updateTimerDisplay(timerElement, remainingSeconds);
   }, 1000);
+
+  updateNamesX();
+}
+
+function updateNamesX() {
+  if (playerNameText === undefined || opponentNameText === undefined) {
+    return;
+  }
+
+  const offsetX = seeIfShouldOffsetFromBorders() ? minHorizontalOffset : 0;
+  const timerDelta = 1.1;
+  const statusDelta = 0.67;
+
+  const playerDelta = (showsPlayerEndOfGameSuffix ? statusDelta : 0) + (showsPlayerTimer ? timerDelta : 0);
+  const opponentDelta = (showsOpponentEndOfGameSuffix ? statusDelta : 0) + (showsOpponentTimer ? timerDelta : 0);
+
+  let initialX = offsetX + 1.55;
+  SVG.setX(playerNameText, initialX + playerDelta);
+  SVG.setX(opponentNameText, initialX + opponentDelta);
 }
 
 function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
@@ -377,6 +412,9 @@ function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
 }
 
 export function hideTimers() {
+  showsPlayerTimer = false;
+  showsOpponentTimer = false;
+
   if (countdownInterval) {
     clearInterval(countdownInterval);
     countdownInterval = null;
@@ -384,6 +422,7 @@ export function hideTimers() {
   SVG.setHidden(playerTimer, true);
   SVG.setHidden(opponentTimer, true);
   activeTimer = null;
+  updateNamesX();
 }
 
 export function updateScore(white: number, black: number, winnerColor?: MonsWeb.Color, resignedColor?: MonsWeb.Color, winByTimerColor?: MonsWeb.Color) {
@@ -422,6 +461,9 @@ export function updateScore(white: number, black: number, winnerColor?: MonsWeb.
   playerScoreText.textContent = playerScore.toString() + playerSuffix;
   opponentScoreText.textContent = opponentScore.toString() + opponentSuffix;
 
+  showsPlayerEndOfGameSuffix = playerSuffix !== "";
+  showsOpponentEndOfGameSuffix = opponentSuffix !== "";
+  updateNamesX();
   renderPlayersNamesLabels();
 }
 
@@ -564,15 +606,20 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
   }
 }
 
+const minHorizontalOffset = 0.21;
+
+function seeIfShouldOffsetFromBorders(): boolean {
+  return window.innerWidth / window.innerHeight < 0.72;
+}
+
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove);
 
-  let shouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
-  const minHorizontalOffset = 0.21;
+  let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
   const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
   const updateLayout = () => {
-    const newShouldOffsetFromBorders = window.innerWidth / window.innerHeight < 0.72;
+    const newShouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
     if (newShouldOffsetFromBorders !== shouldOffsetFromBorders) {
       shouldOffsetFromBorders = newShouldOffsetFromBorders;
       let delta = shouldOffsetFromBorders ? minHorizontalOffset : -minHorizontalOffset;
@@ -637,7 +684,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(nameText, offsetX + 1.55, y + 0.48 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+    SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0));
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
     nameText.setAttribute("font-size", "0.32");
@@ -675,6 +722,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     } else {
       playerNameText = nameText;
     }
+    updateNamesX();
 
     const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
     const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;

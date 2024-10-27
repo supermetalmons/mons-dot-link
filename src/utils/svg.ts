@@ -4,6 +4,10 @@ export function setFrame(element: SVGElement, x: number, y: number, width: numbe
   setFrameStr(element, x.toString(), y.toString(), width.toString(), height.toString());
 }
 
+export function setX(element: SVGElement, x: number): void {
+  element.setAttribute("x", x.toString());
+}
+
 export function offsetX(element: SVGElement, delta: number): void {
   element.setAttribute("x", (parseFloat(element.getAttribute("x") || "0") + delta).toString());
 }
