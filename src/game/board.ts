@@ -637,7 +637,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(nameText, offsetX, isOpponent ? -0.3 : y + 1.34 - avatarOffsetY);
+    SVG.setOrigin(nameText, offsetX + 1.55, y + 0.48 - avatarOffsetY + (isOpponent ? 0.013 : 0));
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
     nameText.setAttribute("font-size", "0.32");
