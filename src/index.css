@@ -87,7 +87,7 @@ body {
   max-height: 77vh;
   touch-action: none;
   position: absolute;
-  top: 52.5%;
+  top: min(54%, 52.5vh);
   left: 50%;
   transform: translate(-50%, -50%);
 }
