@@ -8,7 +8,7 @@ import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim } from "../ui/BottomControls";
 
-const experimentaDrawingDevMode = true;
+const experimentaDrawingDevMode = false;
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
