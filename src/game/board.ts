@@ -94,6 +94,53 @@ const emojis = (await import("../content/emojis")).emojis;
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
 
+export function runExperimentalAnimation() {
+  let radius = 0;
+  const maxRadius = 5;
+
+  function animate() {
+    cleanAllPixels();
+    drawCircle(radius);
+    radius = radius >= maxRadius ? 0 : radius + 0.5;
+    setTimeout(animate, 200);
+  }
+
+  function drawCircle(radius) {
+    const minRadius = radius - 0.5;
+    const maxRadius = radius + 0.5;
+    const minRadiusSquared = minRadius * minRadius;
+    const maxRadiusSquared = maxRadius * maxRadius;
+
+    for (let x = 0; x <= 10; x++) {
+      for (let y = 0; y <= 10; y++) {
+        const dx = x - 5;
+        const dy = y - 5;
+        const distanceSquared = dx * dx + dy * dy;
+
+        if (distanceSquared >= minRadiusSquared && distanceSquared <= maxRadiusSquared) {
+          colorPixel(new Location(x, y), true);
+        }
+      }
+    }
+  }
+
+  animate();
+}
+
+function colorPixel(location: Location, white: boolean) {
+  placeItem(white ? mana : manaB, location, false);
+}
+
+function cleanAllPixels() {
+  for (const key in items) {
+    const element = items[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete items[key];
+  }
+}
+
 export function didGetEthAddress(address: string, uid: string) {
   resolveEthAddress(address, uid, () => {
     recalculateDisplayNames();

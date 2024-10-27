@@ -8,6 +8,8 @@ import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim } from "../ui/BottomControls";
 
+const experimentaDrawingDevMode = true;
+
 export let isWatchOnly = false;
 export let isOnlineGame = false;
 let isReconnect = false;
@@ -45,6 +47,12 @@ export async function go() {
   playerSideColor = MonsWeb.Color.White;
   game = MonsWeb.MonsGameModel.new();
   initialFen = game.fen();
+
+  if (experimentaDrawingDevMode) {
+    isOnlineGame = true;
+    Board.runExperimentalAnimation();
+    return;
+  }
 
   if (isCreateNewInviteFlow) {
     game.locations_with_content().forEach((loc) => {
