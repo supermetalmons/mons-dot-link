@@ -711,6 +711,10 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
 }
 
 function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
+  if (isGameOver) {
+    return;
+  }
+
   const justConfirmedResignYourself = resignSenderColor === "";
   isGameOver = true;
 
