@@ -50,7 +50,7 @@ export async function go() {
 
   if (experimentaDrawingDevMode) {
     isOnlineGame = true;
-    Board.runExperimentalAnimation();
+    Board.runExperimentalMonsBoardAsDisplayAnimation();
     return;
   }
 
@@ -68,7 +68,7 @@ export async function go() {
 
 export function didFindInviteThatCanBeJoined() {
   showJoinButton();
-  Board.runExperimentalAnimation();
+  Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
 export function didClickJoinGameButton() {
@@ -765,7 +765,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 
 export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
   if (!didConnect) {
-    Board.stopExperimentalAnimation();
+    Board.stopMonsBoardAsDisplayAnimations();
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
     if (!isReconnect && !isGameOver) {

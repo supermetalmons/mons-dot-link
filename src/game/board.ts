@@ -94,9 +94,13 @@ const emojis = (await import("../content/emojis")).emojis;
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
 
-let animationTimeout: NodeJS.Timeout | null = null;
+let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
 
-export function runExperimentalAnimation() {
+export function runExperimentalMonsBoardAsDisplayAnimation() {
+  runMonsBoardAsDisplayWaitingAnimation();
+}
+
+export function runMonsBoardAsDisplayWaitingAnimation() {
   let radius = 0;
   const maxRadius = 5;
 
@@ -104,7 +108,7 @@ export function runExperimentalAnimation() {
     cleanAllPixels();
     drawCircle(radius);
     radius = radius >= maxRadius ? 0 : radius + 0.5;
-    animationTimeout = setTimeout(animate, 200);
+    monsBoardDisplayAnimationTimeout = setTimeout(animate, 200);
   }
 
   function drawCircle(radius) {
@@ -129,10 +133,10 @@ export function runExperimentalAnimation() {
   animate();
 }
 
-export function stopExperimentalAnimation() {
-  if (animationTimeout) {
-    clearTimeout(animationTimeout);
-    animationTimeout = null;
+export function stopMonsBoardAsDisplayAnimations() {
+  if (monsBoardDisplayAnimationTimeout) {
+    clearTimeout(monsBoardDisplayAnimationTimeout);
+    monsBoardDisplayAnimationTimeout = null;
     cleanAllPixels();
   }
 }
