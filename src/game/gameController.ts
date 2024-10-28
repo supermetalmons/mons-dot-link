@@ -419,7 +419,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       if (game.winner_color() !== undefined || resignedColor !== undefined) {
         hideAllMoveStatuses();
       } else {
-        Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+        updateBoardMoveStatuses();
       }
 
       if (isRemoteInput) {
@@ -667,12 +667,16 @@ function updateUndoButtonBasedOnGameState() {
   setUndoEnabled(canHandleUndo());
 }
 
+function updateBoardMoveStatuses() {
+  Board.updateMoveStatuses(game.active_color(), game.available_move_kinds(), game.inactive_player_items_counters());
+}
+
 function setNewBoard() {
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
   if (game.winner_color() !== undefined || resignedColor !== undefined) {
     hideAllMoveStatuses();
   } else {
-    Board.updateMoveStatus(game.active_color(), game.available_move_kinds());
+    updateBoardMoveStatuses();
   }
   const locationsWithContent = game.locations_with_content();
   Board.removeItemsNotPresentIn(locationsWithContent);

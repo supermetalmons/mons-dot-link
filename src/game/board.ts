@@ -350,22 +350,20 @@ export function hideAllMoveStatuses() {
   allMoveStatusItems.forEach((item) => SVG.setHidden(item, true));
 }
 
-export function updateMoveStatus(color: MonsWeb.Color, moveKinds: Int32Array) {
+export function updateMoveStatuses(color: MonsWeb.Color, moveKinds: Int32Array, otherPlayerStatuses: Int32Array) {
+  const playerSideActive = isFlipped ? color === MonsWeb.Color.White : color === MonsWeb.Color.Black;
+  const otherItemsToSetup = playerSideActive ? playerMoveStatusItems : opponentMoveStatusItems;
+  const itemsToSetup = playerSideActive ? opponentMoveStatusItems : playerMoveStatusItems;
+  updateStatusElements(itemsToSetup, moveKinds);
+  updateStatusElements(otherItemsToSetup, otherPlayerStatuses);
+}
+
+function updateStatusElements(itemsToSetup: SVGElement[], moveKinds: Int32Array) {
   const monMoves = moveKinds[0];
   let manaMoves = moveKinds[1];
   let actions = moveKinds[2];
   let potions = moveKinds[3];
-
   const total = monMoves + manaMoves + actions + potions;
-
-  const playerSideActive = isFlipped ? color === MonsWeb.Color.White : color === MonsWeb.Color.Black;
-
-  const itemsToHide = playerSideActive ? playerMoveStatusItems : opponentMoveStatusItems;
-  const itemsToSetup = playerSideActive ? opponentMoveStatusItems : playerMoveStatusItems;
-
-  for (const item of itemsToHide) {
-    SVG.setHidden(item, true);
-  }
   for (const [index, item] of itemsToSetup.entries()) {
     if (index < total) {
       SVG.setHidden(item, false);
