@@ -66,6 +66,11 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
+export function didFindYourOwnInviteThatNobodyJoined() {
+  // TODO: show copy invite link button
+  Board.runMonsBoardAsDisplayWaitingAnimation();
+}
+
 export function didFindInviteThatCanBeJoined() {
   showJoinButton();
   Board.runMonsBoardAsDisplayWaitingAnimation();

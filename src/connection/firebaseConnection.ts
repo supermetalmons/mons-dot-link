@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
-import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
+import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 
 const controllerVersion = 2;
@@ -236,6 +236,7 @@ class FirebaseConnection {
         if (invite.guestId && invite.guestId !== "") {
           this.observeMatch(invite.guestId, gameId);
         } else {
+          didFindYourOwnInviteThatNobodyJoined();
           const inviteRef = ref(db, `invites/${gameId}`);
           onValue(inviteRef, (snapshot: any) => {
             const inviteData = snapshot.val();
