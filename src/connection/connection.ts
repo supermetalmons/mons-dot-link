@@ -22,9 +22,9 @@ export function getCurrentGameId(): string {
   return firebaseConnection.gameId;
 }
 
-export function setupConnection() {
+export function setupConnection(autojoin: boolean) {
   if (!isCreateNewInviteFlow) {
-    connectToGame(initialPath);
+    connectToGame(initialPath, autojoin);
   }
 }
 
@@ -82,10 +82,10 @@ export async function prepareOnchainVictoryTx(gameId: string): Promise<any> {
   return firebaseConnection.prepareOnchainVictoryTx(gameId);
 }
 
-function connectToGame(gameId: string) {
+export function connectToGame(gameId: string, autojoin: boolean) {
   signIn().then((uid) => {
     if (uid) {
-      firebaseConnection.connectToGame(uid, gameId);
+      firebaseConnection.connectToGame(uid, gameId, autojoin);
       // TODO: do not update it too early
       // inviteButton.innerHTML = "connected"; // TODO: gotta be able to copy game link
       // TODO: configure new button differently

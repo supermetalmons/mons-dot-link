@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickJoinGameButton } from "../game/gameController";
 
 let latestModalOutsideTapDismissDate = Date.now();
 
@@ -172,6 +172,7 @@ let disableUndoResignAndTimerControls: () => void;
 let hideReactionPicker: () => void;
 let toggleReactionPicker: () => void;
 let enableTimerVictoryClaim: () => void;
+let showJoinButton: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
@@ -243,6 +244,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoDisabled(!enabled);
   };
 
+  showJoinButton = () => {
+    setShowPrimaryGameNavigationButton(true);
+  };
+
   disableUndoResignAndTimerControls = () => {
     setIsUndoDisabled(true);
     setIsStartTimerVisible(false);
@@ -281,6 +286,12 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     handleResign(event);
   };
 
+  const handlePrimaryGameNavigationButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setShowPrimaryGameNavigationButton(false);
+    didClickJoinGameButton();
+  };
+
   return (
     <ControlsContainer>
       {isStartTimerVisible || isClaimVictoryVisible ? (
@@ -317,7 +328,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
-      {showPrimaryGameNavigationButton && (<PrimaryGameNavigationButton>Join Game</PrimaryGameNavigationButton>)}
+      {showPrimaryGameNavigationButton && (<PrimaryGameNavigationButton onClick={handlePrimaryGameNavigationButtonClick}>Join Game</PrimaryGameNavigationButton>)}
       {isReactionPickerVisible && (
         <ReactionPicker ref={pickerRef}>
           <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
@@ -336,4 +347,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setStartTimerVisible, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setStartTimerVisible, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showJoinButton };

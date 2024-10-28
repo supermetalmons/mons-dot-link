@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
-import { didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
+import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 
 const controllerVersion = 2;
@@ -151,7 +151,7 @@ class FirebaseConnection {
       });
   }
 
-  public connectToGame(uid: string, inviteId: string) {
+  public connectToGame(uid: string, inviteId: string, autojoin: boolean) {
     console.log(uid);
     this.uid = uid;
     this.gameId = inviteId;
@@ -167,8 +167,8 @@ class FirebaseConnection {
         }
         console.log("Invite data retrieved:", inviteData);
         if (!inviteData.guestId && inviteData.hostId !== uid) {
-          // TODO: do not auto join, show "join game" button instead
-          set(ref(db, `invites/${inviteId}/guestId`), uid)
+          if (autojoin) {
+            set(ref(db, `invites/${inviteId}/guestId`), uid)
             .then(() => {
               console.log("did join as a guest successfully");
               this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData);
@@ -176,6 +176,9 @@ class FirebaseConnection {
             .catch((error) => {
               console.error("Error joining as a guest:", error);
             });
+          } else {
+            didFindInviteThatCanBeJoined();
+          }
         } else {
           console.log("has guest or same host");
           if (inviteData.hostId === uid) {

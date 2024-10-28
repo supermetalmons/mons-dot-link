@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showJoinButton } from "../ui/BottomControls";
 
 const experimentaDrawingDevMode = false;
 
@@ -38,7 +38,7 @@ const processedVoiceReactions = new Set<string>();
 var currentInputs: Location[] = [];
 
 export async function go() {
-  setupConnection();
+  setupConnection(false);
 
   Board.setupBoard();
 
@@ -64,6 +64,15 @@ export async function go() {
   }
 
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
+}
+
+export function didFindInviteThatCanBeJoined() {
+  showJoinButton();
+  Board.runExperimentalAnimation();
+}
+
+export function didClickJoinGameButton() {
+  setupConnection(true);
 }
 
 export function didClickClaimVictoryByTimerButton() {
@@ -756,6 +765,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 
 export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
   if (!didConnect) {
+    Board.stopExperimentalAnimation();
     didConnectTo(match, matchPlayerUid, gameId);
     didConnect = true;
     if (!isReconnect && !isGameOver) {
