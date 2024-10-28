@@ -280,7 +280,7 @@ class FirebaseConnection {
           color: color,
           emojiId: emojiId,
           fen: initialFen,
-          status: "playing",
+          status: "",
           flatMovesString: "",
           timer: "",
         };
@@ -327,7 +327,7 @@ class FirebaseConnection {
       color: hostColor,
       emojiId: emojiId,
       fen: initialFen,
-      status: "waiting",
+      status: "",
       flatMovesString: "",
       timer: "",
     };
