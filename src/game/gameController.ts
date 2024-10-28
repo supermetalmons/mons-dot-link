@@ -8,7 +8,7 @@ import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showJoinButton } from "../ui/BottomControls";
 
-const experimentaDrawingDevMode = false;
+const experimentalDrawingDevMode = false;
 
 export let isWatchOnly = false;
 export let isOnlineGame = false;
@@ -26,16 +26,19 @@ let currentGameModelId: string | null = null;
 let whiteFlatMovesString: string | null = null;
 let blackFlatMovesString: string | null = null;
 
-let game;
-let playerSideColor;
-let resignedColor;
-let winnerByTimerColor;
+let game: any;
+let playerSideColor: any;
+let resignedColor: any;
+let winnerByTimerColor: any;
 
 let lastReactionTime = 0;
 let isGameOver = false;
 const processedVoiceReactions = new Set<string>();
 
 var currentInputs: Location[] = [];
+
+let blackTimerStash: string | null = null;
+let whiteTimerStash: string | null = null;
 
 export async function go() {
   setupConnection(false);
@@ -48,7 +51,7 @@ export async function go() {
   game = MonsWeb.MonsGameModel.new();
   initialFen = game.fen();
 
-  if (experimentaDrawingDevMode) {
+  if (experimentalDrawingDevMode) {
     isOnlineGame = true;
     Board.runExperimentalMonsBoardAsDisplayAnimation();
     return;
@@ -605,9 +608,6 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
 
   updateDisplayedTimerIfNeeded(true, match);
 }
-
-let blackTimerStash: string | null = null;
-let whiteTimerStash: string | null = null;
 
 function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
   if (match.color === "white") {

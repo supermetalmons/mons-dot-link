@@ -14,6 +14,58 @@ let highlightsLayer: HTMLElement | null;
 let itemsLayer: HTMLElement | null;
 let controlsLayer: HTMLElement | null;
 
+const items: { [key: string]: SVGElement } = {};
+const basesPlaceholders: { [key: string]: SVGElement } = {};
+const wavesFrames: { [key: string]: SVGElement } = {};
+
+const opponentMoveStatusItems: SVGElement[] = [];
+const playerMoveStatusItems: SVGElement[] = [];
+
+let isFlipped = false;
+let traceIndex = 0;
+
+let itemSelectionOverlay: SVGElement | undefined;
+let opponentNameText: SVGElement | undefined;
+let playerNameText: SVGElement | undefined;
+let opponentScoreText: SVGElement | undefined;
+let playerScoreText: SVGElement | undefined;
+let opponentTimer: SVGElement | undefined;
+let playerTimer: SVGElement | undefined;
+let opponentAvatar: SVGElement | undefined;
+let playerAvatar: SVGElement | undefined;
+
+let showsPlayerTimer = false;
+let showsOpponentTimer = false;
+let showsPlayerEndOfGameSuffix = false;
+let showsOpponentEndOfGameSuffix = false;
+
+export let playerSideMetadata = newEmptyPlayerMetadata();
+export let opponentSideMetadata = newEmptyPlayerMetadata();
+
+let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
+let countdownInterval: NodeJS.Timeout | null = null;
+let activeTimer: SVGElement | null = null;
+
+const minHorizontalOffset = 0.21;
+
+const drainer = loadImage(assets.drainer);
+const angel = loadImage(assets.angel);
+const demon = loadImage(assets.demon);
+const spirit = loadImage(assets.spirit);
+const mystic = loadImage(assets.mystic);
+const mana = loadImage(assets.mana);
+const drainerB = loadImage(assets.drainerB);
+const angelB = loadImage(assets.angelB);
+const demonB = loadImage(assets.demonB);
+const spiritB = loadImage(assets.spiritB);
+const mysticB = loadImage(assets.mysticB);
+const manaB = loadImage(assets.manaB);
+const bombOrPotion = loadImage(assets.bombOrPotion);
+const bomb = loadImage(assets.bomb);
+const supermana = loadImage(assets.supermana);
+const supermanaSimple = loadImage(assets.supermanaSimple);
+const emojis = (await import("../content/emojis")).emojis;
+
 function initializeBoardElements() {
   board = document.getElementById("monsboard");
   highlightsLayer = document.getElementById("highlightsLayer");
@@ -21,12 +73,36 @@ function initializeBoardElements() {
   controlsLayer = document.getElementById("controlsLayer");
 }
 
-const items: { [key: string]: SVGElement } = {};
-const basesPlaceholders: { [key: string]: SVGElement } = {};
-const wavesFrames: { [key: string]: SVGElement } = {};
+export function resetForNewGame() {
+  if (isWatchOnly) {
+    playerSideMetadata.displayName = undefined;
+    playerSideMetadata.ethAddress = undefined;
+    playerSideMetadata.uid = "";
+  }
+  opponentSideMetadata.displayName = undefined;
+  opponentSideMetadata.ethAddress = undefined;
+  opponentSideMetadata.uid = "";
+  renderPlayersNamesLabels();
 
-const opponentMoveStatusItems: SVGElement[] = [];
-const playerMoveStatusItems: SVGElement[] = [];
+  SVG.setHidden(opponentAvatar, false);
+  SVG.setHidden(playerAvatar, false);
+  removeHighlights();
+  for (const key in items) {
+    const element = items[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete items[key];
+  }
+
+  for (const key in basesPlaceholders) {
+    const element = basesPlaceholders[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete basesPlaceholders[key];
+  }
+}
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
   const currentId = isOpponentSide ? opponentSideMetadata.emojiId : playerSideMetadata.emojiId;
@@ -55,47 +131,6 @@ export function setBoardFlipped(flipped: boolean) {
   isFlipped = flipped;
 }
 
-let isFlipped = false;
-let traceIndex = 0;
-
-let itemSelectionOverlay: SVGElement | undefined;
-let opponentNameText: SVGElement | undefined;
-let playerNameText: SVGElement | undefined;
-let opponentScoreText: SVGElement | undefined;
-let playerScoreText: SVGElement | undefined;
-let opponentTimer: SVGElement | undefined;
-let playerTimer: SVGElement | undefined;
-let opponentAvatar: SVGElement | undefined;
-let playerAvatar: SVGElement | undefined;
-
-let showsPlayerTimer = false;
-let showsOpponentTimer = false;
-let showsPlayerEndOfGameSuffix = false;
-let showsOpponentEndOfGameSuffix = false;
-
-const drainer = loadImage(assets.drainer);
-const angel = loadImage(assets.angel);
-const demon = loadImage(assets.demon);
-const spirit = loadImage(assets.spirit);
-const mystic = loadImage(assets.mystic);
-const mana = loadImage(assets.mana);
-const drainerB = loadImage(assets.drainerB);
-const angelB = loadImage(assets.angelB);
-const demonB = loadImage(assets.demonB);
-const spiritB = loadImage(assets.spiritB);
-const mysticB = loadImage(assets.mysticB);
-const manaB = loadImage(assets.manaB);
-const bombOrPotion = loadImage(assets.bombOrPotion);
-const bomb = loadImage(assets.bomb);
-const supermana = loadImage(assets.supermana);
-const supermanaSimple = loadImage(assets.supermanaSimple);
-const emojis = (await import("../content/emojis")).emojis;
-
-export let playerSideMetadata = newEmptyPlayerMetadata();
-export let opponentSideMetadata = newEmptyPlayerMetadata();
-
-let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
-
 export function runExperimentalMonsBoardAsDisplayAnimation() {
   runMonsBoardAsDisplayWaitingAnimation();
 }
@@ -111,7 +146,7 @@ export function runMonsBoardAsDisplayWaitingAnimation() {
     monsBoardDisplayAnimationTimeout = setTimeout(animate, 200);
   }
 
-  function drawCircle(radius) {
+  function drawCircle(radius: number) {
     const minRadius = radius - 0.5;
     const maxRadius = radius + 0.5;
     const minRadiusSquared = minRadius * minRadius;
@@ -314,37 +349,6 @@ export function removeItemsNotPresentIn(locations: Location[]) {
   }
 }
 
-export function resetForNewGame() {
-  if (isWatchOnly) {
-    playerSideMetadata.displayName = undefined;
-    playerSideMetadata.ethAddress = undefined;
-    playerSideMetadata.uid = "";
-  }
-  opponentSideMetadata.displayName = undefined;
-  opponentSideMetadata.ethAddress = undefined;
-  opponentSideMetadata.uid = "";
-  renderPlayersNamesLabels();
-
-  SVG.setHidden(opponentAvatar, false);
-  SVG.setHidden(playerAvatar, false);
-  removeHighlights();
-  for (const key in items) {
-    const element = items[key];
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
-    delete items[key];
-  }
-
-  for (const key in basesPlaceholders) {
-    const element = basesPlaceholders[key];
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
-    delete basesPlaceholders[key];
-  }
-}
-
 export function hideAllMoveStatuses() {
   const allMoveStatusItems = [...opponentMoveStatusItems, ...playerMoveStatusItems];
   allMoveStatusItems.forEach((item) => SVG.setHidden(item, true));
@@ -394,9 +398,6 @@ export function removeItem(location: Location) {
     delete items[locationKey];
   }
 }
-
-let countdownInterval: NodeJS.Timeout | null = null;
-let activeTimer: SVGElement | null = null;
 
 export function showTimer(color: string, remainingSeconds: number) {
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
@@ -664,8 +665,6 @@ export function setupSquare(square: MonsWeb.SquareModel, location: Location) {
     }
   }
 }
-
-const minHorizontalOffset = 0.21;
 
 function seeIfShouldOffsetFromBorders(): boolean {
   return window.innerWidth / window.innerHeight < 0.72;

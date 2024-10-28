@@ -7,8 +7,8 @@ import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 const controllerVersion = 2;
 
 class FirebaseConnection {
-  private app;
-  private auth;
+  private app: any;
+  private auth: any;
 
   private myMatch: any;
   private uid: string;
