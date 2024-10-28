@@ -75,6 +75,33 @@ const ControlButton = styled.button<{ disabled?: boolean }>`
   }
 `;
 
+const PrimaryGameNavigationButton = styled.button`
+  background-color: #2ecc40;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #29b739;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #25a233;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #208c2c;
+      }
+    }
+  }
+`;
+
 const ReactionPicker = styled.div`
   position: absolute;
   bottom: 40px;
@@ -148,6 +175,7 @@ let enableTimerVictoryClaim: () => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
+  const [showPrimaryGameNavigationButton, setShowPrimaryGameNavigationButton] = useState(false);
   const [showOtherControls, setShowOtherControls] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
@@ -289,6 +317,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
+      {showPrimaryGameNavigationButton && (<PrimaryGameNavigationButton>Join Game</PrimaryGameNavigationButton>)}
       {isReactionPickerVisible && (
         <ReactionPicker ref={pickerRef}>
           <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
