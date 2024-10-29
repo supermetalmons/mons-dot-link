@@ -1,3 +1,3 @@
-# mons-dot-link
+# mons
 
 `npm start`
