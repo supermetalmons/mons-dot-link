@@ -28,7 +28,7 @@ let currentGameModelId: string | null = null;
 let whiteFlatMovesString: string | null = null;
 let blackFlatMovesString: string | null = null;
 
-let game: any;
+let game: MonsWeb.MonsGameModel;
 let playerSideColor: MonsWeb.Color;
 let resignedColor: MonsWeb.Color;
 let winnerByTimerColor: MonsWeb.Color;
@@ -702,7 +702,7 @@ function setNewBoard() {
   } else {
     updateBoardMoveStatuses();
   }
-  const locationsWithContent = game.locations_with_content();
+  const locationsWithContent = game.locations_with_content().map(loc => new Location(loc.i, loc.j));
   Board.removeItemsNotPresentIn(locationsWithContent);
   locationsWithContent.forEach((loc) => {
     const location = new Location(loc.i, loc.j);
