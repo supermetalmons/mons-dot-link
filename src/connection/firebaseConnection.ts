@@ -30,8 +30,9 @@ class FirebaseConnection {
   }
   
   public sendRematchProposal() {
-    // TODO: implement sending
-    // TODO: get existing / start listening to opponent's proposals
+    // TODO: create next match model
+    // TODO: update rematches list within the root match model
+    // TODO: get existing opponent's rematch / start listening to opponent's proposals
   }
 
   public subscribeToAuthChanges(callback: (uid: string | null) => void) {
@@ -171,7 +172,7 @@ class FirebaseConnection {
           if (autojoin) {
             set(ref(db, `invites/${inviteId}/guestId`), uid)
             .then(() => {
-              this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData);
+              this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData.hostId);
             })
             .catch((error) => {
               console.error("Error joining as a guest:", error);
@@ -253,9 +254,9 @@ class FirebaseConnection {
     this.observeMatch(guestId, gameId);
   }
 
-  private getOpponentsMatchAndCreateOwnMatch(gameId: string, invite: any) {
+  private getOpponentsMatchAndCreateOwnMatch(gameId: string, hostId: string) {
     const db = getDatabase(this.app);
-    const opponentsMatchRef = ref(db, `players/${invite.hostId}/matches/${gameId}`);
+    const opponentsMatchRef = ref(db, `players/${hostId}/matches/${gameId}`);
 
     get(opponentsMatchRef)
       .then((snapshot) => {
@@ -287,7 +288,7 @@ class FirebaseConnection {
             console.error("Error creating player match:", error);
           });
 
-        this.observeMatch(invite.hostId, gameId);
+        this.observeMatch(hostId, gameId);
       })
       .catch((error) => {
         console.error("failed to get opponent's match:", error);
