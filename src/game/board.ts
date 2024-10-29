@@ -935,7 +935,7 @@ export function setupBoard() {
       SVG.setFrame(rect, x, y + 1, 1, 1);
       SVG.setFill(rect, "transparent");
       rect.classList.add("board-rect");
-      itemsLayer.appendChild(rect);
+      itemsLayer?.appendChild(rect);
     }
   }
 
@@ -945,7 +945,7 @@ export function setupBoard() {
 }
 
 export function removeHighlights() {
-  while (highlightsLayer.firstChild) {
+  while (highlightsLayer?.firstChild) {
     highlightsLayer.removeChild(highlightsLayer.firstChild);
   }
 }
@@ -1068,7 +1068,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  itemsLayer.appendChild(container);
+  itemsLayer?.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -1084,7 +1084,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  itemsLayer.appendChild(container);
+  itemsLayer?.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -1101,7 +1101,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     const container = document.createElementNS(SVG.ns, "g");
     container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
     container.appendChild(img);
-    itemsLayer.appendChild(container);
+    itemsLayer?.appendChild(container);
     items[key] = container;
   } else if (sparkles) {
     const container = document.createElementNS(SVG.ns, "g");
@@ -1109,11 +1109,11 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     SVG.setOrigin(img, location.j, location.i);
     container.appendChild(sparkles);
     container.appendChild(img);
-    itemsLayer.appendChild(container);
+    itemsLayer?.appendChild(container);
     items[key] = container;
   } else {
     SVG.setOrigin(img, location.j, location.i);
-    itemsLayer.appendChild(img);
+    itemsLayer?.appendChild(img);
     items[key] = img;
   }
 }
@@ -1139,7 +1139,7 @@ function createSparklingContainer(location: Location): SVGElement {
     }
   } else {
     const intervalId = setInterval(() => {
-      if (!container.parentNode.parentNode) {
+      if (!container.parentNode?.parentNode) {
         clearInterval(intervalId);
         return;
       }
@@ -1197,7 +1197,7 @@ function setBase(item: SVGElement, location: Location) {
     const img = item.cloneNode() as SVGElement;
     SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
     SVG.setOpacity(img, 0.4);
-    board.appendChild(img);
+    board?.appendChild(img);
     basesPlaceholders[key] = img;
   }
 }
@@ -1207,7 +1207,7 @@ function highlightEmptyDestination(location: Location, color: string) {
   const highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
   highlight.style.pointerEvents = "none";
   SVG.setFill(highlight, color);
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 }
 
 function highlightSelectedItem(location: Location, color: string) {
@@ -1228,7 +1228,7 @@ function highlightSelectedItem(location: Location, color: string) {
 
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
   highlight.appendChild(circle);
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 }
 
 function highlightStartFromSuggestion(location: Location, color: string) {
@@ -1253,7 +1253,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
   SVG.setOpacity(highlight, 0.69);
   highlight.appendChild(circle);
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 
   setTimeout(() => {
     highlight.remove();
@@ -1286,7 +1286,7 @@ function highlightDestinationItem(location: Location, color: string) {
 
   rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
 
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 }
 
 function getTraceColors(): string[] {
@@ -1307,7 +1307,7 @@ function addWaves(location: Location) {
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
   SVG.setOpacity(wavesSquareElement, 0.5);
-  board.appendChild(wavesSquareElement);
+  board?.appendChild(wavesSquareElement);
 
   let frameIndex = 0;
   wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
