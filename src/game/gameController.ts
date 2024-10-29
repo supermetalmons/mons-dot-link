@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
+import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
 
 const experimentalDrawingDevMode = false;
@@ -108,7 +108,7 @@ export function didClickPrimaryActionButton(action: PrimaryActionType) {
 
 export function didClickClaimVictoryByTimerButton() {
   if (isOnlineGame && !isWatchOnly) {
-    claimVictoryByTimer(getCurrentGameId())
+    claimVictoryByTimer()
       .then((res) => {
         if (res.ok) {
           handleVictoryByTimer(false, playerSideColor === MonsWeb.Color.White ? "white" : "black", true);
@@ -120,7 +120,7 @@ export function didClickClaimVictoryByTimerButton() {
 
 export function didClickStartTimerButton() {
   if (isOnlineGame && !isWatchOnly && !isPlayerSideTurn()) {
-    startTimer(getCurrentGameId())
+    startTimer()
       .then((res) => {
         if (res.ok) {
           showTimerCountdown(false, res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black", res.duration);
@@ -506,8 +506,7 @@ function suggestSavingOnchainRating(onResign: boolean) {
   const reason = onResign ? "🫡 opponent resigned" : "🎉 you win";
   const shouldSave = global.confirm(reason + "\n\n💾 save victory onchain");
   if (shouldSave) {
-    const gameId = getCurrentGameId();
-    prepareOnchainVictoryTx(gameId)
+    prepareOnchainVictoryTx()
       .then((res) => {
         saveOnchainRating(res);
       })

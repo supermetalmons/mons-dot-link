@@ -23,10 +23,6 @@ export function sendRematchProposal() {
   firebaseConnection.sendRematchProposal();
 }
 
-export function getCurrentGameId(): string {
-  return firebaseConnection.gameId;
-}
-
 export function setupConnection(autojoin: boolean) {
   if (!isCreateNewInviteFlow) {
     connectToGame(initialPath, autojoin);
@@ -75,16 +71,16 @@ export async function verifyEthAddress(message: string, signature: string): Prom
   return firebaseConnection.verifyEthAddress(message, signature);
 }
 
-export async function startTimer(gameId: string): Promise<any> {
-  return firebaseConnection.startTimer(gameId);
+export async function startTimer(): Promise<any> {
+  return firebaseConnection.startTimer();
 }
 
-export async function claimVictoryByTimer(gameId: string): Promise<any> {
-  return firebaseConnection.claimVictoryByTimer(gameId);
+export async function claimVictoryByTimer(): Promise<any> {
+  return firebaseConnection.claimVictoryByTimer();
 }
 
-export async function prepareOnchainVictoryTx(gameId: string): Promise<any> {
-  return firebaseConnection.prepareOnchainVictoryTx(gameId);
+export async function prepareOnchainVictoryTx(): Promise<any> {
+  return firebaseConnection.prepareOnchainVictoryTx();
 }
 
 export function connectToGame(gameId: string, autojoin: boolean) {

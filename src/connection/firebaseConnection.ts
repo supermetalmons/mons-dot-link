@@ -12,7 +12,7 @@ class FirebaseConnection {
 
   private myMatch: any;
   private uid: string;
-  public gameId: string;
+  private gameId: string;
 
   constructor() {
     const firebaseConfig = {
@@ -54,12 +54,12 @@ class FirebaseConnection {
     });
   }
 
-  public async startTimer(gameId: string): Promise<any> {
+  public async startTimer(): Promise<any> {
     try {
       const { getFunctions, httpsCallable } = await import("firebase/functions");
       const functions = getFunctions(this.app);
       const startTimerFunction = httpsCallable(functions, "startTimer");
-      const response = await startTimerFunction({ gameId });
+      const response = await startTimerFunction({ gameId: this.gameId });
       return response.data;
     } catch (error) {
       console.error("Error starting a timer", error);
@@ -67,12 +67,12 @@ class FirebaseConnection {
     }
   }
 
-  public async claimVictoryByTimer(gameId: string): Promise<any> {
+  public async claimVictoryByTimer(): Promise<any> {
     try {
       const { getFunctions, httpsCallable } = await import("firebase/functions");
       const functions = getFunctions(this.app);
       const claimVictoryByTimerFunction = httpsCallable(functions, "claimVictoryByTimer");
-      const response = await claimVictoryByTimerFunction({ gameId });
+      const response = await claimVictoryByTimerFunction({ gameId: this.gameId });
       return response.data;
     } catch (error) {
       console.error("Error claiming victory by timer", error);
@@ -80,12 +80,12 @@ class FirebaseConnection {
     }
   }
 
-  public async prepareOnchainVictoryTx(gameId: string): Promise<any> {
+  public async prepareOnchainVictoryTx(): Promise<any> {
     try {
       const { getFunctions, httpsCallable } = await import("firebase/functions");
       const functions = getFunctions(this.app);
       const attestVictoryFunction = httpsCallable(functions, "attestVictory");
-      const response = await attestVictoryFunction({ gameId });
+      const response = await attestVictoryFunction({ gameId: this.gameId });
       return response.data;
     } catch (error) {
       console.error("Error preparing onchain victory tx:", error);
