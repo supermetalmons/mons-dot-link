@@ -10,8 +10,11 @@ import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTime
 
 const experimentalDrawingDevMode = false;
 
+export let initialFen = "";
 export let isWatchOnly = false;
 export let isOnlineGame = false;
+
+let isGameOver = false;
 let isReconnect = false;
 let didConnect = false;
 
@@ -19,8 +22,6 @@ let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
 let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
-
-export let initialFen = "";
 
 let currentGameModelId: string | null = null;
 let whiteFlatMovesString: string | null = null;
@@ -32,7 +33,7 @@ let resignedColor: any;
 let winnerByTimerColor: any;
 
 let lastReactionTime = 0;
-let isGameOver = false;
+
 const processedVoiceReactions = new Set<string>();
 
 var currentInputs: Location[] = [];
@@ -830,7 +831,7 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
     setProcessedMovesCountForColor(match.color, movesCount);
 
     if (match.fen !== game.fen()) {
-      // TODO: show something is wrong alert
+      // TODO: handle corrupted game data event
       console.log("fens do not match");
     }
   }

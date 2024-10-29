@@ -86,11 +86,8 @@ export function connectToGame(gameId: string, autojoin: boolean) {
   signIn().then((uid) => {
     if (uid) {
       firebaseConnection.connectToGame(uid, gameId, autojoin);
-      // TODO: do not update it too early
-      // inviteButton.innerHTML = "connected"; // TODO: gotta be able to copy game link
-      // TODO: configure new button differently
     } else {
-      // TODO: show message that smth is wrong
+      // TODO: try to reconnect
       console.log("failed to get game info");
     }
   });
@@ -99,7 +96,7 @@ export function connectToGame(gameId: string, autojoin: boolean) {
 function createNewMatchInvite(completion) {
   signIn().then((uid) => {
     if (uid) {
-      firebaseConnection.createInvite(uid, newGameId); // TODO: process create invite result
+      firebaseConnection.createInvite(uid, newGameId); // TODO: retry if failed to create
       didCreateNewGameInvite = true;
       updatePath(newGameId);
       completion(true);

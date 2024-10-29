@@ -8,7 +8,21 @@ import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 
+export let playerSideMetadata = newEmptyPlayerMetadata();
+export let opponentSideMetadata = newEmptyPlayerMetadata();
+
+let isFlipped = false;
+let traceIndex = 0;
+let showsPlayerTimer = false;
+let showsOpponentTimer = false;
+let showsPlayerEndOfGameSuffix = false;
+let showsOpponentEndOfGameSuffix = false;
+
+let countdownInterval: NodeJS.Timeout | null = null;
+let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
+
 const assets = (await import("../content/gameAssets")).gameAssets;
+
 let board: HTMLElement | null;
 let highlightsLayer: HTMLElement | null;
 let itemsLayer: HTMLElement | null;
@@ -17,12 +31,9 @@ let controlsLayer: HTMLElement | null;
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
 const wavesFrames: { [key: string]: SVGElement } = {};
-
 const opponentMoveStatusItems: SVGElement[] = [];
 const playerMoveStatusItems: SVGElement[] = [];
-
-let isFlipped = false;
-let traceIndex = 0;
+const minHorizontalOffset = 0.21;
 
 let itemSelectionOverlay: SVGElement | undefined;
 let opponentNameText: SVGElement | undefined;
@@ -33,20 +44,7 @@ let opponentTimer: SVGElement | undefined;
 let playerTimer: SVGElement | undefined;
 let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
-
-let showsPlayerTimer = false;
-let showsOpponentTimer = false;
-let showsPlayerEndOfGameSuffix = false;
-let showsOpponentEndOfGameSuffix = false;
-
-export let playerSideMetadata = newEmptyPlayerMetadata();
-export let opponentSideMetadata = newEmptyPlayerMetadata();
-
-let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
-let countdownInterval: NodeJS.Timeout | null = null;
 let activeTimer: SVGElement | null = null;
-
-const minHorizontalOffset = 0.21;
 
 const drainer = loadImage(assets.drainer);
 const angel = loadImage(assets.angel);
