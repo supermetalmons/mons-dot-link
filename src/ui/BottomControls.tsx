@@ -2,7 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickJoinGameButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
+
+export enum PrimaryActionType {
+  None = "none",
+  JoinGame = "joinGame", 
+  Rematch = "rematch"
+}
 
 let latestModalOutsideTapDismissDate = Date.now();
 
@@ -172,11 +178,11 @@ let disableUndoResignAndTimerControls: () => void;
 let hideReactionPicker: () => void;
 let toggleReactionPicker: () => void;
 let enableTimerVictoryClaim: () => void;
-let showJoinButton: () => void;
+let showPrimaryAction: (action: PrimaryActionType) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
-  const [showPrimaryGameNavigationButton, setShowPrimaryGameNavigationButton] = useState(false);
+  const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
   const [showOtherControls, setShowOtherControls] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
@@ -244,8 +250,8 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoDisabled(!enabled);
   };
 
-  showJoinButton = () => {
-    setShowPrimaryGameNavigationButton(true);
+  showPrimaryAction = (action: PrimaryActionType) => {
+    setPrimaryAction(action);
   };
 
   disableUndoResignAndTimerControls = () => {
@@ -286,10 +292,21 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     handleResign(event);
   };
 
-  const handlePrimaryGameNavigationButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handlePrimaryActionClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    setShowPrimaryGameNavigationButton(false);
-    didClickJoinGameButton();
+    didClickPrimaryActionButton(primaryAction);
+    setPrimaryAction(PrimaryActionType.None);
+  };
+
+  const getPrimaryActionButtonText = () => {
+    switch (primaryAction) {
+      case PrimaryActionType.JoinGame:
+        return "Join Game";
+      case PrimaryActionType.Rematch:
+        return "Play Again";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -328,7 +345,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
-      {showPrimaryGameNavigationButton && (<PrimaryGameNavigationButton onClick={handlePrimaryGameNavigationButtonClick}>Join Game</PrimaryGameNavigationButton>)}
+      {primaryAction !== PrimaryActionType.None && (
+        <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>
+          {getPrimaryActionButtonText()}
+        </PrimaryGameNavigationButton>
+      )}
       {isReactionPickerVisible && (
         <ReactionPicker ref={pickerRef}>
           <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
@@ -347,4 +368,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setStartTimerVisible, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showJoinButton };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setStartTimerVisible, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

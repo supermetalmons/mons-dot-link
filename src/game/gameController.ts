@@ -6,7 +6,7 @@ import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showJoinButton } from "../ui/BottomControls";
+import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
 
 const experimentalDrawingDevMode = false;
 
@@ -76,12 +76,33 @@ export function didFindYourOwnInviteThatNobodyJoined() {
 }
 
 export function didFindInviteThatCanBeJoined() {
-  showJoinButton();
+  showPrimaryAction(PrimaryActionType.JoinGame);
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
-export function didClickJoinGameButton() {
-  setupConnection(true);
+function showRematchInterface() {
+  if (isWatchOnly) {
+    return;
+  }
+  showPrimaryAction(PrimaryActionType.Rematch);
+}
+
+function didConfirmRematchProposal() {
+  alert("wip. rematch is not implemented yet.")
+  // TODO: implement
+}
+
+export function didClickPrimaryActionButton(action: PrimaryActionType) {
+  switch (action) {
+    case PrimaryActionType.JoinGame:
+      setupConnection(true);
+      break;
+    case PrimaryActionType.Rematch:
+      didConfirmRematchProposal();
+      break;
+    default:
+      break;
+  }
 }
 
 export function didClickClaimVictoryByTimerButton() {
@@ -702,10 +723,6 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
-function showRematchInterface() {
-  // TODO: implement
-}
-
 function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaimedByYourself: boolean) {
   if (isGameOver) {
     return;
@@ -722,6 +739,7 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
 
   winnerByTimerColor = winnerColor === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+  showRematchInterface();
 
   if (justClaimedByYourself) {
     playSounds([Sound.Victory]);
@@ -744,8 +762,6 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
       playSounds([Sound.Defeat]);
     }
   }
-
-  showRematchInterface();
 }
 
 function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
@@ -782,6 +798,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   Board.removeHighlights();
   Board.hideItemSelection();
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+  showRematchInterface();
 }
 
 export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
