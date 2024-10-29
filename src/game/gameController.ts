@@ -7,6 +7,7 @@ import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
+import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
 
@@ -578,7 +579,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
+function didConnectTo(match: Match, matchPlayerUid: string, gameId: string) {
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -632,7 +633,7 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   updateDisplayedTimerIfNeeded(true, match);
 }
 
-function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
+function updateDisplayedTimerIfNeeded(onConnect: boolean, match: Match) {
   if (match.color === "white") {
     whiteTimerStash = match.timer;
   } else {
@@ -801,7 +802,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   showRematchInterface();
 }
 
-export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
+export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, gameId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
     didConnectTo(match, matchPlayerUid, gameId);
@@ -871,7 +872,7 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
   updateDisplayedTimerIfNeeded(didNotHaveBothMatchesSetupBeforeThisUpdate, match);
 }
 
-export function didRecoverMyMatch(match: any, gameId: string) {
+export function didRecoverMyMatch(match: Match, gameId: string) {
   isReconnect = true;
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
@@ -896,7 +897,7 @@ export function enterWatchOnlyMode() {
   isWatchOnly = true;
 }
 
-function movesFensArray(match: any): string[] {
+function movesFensArray(match: Match): string[] {
   const flatMovesString = match.flatMovesString;
   if (!flatMovesString || flatMovesString === "") {
     return [];
@@ -904,7 +905,7 @@ function movesFensArray(match: any): string[] {
   return flatMovesString.split("-");
 }
 
-function movesCountOfMatch(match: any): number {
+function movesCountOfMatch(match: Match): number {
   const flatMovesString = match.flatMovesString;
   if (!flatMovesString || flatMovesString === "") {
     return 0;

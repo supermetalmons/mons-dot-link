@@ -9,6 +9,10 @@ export interface Match {
   reaction?: Reaction;
 }
 
+export interface RootMatch extends Match {
+  rematchesSuffixes: string;
+}
+
 export interface Invite {
   version: number;
   hostId: string;

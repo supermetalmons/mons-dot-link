@@ -4,7 +4,7 @@ import { getDatabase, Database, ref, set, onValue, off, get } from "firebase/dat
 import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
-import { Match, Invite, Reaction } from "./connectionModels";
+import { Match, Invite, Reaction, RootMatch } from "./connectionModels";
 
 const controllerVersion = 2;
 
@@ -253,7 +253,7 @@ class FirebaseConnection {
 
         const color = opponentsMatchData.color === "black" ? "white" : "black";
         const emojiId = getPlayersEmojiId();
-        const match: Match = {
+        const match: RootMatch = {
           version: controllerVersion,
           color,
           emojiId,
@@ -261,6 +261,7 @@ class FirebaseConnection {
           status: "",
           flatMovesString: "",
           timer: "",
+          rematchesSuffixes: "",
         };
 
         this.myMatch = match;
@@ -297,7 +298,7 @@ class FirebaseConnection {
         console.error("Error creating invite:", error);
       });
 
-    const match: Match = {
+    const match: RootMatch = {
       version: controllerVersion,
       color: hostColor,
       emojiId,
@@ -305,6 +306,7 @@ class FirebaseConnection {
       status: "",
       flatMovesString: "",
       timer: "",
+      rematchesSuffixes: "",
     };
 
     this.myMatch = match;
