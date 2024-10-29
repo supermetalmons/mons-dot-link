@@ -18,6 +18,11 @@ export async function subscribeToAuthChanges(callback: (uid: string | null) => v
   });
 }
 
+export function sendRematchProposal() {
+  // TODO: implement
+  firebaseConnection.sendRematchProposal();
+}
+
 export function getCurrentGameId(): string {
   return firebaseConnection.gameId;
 }

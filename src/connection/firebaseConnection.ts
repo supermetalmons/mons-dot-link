@@ -28,6 +28,11 @@ class FirebaseConnection {
     this.app = initializeApp(firebaseConfig);
     this.auth = getAuth(this.app);
   }
+  
+  public sendRematchProposal() {
+    // TODO: implement sending
+    // TODO: get existing / start listening to opponent's proposals
+  }
 
   public subscribeToAuthChanges(callback: (uid: string | null) => void) {
     onAuthStateChanged(this.auth, (user) => {
