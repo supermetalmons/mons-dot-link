@@ -311,6 +311,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      {primaryAction !== PrimaryActionType.None && (
+        <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>
+          {getPrimaryActionButtonText()}
+        </PrimaryGameNavigationButton>
+      )}
       {isStartTimerVisible || isClaimVictoryVisible ? (
         <>
           {isClaimVictoryVisible && (
@@ -345,11 +350,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
-      {primaryAction !== PrimaryActionType.None && (
-        <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>
-          {getPrimaryActionButtonText()}
-        </PrimaryGameNavigationButton>
-      )}
       {isReactionPickerVisible && (
         <ReactionPicker ref={pickerRef}>
           <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
