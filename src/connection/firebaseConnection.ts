@@ -28,7 +28,7 @@ class FirebaseConnection {
     this.app = initializeApp(firebaseConfig);
     this.auth = getAuth(this.app);
   }
-  
+
   public sendRematchProposal() {
     // TODO: create next match model
     // TODO: update rematches list within the root match model
@@ -171,12 +171,12 @@ class FirebaseConnection {
         if (!inviteData.guestId && inviteData.hostId !== uid) {
           if (autojoin) {
             set(ref(db, `invites/${inviteId}/guestId`), uid)
-            .then(() => {
-              this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData.hostId);
-            })
-            .catch((error) => {
-              console.error("Error joining as a guest:", error);
-            });
+              .then(() => {
+                this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData.hostId);
+              })
+              .catch((error) => {
+                console.error("Error joining as a guest:", error);
+              });
           } else {
             didFindInviteThatCanBeJoined();
           }
@@ -265,7 +265,7 @@ class FirebaseConnection {
           console.log("got empty opponent's match data");
           return;
         }
-        
+
         const color = opponentsMatchData.color === "black" ? "white" : "black";
         const emojiId = getPlayersEmojiId();
         const match = {
