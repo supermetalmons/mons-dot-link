@@ -29,9 +29,9 @@ let whiteFlatMovesString: string | null = null;
 let blackFlatMovesString: string | null = null;
 
 let game: any;
-let playerSideColor: any;
-let resignedColor: any;
-let winnerByTimerColor: any;
+let playerSideColor: MonsWeb.Color;
+let resignedColor: MonsWeb.Color;
+let winnerByTimerColor: MonsWeb.Color;
 
 let lastReactionTime = 0;
 
