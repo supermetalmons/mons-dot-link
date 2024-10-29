@@ -405,6 +405,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             isGameOver = true;
             disableUndoResignAndTimerControls();
             hideTimers();
+            showRematchInterface();
             break;
         }
       }
@@ -701,7 +702,15 @@ function setProcessedMovesCountForColor(color: string, count: number) {
   }
 }
 
+function showRematchInterface() {
+  // TODO: implement
+}
+
 function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaimedByYourself: boolean) {
+  if (isGameOver) {
+    return;
+  }
+
   isGameOver = true;
 
   hideTimers();
@@ -735,6 +744,8 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
       playSounds([Sound.Defeat]);
     }
   }
+
+  showRematchInterface();
 }
 
 function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
