@@ -4,7 +4,7 @@ import { getDatabase, Database, ref, set, onValue, off, get } from "firebase/dat
 import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
-import { Match, Invite } from "./connectionModels";
+import { Match, Invite, Reaction } from "./connectionModels";
 
 const controllerVersion = 2;
 
@@ -115,7 +115,7 @@ class FirebaseConnection {
     });
   }
 
-  public sendVoiceReaction(reaction: any): void {
+  public sendVoiceReaction(reaction: Reaction): void {
     this.myMatch.reaction = reaction;
     set(ref(this.db, `players/${this.uid}/matches/${this.gameId}/reaction`), reaction).catch((error) => {
       console.error("Error sending voice reaction:", error);

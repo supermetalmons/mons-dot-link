@@ -1,5 +1,6 @@
 import { Sound } from "../utils/gameModels";
 import { getIsMuted } from "../ui/BottomControlsActions";
+import { Reaction } from "../connection/connectionModels";
 
 const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 const audioBuffers: { [key: string]: AudioBuffer } = {};
@@ -54,7 +55,7 @@ function playSound(path: string) {
   };
 }
 
-export async function playReaction(reaction: any) {
+export async function playReaction(reaction: Reaction) {
   if (getIsMuted()) {
     return;
   }
@@ -64,7 +65,7 @@ export async function playReaction(reaction: any) {
   playSound(path);
 }
 
-export function newReactionOfKind(kind: string): any {
+export function newReactionOfKind(kind: string): Reaction {
   const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0,
       v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -84,7 +85,7 @@ export function newReactionOfKind(kind: string): any {
       variation = 1;
       break;
   }
-  return { uuid: uuid, variation: variation, kind: kind };
+  return { uuid, variation, kind };
 }
 
 export async function playSounds(sounds: Sound[]) {

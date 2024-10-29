@@ -1,4 +1,5 @@
 import { generateNewGameId } from "../utils/misc";
+import { Reaction } from "./connectionModels";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 export const isCreateNewInviteFlow = initialPath === "";
@@ -53,7 +54,7 @@ export function sendMove(moveFen: string, newBoardFen: string) {
   firebaseConnection.sendMove(moveFen, newBoardFen);
 }
 
-export function sendVoiceReaction(reaction: any) {
+export function sendVoiceReaction(reaction: Reaction) {
   firebaseConnection.sendVoiceReaction(reaction);
 }
 

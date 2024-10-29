@@ -6,7 +6,7 @@ export interface Match {
   status: string;
   flatMovesString: string;
   timer: string;
-  reaction?: any;
+  reaction?: Reaction;
 }
 
 export interface Invite {
@@ -14,4 +14,10 @@ export interface Invite {
   hostId: string;
   hostColor: string;
   guestId?: string | null;
+}
+
+export interface Reaction {
+  uuid: string;
+  variation: number;
+  kind: string;
 }
