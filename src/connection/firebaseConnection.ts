@@ -67,7 +67,6 @@ class FirebaseConnection {
       const functions = getFunctions(this.app);
       const claimVictoryByTimerFunction = httpsCallable(functions, "claimVictoryByTimer");
       const response = await claimVictoryByTimerFunction({ gameId });
-      console.log("claimVictoryByTimer response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error claiming victory by timer", error);
@@ -81,7 +80,6 @@ class FirebaseConnection {
       const functions = getFunctions(this.app);
       const attestVictoryFunction = httpsCallable(functions, "attestVictory");
       const response = await attestVictoryFunction({ gameId });
-      console.log("attestVictory response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error preparing onchain victory tx:", error);
@@ -101,7 +99,6 @@ class FirebaseConnection {
       const functions = getFunctions(this.app);
       const verifyEthAddressFunction = httpsCallable(functions, "verifyEthAddress");
       const response = await verifyEthAddressFunction({ message, signature });
-      console.log("verifyEthAddress response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error verifying Ethereum address:", error);
@@ -165,12 +162,10 @@ class FirebaseConnection {
           console.log("got empty invite data");
           return;
         }
-        console.log("Invite data retrieved:", inviteData);
         if (!inviteData.guestId && inviteData.hostId !== uid) {
           if (autojoin) {
             set(ref(db, `invites/${inviteId}/guestId`), uid)
             .then(() => {
-              console.log("did join as a guest successfully");
               this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData);
             })
             .catch((error) => {
@@ -180,7 +175,6 @@ class FirebaseConnection {
             didFindInviteThatCanBeJoined();
           }
         } else {
-          console.log("has guest or same host");
           if (inviteData.hostId === uid) {
             this.reconnectAsHost(inviteId, inviteData);
           } else if (inviteData.guestId === uid) {
@@ -196,8 +190,6 @@ class FirebaseConnection {
   }
 
   private reconnectAsGuest(gameId: string, invite: any) {
-    console.log("will reconnect as guest");
-
     const db = getDatabase(this.app);
     const myMatchRef = ref(db, `players/${invite.guestId}/matches/${gameId}`);
 
@@ -208,7 +200,6 @@ class FirebaseConnection {
           console.log("got empty my match data");
           return;
         }
-        console.log("got my match:", myMatchData);
         this.myMatch = myMatchData;
         didRecoverMyMatch(myMatchData, gameId);
         this.observeMatch(invite.hostId, gameId);
@@ -219,7 +210,6 @@ class FirebaseConnection {
   }
 
   private reconnectAsHost(gameId: string, invite: any) {
-    console.log("will reconnect as host");
     const db = getDatabase(this.app);
     const myMatchRef = ref(db, `players/${invite.hostId}/matches/${gameId}`);
     get(myMatchRef)
@@ -229,7 +219,6 @@ class FirebaseConnection {
           console.log("got empty my match data");
           return;
         }
-        console.log("got my match:", myMatchData);
         this.myMatch = myMatchData;
         didRecoverMyMatch(myMatchData, gameId);
 
@@ -254,7 +243,6 @@ class FirebaseConnection {
   }
 
   private enterWatchOnlyMode(gameId: string, hostId: string, guestId: string) {
-    console.log("will enter watch only mode");
     enterWatchOnlyMode();
     this.observeMatch(hostId, gameId);
     this.observeMatch(guestId, gameId);
@@ -271,8 +259,7 @@ class FirebaseConnection {
           console.log("got empty opponent's match data");
           return;
         }
-        console.log("got opponent's match:", opponentsMatchData);
-
+        
         const color = opponentsMatchData.color === "black" ? "white" : "black";
         const emojiId = getPlayersEmojiId();
         const match = {
