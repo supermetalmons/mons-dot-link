@@ -4,7 +4,7 @@ import { getDatabase, Database, ref, set, onValue, off, get } from "firebase/dat
 import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
-import { Match, Invite, Reaction, RootMatch } from "./connectionModels";
+import { Match, Invite, Reaction } from "./connectionModels";
 
 const controllerVersion = 2;
 
@@ -36,9 +36,17 @@ class FirebaseConnection {
   }
 
   public sendRematchProposal(): void {
+    // TODO: send correct props to the correct field
     // TODO: create next match model
-    // TODO: update rematches list within the root match model
-    // TODO: get existing opponent's rematch / start listening to opponent's proposals
+    // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
+
+    const tmpProposal = "go";
+    set(ref(this.db, `invites/${this.gameId}/guestRematches`), tmpProposal).catch((error) => {
+      console.error("Error sending guestRematches:", error);
+    });
+    set(ref(this.db, `invites/${this.gameId}/hostRematches`), tmpProposal).catch((error) => {
+      console.error("Error sending hostRematches:", error);
+    });
   }
 
   public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
@@ -257,7 +265,7 @@ class FirebaseConnection {
 
         const color = opponentsMatchData.color === "black" ? "white" : "black";
         const emojiId = getPlayersEmojiId();
-        const match: RootMatch = {
+        const match: Match = {
           version: controllerVersion,
           color,
           emojiId,
@@ -265,7 +273,6 @@ class FirebaseConnection {
           status: "",
           flatMovesString: "",
           timer: "",
-          rematchesSuffixes: "",
         };
 
         this.myMatch = match;
@@ -302,7 +309,7 @@ class FirebaseConnection {
         console.error("Error creating invite:", error);
       });
 
-    const match: RootMatch = {
+    const match: Match = {
       version: controllerVersion,
       color: hostColor,
       emojiId,
@@ -310,7 +317,6 @@ class FirebaseConnection {
       status: "",
       flatMovesString: "",
       timer: "",
-      rematchesSuffixes: "",
     };
 
     this.myMatch = match;

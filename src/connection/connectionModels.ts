@@ -9,15 +9,13 @@ export interface Match {
   reaction?: Reaction;
 }
 
-export interface RootMatch extends Match {
-  rematchesSuffixes: string;
-}
-
 export interface Invite {
   version: number;
   hostId: string;
   hostColor: string;
   guestId?: string | null;
+  hostRematches?: string | null;
+  guestRematches?: string | null;
 }
 
 export interface Reaction {
