@@ -9,14 +9,17 @@ import { Match, Invite, Reaction } from "./connectionModels";
 const controllerVersion = 2;
 
 class FirebaseConnection {
+
   private app: FirebaseApp;
   private auth: Auth;
   private db: Database;
   private functions: Functions;
 
   private myMatch: Match | null = null;
+
   private uid: string | null = null;
-  private gameId: string | null = null;
+  private inviteId: string | null = null;
+  private matchId: string | null = null;
 
   constructor() {
     const firebaseConfig = {
@@ -40,11 +43,13 @@ class FirebaseConnection {
     // TODO: create next match model
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
 
-    const tmpProposal = "go";
-    set(ref(this.db, `invites/${this.gameId}/guestRematches`), tmpProposal).catch((error) => {
+    const tmpProposal = "1";
+    
+    set(ref(this.db, `invites/${this.inviteId}/guestRematches`), tmpProposal).catch((error) => {
       console.error("Error sending guestRematches:", error);
     });
-    set(ref(this.db, `invites/${this.gameId}/hostRematches`), tmpProposal).catch((error) => {
+
+    set(ref(this.db, `invites/${this.inviteId}/hostRematches`), tmpProposal).catch((error) => {
       console.error("Error sending hostRematches:", error);
     });
   }
@@ -69,7 +74,7 @@ class FirebaseConnection {
   public async startTimer(): Promise<any> {
     try {
       const startTimerFunction = httpsCallable(this.functions, "startTimer");
-      const response = await startTimerFunction({ gameId: this.gameId });
+      const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
       console.error("Error starting a timer:", error);
@@ -80,7 +85,7 @@ class FirebaseConnection {
   public async claimVictoryByTimer(): Promise<any> {
     try {
       const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimVictoryByTimer");
-      const response = await claimVictoryByTimerFunction({ gameId: this.gameId });
+      const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
       console.error("Error claiming victory by timer:", error);
@@ -91,7 +96,7 @@ class FirebaseConnection {
   public async prepareOnchainVictoryTx(): Promise<any> {
     try {
       const attestVictoryFunction = httpsCallable(this.functions, "attestVictory");
-      const response = await attestVictoryFunction({ gameId: this.gameId });
+      const response = await attestVictoryFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
       console.error("Error preparing onchain victory tx:", error);
@@ -119,7 +124,7 @@ class FirebaseConnection {
   public updateEmoji(newId: number): void {
     if (!this.myMatch) return;
     this.myMatch.emojiId = newId;
-    set(ref(this.db, `players/${this.uid}/matches/${this.gameId}/emojiId`), newId).catch((error) => {
+    set(ref(this.db, `players/${this.uid}/matches/${this.matchId}/emojiId`), newId).catch((error) => {
       console.error("Error updating emoji:", error);
     });
   }
@@ -127,7 +132,7 @@ class FirebaseConnection {
   public sendVoiceReaction(reaction: Reaction): void {
     if (!this.myMatch) return;
     this.myMatch.reaction = reaction;
-    set(ref(this.db, `players/${this.uid}/matches/${this.gameId}/reaction`), reaction).catch((error) => {
+    set(ref(this.db, `players/${this.uid}/matches/${this.matchId}/reaction`), reaction).catch((error) => {
       console.error("Error sending voice reaction:", error);
     });
   }
@@ -146,7 +151,7 @@ class FirebaseConnection {
   }
 
   private sendMatchUpdate(): void {
-    set(ref(this.db, `players/${this.uid}/matches/${this.gameId}`), this.myMatch)
+    set(ref(this.db, `players/${this.uid}/matches/${this.matchId}`), this.myMatch)
       .then(() => {
         console.log("Match update sent successfully");
       })
@@ -157,8 +162,7 @@ class FirebaseConnection {
 
   public connectToGame(uid: string, inviteId: string, autojoin: boolean): void {
     this.uid = uid;
-    this.gameId = inviteId;
-
+    this.inviteId = inviteId;
     const inviteRef = ref(this.db, `invites/${inviteId}`);
     get(inviteRef)
       .then((snapshot) => {
@@ -168,11 +172,14 @@ class FirebaseConnection {
           return;
         }
 
+        const matchId = inviteId; // TODO: !!! use inviteData to determine the current match id – based on rematches in there
+        this.matchId = matchId;
+
         if (!inviteData.guestId && inviteData.hostId !== uid) {
           if (autojoin) {
             set(ref(this.db, `invites/${inviteId}/guestId`), uid)
               .then(() => {
-                this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData.hostId);
+                this.getOpponentsMatchAndCreateOwnMatch(matchId, inviteData.hostId);
               })
               .catch((error) => {
                 console.error("Error joining as a guest:", error);
@@ -182,11 +189,11 @@ class FirebaseConnection {
           }
         } else {
           if (inviteData.hostId === uid) {
-            this.reconnectAsHost(inviteId, inviteData);
+            this.reconnectAsHost(inviteId, matchId, inviteData.hostId, inviteData.guestId);
           } else if (inviteData.guestId === uid) {
-            this.reconnectAsGuest(inviteId, inviteData);
+            this.reconnectAsGuest(matchId, inviteData.hostId, inviteData.guestId);
           } else {
-            this.enterWatchOnlyMode(inviteId, inviteData.hostId, inviteData.guestId);
+            this.enterWatchOnlyMode(matchId, inviteData.hostId, inviteData.guestId);
           }
         }
       })
@@ -195,8 +202,8 @@ class FirebaseConnection {
       });
   }
 
-  private reconnectAsGuest(gameId: string, invite: Invite): void {
-    const myMatchRef = ref(this.db, `players/${invite.guestId}/matches/${gameId}`);
+  private reconnectAsGuest(matchId: string, hostId: string, guestId: string): void {
+    const myMatchRef = ref(this.db, `players/${guestId}/matches/${matchId}`);
     get(myMatchRef)
       .then((snapshot) => {
         const myMatchData: Match | null = snapshot.val();
@@ -205,16 +212,16 @@ class FirebaseConnection {
           return;
         }
         this.myMatch = myMatchData;
-        didRecoverMyMatch(myMatchData, gameId);
-        this.observeMatch(invite.hostId, gameId);
+        didRecoverMyMatch(myMatchData, matchId);
+        this.observeMatch(hostId, matchId);
       })
       .catch((error) => {
         console.error("Failed to get guest's match:", error);
       });
   }
 
-  private reconnectAsHost(gameId: string, invite: Invite): void {
-    const myMatchRef = ref(this.db, `players/${invite.hostId}/matches/${gameId}`);
+  private reconnectAsHost(inviteId: string, matchId: string, hostId: string, guestId: string | null | undefined): void {
+    const myMatchRef = ref(this.db, `players/${hostId}/matches/${matchId}`);
     get(myMatchRef)
       .then((snapshot) => {
         const myMatchData: Match | null = snapshot.val();
@@ -223,18 +230,17 @@ class FirebaseConnection {
           return;
         }
         this.myMatch = myMatchData;
-        didRecoverMyMatch(myMatchData, gameId);
+        didRecoverMyMatch(myMatchData, matchId);
 
-        if (invite.guestId) {
-          this.observeMatch(invite.guestId, gameId);
+        if (guestId) {
+          this.observeMatch(guestId, matchId);
         } else {
           didFindYourOwnInviteThatNobodyJoined();
-          const inviteRef = ref(this.db, `invites/${gameId}`);
+          const inviteRef = ref(this.db, `invites/${inviteId}`);
           onValue(inviteRef, (snapshot) => {
             const updatedInvite: Invite | null = snapshot.val();
             if (updatedInvite && updatedInvite.guestId) {
-              console.log(`Guest ${updatedInvite.guestId} joined the invite ${gameId}`);
-              this.observeMatch(updatedInvite.guestId, gameId);
+              this.observeMatch(updatedInvite.guestId, matchId);
               off(inviteRef);
             }
           });
@@ -245,16 +251,16 @@ class FirebaseConnection {
       });
   }
 
-  private enterWatchOnlyMode(gameId: string, hostId: string, guestId?: string | null): void {
+  private enterWatchOnlyMode(matchId: string, hostId: string, guestId?: string | null): void {
     enterWatchOnlyMode();
-    this.observeMatch(hostId, gameId);
+    this.observeMatch(hostId, matchId);
     if (guestId) {
-      this.observeMatch(guestId, gameId);
+      this.observeMatch(guestId, matchId);
     }
   }
 
-  private getOpponentsMatchAndCreateOwnMatch(gameId: string, hostId: string): void {
-    const opponentsMatchRef = ref(this.db, `players/${hostId}/matches/${gameId}`);
+  private getOpponentsMatchAndCreateOwnMatch(matchId: string, hostId: string): void {
+    const opponentsMatchRef = ref(this.db, `players/${hostId}/matches/${matchId}`);
     get(opponentsMatchRef)
       .then((snapshot) => {
         const opponentsMatchData: Match | null = snapshot.val();
@@ -277,9 +283,9 @@ class FirebaseConnection {
 
         this.myMatch = match;
 
-        set(ref(this.db, `players/${this.uid}/matches/${gameId}`), match)
+        set(ref(this.db, `players/${this.uid}/matches/${matchId}`), match)
           .then(() => {
-            this.observeMatch(hostId, gameId);
+            this.observeMatch(hostId, matchId);
           })
           .catch((error) => {
             console.error("Error creating player match:", error);
@@ -321,9 +327,12 @@ class FirebaseConnection {
 
     this.myMatch = match;
     this.uid = uid;
-    this.gameId = inviteId;
+    this.inviteId = inviteId;
 
-    set(ref(this.db, `players/${uid}/matches/${inviteId}`), match).catch((error) => {
+    const matchId = inviteId;
+    this.matchId = matchId;
+
+    set(ref(this.db, `players/${uid}/matches/${matchId}`), match).catch((error) => {
       console.error("Error creating player match:", error);
     });
     const inviteRef = ref(this.db, `invites/${inviteId}`);
@@ -331,7 +340,7 @@ class FirebaseConnection {
       const updatedInvite: Invite | null = snapshot.val();
       if (updatedInvite && updatedInvite.guestId) {
         console.log(`Guest ${updatedInvite.guestId} joined the invite ${inviteId}`);
-        this.observeMatch(updatedInvite.guestId, inviteId);
+        this.observeMatch(updatedInvite.guestId, matchId);
         off(inviteRef);
       }
     });

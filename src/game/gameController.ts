@@ -24,7 +24,7 @@ let blackProcessedMovesCount = 0;
 let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
-let currentGameModelId: string | null = null;
+let currentGameModelMatchId: string | null = null;
 let whiteFlatMovesString: string | null = null;
 let blackFlatMovesString: string | null = null;
 
@@ -496,13 +496,13 @@ function hasBothEthAddresses(): boolean {
   return playerSide !== undefined && opponentSide !== undefined && playerSide !== opponentSide;
 }
 
-function verifyMovesIfNeeded(gameId: string, flatMovesString: string, color: string) {
-  if (currentGameModelId === gameId && game.is_moves_verified()) {
+function verifyMovesIfNeeded(matchId: string, flatMovesString: string, color: string) {
+  if (currentGameModelMatchId === matchId && game.is_moves_verified()) {
     return;
   }
 
-  if (currentGameModelId !== gameId) {
-    currentGameModelId = gameId;
+  if (currentGameModelMatchId !== matchId) {
+    currentGameModelMatchId = matchId;
     whiteFlatMovesString = null;
     blackFlatMovesString = null;
   }
@@ -598,7 +598,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(match: Match, matchPlayerUid: string, gameId: string) {
+function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -631,7 +631,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, gameId: string) {
     }
   }
 
-  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
+  verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
 
   if (isReconnect || isWatchOnly) {
     const movesCount = movesCountOfMatch(match);
@@ -823,10 +823,10 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   showRematchInterface();
 }
 
-export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, gameId: string) {
+export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
-    didConnectTo(match, matchPlayerUid, gameId);
+    didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver) {
       playSounds([Sound.DidConnect]);
@@ -867,7 +867,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, game
       setNewBoard();
     }
 
-    verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
+    verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
     setProcessedMovesCountForColor(match.color, movesCount);
   }
 
@@ -895,7 +895,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, game
   updateDisplayedTimerIfNeeded(didNotHaveBothMatchesSetupBeforeThisUpdate, match);
 }
 
-export function didRecoverMyMatch(match: Match, gameId: string) {
+export function didRecoverMyMatch(match: Match, matchId: string) {
   isReconnect = true;
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
@@ -906,7 +906,7 @@ export function didRecoverMyMatch(match: Match, gameId: string) {
     disableUndoResignAndTimerControls();
     hideTimers();
   }
-  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
+  verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
   const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
   Board.updateEmojiIfNeeded(match.emojiId.toString(), false);

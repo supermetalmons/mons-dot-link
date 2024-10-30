@@ -10,7 +10,7 @@ export const isModernAndPowerful = (() => {
   return true;
 })();
 
-export function generateNewGameId(): string {
+export function generateNewInviteId(): string {
   const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let id = "";
   for (let i = 0; i < 10; i++) {
