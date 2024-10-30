@@ -9,15 +9,15 @@ import { Match, Invite, Reaction } from "./connectionModels";
 const controllerVersion = 2;
 
 class FirebaseConnection {
-
   private app: FirebaseApp;
   private auth: Auth;
   private db: Database;
   private functions: Functions;
 
-  private myMatch: Match | null = null;
-
   private uid: string | null = null;
+
+  private latestInvite: Invite | null = null;
+  private myMatch: Match | null = null;
   private inviteId: string | null = null;
   private matchId: string | null = null;
 
@@ -40,18 +40,40 @@ class FirebaseConnection {
 
   public sendRematchProposal(): void {
     // TODO: send correct props to the correct field
-    // TODO: create next match model
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
 
-    const tmpProposal = "1";
-    
-    set(ref(this.db, `invites/${this.inviteId}/guestRematches`), tmpProposal).catch((error) => {
-      console.error("Error sending guestRematches:", error);
-    });
+    const tmpProposal = "1"; // TODO: determine this one correctly
+    const emojiId = getPlayersEmojiId();
+    const newColor = this.myMatch?.color === "white" ? "black" : "white"; // TODO: make sure color is determined correctly
 
-    set(ref(this.db, `invites/${this.inviteId}/hostRematches`), tmpProposal).catch((error) => {
-      console.error("Error sending hostRematches:", error);
-    });
+    const nextMatchId = this.inviteId + tmpProposal;
+    const nextMatch: Match = {
+      version: controllerVersion,
+      color: newColor,
+      emojiId,
+      fen: initialFen,
+      status: "",
+      flatMovesString: "",
+      timer: "",
+    };
+
+    set(ref(this.db, `players/${this.uid}/matches/${nextMatchId}`), nextMatch)
+      .then(() => {
+        if (this.latestInvite?.hostId === this.uid) {
+          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), tmpProposal).catch((error) => {
+            console.error("Error sending hostRematches:", error);
+          });
+        } else {
+          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), tmpProposal).catch((error) => {
+            console.error("Error sending guestRematches:", error);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error creating next match:", error);
+      });
+
+    // TODO: update this.latestInvite, this.myMatch, this.inviteId, this.matchId
   }
 
   public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
@@ -73,7 +95,7 @@ class FirebaseConnection {
 
   public async startTimer(): Promise<any> {
     try {
-      const startTimerFunction = httpsCallable(this.functions, "startTimer");
+      const startTimerFunction = httpsCallable(this.functions, "startMatchTimer");
       const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
@@ -84,7 +106,7 @@ class FirebaseConnection {
 
   public async claimVictoryByTimer(): Promise<any> {
     try {
-      const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimVictoryByTimer");
+      const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimMatchVictoryByTimer");
       const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
@@ -95,7 +117,7 @@ class FirebaseConnection {
 
   public async prepareOnchainVictoryTx(): Promise<any> {
     try {
-      const attestVictoryFunction = httpsCallable(this.functions, "attestVictory");
+      const attestVictoryFunction = httpsCallable(this.functions, "attestMatchVictory");
       const response = await attestVictoryFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
@@ -172,7 +194,10 @@ class FirebaseConnection {
           return;
         }
 
-        const matchId = inviteId; // TODO: !!! use inviteData to determine the current match id – based on rematches in there
+        this.latestInvite = inviteData;
+        const nextMatchSuffix = (inviteData.guestRematches && inviteData.guestRematches === inviteData.hostRematches) ? inviteData.hostRematches : "";
+        // TODO: !!! use inviteData to determine the current match id – based on rematches in there – gotta select the latest common one
+        const matchId = inviteId + nextMatchSuffix;
         this.matchId = matchId;
 
         if (!inviteData.guestId && inviteData.hostId !== uid) {
@@ -328,6 +353,7 @@ class FirebaseConnection {
     this.myMatch = match;
     this.uid = uid;
     this.inviteId = inviteId;
+    this.latestInvite = invite;
 
     const matchId = inviteId;
     this.matchId = matchId;
