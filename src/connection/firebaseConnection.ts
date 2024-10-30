@@ -43,6 +43,7 @@ class FirebaseConnection {
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
 
     const tmpProposal = "1"; // TODO: determine this one correctly
+
     const emojiId = getPlayersEmojiId();
     const newColor = this.myMatch?.color === "white" ? "black" : "white"; // TODO: make sure color is determined correctly
 
@@ -182,6 +183,39 @@ class FirebaseConnection {
       });
   }
 
+  private getLatestBothSidesApprovedMatchId(): string {
+    if (!this.inviteId || !this.latestInvite) {
+      return "";
+    }
+
+    const guestRematchesString = this.latestInvite.guestRematches;
+    const hostRematchesString = this.latestInvite.hostRematches;
+
+    if (!guestRematchesString || !hostRematchesString) {
+      return this.inviteId;
+    }
+
+    let commonPrefix = "";
+    for (let i = 0; i < Math.min(guestRematchesString.length, hostRematchesString.length); i++) {
+      if (guestRematchesString[i] === hostRematchesString[i]) {
+        commonPrefix += guestRematchesString[i];
+      } else {
+        break;
+      }
+    }
+
+    if (!commonPrefix) {
+      return this.inviteId;
+    }
+
+    const lastNumber = parseInt(commonPrefix.includes(";") ? commonPrefix.split(";").pop()! : commonPrefix);
+    if (isNaN(lastNumber)) {
+      return this.inviteId;
+    }
+
+    return this.inviteId + lastNumber.toString();
+  }
+
   public connectToGame(uid: string, inviteId: string, autojoin: boolean): void {
     this.uid = uid;
     this.inviteId = inviteId;
@@ -195,9 +229,7 @@ class FirebaseConnection {
         }
 
         this.latestInvite = inviteData;
-        const nextMatchSuffix = (inviteData.guestRematches && inviteData.guestRematches === inviteData.hostRematches) ? inviteData.hostRematches : "";
-        // TODO: !!! use inviteData to determine the current match id – based on rematches in there – gotta select the latest common one
-        const matchId = inviteId + nextMatchSuffix;
+        const matchId = this.getLatestBothSidesApprovedMatchId();
         this.matchId = matchId;
 
         if (!inviteData.guestId && inviteData.hostId !== uid) {
