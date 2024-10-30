@@ -191,6 +191,14 @@ function cleanAllPixels() {
     }
     delete items[key];
   }
+
+  for (const key in basesPlaceholders) {
+    const element = basesPlaceholders[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete basesPlaceholders[key];
+  }
 }
 
 export function didGetEthAddress(address: string, uid: string) {
