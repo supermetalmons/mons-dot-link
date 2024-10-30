@@ -8,7 +8,8 @@ export function setX(element: SVGElement, x: number): void {
   element.setAttribute("x", x.toString());
 }
 
-export function offsetX(element: SVGElement, delta: number): void {
+export function offsetX(element: SVGElement | undefined, delta: number): void {
+  if (!element) return;
   element.setAttribute("x", (parseFloat(element.getAttribute("x") || "0") + delta).toString());
 }
 

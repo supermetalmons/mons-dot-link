@@ -82,8 +82,11 @@ export function resetForNewGame() {
   opponentSideMetadata.uid = "";
   renderPlayersNamesLabels();
 
-  SVG.setHidden(opponentAvatar, false);
-  SVG.setHidden(playerAvatar, false);
+  if (opponentAvatar && playerAvatar) {
+    SVG.setHidden(opponentAvatar, false);
+    SVG.setHidden(playerAvatar, false);
+  }
+
   removeHighlights();
   for (const key in items) {
     const element = items[key];
@@ -113,9 +116,11 @@ export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean)
   }
 
   if (isOpponentSide) {
+    if (!opponentAvatar) return;
     opponentSideMetadata.emojiId = newEmojiId;
     SVG.setImage(opponentAvatar, newEmojiData);
   } else {
+    if (!playerAvatar) return;
     playerSideMetadata.emojiId = newEmojiId;
     SVG.setImage(playerAvatar, newEmojiData);
   }
@@ -186,6 +191,14 @@ function cleanAllPixels() {
     }
     delete items[key];
   }
+
+  for (const key in basesPlaceholders) {
+    const element = basesPlaceholders[key];
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+    delete basesPlaceholders[key];
+  }
 }
 
 export function didGetEthAddress(address: string, uid: string) {
@@ -196,6 +209,8 @@ export function didGetEthAddress(address: string, uid: string) {
 }
 
 function renderPlayersNamesLabels() {
+  if (!playerNameText || !opponentNameText) return;
+
   if (!isOnlineGame || opponentSideMetadata.uid === "") {
     playerNameText.textContent = "";
     opponentNameText.textContent = "";
@@ -400,6 +415,7 @@ export function removeItem(location: Location) {
 export function showTimer(color: string, remainingSeconds: number) {
   const playerSideTimer = isFlipped ? color === "white" : color === "black";
   const timerElement = playerSideTimer ? playerTimer : opponentTimer;
+  if (!timerElement) return;
 
   if (countdownInterval) {
     clearInterval(countdownInterval);
@@ -477,8 +493,10 @@ export function hideTimers() {
     clearInterval(countdownInterval);
     countdownInterval = null;
   }
-  SVG.setHidden(playerTimer, true);
-  SVG.setHidden(opponentTimer, true);
+  if (playerTimer && opponentTimer) {
+    SVG.setHidden(playerTimer, true);
+    SVG.setHidden(opponentTimer, true);
+  }
   activeTimer = null;
   updateNamesX();
 }
@@ -516,8 +534,10 @@ export function updateScore(white: number, black: number, winnerColor?: MonsWeb.
   const playerSuffix = isFlipped ? blackSuffix : whiteSuffix;
   const opponentSuffix = isFlipped ? whiteSuffix : blackSuffix;
 
-  playerScoreText.textContent = playerScore.toString() + playerSuffix;
-  opponentScoreText.textContent = opponentScore.toString() + opponentSuffix;
+  if (playerScoreText && opponentScoreText) {
+    playerScoreText.textContent = playerScore.toString() + playerSuffix;
+    opponentScoreText.textContent = opponentScore.toString() + opponentSuffix;
+  }
 
   showsPlayerEndOfGameSuffix = playerSuffix !== "";
   showsOpponentEndOfGameSuffix = opponentSuffix !== "";
@@ -568,15 +588,15 @@ export function showItemSelection() {
     overlay.remove();
   });
 
-  itemsLayer.appendChild(overlay);
+  itemsLayer?.appendChild(overlay);
 }
 
 export function putItem(item: MonsWeb.ItemModel, location: Location) {
   switch (item.kind) {
     case MonsWeb.ItemModelKind.Mon:
-      const isBlack = item.mon.color === MonsWeb.Color.Black;
-      const isFainted = item.mon.is_fainted();
-      switch (item.mon.kind) {
+      const isBlack = item.mon?.color === MonsWeb.Color.Black;
+      const isFainted = item.mon?.is_fainted();
+      switch (item.mon?.kind) {
         case MonsWeb.MonKind.Demon:
           placeItem(isBlack ? demonB : demon, location, isFainted);
           break;
@@ -595,7 +615,7 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       }
       break;
     case MonsWeb.ItemModelKind.Mana:
-      switch (item.mana.kind) {
+      switch (item.mana?.kind) {
         case MonsWeb.ManaKind.Regular:
           const isBlack = item.mana.color === MonsWeb.Color.Black;
           placeItem(isBlack ? manaB : mana, location);
@@ -606,18 +626,18 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       }
       break;
     case MonsWeb.ItemModelKind.MonWithMana:
-      const isBlackDrainer = item.mon.color === MonsWeb.Color.Black;
-      const isSupermana = item.mana.kind === MonsWeb.ManaKind.Supermana;
+      const isBlackDrainer = item.mon?.color === MonsWeb.Color.Black;
+      const isSupermana = item.mana?.kind === MonsWeb.ManaKind.Supermana;
       if (isSupermana) {
         placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
       } else {
-        const isBlackMana = item.mana.color === MonsWeb.Color.Black;
+        const isBlackMana = item.mana?.color === MonsWeb.Color.Black;
         placeMonWithMana(isBlackDrainer ? drainerB : drainer, isBlackMana ? manaB : mana, location);
       }
       break;
     case MonsWeb.ItemModelKind.MonWithConsumable:
-      const isBlackWithConsumable = item.mon.color === MonsWeb.Color.Black;
-      switch (item.mon.kind) {
+      const isBlackWithConsumable = item.mon?.color === MonsWeb.Color.Black;
+      switch (item.mon?.kind) {
         case MonsWeb.MonKind.Demon:
           placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location);
           break;
@@ -718,7 +738,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     numberText.setAttribute("font-size", "0.5");
     numberText.setAttribute("font-weight", "600");
     numberText.textContent = allHiddenInitially ? "" : "0";
-    controlsLayer.append(numberText);
+    controlsLayer?.append(numberText);
     if (isOpponent) {
       opponentScoreText = numberText;
     } else {
@@ -732,7 +752,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     timerText.setAttribute("font-size", "0.5");
     timerText.setAttribute("font-weight", "600");
     timerText.textContent = "";
-    controlsLayer.append(timerText);
+    controlsLayer?.append(timerText);
     if (isOpponent) {
       opponentTimer = timerText;
     } else {
@@ -747,7 +767,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
     nameText.style.cursor = "pointer";
-    controlsLayer.append(nameText);
+    controlsLayer?.append(nameText);
 
     nameText.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -785,7 +805,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
       SVG.setFrame(img, 10.5 - x * 0.55 - statusItemsOffsetX, y - statusItemsOffsetY, 0.5, 0.5);
-      controlsLayer.appendChild(img);
+      controlsLayer?.appendChild(img);
 
       if (isOpponent) {
         opponentMoveStatusItems.push(img);
@@ -806,7 +826,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
     avatar.style.pointerEvents = "auto";
     SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
-    controlsLayer.append(avatar);
+    controlsLayer?.append(avatar);
     if (isOpponent) {
       opponentAvatar = avatar;
     } else {
@@ -935,7 +955,7 @@ export function setupBoard() {
       SVG.setFrame(rect, x, y + 1, 1, 1);
       SVG.setFill(rect, "transparent");
       rect.classList.add("board-rect");
-      itemsLayer.appendChild(rect);
+      itemsLayer?.appendChild(rect);
     }
   }
 
@@ -945,7 +965,7 @@ export function setupBoard() {
 }
 
 export function removeHighlights() {
-  while (highlightsLayer.firstChild) {
+  while (highlightsLayer?.firstChild) {
     highlightsLayer.removeChild(highlightsLayer.firstChild);
   }
 }
@@ -970,13 +990,14 @@ export function applyHighlights(highlights: Highlight[]) {
 }
 
 export function popOpponentsEmoji() {
-  if (!isModernAndPowerful) {
+  if (!isModernAndPowerful || !opponentAvatar) {
     return;
   }
 
   opponentAvatar.style.transition = "transform 0.3s";
   opponentAvatar.style.transform = "scale(1.8)";
   setTimeout(() => {
+    if (!opponentAvatar) return;
     opponentAvatar.style.transform = "scale(1)";
   }, 300);
 }
@@ -998,7 +1019,7 @@ export function drawTrace(trace: Trace) {
   stop2.setAttribute("offset", "100%");
   stop2.setAttribute("stop-color", colors[0]);
   gradient.appendChild(stop2);
-  board.appendChild(gradient);
+  board?.appendChild(gradient);
 
   const rect = document.createElementNS(SVG.ns, "rect");
   const fromCenter = { x: from.j + 0.5, y: from.i + 0.5 };
@@ -1013,7 +1034,7 @@ export function drawTrace(trace: Trace) {
   rect.setAttribute("transform", transform);
 
   SVG.setFill(rect, `url(#trace-gradient-${from.toString()}-${to.toString()})`);
-  board.append(rect);
+  board?.append(rect);
 
   const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
     duration: 2000,
@@ -1052,7 +1073,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedBomb);
 
-  itemsLayer.appendChild(container);
+  itemsLayer?.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -1068,7 +1089,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  itemsLayer.appendChild(container);
+  itemsLayer?.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -1084,7 +1105,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  itemsLayer.appendChild(container);
+  itemsLayer?.appendChild(container);
   items[location.toString()] = container;
 }
 
@@ -1101,7 +1122,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     const container = document.createElementNS(SVG.ns, "g");
     container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
     container.appendChild(img);
-    itemsLayer.appendChild(container);
+    itemsLayer?.appendChild(container);
     items[key] = container;
   } else if (sparkles) {
     const container = document.createElementNS(SVG.ns, "g");
@@ -1109,11 +1130,11 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     SVG.setOrigin(img, location.j, location.i);
     container.appendChild(sparkles);
     container.appendChild(img);
-    itemsLayer.appendChild(container);
+    itemsLayer?.appendChild(container);
     items[key] = container;
   } else {
     SVG.setOrigin(img, location.j, location.i);
-    itemsLayer.appendChild(img);
+    itemsLayer?.appendChild(img);
     items[key] = img;
   }
 }
@@ -1139,7 +1160,7 @@ function createSparklingContainer(location: Location): SVGElement {
     }
   } else {
     const intervalId = setInterval(() => {
-      if (!container.parentNode.parentNode) {
+      if (!container.parentNode?.parentNode) {
         clearInterval(intervalId);
         return;
       }
@@ -1165,7 +1186,7 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
 
   const velocity = (4 + 2 * Math.random()) * 0.01;
   const duration = Math.random() * 1000 + 2500;
-  let startTime: number = null;
+  let startTime: number | null = null;
 
   function animateParticle(time: number) {
     if (!startTime) {
@@ -1197,7 +1218,7 @@ function setBase(item: SVGElement, location: Location) {
     const img = item.cloneNode() as SVGElement;
     SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
     SVG.setOpacity(img, 0.4);
-    board.appendChild(img);
+    board?.appendChild(img);
     basesPlaceholders[key] = img;
   }
 }
@@ -1207,7 +1228,7 @@ function highlightEmptyDestination(location: Location, color: string) {
   const highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
   highlight.style.pointerEvents = "none";
   SVG.setFill(highlight, color);
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 }
 
 function highlightSelectedItem(location: Location, color: string) {
@@ -1228,7 +1249,7 @@ function highlightSelectedItem(location: Location, color: string) {
 
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
   highlight.appendChild(circle);
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 }
 
 function highlightStartFromSuggestion(location: Location, color: string) {
@@ -1253,7 +1274,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
   SVG.setOpacity(highlight, 0.69);
   highlight.appendChild(circle);
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 
   setTimeout(() => {
     highlight.remove();
@@ -1286,7 +1307,7 @@ function highlightDestinationItem(location: Location, color: string) {
 
   rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
 
-  highlightsLayer.append(highlight);
+  highlightsLayer?.append(highlight);
 }
 
 function getTraceColors(): string[] {
@@ -1307,7 +1328,7 @@ function addWaves(location: Location) {
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
   SVG.setOpacity(wavesSquareElement, 0.5);
-  board.appendChild(wavesSquareElement);
+  board?.appendChild(wavesSquareElement);
 
   let frameIndex = 0;
   wavesSquareElement.appendChild(getWavesFrame(location, frameIndex));
@@ -1365,8 +1386,8 @@ function getWavesFrame(location: Location, frameIndex: number) {
         const baseBottomRect = baseBottomRects[i];
         const slidingBottomRect = slidingBottomRects[i];
         const slidingTopRect = slidingTopRects[i];
-        const baseX = parseFloat(baseBottomRect.getAttribute("x"));
-        const baseWidth = parseFloat(baseBottomRect.getAttribute("width"));
+        const baseX = parseFloat(baseBottomRect.getAttribute("x") ?? "0");
+        const baseWidth = parseFloat(baseBottomRect.getAttribute("width") ?? "0");
         let sliderX = baseX + baseWidth - pixel * frameIndex;
         const attemptedWidth = Math.min(frameIndex, 3) * pixel;
         const visibleWidth = (() => {

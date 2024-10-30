@@ -20,6 +20,16 @@
         "guestId": {
           ".write": "auth != null && !data.exists() && newData.isString() && auth.uid === newData.val()",
           ".validate": "newData.isString() && auth.uid === newData.val() && (!data.parent().child('password').exists() || (data.parent().child('password').exists() && newData.parent().child('password').val() === data.parent().child('password').val()))"
+        },
+
+        "guestRematches": {
+          ".write": "auth.uid === data.parent().child('guestId').val()",
+          ".validate": "newData.isString() && (!data.exists() || newData.val().contains(data.val()))"
+        },
+
+        "hostRematches": {
+          ".write": "auth.uid === data.parent().child('hostId').val()",
+          ".validate": "newData.isString() && (!data.exists() || newData.val().contains(data.val()))"
         }
       }
     },

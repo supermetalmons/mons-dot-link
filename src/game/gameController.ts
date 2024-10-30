@@ -5,8 +5,9 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isModernAndPowerful } from "../utils/misc";
-import { sendResignStatus, prepareOnchainVictoryTx, getCurrentGameId, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer } from "../connection/connection";
+import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, setStartTimerVisible, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
+import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
 
@@ -23,14 +24,14 @@ let blackProcessedMovesCount = 0;
 let didSetWhiteProcessedMovesCount = false;
 let didSetBlackProcessedMovesCount = false;
 
-let currentGameModelId: string | null = null;
+let currentGameModelMatchId: string | null = null;
 let whiteFlatMovesString: string | null = null;
 let blackFlatMovesString: string | null = null;
 
-let game: any;
-let playerSideColor: any;
-let resignedColor: any;
-let winnerByTimerColor: any;
+let game: MonsWeb.MonsGameModel;
+let playerSideColor: MonsWeb.Color;
+let resignedColor: MonsWeb.Color;
+let winnerByTimerColor: MonsWeb.Color;
 
 let lastReactionTime = 0;
 
@@ -88,7 +89,8 @@ function showRematchInterface() {
 }
 
 function didConfirmRematchProposal() {
-  alert("wip. rematch is not implemented yet.")
+  Board.runMonsBoardAsDisplayWaitingAnimation();
+  sendRematchProposal();
   // TODO: implement
 }
 
@@ -107,7 +109,7 @@ export function didClickPrimaryActionButton(action: PrimaryActionType) {
 
 export function didClickClaimVictoryByTimerButton() {
   if (isOnlineGame && !isWatchOnly) {
-    claimVictoryByTimer(getCurrentGameId())
+    claimVictoryByTimer()
       .then((res) => {
         if (res.ok) {
           handleVictoryByTimer(false, playerSideColor === MonsWeb.Color.White ? "white" : "black", true);
@@ -119,7 +121,7 @@ export function didClickClaimVictoryByTimerButton() {
 
 export function didClickStartTimerButton() {
   if (isOnlineGame && !isWatchOnly && !isPlayerSideTurn()) {
-    startTimer(getCurrentGameId())
+    startTimer()
       .then((res) => {
         if (res.ok) {
           showTimerCountdown(false, res.timer, playerSideColor === MonsWeb.Color.White ? "white" : "black", res.duration);
@@ -186,7 +188,7 @@ export function didClickSquare(location: Location) {
 function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assistedInputKind: AssistedInputKind, inputLocation?: Location) {
   switch (output.kind) {
     case MonsWeb.OutputModelKind.InvalidInput:
-      const shouldTryToReselect = assistedInputKind === AssistedInputKind.None && currentInputs.length > 1 && !currentInputs[0].equals(inputLocation);
+      const shouldTryToReselect = assistedInputKind === AssistedInputKind.None && currentInputs.length > 1 && inputLocation && !currentInputs[0].equals(inputLocation);
       const shouldHelpFindOptions = assistedInputKind === AssistedInputKind.None && currentInputs.length === 1;
       currentInputs = [];
       Board.removeHighlights();
@@ -211,6 +213,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       }
 
       const nextInputHighlights = nextInputs.flatMap((input) => {
+        if (!input.location) return [];
         const location = new Location(input.location.i, input.location.j);
         let color: string;
         let highlightKind: HighlightKind;
@@ -300,6 +303,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         const to = event.loc2 ? location(event.loc2) : undefined;
         switch (event.kind) {
           case MonsWeb.EventModelKind.MonMove:
+            if (!from || !to) break;
             sounds.push(Sound.Move);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
@@ -307,11 +311,13 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.ManaMove:
+            if (!from || !to) break;
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.ManaScored:
+            if (!from || !event.mana) break;
             if (event.mana.kind === MonsWeb.ManaKind.Supermana) {
               sounds.push(Sound.ScoreSupermana);
             } else {
@@ -322,65 +328,80 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
             break;
           case MonsWeb.EventModelKind.MysticAction:
+            if (!from || !to) break;
             sounds.push(Sound.MysticAbility);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.DemonAction:
+            if (!from || !to) break;
             sounds.push(Sound.DemonAbility);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.DemonAdditionalStep:
+            if (!from || !to) break;
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.SpiritTargetMove:
+            if (!from || !to) break;
             sounds.push(Sound.SpiritAbility);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.PickupBomb:
+            if (!from) break;
             sounds.push(Sound.PickupBomb);
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
             break;
           case MonsWeb.EventModelKind.PickupPotion:
+            if (!from) break;
             sounds.push(Sound.PickupPotion);
             locationsToUpdate.push(from);
             mustReleaseHighlight = true;
             break;
           case MonsWeb.EventModelKind.PickupMana:
+            if (!from) break;
             sounds.push(Sound.ManaPickUp);
             locationsToUpdate.push(from);
             break;
           case MonsWeb.EventModelKind.MonFainted:
+            if (!from || !to) break;
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             break;
           case MonsWeb.EventModelKind.ManaDropped:
+            if (!from) break;
             locationsToUpdate.push(from);
             break;
           case MonsWeb.EventModelKind.SupermanaBackToBase:
+            if (!from || !to) break;
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             break;
           case MonsWeb.EventModelKind.BombAttack:
+            if (!from || !to) break;
             sounds.push(Sound.Bomb);
             locationsToUpdate.push(from);
             locationsToUpdate.push(to);
             traces.push(new Trace(from, to));
             break;
           case MonsWeb.EventModelKind.MonAwake:
-            locationsToUpdate.push(from);
+            if (from) {
+              locationsToUpdate.push(from);
+            }
             break;
           case MonsWeb.EventModelKind.BombExplosion:
             sounds.push(Sound.Bomb);
-            locationsToUpdate.push(from);
+            if (from) {
+              locationsToUpdate.push(from);
+            }
             break;
           case MonsWeb.EventModelKind.NextTurn:
             sounds.push(Sound.EndTurn);
@@ -475,13 +496,13 @@ function hasBothEthAddresses(): boolean {
   return playerSide !== undefined && opponentSide !== undefined && playerSide !== opponentSide;
 }
 
-function verifyMovesIfNeeded(gameId: string, flatMovesString: string, color: string) {
-  if (currentGameModelId === gameId && game.is_moves_verified()) {
+function verifyMovesIfNeeded(matchId: string, flatMovesString: string, color: string) {
+  if (currentGameModelMatchId === matchId && game.is_moves_verified()) {
     return;
   }
 
-  if (currentGameModelId !== gameId) {
-    currentGameModelId = gameId;
+  if (currentGameModelMatchId !== matchId) {
+    currentGameModelMatchId = matchId;
     whiteFlatMovesString = null;
     blackFlatMovesString = null;
   }
@@ -505,8 +526,7 @@ function suggestSavingOnchainRating(onResign: boolean) {
   const reason = onResign ? "🫡 opponent resigned" : "🎉 you win";
   const shouldSave = global.confirm(reason + "\n\n💾 save victory onchain");
   if (shouldSave) {
-    const gameId = getCurrentGameId();
-    prepareOnchainVictoryTx(gameId)
+    prepareOnchainVictoryTx()
       .then((res) => {
         saveOnchainRating(res);
       })
@@ -514,7 +534,7 @@ function suggestSavingOnchainRating(onResign: boolean) {
   }
 }
 
-async function saveOnchainRating(txData) {
+async function saveOnchainRating(txData: any) {
   const { sendEasTx } = await import("../connection/eas");
   sendEasTx(txData);
 }
@@ -578,7 +598,7 @@ function hasItemAt(location: Location): boolean {
   }
 }
 
-function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
+function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   Board.resetForNewGame();
   isOnlineGame = true;
   currentInputs = [];
@@ -602,14 +622,16 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   }
 
   if (!isReconnect || (isReconnect && !game.is_later_than(match.fen)) || isWatchOnly) {
-    game = MonsWeb.MonsGameModel.from_fen(match.fen);
+    const gameFromFen = MonsWeb.MonsGameModel.from_fen(match.fen);
+    if (!gameFromFen) return;
+    game = gameFromFen;
     if (game.winner_color() !== undefined) {
       disableUndoResignAndTimerControls();
       hideTimers();
     }
   }
 
-  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
+  verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
 
   if (isReconnect || isWatchOnly) {
     const movesCount = movesCountOfMatch(match);
@@ -632,7 +654,7 @@ function didConnectTo(match: any, matchPlayerUid: string, gameId: string) {
   updateDisplayedTimerIfNeeded(true, match);
 }
 
-function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
+function updateDisplayedTimerIfNeeded(onConnect: boolean, match: Match) {
   if (match.color === "white") {
     whiteTimerStash = match.timer;
   } else {
@@ -645,7 +667,7 @@ function updateDisplayedTimerIfNeeded(onConnect: boolean, match: any) {
     }
   }
 
-  let timer = "";
+  let timer: string | null = "";
   let timerColor = "";
   const activeColor = game.active_color();
   if (activeColor === MonsWeb.Color.Black) {
@@ -701,7 +723,7 @@ function setNewBoard() {
   } else {
     updateBoardMoveStatuses();
   }
-  const locationsWithContent = game.locations_with_content();
+  const locationsWithContent = game.locations_with_content().map((loc) => new Location(loc.i, loc.j));
   Board.removeItemsNotPresentIn(locationsWithContent);
   locationsWithContent.forEach((loc) => {
     const location = new Location(loc.i, loc.j);
@@ -801,10 +823,10 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   showRematchInterface();
 }
 
-export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId: string) {
+export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
-    didConnectTo(match, matchPlayerUid, gameId);
+    didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver) {
       playSounds([Sound.DidConnect]);
@@ -835,7 +857,9 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
   if (isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount)) {
     didNotHaveBothMatchesSetupBeforeThisUpdate = true;
     if (!game.is_later_than(match.fen)) {
-      game = MonsWeb.MonsGameModel.from_fen(match.fen);
+      const gameFromFen = MonsWeb.MonsGameModel.from_fen(match.fen);
+      if (!gameFromFen) return;
+      game = gameFromFen;
       if (game.winner_color() !== undefined) {
         disableUndoResignAndTimerControls();
         hideTimers();
@@ -843,7 +867,7 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
       setNewBoard();
     }
 
-    verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
+    verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
     setProcessedMovesCountForColor(match.color, movesCount);
   }
 
@@ -871,16 +895,18 @@ export function didReceiveMatchUpdate(match: any, matchPlayerUid: string, gameId
   updateDisplayedTimerIfNeeded(didNotHaveBothMatchesSetupBeforeThisUpdate, match);
 }
 
-export function didRecoverMyMatch(match: any, gameId: string) {
+export function didRecoverMyMatch(match: Match, matchId: string) {
   isReconnect = true;
 
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
-  game = MonsWeb.MonsGameModel.from_fen(match.fen);
+  const gameFromFen = MonsWeb.MonsGameModel.from_fen(match.fen);
+  if (!gameFromFen) return;
+  game = gameFromFen
   if (game.winner_color() !== undefined) {
     disableUndoResignAndTimerControls();
     hideTimers();
   }
-  verifyMovesIfNeeded(gameId, match.flatMovesString, match.color);
+  verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
   const movesCount = movesCountOfMatch(match);
   setProcessedMovesCountForColor(match.color, movesCount);
   Board.updateEmojiIfNeeded(match.emojiId.toString(), false);
@@ -896,7 +922,7 @@ export function enterWatchOnlyMode() {
   isWatchOnly = true;
 }
 
-function movesFensArray(match: any): string[] {
+function movesFensArray(match: Match): string[] {
   const flatMovesString = match.flatMovesString;
   if (!flatMovesString || flatMovesString === "") {
     return [];
@@ -904,7 +930,7 @@ function movesFensArray(match: any): string[] {
   return flatMovesString.split("-");
 }
 
-function movesCountOfMatch(match: any): number {
+function movesCountOfMatch(match: Match): number {
   const flatMovesString = match.flatMovesString;
   if (!flatMovesString || flatMovesString === "") {
     return 0;

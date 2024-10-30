@@ -190,7 +190,7 @@ const MainMenu: React.FC = () => {
 
   const handleInviteClick = () => {
     setIsInviteLoading(true);
-    didClickInviteButton((result) => {
+    didClickInviteButton((result: boolean) => {
       if (result) {
         setIsInviteLoading(false);
         setDidCreateInvite(true);

@@ -12,7 +12,7 @@ export const colors = {
     5: "#73FDFF",
     6: "#75D5FF",
     7: "#D783FF",
-  },
+  } as { [key: string]: string },
 
   getRainbow: function (index: string) {
     return this.rainbow[index];

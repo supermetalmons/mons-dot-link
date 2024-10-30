@@ -1,10 +1,11 @@
-import { generateNewGameId } from "../utils/misc";
+import { generateNewInviteId } from "../utils/misc";
+import { Reaction } from "./connectionModels";
 
 const initialPath = window.location.pathname.replace(/^\/|\/$/g, "");
 export const isCreateNewInviteFlow = initialPath === "";
 
 let firebaseConnection: any;
-let newGameId = "";
+let newInviteId = "";
 let didCreateNewGameInvite = false;
 let currentUid: string | null = "";
 
@@ -18,8 +19,8 @@ export async function subscribeToAuthChanges(callback: (uid: string | null) => v
   });
 }
 
-export function getCurrentGameId(): string {
-  return firebaseConnection.gameId;
+export function sendRematchProposal() {
+  firebaseConnection.sendRematchProposal();
 }
 
 export function setupConnection(autojoin: boolean) {
@@ -28,19 +29,19 @@ export function setupConnection(autojoin: boolean) {
   }
 }
 
-export function didClickInviteButton(completion) {
+export function didClickInviteButton(completion: any) {
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
     completion(true);
   } else {
-    newGameId = generateNewGameId();
+    newInviteId = generateNewInviteId();
     writeInviteLinkToClipboard();
     createNewMatchInvite(completion);
   }
 }
 
 function writeInviteLinkToClipboard() {
-  const link = window.location.origin + "/" + newGameId;
+  const link = window.location.origin + "/" + newInviteId;
   navigator.clipboard.writeText(link);
 }
 
@@ -52,7 +53,7 @@ export function sendMove(moveFen: string, newBoardFen: string) {
   firebaseConnection.sendMove(moveFen, newBoardFen);
 }
 
-export function sendVoiceReaction(reaction: any) {
+export function sendVoiceReaction(reaction: Reaction) {
   firebaseConnection.sendVoiceReaction(reaction);
 }
 
@@ -70,22 +71,22 @@ export async function verifyEthAddress(message: string, signature: string): Prom
   return firebaseConnection.verifyEthAddress(message, signature);
 }
 
-export async function startTimer(gameId: string): Promise<any> {
-  return firebaseConnection.startTimer(gameId);
+export async function startTimer(): Promise<any> {
+  return firebaseConnection.startTimer();
 }
 
-export async function claimVictoryByTimer(gameId: string): Promise<any> {
-  return firebaseConnection.claimVictoryByTimer(gameId);
+export async function claimVictoryByTimer(): Promise<any> {
+  return firebaseConnection.claimVictoryByTimer();
 }
 
-export async function prepareOnchainVictoryTx(gameId: string): Promise<any> {
-  return firebaseConnection.prepareOnchainVictoryTx(gameId);
+export async function prepareOnchainVictoryTx(): Promise<any> {
+  return firebaseConnection.prepareOnchainVictoryTx();
 }
 
-export function connectToGame(gameId: string, autojoin: boolean) {
+export function connectToGame(inviteId: string, autojoin: boolean) {
   signIn().then((uid) => {
     if (uid) {
-      firebaseConnection.connectToGame(uid, gameId, autojoin);
+      firebaseConnection.connectToGame(uid, inviteId, autojoin);
     } else {
       // TODO: try to reconnect
       console.log("failed to get game info");
@@ -93,12 +94,12 @@ export function connectToGame(gameId: string, autojoin: boolean) {
   });
 }
 
-function createNewMatchInvite(completion) {
+function createNewMatchInvite(completion: any) {
   signIn().then((uid) => {
     if (uid) {
-      firebaseConnection.createInvite(uid, newGameId); // TODO: retry if failed to create
+      firebaseConnection.createInvite(uid, newInviteId); // TODO: retry if failed to create
       didCreateNewGameInvite = true;
-      updatePath(newGameId);
+      updatePath(newInviteId);
       completion(true);
     } else {
       console.log("failed to sign in");
@@ -107,8 +108,8 @@ function createNewMatchInvite(completion) {
   });
 }
 
-function updatePath(newGameId: string) {
-  const newPath = `/${newGameId}`;
+function updatePath(newInviteId: string) {
+  const newPath = `/${newInviteId}`;
   window.history.pushState({ path: newPath }, "", newPath);
 }
 

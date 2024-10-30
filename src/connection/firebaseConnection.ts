@@ -1,18 +1,25 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set, onValue, off, get } from "firebase/database";
+import { initializeApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import { getDatabase, Database, ref, set, onValue, off, get } from "firebase/database";
 import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
+import { getFunctions, Functions, httpsCallable } from "firebase/functions";
+import { Match, Invite, Reaction } from "./connectionModels";
 
 const controllerVersion = 2;
 
 class FirebaseConnection {
-  private app: any;
-  private auth: any;
+  private app: FirebaseApp;
+  private auth: Auth;
+  private db: Database;
+  private functions: Functions;
 
-  private myMatch: any;
-  private uid: string;
-  public gameId: string;
+  private uid: string | null = null;
+
+  private latestInvite: Invite | null = null;
+  private myMatch: Match | null = null;
+  private inviteId: string | null = null;
+  private matchId: string | null = null;
 
   constructor() {
     const firebaseConfig = {
@@ -27,59 +34,144 @@ class FirebaseConnection {
 
     this.app = initializeApp(firebaseConfig);
     this.auth = getAuth(this.app);
+    this.db = getDatabase(this.app);
+    this.functions = getFunctions(this.app);
   }
 
-  public subscribeToAuthChanges(callback: (uid: string | null) => void) {
+  public sendRematchProposal(): void {
+    // TODO: send correct props to the correct field
+    // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
+
+    const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
+    if (!newRematchProposalIndex) {
+      // TODO: might need extra / different handling for existing proposal
+      window.location.reload(); // TODO: dev tmp, handle with no reloading
+      return;
+    }
+
+    const emojiId = getPlayersEmojiId();
+    const newColor = this.myMatch?.color === "white" ? "black" : "white"; // TODO: make sure color is determined correctly
+
+    const nextMatchId = this.inviteId + newRematchProposalIndex;
+    const nextMatch: Match = {
+      version: controllerVersion,
+      color: newColor,
+      emojiId,
+      fen: initialFen,
+      status: "",
+      flatMovesString: "",
+      timer: "",
+    };
+
+    set(ref(this.db, `players/${this.uid}/matches/${nextMatchId}`), nextMatch)
+      .then(() => {
+        if (this.latestInvite?.hostId === this.uid) {
+          const newHostProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), newHostProposalsString)
+            .then(() => {
+              console.log("Successfully sent hostRematches");
+              window.location.reload(); // TODO: dev tmp, handle with no reloading
+            })
+            .catch((error) => {
+              console.error("Error sending hostRematches:", error);
+            });
+        } else {
+          const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), newGuestProposalsString)
+            .then(() => {
+              console.log("Successfully sent guestRematches"); 
+              window.location.reload(); // TODO: dev tmp, handle with no reloading
+            })
+            .catch((error) => {
+              console.error("Error sending guestRematches:", error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error("Error creating next match:", error);
+      });
+
+    // TODO: update this.latestInvite, this.myMatch, this.inviteId, this.matchId
+  }
+
+  private getRematchIndexAvailableForNewProposal(): string | null {
+    if (!this.latestInvite) return null;
+
+    const proposingAsHost = this.latestInvite.hostId === this.uid;
+    const guestRematchesLength = this.latestInvite.guestRematches ? this.latestInvite.guestRematches.length : 0;
+    const hostRematchesLength = this.latestInvite.hostRematches ? this.latestInvite.hostRematches.length : 0;
+
+    const proposerRematchesLength = proposingAsHost ? hostRematchesLength : guestRematchesLength;
+    const otherPlayerRematchesLength = proposingAsHost ? guestRematchesLength : hostRematchesLength;
+
+    const latestCommonIndex = this.getLatestBothSidesApprovedRematchIndex();
+
+    if (!latestCommonIndex) {
+      if (proposerRematchesLength === 0 && otherPlayerRematchesLength === 0) {
+        return "1";
+      } else if (proposerRematchesLength >= otherPlayerRematchesLength) {
+        return null
+      } else if (proposerRematchesLength < otherPlayerRematchesLength) {
+        if (proposerRematchesLength === 0) {
+          return "1"
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      if (proposerRematchesLength > otherPlayerRematchesLength) {
+        return null;
+      } else {
+        return (latestCommonIndex + 1).toString();
+      }
+    }
+  }
+
+  public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
     onAuthStateChanged(this.auth, (user) => {
       callback(user ? user.uid : null);
     });
   }
 
-  public signIn(): Promise<string | undefined> {
-    return new Promise((resolve) => {
-      signInAnonymously(this.auth)
-        .then(() => {
-          const uid = this.auth.currentUser?.uid;
-          resolve(uid);
-        })
-        .catch(() => {
-          resolve(undefined);
-        });
-    });
+  public async signIn(): Promise<string | undefined> {
+    try {
+      await signInAnonymously(this.auth);
+      const uid = this.auth.currentUser?.uid;
+      return uid;
+    } catch (error) {
+      console.error("Failed to sign in anonymously:", error);
+      return undefined;
+    }
   }
 
-  public async startTimer(gameId: string): Promise<any> {
+  public async startTimer(): Promise<any> {
     try {
-      const { getFunctions, httpsCallable } = await import("firebase/functions");
-      const functions = getFunctions(this.app);
-      const startTimerFunction = httpsCallable(functions, "startTimer");
-      const response = await startTimerFunction({ gameId });
+      const startTimerFunction = httpsCallable(this.functions, "startMatchTimer");
+      const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
-      console.error("Error starting a timer", error);
+      console.error("Error starting a timer:", error);
       throw error;
     }
   }
 
-  public async claimVictoryByTimer(gameId: string): Promise<any> {
+  public async claimVictoryByTimer(): Promise<any> {
     try {
-      const { getFunctions, httpsCallable } = await import("firebase/functions");
-      const functions = getFunctions(this.app);
-      const claimVictoryByTimerFunction = httpsCallable(functions, "claimVictoryByTimer");
-      const response = await claimVictoryByTimerFunction({ gameId });
+      const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimMatchVictoryByTimer");
+      const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
-      console.error("Error claiming victory by timer", error);
+      console.error("Error claiming victory by timer:", error);
       throw error;
     }
   }
 
-  public async prepareOnchainVictoryTx(gameId: string): Promise<any> {
+  public async prepareOnchainVictoryTx(): Promise<any> {
     try {
-      const { getFunctions, httpsCallable } = await import("firebase/functions");
-      const functions = getFunctions(this.app);
-      const attestVictoryFunction = httpsCallable(functions, "attestVictory");
-      const response = await attestVictoryFunction({ gameId });
+      const attestVictoryFunction = httpsCallable(this.functions, "attestMatchVictory");
+      const response = await attestVictoryFunction({ inviteId: this.inviteId, matchId: this.matchId });
       return response.data;
     } catch (error) {
       console.error("Error preparing onchain victory tx:", error);
@@ -95,9 +187,7 @@ class FirebaseConnection {
           throw new Error("Failed to authenticate user");
         }
       }
-      const { getFunctions, httpsCallable } = await import("firebase/functions");
-      const functions = getFunctions(this.app);
-      const verifyEthAddressFunction = httpsCallable(functions, "verifyEthAddress");
+      const verifyEthAddressFunction = httpsCallable(this.functions, "verifyEthAddress");
       const response = await verifyEthAddressFunction({ message, signature });
       return response.data;
     } catch (error) {
@@ -106,81 +196,125 @@ class FirebaseConnection {
     }
   }
 
-  public updateEmoji(newId: number) {
+  public updateEmoji(newId: number): void {
+    if (!this.myMatch) return;
     this.myMatch.emojiId = newId;
-    const db = getDatabase(this.app);
-    set(ref(db, `players/${this.uid}/matches/${this.gameId}/emojiId`), newId)
-      .then(() => {})
-      .catch(() => {});
+    set(ref(this.db, `players/${this.uid}/matches/${this.matchId}/emojiId`), newId).catch((error) => {
+      console.error("Error updating emoji:", error);
+    });
   }
 
-  public sendVoiceReaction(reaction: any) {
+  public sendVoiceReaction(reaction: Reaction): void {
+    if (!this.myMatch) return;
     this.myMatch.reaction = reaction;
-    const db = getDatabase(this.app);
-    set(ref(db, `players/${this.uid}/matches/${this.gameId}/reaction`), reaction)
-      .then(() => {})
-      .catch(() => {});
+    set(ref(this.db, `players/${this.uid}/matches/${this.matchId}/reaction`), reaction).catch((error) => {
+      console.error("Error sending voice reaction:", error);
+    });
   }
 
-  public surrender() {
+  public surrender(): void {
+    if (!this.myMatch) return;
     this.myMatch.status = "surrendered";
     this.sendMatchUpdate();
   }
 
-  public sendMove(moveFen: string, newBoardFen: string) {
+  public sendMove(moveFen: string, newBoardFen: string): void {
+    if (!this.myMatch) return;
     this.myMatch.fen = newBoardFen;
-    if (this.myMatch.flatMovesString === "") {
-      this.myMatch.flatMovesString = moveFen;
-    } else {
-      this.myMatch.flatMovesString += "-" + moveFen;
-    }
+    this.myMatch.flatMovesString = this.myMatch.flatMovesString ? `${this.myMatch.flatMovesString}-${moveFen}` : moveFen;
     this.sendMatchUpdate();
   }
 
-  private sendMatchUpdate() {
-    const db = getDatabase(this.app);
-    set(ref(db, `players/${this.uid}/matches/${this.gameId}`), this.myMatch)
+  private sendMatchUpdate(): void {
+    set(ref(this.db, `players/${this.uid}/matches/${this.matchId}`), this.myMatch)
       .then(() => {
-        console.log("did send match update successfully");
+        console.log("Match update sent successfully");
       })
       .catch((error) => {
-        console.error("error sending a match update", error);
+        console.error("Error sending match update:", error);
       });
   }
 
-  public connectToGame(uid: string, inviteId: string, autojoin: boolean) {
-    console.log(uid);
-    this.uid = uid;
-    this.gameId = inviteId;
+  private getLatestBothSidesApprovedRematchIndex(): number | null {
+    if (!this.inviteId || !this.latestInvite) {
+      return null;
+    }
 
-    const db = getDatabase(this.app);
-    const inviteRef = ref(db, `invites/${inviteId}`);
+    const guestRematchesString = this.latestInvite.guestRematches;
+    const hostRematchesString = this.latestInvite.hostRematches;
+
+    if (!guestRematchesString || !hostRematchesString) {
+      return null;
+    }
+
+    let commonPrefix = "";
+    for (let i = 0; i < Math.min(guestRematchesString.length, hostRematchesString.length); i++) {
+      if (guestRematchesString[i] === hostRematchesString[i]) {
+        commonPrefix += guestRematchesString[i];
+      } else {
+        break;
+      }
+    }
+
+    if (!commonPrefix) {
+      return null;
+    }
+
+    const lastNumber = parseInt(commonPrefix.includes(";") ? commonPrefix.split(";").pop()! : commonPrefix);
+    if (isNaN(lastNumber)) {
+      return null;
+    }
+
+    return lastNumber;
+  }
+
+  private getLatestBothSidesApprovedMatchId(): string {
+    const commonRematchIndex = this.getLatestBothSidesApprovedRematchIndex();
+
+    if (!this.inviteId) {
+      return "";
+    } else if (!commonRematchIndex) {
+      return this.inviteId;
+    }
+
+    return this.inviteId + commonRematchIndex.toString();
+  }
+
+  public connectToGame(uid: string, inviteId: string, autojoin: boolean): void {
+    this.uid = uid;
+    this.inviteId = inviteId;
+    const inviteRef = ref(this.db, `invites/${inviteId}`);
     get(inviteRef)
       .then((snapshot) => {
-        const inviteData = snapshot.val();
+        const inviteData: Invite | null = snapshot.val();
         if (!inviteData) {
-          console.log("got empty invite data");
+          console.log("No invite data found");
           return;
         }
+
+        this.latestInvite = inviteData;
+        const matchId = this.getLatestBothSidesApprovedMatchId();
+        this.matchId = matchId;
+
         if (!inviteData.guestId && inviteData.hostId !== uid) {
           if (autojoin) {
-            set(ref(db, `invites/${inviteId}/guestId`), uid)
-            .then(() => {
-              this.getOpponentsMatchAndCreateOwnMatch(inviteId, inviteData);
-            })
-            .catch((error) => {
-              console.error("Error joining as a guest:", error);
-            });
+            set(ref(this.db, `invites/${inviteId}/guestId`), uid)
+              .then(() => {
+                this.getOpponentsMatchAndCreateOwnMatch(matchId, inviteData.hostId);
+              })
+              .catch((error) => {
+                console.error("Error joining as a guest:", error);
+              });
           } else {
             didFindInviteThatCanBeJoined();
           }
         } else {
           if (inviteData.hostId === uid) {
-            this.reconnectAsHost(inviteId, inviteData);
+            this.reconnectAsHost(inviteId, matchId, inviteData.hostId, inviteData.guestId);
           } else if (inviteData.guestId === uid) {
-            this.reconnectAsGuest(inviteId, inviteData);
+            this.reconnectAsGuest(matchId, inviteData.hostId, inviteData.guestId);
           } else {
-            this.enterWatchOnlyMode(inviteId, inviteData.hostId, inviteData.guestId);
+            this.enterWatchOnlyMode(matchId, inviteData.hostId, inviteData.guestId);
           }
         }
       })
@@ -189,83 +323,79 @@ class FirebaseConnection {
       });
   }
 
-  private reconnectAsGuest(gameId: string, invite: any) {
-    const db = getDatabase(this.app);
-    const myMatchRef = ref(db, `players/${invite.guestId}/matches/${gameId}`);
-
+  private reconnectAsGuest(matchId: string, hostId: string, guestId: string): void {
+    const myMatchRef = ref(this.db, `players/${guestId}/matches/${matchId}`);
     get(myMatchRef)
       .then((snapshot) => {
-        const myMatchData = snapshot.val();
+        const myMatchData: Match | null = snapshot.val();
         if (!myMatchData) {
-          console.log("got empty my match data");
+          console.log("No match data found for guest");
           return;
         }
         this.myMatch = myMatchData;
-        didRecoverMyMatch(myMatchData, gameId);
-        this.observeMatch(invite.hostId, gameId);
+        didRecoverMyMatch(myMatchData, matchId);
+        this.observeMatch(hostId, matchId);
       })
       .catch((error) => {
-        console.error("failed to get my match:", error);
+        console.error("Failed to get guest's match:", error);
       });
   }
 
-  private reconnectAsHost(gameId: string, invite: any) {
-    const db = getDatabase(this.app);
-    const myMatchRef = ref(db, `players/${invite.hostId}/matches/${gameId}`);
+  private reconnectAsHost(inviteId: string, matchId: string, hostId: string, guestId: string | null | undefined): void {
+    const myMatchRef = ref(this.db, `players/${hostId}/matches/${matchId}`);
     get(myMatchRef)
       .then((snapshot) => {
-        const myMatchData = snapshot.val();
+        const myMatchData: Match | null = snapshot.val();
         if (!myMatchData) {
-          console.log("got empty my match data");
+          console.log("No match data found for host");
           return;
         }
         this.myMatch = myMatchData;
-        didRecoverMyMatch(myMatchData, gameId);
+        didRecoverMyMatch(myMatchData, matchId);
 
-        if (invite.guestId && invite.guestId !== "") {
-          this.observeMatch(invite.guestId, gameId);
+        if (guestId) {
+          this.observeMatch(guestId, matchId);
         } else {
           didFindYourOwnInviteThatNobodyJoined();
-          const inviteRef = ref(db, `invites/${gameId}`);
-          onValue(inviteRef, (snapshot: any) => {
-            const inviteData = snapshot.val();
-            if (inviteData && inviteData.guestId) {
-              console.log(`Guest ${inviteData.guestId} joined the invite ${gameId}`);
-              this.observeMatch(inviteData.guestId, gameId);
+          const inviteRef = ref(this.db, `invites/${inviteId}`);
+          onValue(inviteRef, (snapshot) => {
+            const updatedInvite: Invite | null = snapshot.val();
+            if (updatedInvite && updatedInvite.guestId) {
+              this.observeMatch(updatedInvite.guestId, matchId);
               off(inviteRef);
             }
           });
         }
       })
       .catch((error) => {
-        console.error("failed to get my match:", error);
+        console.error("Failed to get host's match:", error);
       });
   }
 
-  private enterWatchOnlyMode(gameId: string, hostId: string, guestId: string) {
+  private enterWatchOnlyMode(matchId: string, hostId: string, guestId?: string | null): void {
     enterWatchOnlyMode();
-    this.observeMatch(hostId, gameId);
-    this.observeMatch(guestId, gameId);
+    this.observeMatch(hostId, matchId);
+    if (guestId) {
+      this.observeMatch(guestId, matchId);
+    }
   }
 
-  private getOpponentsMatchAndCreateOwnMatch(gameId: string, invite: any) {
-    const db = getDatabase(this.app);
-    const opponentsMatchRef = ref(db, `players/${invite.hostId}/matches/${gameId}`);
-
+  private getOpponentsMatchAndCreateOwnMatch(matchId: string, hostId: string): void {
+    const opponentsMatchRef = ref(this.db, `players/${hostId}/matches/${matchId}`);
     get(opponentsMatchRef)
       .then((snapshot) => {
-        const opponentsMatchData = snapshot.val();
+        const opponentsMatchData: Match | null = snapshot.val();
         if (!opponentsMatchData) {
-          console.log("got empty opponent's match data");
+          console.log("No opponent's match data found");
           return;
         }
-        
+
         const color = opponentsMatchData.color === "black" ? "white" : "black";
         const emojiId = getPlayersEmojiId();
-        const match = {
+        const match: Match = {
           version: controllerVersion,
-          color: color,
-          emojiId: emojiId,
+          color,
+          emojiId,
           fen: initialFen,
           status: "",
           flatMovesString: "",
@@ -274,34 +404,31 @@ class FirebaseConnection {
 
         this.myMatch = match;
 
-        set(ref(db, `players/${this.uid}/matches/${gameId}`), match)
+        set(ref(this.db, `players/${this.uid}/matches/${matchId}`), match)
           .then(() => {
-            console.log("Player match created successfully");
+            this.observeMatch(hostId, matchId);
           })
           .catch((error) => {
             console.error("Error creating player match:", error);
           });
-
-        this.observeMatch(invite.hostId, gameId);
       })
       .catch((error) => {
-        console.error("failed to get opponent's match:", error);
+        console.error("Failed to get opponent's match:", error);
       });
   }
 
-  public createInvite(uid: string, inviteId: string) {
+  public createInvite(uid: string, inviteId: string): void {
     const hostColor = Math.random() < 0.5 ? "white" : "black";
     const emojiId = getPlayersEmojiId();
 
-    const invite = {
+    const invite: Invite = {
       version: controllerVersion,
       hostId: uid,
-      hostColor: hostColor,
-      guestId: null as any,
+      hostColor,
+      guestId: null,
     };
 
-    const db = getDatabase(this.app);
-    set(ref(db, `invites/${inviteId}`), invite)
+    set(ref(this.db, `invites/${inviteId}`), invite)
       .then(() => {
         console.log("Invite created successfully");
       })
@@ -309,10 +436,10 @@ class FirebaseConnection {
         console.error("Error creating invite:", error);
       });
 
-    const match = {
+    const match: Match = {
       version: controllerVersion,
       color: hostColor,
-      emojiId: emojiId,
+      emojiId,
       fen: initialFen,
       status: "",
       flatMovesString: "",
@@ -321,37 +448,34 @@ class FirebaseConnection {
 
     this.myMatch = match;
     this.uid = uid;
-    this.gameId = inviteId;
+    this.inviteId = inviteId;
+    this.latestInvite = invite;
 
-    set(ref(db, `players/${uid}/matches/${inviteId}`), match)
-      .then(() => {
-        console.log("Player match created successfully");
-      })
-      .catch((error) => {
-        console.error("Error creating player match:", error);
-      });
+    const matchId = inviteId;
+    this.matchId = matchId;
 
-    const inviteRef = ref(db, `invites/${inviteId}`);
-    onValue(inviteRef, (snapshot: any) => {
-      const inviteData = snapshot.val();
-      if (inviteData && inviteData.guestId) {
-        console.log(`Guest ${inviteData.guestId} joined the invite ${inviteId}`);
-        this.observeMatch(inviteData.guestId, inviteId);
+    set(ref(this.db, `players/${uid}/matches/${matchId}`), match).catch((error) => {
+      console.error("Error creating player match:", error);
+    });
+    const inviteRef = ref(this.db, `invites/${inviteId}`);
+    onValue(inviteRef, (snapshot) => {
+      const updatedInvite: Invite | null = snapshot.val();
+      if (updatedInvite && updatedInvite.guestId) {
+        console.log(`Guest ${updatedInvite.guestId} joined the invite ${inviteId}`);
+        this.observeMatch(updatedInvite.guestId, matchId);
         off(inviteRef);
       }
     });
   }
 
-  observeMatch(playerId: string, matchId: string) {
-    const db = getDatabase(this.app);
-    const matchRef = ref(db, `players/${playerId}/matches/${matchId}`);
-    const ethAddressRef = ref(db, `players/${playerId}/ethAddress`);
+  private observeMatch(playerId: string, matchId: string): void {
+    const matchRef = ref(this.db, `players/${playerId}/matches/${matchId}`);
+    const ethAddressRef = ref(this.db, `players/${playerId}/ethAddress`);
 
     onValue(
       matchRef,
       (snapshot) => {
-        const matchData = snapshot.val();
-        console.log(matchData);
+        const matchData: Match | null = snapshot.val();
         if (matchData) {
           didReceiveMatchUpdate(matchData, playerId, matchId);
         }
@@ -364,7 +488,7 @@ class FirebaseConnection {
     onValue(
       ethAddressRef,
       (snapshot) => {
-        const ethAddress = snapshot.val();
+        const ethAddress: string | null = snapshot.val();
         if (ethAddress) {
           didGetEthAddress(ethAddress, playerId);
         }
