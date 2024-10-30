@@ -42,12 +42,13 @@ class FirebaseConnection {
     // TODO: send correct props to the correct field
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
 
-    const tmpProposal = "1"; // TODO: determine this one correctly
+    const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
+    if (!newRematchProposalIndex) return; // TODO: might need extra / different handling for existing proposal
 
     const emojiId = getPlayersEmojiId();
     const newColor = this.myMatch?.color === "white" ? "black" : "white"; // TODO: make sure color is determined correctly
 
-    const nextMatchId = this.inviteId + tmpProposal;
+    const nextMatchId = this.inviteId + newRematchProposalIndex;
     const nextMatch: Match = {
       version: controllerVersion,
       color: newColor,
@@ -61,11 +62,13 @@ class FirebaseConnection {
     set(ref(this.db, `players/${this.uid}/matches/${nextMatchId}`), nextMatch)
       .then(() => {
         if (this.latestInvite?.hostId === this.uid) {
-          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), tmpProposal).catch((error) => {
+          const newHostProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), newHostProposalsString).catch((error) => {
             console.error("Error sending hostRematches:", error);
           });
         } else {
-          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), tmpProposal).catch((error) => {
+          const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), newGuestProposalsString).catch((error) => {
             console.error("Error sending guestRematches:", error);
           });
         }
@@ -75,6 +78,11 @@ class FirebaseConnection {
       });
 
     // TODO: update this.latestInvite, this.myMatch, this.inviteId, this.matchId
+  }
+
+  private getRematchIndexAvailableForNewProposal(): string | null {
+    // TODO: determine this one correctly
+    return "1";
   }
 
   public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
