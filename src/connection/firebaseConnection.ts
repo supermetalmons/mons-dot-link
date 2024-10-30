@@ -43,7 +43,11 @@ class FirebaseConnection {
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
 
     const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
-    if (!newRematchProposalIndex) return; // TODO: might need extra / different handling for existing proposal
+    if (!newRematchProposalIndex) {
+      // TODO: might need extra / different handling for existing proposal
+      window.location.reload(); // TODO: dev tmp, handle with no reloading
+      return;
+    }
 
     const emojiId = getPlayersEmojiId();
     const newColor = this.myMatch?.color === "white" ? "black" : "white"; // TODO: make sure color is determined correctly
@@ -63,14 +67,24 @@ class FirebaseConnection {
       .then(() => {
         if (this.latestInvite?.hostId === this.uid) {
           const newHostProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
-          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), newHostProposalsString).catch((error) => {
-            console.error("Error sending hostRematches:", error);
-          });
+          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), newHostProposalsString)
+            .then(() => {
+              console.log("Successfully sent hostRematches");
+              window.location.reload(); // TODO: dev tmp, handle with no reloading
+            })
+            .catch((error) => {
+              console.error("Error sending hostRematches:", error);
+            });
         } else {
           const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
-          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), newGuestProposalsString).catch((error) => {
-            console.error("Error sending guestRematches:", error);
-          });
+          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), newGuestProposalsString)
+            .then(() => {
+              console.log("Successfully sent guestRematches"); 
+              window.location.reload(); // TODO: dev tmp, handle with no reloading
+            })
+            .catch((error) => {
+              console.error("Error sending guestRematches:", error);
+            });
         }
       })
       .catch((error) => {
