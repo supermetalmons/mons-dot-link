@@ -30,7 +30,7 @@ export function setupConnection(autojoin: boolean) {
   }
 }
 
-export function didClickInviteButton(completion) {
+export function didClickInviteButton(completion: any) {
   if (didCreateNewGameInvite) {
     writeInviteLinkToClipboard();
     completion(true);
@@ -95,7 +95,7 @@ export function connectToGame(gameId: string, autojoin: boolean) {
   });
 }
 
-function createNewMatchInvite(completion) {
+function createNewMatchInvite(completion: any) {
   signIn().then((uid) => {
     if (uid) {
       firebaseConnection.createInvite(uid, newGameId); // TODO: retry if failed to create

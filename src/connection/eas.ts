@@ -56,5 +56,5 @@ export async function sendEasTx(txData: any) {
 
   const newAttestationsUIDs = await multiTxAll.wait();
   console.log(newAttestationsUIDs);
-  return multiTxAll.receipt.hash;
+  return multiTxAll.receipt?.hash;
 }

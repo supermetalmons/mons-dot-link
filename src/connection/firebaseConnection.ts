@@ -109,6 +109,7 @@ class FirebaseConnection {
   }
 
   public updateEmoji(newId: number): void {
+    if (!this.myMatch) return;
     this.myMatch.emojiId = newId;
     set(ref(this.db, `players/${this.uid}/matches/${this.gameId}/emojiId`), newId).catch((error) => {
       console.error("Error updating emoji:", error);
@@ -116,6 +117,7 @@ class FirebaseConnection {
   }
 
   public sendVoiceReaction(reaction: Reaction): void {
+    if (!this.myMatch) return;
     this.myMatch.reaction = reaction;
     set(ref(this.db, `players/${this.uid}/matches/${this.gameId}/reaction`), reaction).catch((error) => {
       console.error("Error sending voice reaction:", error);
@@ -123,11 +125,13 @@ class FirebaseConnection {
   }
 
   public surrender(): void {
+    if (!this.myMatch) return;
     this.myMatch.status = "surrendered";
     this.sendMatchUpdate();
   }
 
   public sendMove(moveFen: string, newBoardFen: string): void {
+    if (!this.myMatch) return;
     this.myMatch.fen = newBoardFen;
     this.myMatch.flatMovesString = this.myMatch.flatMovesString ? `${this.myMatch.flatMovesString}-${moveFen}` : moveFen;
     this.sendMatchUpdate();

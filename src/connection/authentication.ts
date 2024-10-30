@@ -33,7 +33,9 @@ export function useAuthStatus() {
 export const createAuthAdapter = (setAuthStatus: (status: AuthStatus) => void) =>
   createAuthenticationAdapter({
     getNonce: async () => {
-      return await signIn();
+      const nonce = await signIn();
+      if (!nonce) throw new Error("Failed to get nonce");
+      return nonce;
     },
 
     createMessage: ({ nonce, address, chainId }) => {
