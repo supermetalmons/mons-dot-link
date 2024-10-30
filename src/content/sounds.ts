@@ -12,7 +12,7 @@ async function loadAudio(path: string): Promise<AudioBuffer> {
     return audioBuffers[path];
   }
 
-  if (loadingPromises[path]) {
+  if (path in loadingPromises) {
     return loadingPromises[path];
   }
 
