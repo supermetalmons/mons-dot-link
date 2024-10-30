@@ -81,8 +81,38 @@ class FirebaseConnection {
   }
 
   private getRematchIndexAvailableForNewProposal(): string | null {
-    // TODO: determine this one correctly
-    return "1";
+    if (!this.latestInvite) return null;
+
+    const proposingAsHost = this.latestInvite.hostId === this.uid;
+    const guestRematchesLength = this.latestInvite.guestRematches ? this.latestInvite.guestRematches.length : 0;
+    const hostRematchesLength = this.latestInvite.hostRematches ? this.latestInvite.hostRematches.length : 0;
+
+    const proposerRematchesLength = proposingAsHost ? hostRematchesLength : guestRematchesLength;
+    const otherPlayerRematchesLength = proposingAsHost ? guestRematchesLength : hostRematchesLength;
+
+    const latestCommonIndex = this.getLatestBothSidesApprovedRematchIndex();
+
+    if (!latestCommonIndex) {
+      if (proposerRematchesLength === 0 && otherPlayerRematchesLength === 0) {
+        return "1";
+      } else if (proposerRematchesLength >= otherPlayerRematchesLength) {
+        return null
+      } else if (proposerRematchesLength < otherPlayerRematchesLength) {
+        if (proposerRematchesLength === 0) {
+          return "1"
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      if (proposerRematchesLength > otherPlayerRematchesLength) {
+        return null;
+      } else {
+        return (latestCommonIndex + 1).toString();
+      }
+    }
   }
 
   public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
