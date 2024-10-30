@@ -191,16 +191,16 @@ class FirebaseConnection {
       });
   }
 
-  private getLatestBothSidesApprovedMatchId(): string {
+  private getLatestBothSidesApprovedRematchIndex(): number | null {
     if (!this.inviteId || !this.latestInvite) {
-      return "";
+      return null;
     }
 
     const guestRematchesString = this.latestInvite.guestRematches;
     const hostRematchesString = this.latestInvite.hostRematches;
 
     if (!guestRematchesString || !hostRematchesString) {
-      return this.inviteId;
+      return null;
     }
 
     let commonPrefix = "";
@@ -213,15 +213,27 @@ class FirebaseConnection {
     }
 
     if (!commonPrefix) {
-      return this.inviteId;
+      return null;
     }
 
     const lastNumber = parseInt(commonPrefix.includes(";") ? commonPrefix.split(";").pop()! : commonPrefix);
     if (isNaN(lastNumber)) {
+      return null;
+    }
+
+    return lastNumber;
+  }
+
+  private getLatestBothSidesApprovedMatchId(): string {
+    const commonRematchIndex = this.getLatestBothSidesApprovedRematchIndex();
+
+    if (!this.inviteId) {
+      return "";
+    } else if (!commonRematchIndex) {
       return this.inviteId;
     }
 
-    return this.inviteId + lastNumber.toString();
+    return this.inviteId + commonRematchIndex.toString();
   }
 
   public connectToGame(uid: string, inviteId: string, autojoin: boolean): void {
