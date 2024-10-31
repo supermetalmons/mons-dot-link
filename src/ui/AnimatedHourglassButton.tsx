@@ -3,20 +3,26 @@
 import React, { useState, useEffect } from "react";
 import { ControlButton } from "./BottomControls";
 
-interface AnimatedHourglassIconProps {
-  duration: number;
-  startTime: number;
+interface HourglassConfig {
+  duration: number; // Total duration in seconds
+  progress: number; // Initial progress in seconds
 }
 
-const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration, startTime }) => {
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+interface AnimatedHourglassIconProps {
+  duration: number;
+  initialProgress: number;
+}
+
+const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration, initialProgress }) => {
+  const [elapsedTime, setElapsedTime] = useState<number>(initialProgress);
 
   useEffect(() => {
     let animationFrameId: number;
+    const startTime = Date.now();
 
     const updateElapsedTime = () => {
       const currentTime = Date.now();
-      const timeElapsed = (currentTime - startTime) / 1000; // in seconds
+      const timeElapsed = initialProgress + (currentTime - startTime) / 1000; // in seconds
       const clampedTime = Math.min(timeElapsed, duration);
       setElapsedTime(clampedTime);
 
@@ -28,7 +34,7 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
     updateElapsedTime();
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [duration, startTime]);
+  }, [duration, initialProgress]);
 
   // Calculate the progress ratio (0 to 1)
   const progress = elapsedTime / duration;
@@ -46,11 +52,11 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
       {/* Hourglass outline */}
       <path
         d="
-            M16,8 H48
-            M16,56 H48
-            M16,8 L16,20 L32,32 L16,44 L16,56
-            M48,8 L48,20 L32,32 L48,44 L48,56
-          "
+          M16,8 H48
+          M16,56 H48
+          M16,8 L16,20 L32,32 L16,44 L16,56
+          M48,8 L48,20 L32,32 L48,44 L48,56
+        "
         stroke="currentColor"
         strokeWidth="4"
         fill="none"
@@ -58,7 +64,7 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
 
       {/* Top bulb sand */}
       <path d="M16,8 L48,8 L32,32 Z" fill="currentColor" clipPath="url(#top-sand-clip)" />
-      {/* Corrected Clip path for top bulb sand */}
+      {/* Clip path for top bulb sand */}
       <clipPath id="top-sand-clip">
         <rect x="0" y={topSandY} width="64" height={topSandHeight} />
       </clipPath>
@@ -74,19 +80,15 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
 };
 
 interface AnimatedHourglassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  duration?: number;
+  config: HourglassConfig;
 }
 
-const AnimatedHourglassButton: React.FC<AnimatedHourglassButtonProps> = ({ duration = 5, onClick, ...props }) => {
-  const [startTime, setStartTime] = useState<number>(Date.now());
-
-  useEffect(() => {
-    setStartTime(Date.now());
-  }, [duration]);
+const AnimatedHourglassButton: React.FC<AnimatedHourglassButtonProps> = ({ config, onClick, ...props }) => {
+  const { duration, progress } = config;
 
   return (
     <ControlButton onClick={onClick} aria-label="Timer" {...props}>
-      <AnimatedHourglassIcon duration={duration} startTime={startTime} />
+      <AnimatedHourglassIcon duration={duration} initialProgress={progress} />
     </ControlButton>
   );
 };

@@ -340,7 +340,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
             </ControlButton>
           )}
           {isStartTimerVisible && (
-            <AnimatedHourglassButton duration={90} onClick={handleTimerClick} disabled={isTimerButtonDisabled}/>
+            <AnimatedHourglassButton config={{ duration: 90, progress: 0 }} onClick={handleTimerClick} disabled={isTimerButtonDisabled}/>
           )}
         </>
       ) : (

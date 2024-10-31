@@ -692,8 +692,6 @@ function updateDisplayedTimerIfNeeded(onConnect: boolean, match: Match) {
 }
 
 function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string, duration?: number) {
-  // TODO: update timer button to match the progress if needed
-
   if (timer === "gg") {
     handleVictoryByTimer(onConnect, timerColor, false);
   } else if (timer && typeof timer === "string" && !isGameOver) {
@@ -706,7 +704,8 @@ function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string, 
         }
         showTimer(timerColor, delta);
         if (!isWatchOnly && !isPlayerSideTurn()) {
-          // TODO: prevent startTimer getting reenabled when there is ongoing claim timer
+          const target = 90;
+          showTimerButtonProgressing(target - delta, target, false);
           setTimeout(() => {
             if (game.turn_number() === turnNumber) {
               enableTimerVictoryClaim();
