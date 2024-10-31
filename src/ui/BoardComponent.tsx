@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { go } from "./gameController";
+import { go } from "../game/gameController";
 
 const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
