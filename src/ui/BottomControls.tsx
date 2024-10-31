@@ -191,6 +191,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(true);
   const [isClaimVictoryVisible, setIsClaimVictoryVisible] = useState(false);
   const [isClaimVictoryButtonDisabled, setIsClaimVictoryButtonDisabled] = useState(false);
+  const [timerConfig, setTimerConfig] = useState({ duration: 90, progress: 0 });
   const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -246,6 +247,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsTimerButtonDisabled(true);
     setIsStartTimerVisible(true);
     setIsClaimVictoryVisible(false);
+    setTimerConfig({ duration: target, progress: currentProgress });
     
     if (enableWhenTargetReached) {
       const timeUntilTarget = (target - currentProgress) * 1000;
@@ -340,7 +342,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
             </ControlButton>
           )}
           {isStartTimerVisible && (
-            <AnimatedHourglassButton config={{ duration: 90, progress: 0 }} onClick={handleTimerClick} disabled={isTimerButtonDisabled}/>
+            <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled}/>
           )}
         </>
       ) : (
