@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass, FaTrophy } from "react-icons/fa";
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from './AnimatedHourglassButton';
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
@@ -197,6 +197,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
   const resignButtonRef = useRef<HTMLButtonElement>(null);
   const resignConfirmRef = useRef<HTMLDivElement>(null);
+  const hourglassEnableTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -214,16 +215,22 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (hourglassEnableTimeoutRef.current) {
+        clearTimeout(hourglassEnableTimeoutRef.current);
+      }
+    };
+  }, []);
+
   showGameRelatedBottomControls = () => {
     setShowOtherControls(true);
   };
 
-  let hourglassEnableTimeout: NodeJS.Timeout | undefined;
-
   hideTimerButtons = () => {
-    if (hourglassEnableTimeout !== undefined) {
-      clearTimeout(hourglassEnableTimeout);
-      hourglassEnableTimeout = undefined;
+    if (hourglassEnableTimeoutRef.current) {
+      clearTimeout(hourglassEnableTimeoutRef.current);
+      hourglassEnableTimeoutRef.current = undefined;
     }
     setIsTimerButtonDisabled(true);
     setIsStartTimerVisible(false);
@@ -231,11 +238,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   showTimerButtonProgressing = (currentProgress: number, target: number, enableWhenTargetReached: boolean) => {
-    // TODO: make it work with a hourglass
-
-    if (hourglassEnableTimeout !== undefined) {
-      clearTimeout(hourglassEnableTimeout);
-      hourglassEnableTimeout = undefined;
+    if (hourglassEnableTimeoutRef.current) {
+      clearTimeout(hourglassEnableTimeoutRef.current);
+      hourglassEnableTimeoutRef.current = undefined;
     }
 
     setIsTimerButtonDisabled(true);
@@ -244,9 +249,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     
     if (enableWhenTargetReached) {
       const timeUntilTarget = (target - currentProgress) * 1000;
-      hourglassEnableTimeout = setTimeout(() => {
+      hourglassEnableTimeoutRef.current = setTimeout(() => {
         setIsTimerButtonDisabled(false);
-        hourglassEnableTimeout = undefined;
+        hourglassEnableTimeoutRef.current = undefined;
       }, timeUntilTarget);
     }
   };
@@ -335,11 +340,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
             </ControlButton>
           )}
           {isStartTimerVisible && (
-            // TODO: use realistic hourglass
-            // <AnimatedHourglassButton duration={10} onClick={handleTimerClick} />
-            <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
-              <FaHourglass />
-            </ControlButton>
+            <AnimatedHourglassButton duration={90} onClick={handleTimerClick} disabled={isTimerButtonDisabled}/>
           )}
         </>
       ) : (

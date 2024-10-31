@@ -5,10 +5,9 @@ import { ControlButton } from "./BottomControls";
 
 interface AnimatedHourglassIconProps {
   duration: number;
-  animate?: boolean;
 }
 
-const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration, animate = true }) => {
+const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration }) => {
   return (
     <svg width="64" height="64" viewBox="0 0 64 64" style={{ display: "block" }}>
       {/* Hourglass outline */}
@@ -29,35 +28,20 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
       <mask id="top-sand-mask">
         {/* Start with sand visible, cover with black rectangle moving down */}
         <rect x="0" y="0" width="64" height="64" fill="white" />
-        {animate ? (
-          <rect x="0" y="8" width="64" height="0" fill="black">
-            <animate attributeName="height" from="0" to="24" dur={`${duration}s`} fill="freeze" />
-          </rect>
-        ) : (
-          // When animation is done, cover the entire top bulb
-          <rect x="0" y="8" width="64" height="24" fill="black" />
-        )}
+        <rect x="0" y="8" width="64" height="0" fill="black">
+          <animate attributeName="height" from="0" to="24" dur={`${duration}s`} fill="freeze" />
+        </rect>
       </mask>
       {/* Sand in bottom bulb */}
       <path d="M16,56 L48,56 L32,32 Z" fill="currentColor" mask="url(#bottom-sand-mask)" />
       {/* Mask for bottom bulb sand */}
       <mask id="bottom-sand-mask">
-        {animate ? (
-          <>
-            {/* Start with sand hidden, reveal with white rectangle moving up */}
-            <rect x="0" y="0" width="64" height="64" fill="black" />
-            <rect x="0" y="56" width="64" height="0" fill="white">
-              <animate attributeName="y" from="56" to="32" dur={`${duration}s`} fill="freeze" />
-              <animate attributeName="height" from="0" to="24" dur={`${duration}s`} fill="freeze" />
-            </rect>
-          </>
-        ) : (
-          <>
-            {/* When animation is done, reveal the entire bottom bulb */}
-            <rect x="0" y="0" width="64" height="64" fill="black" />
-            <rect x="0" y="32" width="64" height="24" fill="white" />
-          </>
-        )}
+        {/* Start with sand hidden, reveal with white rectangle moving up */}
+        <rect x="0" y="0" width="64" height="64" fill="black" />
+        <rect x="0" y="56" width="64" height="0" fill="white">
+          <animate attributeName="y" from="56" to="32" dur={`${duration}s`} fill="freeze" />
+          <animate attributeName="height" from="0" to="24" dur={`${duration}s`} fill="freeze" />
+        </rect>
       </mask>
     </svg>
   );
@@ -68,17 +52,15 @@ interface AnimatedHourglassButtonProps extends React.ButtonHTMLAttributes<HTMLBu
 }
 
 const AnimatedHourglassButton: React.FC<AnimatedHourglassButtonProps> = ({ duration = 5, onClick, ...props }) => {
-  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const [animationKey, setAnimationKey] = useState<number>(0);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsDisabled(false);
-    }, duration * 1000);
-    return () => clearTimeout(timer);
+    setAnimationKey((prevKey) => prevKey + 1);
   }, [duration]);
 
   return (
-    <ControlButton onClick={onClick} disabled={isDisabled} aria-label="Timer" {...props}>
-      <AnimatedHourglassIcon duration={duration} animate={isDisabled} />
+    <ControlButton onClick={onClick} aria-label="Timer" {...props}>
+      <AnimatedHourglassIcon duration={duration} key={animationKey} />
     </ControlButton>
   );
 };
