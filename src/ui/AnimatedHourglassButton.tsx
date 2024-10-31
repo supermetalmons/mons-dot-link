@@ -6,15 +6,16 @@ import { ControlButton } from "./BottomControls";
 interface HourglassConfig {
   duration: number; // Total duration in seconds
   progress: number; // Initial progress in seconds
+  requestDate: number;
 }
 
 interface AnimatedHourglassIconProps {
-  duration: number;
-  initialProgress: number;
+  config: HourglassConfig;
 }
 
-const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration, initialProgress }) => {
-  const [elapsedTime, setElapsedTime] = useState<number>(initialProgress);
+const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ config }) => {
+  const { duration, progress, requestDate } = config;
+  const [elapsedTime, setElapsedTime] = useState<number>(progress);
 
   useEffect(() => {
     let animationFrameId: number;
@@ -22,7 +23,7 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
 
     const updateElapsedTime = () => {
       const currentTime = Date.now();
-      const timeElapsed = initialProgress + (currentTime - startTime) / 1000; // in seconds
+      const timeElapsed = progress + (currentTime - startTime) / 1000; // in seconds
       const clampedTime = Math.min(timeElapsed, duration);
       setElapsedTime(clampedTime);
 
@@ -33,18 +34,20 @@ const AnimatedHourglassIcon: React.FC<AnimatedHourglassIconProps> = ({ duration,
 
     updateElapsedTime();
 
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [duration, initialProgress]);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [duration, progress, requestDate]);
 
   // Calculate the progress ratio (0 to 1)
-  const progress = elapsedTime / duration;
+  const progressRatio = elapsedTime / duration;
 
   // For the top bulb sand
-  const topSandHeight = 24 * (1 - progress); // Decreases from 24 to 0
-  const topSandY = 8 + 24 * progress; // Moves down from y=8 to y=32
+  const topSandHeight = 24 * (1 - progressRatio); // Decreases from 24 to 0
+  const topSandY = 8 + 24 * progressRatio; // Moves down from y=8 to y=32
 
   // For the bottom bulb sand
-  const bottomSandHeight = 24 * progress; // Increases from 0 to 24
+  const bottomSandHeight = 24 * progressRatio; // Increases from 0 to 24
   const bottomSandY = 56 - bottomSandHeight; // Moves up from y=56 to y=32
 
   return (
@@ -84,11 +87,9 @@ interface AnimatedHourglassButtonProps extends React.ButtonHTMLAttributes<HTMLBu
 }
 
 const AnimatedHourglassButton: React.FC<AnimatedHourglassButtonProps> = ({ config, onClick, ...props }) => {
-  const { duration, progress } = config;
-
   return (
     <ControlButton onClick={onClick} aria-label="Timer" {...props}>
-      <AnimatedHourglassIcon duration={duration} initialProgress={progress} />
+      <AnimatedHourglassIcon config={config} />
     </ControlButton>
   );
 };
