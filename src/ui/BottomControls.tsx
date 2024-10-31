@@ -2,13 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
-import AnimatedHourglassButton from './AnimatedHourglassButton';
+import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
 
 export enum PrimaryActionType {
   None = "none",
-  JoinGame = "joinGame", 
-  Rematch = "rematch"
+  JoinGame = "joinGame",
+  Rematch = "rematch",
 }
 
 let latestModalOutsideTapDismissDate = Date.now();
@@ -172,7 +172,7 @@ const ResignButton = styled(ReactionButton)`
   }
 `;
 
-let showGameRelatedBottomControls: () => void;
+let showResignAndVoiceReactionButtons: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableUndoResignAndTimerControls: () => void;
 let hideTimerButtons: () => void;
@@ -185,7 +185,8 @@ let showPrimaryAction: (action: PrimaryActionType) => void;
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
-  const [showOtherControls, setShowOtherControls] = useState(false);
+  const [isResignButtonVisible, setIsResignButtonVisible] = useState(false);
+  const [isVoiceReactionButtonVisible, setIsVoiceReactionButtonVisible] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
   const [isResignConfirmVisible, setIsResignConfirmVisible] = useState(false);
   const [isTimerButtonDisabled, setIsTimerButtonDisabled] = useState(true);
@@ -224,8 +225,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
-  showGameRelatedBottomControls = () => {
-    setShowOtherControls(true);
+  showResignAndVoiceReactionButtons = () => {
+    setIsResignButtonVisible(true);
+    setIsVoiceReactionButtonVisible(true);
   };
 
   hideTimerButtons = () => {
@@ -248,7 +250,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsStartTimerVisible(true);
     setIsClaimVictoryVisible(false);
     setTimerConfig({ duration: target, progress: currentProgress, requestDate: Date.now() });
-    
+
     if (enableWhenTargetReached) {
       const timeUntilTarget = (target - currentProgress) * 1000;
       hourglassEnableTimeoutRef.current = setTimeout(() => {
@@ -329,11 +331,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      {primaryAction !== PrimaryActionType.None && (
-        <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>
-          {getPrimaryActionButtonText()}
-        </PrimaryGameNavigationButton>
-      )}
+      {primaryAction !== PrimaryActionType.None && <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</PrimaryGameNavigationButton>}
       {isStartTimerVisible || isClaimVictoryVisible ? (
         <>
           {isClaimVictoryVisible && (
@@ -341,24 +339,22 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
               <FaTrophy />
             </ControlButton>
           )}
-          {isStartTimerVisible && (
-            <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled}/>
-          )}
+          {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
         </>
       ) : (
         <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
           <FaUndo />
         </ControlButton>
       )}
-      {showOtherControls && (
-        <>
-          <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
-            <FaFlag />
-          </ControlButton>
-          <ControlButton onClick={toggleReactionPicker} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
-            <FaCommentAlt />
-          </ControlButton>
-        </>
+      {isResignButtonVisible && (
+        <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
+          <FaFlag />
+        </ControlButton>
+      )}
+      {isVoiceReactionButtonVisible && (
+        <ControlButton onClick={toggleReactionPicker} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
+          <FaCommentAlt />
+        </ControlButton>
       )}
       <ControlButton onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
         {isMusicPlaying ? <FaStop /> : <FaMusic />}
@@ -384,4 +380,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, hideTimerButtons, showTimerButtonProgressing, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showResignAndVoiceReactionButtons, setUndoEnabled, hideTimerButtons, showTimerButtonProgressing, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
-import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
+import { showResignAndVoiceReactionButtons, setUndoEnabled, disableUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -410,7 +410,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
                 popOpponentsEmoji = true;
               }
               if (playerTurn) {
-                hideTimerButtons()
+                hideTimerButtons();
               } else {
                 showTimerButtonProgressing(0, 90, true);
               }
@@ -599,7 +599,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   currentInputs = [];
 
   if (!isWatchOnly) {
-    showGameRelatedBottomControls();
+    showResignAndVoiceReactionButtons();
   }
 
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isWatchOnly ? match.color === "black" : true);
@@ -644,7 +644,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
     handleResignStatus(true, match.color);
   } else if (!isWatchOnly && !isGameOver) {
     if (isPlayerSideTurn()) {
-      hideTimerButtons()
+      hideTimerButtons();
     } else {
       showTimerButtonProgressing(0, 90, true);
     }
@@ -888,7 +888,7 @@ export function didRecoverMyMatch(match: Match, matchId: string) {
   playerSideColor = match.color === "white" ? MonsWeb.Color.White : MonsWeb.Color.Black;
   const gameFromFen = MonsWeb.MonsGameModel.from_fen(match.fen);
   if (!gameFromFen) return;
-  game = gameFromFen
+  game = gameFromFen;
   if (game.winner_color() !== undefined) {
     disableUndoResignAndTimerControls();
     hideTimerCountdownDigits();
