@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
-// import AnimatedHourglassButton from './AnimatedHourglassButton';
+import AnimatedHourglassButton from './AnimatedHourglassButton';
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
 
 export enum PrimaryActionType {
@@ -174,8 +174,9 @@ const ResignButton = styled(ReactionButton)`
 
 let showGameRelatedBottomControls: () => void;
 let setUndoEnabled: (enabled: boolean) => void;
-let setStartTimerVisible: (visible: boolean) => void;
 let disableUndoResignAndTimerControls: () => void;
+let hideTimerButtons: () => void;
+let showTimerButtonProgressing: (currentProgress: number, target: number, enableWhenTargetReached: boolean) => void;
 let hideReactionPicker: () => void;
 let toggleReactionPicker: () => void;
 let enableTimerVictoryClaim: () => void;
@@ -213,32 +214,36 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
-  useEffect(() => {
-    let timerEnableTimeout: NodeJS.Timeout | null = null;
-    setIsTimerButtonDisabled(true);
-    if (isStartTimerVisible) {
-      timerEnableTimeout = setTimeout(() => {
-        setIsTimerButtonDisabled(false);
-      }, 90000);
-    } else {
-      if (timerEnableTimeout) {
-        clearTimeout(timerEnableTimeout);
-      }
-    }
-    return () => {
-      if (timerEnableTimeout) {
-        clearTimeout(timerEnableTimeout);
-      }
-    };
-  }, [isStartTimerVisible]);
-
   showGameRelatedBottomControls = () => {
     setShowOtherControls(true);
   };
 
-  setStartTimerVisible = (visible: boolean) => {
-    setIsStartTimerVisible(visible);
+  let hourglassEnableTimeout: NodeJS.Timeout | undefined;
+
+  hideTimerButtons = () => {
+    if (hourglassEnableTimeout !== undefined) {
+      clearTimeout(hourglassEnableTimeout);
+      hourglassEnableTimeout = undefined;
+    }
+    setIsTimerButtonDisabled(true);
+    setIsStartTimerVisible(false);
     setIsClaimVictoryVisible(false);
+  };
+
+  showTimerButtonProgressing = (currentProgress: number, target: number, enableWhenTargetReached: boolean) => {
+    // TODO: make it work with a hourglass
+
+    setIsTimerButtonDisabled(true);
+    setIsStartTimerVisible(true);
+    setIsClaimVictoryVisible(false);
+    
+    if (enableWhenTargetReached) {
+      const timeUntilTarget = (target - currentProgress) * 1000;
+      hourglassEnableTimeout = setTimeout(() => {
+        setIsTimerButtonDisabled(false);
+        hourglassEnableTimeout = undefined;
+      }, timeUntilTarget);
+    }
   };
 
   enableTimerVictoryClaim = () => {
@@ -371,4 +376,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, setStartTimerVisible, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showGameRelatedBottomControls, setUndoEnabled, hideTimerButtons, showTimerButtonProgressing, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

@@ -485,7 +485,7 @@ function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
   timerElement.textContent = `${displayValue}s`;
 }
 
-export function hideTimers() {
+export function hideTimerCountdownDigits() {
   showsPlayerTimer = false;
   showsOpponentTimer = false;
 
