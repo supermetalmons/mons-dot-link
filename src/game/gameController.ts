@@ -602,7 +602,6 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
 
   if (!isWatchOnly) {
     showVoiceReactionButton();
-    showResignButton(); // TODO: it might be unnesessary if the game is over
   }
 
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isWatchOnly ? match.color === "black" : true);
@@ -642,10 +641,12 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
 
   setNewBoard();
   updateUndoButtonBasedOnGameState();
+  const thereIsWinner = game.winner_color() !== undefined;
 
   if (match.status === "surrendered") {
     handleResignStatus(true, match.color);
-  } else if (!isWatchOnly && !isGameOver) {
+  } else if (!isWatchOnly && !isGameOver && !thereIsWinner) {
+    showResignButton();
     if (isPlayerSideTurn()) {
       hideTimerButtons();
       setUndoVisible(true);
@@ -724,6 +725,7 @@ function setNewBoard() {
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
   if (game.winner_color() !== undefined || resignedColor !== undefined) {
     hideAllMoveStatuses();
+    disableAndHideUndoResignAndTimerControls();
     showRematchInterface();
   } else {
     updateBoardMoveStatuses();
@@ -819,7 +821,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     Board.stopMonsBoardAsDisplayAnimations();
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
-    if (!isReconnect && !isGameOver) {
+    if (!isReconnect && !isGameOver && !isWatchOnly) {
       playSounds([Sound.DidConnect]);
     }
     return;
