@@ -187,7 +187,7 @@ let showPrimaryAction: (action: PrimaryActionType) => void;
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
-  const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(true);
+  const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(false);
   const [isResignButtonVisible, setIsResignButtonVisible] = useState(false);
   const [isVoiceReactionButtonVisible, setIsVoiceReactionButtonVisible] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);

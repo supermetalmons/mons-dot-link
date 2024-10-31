@@ -63,6 +63,7 @@ export async function go() {
       const location = new Location(loc.i, loc.j);
       updateLocation(location);
     });
+    setUndoVisible(true);
   } else {
     isOnlineGame = true;
   }
