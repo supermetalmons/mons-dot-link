@@ -173,8 +173,9 @@ const ResignButton = styled(ReactionButton)`
 `;
 
 let showResignAndVoiceReactionButtons: () => void;
+let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
-let disableUndoResignAndTimerControls: () => void;
+let disableAndHideUndoResignAndTimerControls: () => void;
 let hideTimerButtons: () => void;
 let showTimerButtonProgressing: (currentProgress: number, target: number, enableWhenTargetReached: boolean) => void;
 let hideReactionPicker: () => void;
@@ -185,6 +186,7 @@ let showPrimaryAction: (action: PrimaryActionType) => void;
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
+  const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(true);
   const [isResignButtonVisible, setIsResignButtonVisible] = useState(false);
   const [isVoiceReactionButtonVisible, setIsVoiceReactionButtonVisible] = useState(false);
   const [isReactionPickerVisible, setIsReactionPickerVisible] = useState(false);
@@ -248,6 +250,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
     setIsTimerButtonDisabled(true);
     setIsStartTimerVisible(true);
+    setIsUndoButtonVisible(false);
     setIsClaimVictoryVisible(false);
     setTimerConfig({ duration: target, progress: currentProgress, requestDate: Date.now() });
 
@@ -262,8 +265,13 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   enableTimerVictoryClaim = () => {
     setIsClaimVictoryVisible(true);
+    setIsUndoButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryButtonDisabled(false);
+  };
+
+  setUndoVisible = (visible: boolean) => {
+    setIsUndoButtonVisible(visible);
   };
 
   setUndoEnabled = (enabled: boolean) => {
@@ -274,8 +282,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setPrimaryAction(action);
   };
 
-  disableUndoResignAndTimerControls = () => {
+  disableAndHideUndoResignAndTimerControls = () => {
     setIsUndoDisabled(true);
+    setIsUndoButtonVisible(false);
+    setIsResignButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryVisible(false);
     actions.setIsResignDisabled(true);
@@ -332,16 +342,13 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   return (
     <ControlsContainer>
       {primaryAction !== PrimaryActionType.None && <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</PrimaryGameNavigationButton>}
-      {isStartTimerVisible || isClaimVictoryVisible ? (
-        <>
-          {isClaimVictoryVisible && (
-            <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
-              <FaTrophy />
-            </ControlButton>
-          )}
-          {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
-        </>
-      ) : (
+      {isClaimVictoryVisible && (
+        <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
+          <FaTrophy />
+        </ControlButton>
+      )}
+      {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
+      {isUndoButtonVisible && (
         <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
           <FaUndo />
         </ControlButton>
@@ -380,4 +387,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showResignAndVoiceReactionButtons, setUndoEnabled, hideTimerButtons, showTimerButtonProgressing, disableUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showResignAndVoiceReactionButtons, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

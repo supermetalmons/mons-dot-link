@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
-import { showResignAndVoiceReactionButtons, setUndoEnabled, disableUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
+import { showResignAndVoiceReactionButtons, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -411,6 +411,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
               }
               if (playerTurn) {
                 hideTimerButtons();
+                setUndoVisible(true);
               } else {
                 showTimerButtonProgressing(0, 90, true);
               }
@@ -440,7 +441,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
 
             isGameOver = true;
-            disableUndoResignAndTimerControls();
+            disableAndHideUndoResignAndTimerControls();
             hideTimerCountdownDigits();
             showRematchInterface();
             break;
@@ -621,7 +622,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
     if (!gameFromFen) return;
     game = gameFromFen;
     if (game.winner_color() !== undefined) {
-      disableUndoResignAndTimerControls();
+      disableAndHideUndoResignAndTimerControls();
       hideTimerCountdownDigits();
     }
   }
@@ -645,6 +646,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   } else if (!isWatchOnly && !isGameOver) {
     if (isPlayerSideTurn()) {
       hideTimerButtons();
+      setUndoVisible(true);
     } else {
       showTimerButtonProgressing(0, 90, true);
     }
@@ -754,7 +756,7 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
   isGameOver = true;
 
   hideTimerCountdownDigits();
-  disableUndoResignAndTimerControls();
+  disableAndHideUndoResignAndTimerControls();
   hideAllMoveStatuses();
 
   Board.removeHighlights();
@@ -801,7 +803,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   }
 
   hideTimerCountdownDigits();
-  disableUndoResignAndTimerControls();
+  disableAndHideUndoResignAndTimerControls();
   hideAllMoveStatuses();
 
   Board.removeHighlights();
@@ -848,7 +850,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
       if (!gameFromFen) return;
       game = gameFromFen;
       if (game.winner_color() !== undefined) {
-        disableUndoResignAndTimerControls();
+        disableAndHideUndoResignAndTimerControls();
         hideTimerCountdownDigits();
       }
       setNewBoard();
@@ -890,7 +892,7 @@ export function didRecoverMyMatch(match: Match, matchId: string) {
   if (!gameFromFen) return;
   game = gameFromFen;
   if (game.winner_color() !== undefined) {
-    disableUndoResignAndTimerControls();
+    disableAndHideUndoResignAndTimerControls();
     hideTimerCountdownDigits();
   }
   verifyMovesIfNeeded(matchId, match.flatMovesString, match.color);
