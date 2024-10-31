@@ -172,7 +172,8 @@ const ResignButton = styled(ReactionButton)`
   }
 `;
 
-let showResignAndVoiceReactionButtons: () => void;
+let showVoiceReactionButton: () => void;
+let showResignButton: () => void;
 let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableAndHideUndoResignAndTimerControls: () => void;
@@ -227,9 +228,12 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
-  showResignAndVoiceReactionButtons = () => {
-    setIsResignButtonVisible(true);
+  showVoiceReactionButton = () => {
     setIsVoiceReactionButtonVisible(true);
+  };
+
+  showResignButton = () => {
+    setIsResignButtonVisible(true);
   };
 
   hideTimerButtons = () => {
@@ -387,4 +391,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showResignAndVoiceReactionButtons, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showVoiceReactionButton, showResignButton, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
