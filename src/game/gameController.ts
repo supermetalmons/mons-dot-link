@@ -686,7 +686,7 @@ function updateDisplayedTimerIfNeeded(onConnect: boolean, match: Match) {
 function showTimerCountdown(onConnect: boolean, timer: any, timerColor: string, duration?: number) {
   if (timer === "gg") {
     handleVictoryByTimer(onConnect, timerColor, false);
-  } else if (timer && typeof timer === "string") {
+  } else if (timer && typeof timer === "string" && !isGameOver) {
     const [turnNumber, targetTimestamp] = timer.split(";").map(Number);
     if (!isNaN(turnNumber) && !isNaN(targetTimestamp)) {
       if (game.turn_number() === turnNumber) {
