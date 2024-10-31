@@ -720,6 +720,7 @@ function setNewBoard() {
   Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
   if (game.winner_color() !== undefined || resignedColor !== undefined) {
     hideAllMoveStatuses();
+    showRematchInterface();
   } else {
     updateBoardMoveStatuses();
   }
