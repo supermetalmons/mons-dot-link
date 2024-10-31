@@ -4,7 +4,6 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { isModernAndPowerful } from "../utils/misc";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
 import { showGameRelatedBottomControls, setUndoEnabled, disableUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
@@ -427,10 +426,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             return;
           case MonsWeb.EventModelKind.GameOver:
             const isVictory = !isOnlineGame || event.color === playerSideColor;
-            let winnerAlertText = (event.color === MonsWeb.Color.White ? "⚪️" : "⚫️") + "🏅";
-            if (!isModernAndPowerful) {
-              winnerAlertText = (event.color === MonsWeb.Color.White ? "white" : "black") + " wins";
-            }
 
             if (isVictory) {
               sounds.push(Sound.Victory);
@@ -441,10 +436,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             if (isVictory && !isWatchOnly && hasBothEthAddresses()) {
               setTimeout(() => {
                 suggestSavingOnchainRating(false);
-              }, 420);
-            } else {
-              setTimeout(() => {
-                alert(winnerAlertText);
               }, 420);
             }
 
@@ -779,17 +770,8 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
       setTimeout(() => {
         suggestSavingOnchainRating(false);
       }, 420);
-    } else {
-      setTimeout(() => {
-        alert("🎉 you win");
-      }, 420);
     }
   } else if (!onConnect) {
-    setTimeout(() => {
-      const emoji = winnerColor === "white" ? "⚪️" : "⚫️";
-      alert(emoji + " wins");
-    }, 420);
-
     if (!isWatchOnly) {
       playSounds([Sound.Defeat]);
     }
@@ -815,11 +797,6 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
     playSounds([Sound.Victory]);
     if (!isWatchOnly && hasBothEthAddresses()) {
       suggestSavingOnchainRating(true);
-    } else {
-      setTimeout(() => {
-        const emoji = resignSenderColor === "white" ? "⚪️" : "⚫️";
-        alert(emoji + " resigned");
-      }, 420);
     }
   }
 
