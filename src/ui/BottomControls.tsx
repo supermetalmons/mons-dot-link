@@ -233,6 +233,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   showTimerButtonProgressing = (currentProgress: number, target: number, enableWhenTargetReached: boolean) => {
     // TODO: make it work with a hourglass
 
+    if (hourglassEnableTimeout !== undefined) {
+      clearTimeout(hourglassEnableTimeout);
+      hourglassEnableTimeout = undefined;
+    }
+
     setIsTimerButtonDisabled(true);
     setIsStartTimerVisible(true);
     setIsClaimVictoryVisible(false);
