@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaHourglass, FaTrophy } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
+// import AnimatedHourglassButton from './AnimatedHourglassButton';
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
 
 export enum PrimaryActionType {
@@ -33,7 +34,7 @@ const ControlsContainer = styled.div`
   gap: 8px;
 `;
 
-const ControlButton = styled.button<{ disabled?: boolean }>`
+export const ControlButton = styled.button<{ disabled?: boolean }>`
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -324,6 +325,8 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
             </ControlButton>
           )}
           {isStartTimerVisible && (
+            // TODO: use realistic hourglass
+            // <AnimatedHourglassButton duration={10} onClick={handleTimerClick} />
             <ControlButton onClick={handleTimerClick} aria-label="Timer" disabled={isTimerButtonDisabled}>
               <FaHourglass />
             </ControlButton>
