@@ -9,7 +9,7 @@ import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisib
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
-const isLocalBotEnabled = false;
+let isLocalBotEnabled = true;
 
 export let initialFen = "";
 export let isWatchOnly = false;
