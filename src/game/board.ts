@@ -931,9 +931,10 @@ export function setupBoard() {
 
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
-      const x = parseInt(target.getAttribute("x") || "-1");
+      const rawX = parseInt(target.getAttribute("x") || "-1");
       const rawY = parseInt(target.getAttribute("y") || "-1") - 1;
 
+      const x = isFlipped ? 10 - rawX : rawX;
       const y = isFlipped ? 10 - rawY : rawY;
 
       didClickSquare(new Location(y, x));
@@ -1420,7 +1421,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
 
 function inBoardCoordinates(location: Location): Location {
   if (isFlipped) {
-    return new Location(12 - (location.i + 1), location.j);
+    return new Location(11 - location.i, 10 - location.j);
   } else {
     return new Location(location.i + 1, location.j);
   }
