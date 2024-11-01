@@ -82,8 +82,8 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
   }
 `;
 
-const PrimaryGameNavigationButton = styled.button`
-  background-color: #2ecc40;
+const PrimaryGameNavigationButton = styled.button<{ isBlue?: boolean }>`
+  background-color: ${props => props.isBlue ? '#0074D9' : '#2ecc40'};
   color: white;
   border: none;
   border-radius: 20px;
@@ -94,17 +94,25 @@ const PrimaryGameNavigationButton = styled.button`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #29b739;
+      background-color: ${props => props.isBlue ? '#0063B8' : '#29b739'};
     }
   }
 
+  &:active {
+    background-color: ${props => props.isBlue ? '#005299' : '#25a233'};
+  }
+
   @media (prefers-color-scheme: dark) {
-    background-color: #25a233;
+    background-color: ${props => props.isBlue ? '#005299' : '#25a233'};
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #208c2c;
+        background-color: ${props => props.isBlue ? '#004785' : '#208c2c'};
       }
+    }
+
+    &:active {
+      background-color: ${props => props.isBlue ? '#003d71' : '#1b7825'};
     }
   }
 `;
@@ -345,6 +353,8 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      {/* <PrimaryGameNavigationButton onClick={handlePrimaryActionClick} isBlue={true}>{"✉️ New Game Link"}</PrimaryGameNavigationButton>
+      <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{"⚡️ Automatch"}</PrimaryGameNavigationButton> */}
       {primaryAction !== PrimaryActionType.None && <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</PrimaryGameNavigationButton>}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
