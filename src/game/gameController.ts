@@ -64,6 +64,7 @@ export async function go() {
       updateLocation(location);
     });
     setUndoVisible(true);
+    processInput(AssistedInputKind.None, InputModifier.None, new Location(10, 5));
   } else {
     isOnlineGame = true;
   }
