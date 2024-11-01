@@ -9,6 +9,7 @@ import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisib
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
+const isLocalBotEnabled = false;
 
 export let initialFen = "";
 export let isWatchOnly = false;
@@ -64,7 +65,6 @@ export async function go() {
       updateLocation(location);
     });
     setUndoVisible(true);
-    processInput(AssistedInputKind.None, InputModifier.None, new Location(10, 5));
   } else {
     isOnlineGame = true;
   }
@@ -87,6 +87,11 @@ function showRematchInterface() {
     return;
   }
   showPrimaryAction(PrimaryActionType.Rematch);
+}
+
+function automove() {
+  let output = game.automove();
+  applyOutput(output, true, AssistedInputKind.None);
 }
 
 function didConfirmRematchProposal() {
@@ -484,6 +489,11 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       }
 
       updateUndoButtonBasedOnGameState();
+
+      if (isLocalBotEnabled && !isOnlineGame && !isPlayerSideTurn() && !isGameOver) {
+        automove();
+      }
+
       break;
   }
 }
