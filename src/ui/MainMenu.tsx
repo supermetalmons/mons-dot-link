@@ -15,7 +15,7 @@ const RockButton = styled.div`
   background-color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 5px;
+  padding: 3px 6px;
   cursor: pointer;
 
   @media (prefers-color-scheme: dark) {
@@ -23,8 +23,8 @@ const RockButton = styled.div`
   }
 
   img {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     opacity: 1;
     display: block;
   }
