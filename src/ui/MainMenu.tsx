@@ -54,11 +54,22 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   }
 `;
 
+const MenuTitle = styled.div`
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  margin: 8px 0 0 45px;
+
+  @media (prefers-color-scheme: dark) {
+    color: #f5f5f5;
+  }
+`;
+
 const IconRow = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 6px;
-  margin-top: 45px;
+  margin-top: 12px;
 
   a {
     color: #000;
@@ -166,6 +177,7 @@ const MainMenu: React.FC = () => {
   return (
     <RockButtonContainer ref={menuRef}>
       <RockMenu isOpen={isMenuOpen}>
+        <MenuTitle>Super Metal Mons</MenuTitle>
         <IconRow>
           <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
