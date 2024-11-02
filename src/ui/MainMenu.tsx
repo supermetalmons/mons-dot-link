@@ -59,6 +59,7 @@ const MenuTitle = styled.div`
   font-size: 16px;
   color: #333;
   margin: 10px 0 0 16px;
+  cursor: default;
 
   @media (prefers-color-scheme: dark) {
     color: #f5f5f5;
@@ -66,18 +67,22 @@ const MenuTitle = styled.div`
 `;
 
 const CloseButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: red;
   border: none;
   color: white;
   cursor: pointer;
   font-size: 18px;
-  line-height: 1;
+  line-height: 18px;
   position: absolute;
-  border-radius: 13px;
+  border-radius: 50%;
   height: 26px;
   width: 26px;
   right: 6px;
   top: 11px;
+  padding: 0;
   
   @media (prefers-color-scheme: dark) {
     color: white;
