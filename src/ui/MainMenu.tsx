@@ -58,7 +58,7 @@ const MenuTitle = styled.div`
   font-weight: bold;
   font-size: 16px;
   color: #333;
-  margin: 8px 0 0 45px;
+  margin: 10px 0 0 16px;
 
   @media (prefers-color-scheme: dark) {
     color: #f5f5f5;
