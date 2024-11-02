@@ -57,7 +57,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
 const MenuTitle = styled.div`
   font-weight: bold;
   font-size: 16px;
-  color: #333;
+  color: #f5f5f5;
   margin: 10px 0 0 16px;
   cursor: default;
 
@@ -70,11 +70,12 @@ const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: red;
+  background: #f9f9f9;
   border: none;
-  color: white;
+  color: #777;
   cursor: pointer;
   font-size: 18px;
+  font-weight: 230;
   line-height: 18px;
   position: absolute;
   border-radius: 50%;
@@ -85,7 +86,8 @@ const CloseButton = styled.button`
   padding: 0;
   
   @media (prefers-color-scheme: dark) {
-    color: white;
+    color: #ccc;
+    background: #252525;
   }
 `;
 
@@ -116,7 +118,7 @@ const IconLink = styled.a`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -125,7 +127,7 @@ const IconLink = styled.a`
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: #2a2a2a;
+    background-color: #252525;
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
@@ -153,7 +155,7 @@ const LinkButton = styled.a`
   text-align: center;
   font-size: 0.55rem;
   border-radius: 8px;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
   color: #333;
   text-decoration: none;
 
@@ -164,7 +166,7 @@ const LinkButton = styled.a`
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: #2a2a2a;
+    background-color: #252525;
     color: #f5f5f5;
 
     @media (hover: hover) and (pointer: fine) {
