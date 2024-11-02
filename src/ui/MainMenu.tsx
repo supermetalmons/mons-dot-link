@@ -34,14 +34,14 @@ const RockButton = styled.div`
 
 const RockMenu = styled.div<{ isOpen: boolean }>`
   position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #fff;
+  top: -5px;
+  left: -6px;
+  background-color: green;
   border-radius: 12px;
-  padding: 8px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   box-shadow: ${(props) => (props.isOpen ? "0 10px 30px rgba(0, 0, 0, 0.2)" : "none")};
   min-width: 230px;
   transform-origin: top left;
@@ -50,15 +50,15 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   z-index: 1;
 
   @media (prefers-color-scheme: dark) {
-    background-color: #1e1e1e;
+    background-color: green;
   }
 `;
 
 const IconRow = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 48px;
+  gap: 6px;
+  margin-top: 45px;
 
   a {
     color: #000;
@@ -108,7 +108,7 @@ const IconLink = styled.a`
 const LinkRow = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 `;
 
