@@ -43,7 +43,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   top: -5px;
   left: -6px;
   background-color: #FFF;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 6px;
   display: flex;
   flex-direction: column;
