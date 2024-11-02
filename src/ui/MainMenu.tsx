@@ -42,7 +42,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 6px;
-  box-shadow: ${(props) => (props.isOpen ? "0 10px 30px rgba(0, 0, 0, 0.2)" : "none")};
+  box-shadow: ${(props) => (props.isOpen ? "0 6px 20px rgba(0, 0, 0, 0.12)" : "none")};
   min-width: 230px;
   transform-origin: top left;
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
