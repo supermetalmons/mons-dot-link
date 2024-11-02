@@ -28,6 +28,12 @@ const RockButton = styled.div`
 
   @media (prefers-color-scheme: dark) {
     background-color: #252525;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #262626;
+      }
+    }
   }
 
   img {
@@ -100,6 +106,12 @@ const CloseButton = styled.button`
   @media (prefers-color-scheme: dark) {
     color: #424242;
     background: #232323;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #242424;
+      }
+    }
   }
 `;
 
@@ -143,7 +155,7 @@ const IconLink = styled.a`
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #3a3a3a;
+        background-color: #272727;
       }
     }
   }
@@ -183,7 +195,7 @@ const LinkButton = styled.a`
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #3a3a3a;
+        background-color: #272727;
       }
     }
   }
