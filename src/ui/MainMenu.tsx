@@ -12,14 +12,14 @@ const RockButtonContainer = styled.div`
 
 const RockButton = styled.div`
   display: block;
-  background-color: #fff;
+  background-color: #f9f9f9;
   border: none;
   border-radius: 10px;
   padding: 3px 6px;
   cursor: pointer;
 
   @media (prefers-color-scheme: dark) {
-    background-color: #1a1b1f;
+    background-color: #252525;
   }
 
   img {
