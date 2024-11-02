@@ -22,12 +22,6 @@ const RockButton = styled.div`
     background-color: #1a1b1f;
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-
   img {
     width: 30px;
     height: 30px;
