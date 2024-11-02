@@ -36,7 +36,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   position: absolute;
   top: -5px;
   left: -6px;
-  background-color: green;
+  background-color: #FFF;
   border-radius: 12px;
   padding: 6px;
   display: flex;
@@ -50,14 +50,14 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   z-index: 1;
 
   @media (prefers-color-scheme: dark) {
-    background-color: green;
+    background-color: #1E1E1E;
   }
 `;
 
 const MenuTitle = styled.div`
   font-weight: bold;
   font-size: 16px;
-  color: #f5f5f5;
+  color: #333;
   margin: 10px 0 0 16px;
   cursor: default;
 
