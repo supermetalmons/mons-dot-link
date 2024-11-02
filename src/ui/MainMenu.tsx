@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { logoBase64 } from "../content/uiAssets";
-import { didClickInviteButton } from "../connection/connection";
 import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 import styled from "styled-components";
 
@@ -52,44 +51,6 @@ const RockMenu = styled.div`
 
   @media (prefers-color-scheme: dark) {
     background-color: #1e1e1e;
-  }
-`;
-
-const NewGameButton = styled.button`
-  background-color: #0e76fd;
-  height: 55px;
-  text-align: left;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: 600;
-  transition: background-color 0.1s ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #0c66db;
-    }
-  }
-
-  &:active {
-    background-color: #0a56b9;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    background-color: #3898ff;
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: #4ca5ff;
-      }
-    }
-
-    &:active {
-      background-color: #2688f0;
-    }
   }
 `;
 
@@ -180,27 +141,11 @@ const LinkButton = styled.a`
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isInviteLoading, setIsInviteLoading] = useState(false);
-  const [didCreateInvite, setDidCreateInvite] = useState(false);
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleInviteClick = () => {
-    setIsInviteLoading(true);
-    didClickInviteButton((result: boolean) => {
-      if (result) {
-        setIsInviteLoading(false);
-        setDidCreateInvite(true);
-        console.log("Invite created successfully");
-        // TODO: handle invite copy here too
-      } else {
-        setIsInviteLoading(false);
-        console.error("Failed to create invite");
-      }
-    });
   };
 
   useEffect(() => {
@@ -230,15 +175,6 @@ const MainMenu: React.FC = () => {
       </RockButton>
       {isMenuOpen && (
         <RockMenu>
-          <NewGameButton onClick={handleInviteClick} disabled={isInviteLoading}>
-            {isInviteLoading ? (
-              <span className="activity-indicator">loading...</span>
-            ) : (
-              <span className="button-text" style={{ fontWeight: 777 }}>
-                {didCreateInvite ? "Copy Invite" : "New Game"}
-              </span>
-            )}
-          </NewGameButton>
           <IconRow>
             <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">

@@ -4,6 +4,7 @@ import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
+import { didClickInviteButton } from "../connection/connection";
 
 export enum PrimaryActionType {
   None = "none",
@@ -82,8 +83,8 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
   }
 `;
 
-const PrimaryGameNavigationButton = styled.button<{ isBlue?: boolean }>`
-  background-color: ${props => props.isBlue ? '#0074D9' : '#2ecc40'};
+const BottomPillButton = styled.button<{ isBlue?: boolean }>`
+  background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
   color: white;
   border: none;
   border-radius: 20px;
@@ -94,25 +95,25 @@ const PrimaryGameNavigationButton = styled.button<{ isBlue?: boolean }>`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: ${props => props.isBlue ? '#0063B8' : '#29b739'};
+      background-color: ${(props) => (props.isBlue ? "#0063B8" : "#29b739")};
     }
   }
 
   &:active {
-    background-color: ${props => props.isBlue ? '#005299' : '#25a233'};
+    background-color: ${(props) => (props.isBlue ? "#005299" : "#25a233")};
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: ${props => props.isBlue ? '#005299' : '#25a233'};
+    background-color: ${(props) => (props.isBlue ? "#005299" : "#25a233")};
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: ${props => props.isBlue ? '#004785' : '#208c2c'};
+        background-color: ${(props) => (props.isBlue ? "#004785" : "#208c2c")};
       }
     }
 
     &:active {
-      background-color: ${props => props.isBlue ? '#003d71' : '#1b7825'};
+      background-color: ${(props) => (props.isBlue ? "#003d71" : "#1b7825")};
     }
   }
 `;
@@ -193,6 +194,10 @@ let enableTimerVictoryClaim: () => void;
 let showPrimaryAction: (action: PrimaryActionType) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
+  // TODO: refactor
+  const [isInviteLoading, setIsInviteLoading] = useState(false);
+  const [didCreateInvite, setDidCreateInvite] = useState(false);
+
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
   const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(false);
@@ -235,6 +240,20 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       }
     };
   }, []);
+
+  // TODO: refactor and prettify
+  const handleInviteClick = () => {
+    setIsInviteLoading(true);
+    didClickInviteButton((result: boolean) => {
+      if (result) {
+        setIsInviteLoading(false);
+        setDidCreateInvite(true);
+        // TODO: handle invite copy here too
+      } else {
+        setIsInviteLoading(false);
+      }
+    });
+  };
 
   showVoiceReactionButton = () => {
     setIsVoiceReactionButtonVisible(true);
@@ -353,9 +372,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      {/* <PrimaryGameNavigationButton onClick={handlePrimaryActionClick} isBlue={true}>{"✉️ New Game Link"}</PrimaryGameNavigationButton>
-      <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{"⚡️ Automatch"}</PrimaryGameNavigationButton> */}
-      {primaryAction !== PrimaryActionType.None && <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</PrimaryGameNavigationButton>}
+      <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
+        {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Game Link" : "✉️ New Game Link"}
+      </BottomPillButton>
+      {/* <BottomPillButton onClick={handlePrimaryActionClick}>{"⚡️ Automatch"}</BottomPillButton> */}
+      {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
           <FaTrophy />
