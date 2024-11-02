@@ -65,6 +65,25 @@ const MenuTitle = styled.div`
   }
 `;
 
+const CloseButton = styled.button`
+  background: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  position: absolute;
+  border-radius: 13px;
+  height: 26px;
+  width: 26px;
+  right: 6px;
+  top: 11px;
+  
+  @media (prefers-color-scheme: dark) {
+    color: white;
+  }
+`;
+
 const IconRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -178,6 +197,7 @@ const MainMenu: React.FC = () => {
     <RockButtonContainer ref={menuRef}>
       <RockMenu isOpen={isMenuOpen}>
         <MenuTitle>Super Metal Mons</MenuTitle>
+        <CloseButton onClick={() => setIsMenuOpen(false)}>×</CloseButton>
         <IconRow>
           <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
