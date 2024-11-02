@@ -20,6 +20,12 @@ const RockButton = styled.div`
   position: relative;
   z-index: 2;
 
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #F8F8F8;
+    }
+  }
+
   @media (prefers-color-scheme: dark) {
     background-color: #252525;
   }
@@ -85,6 +91,12 @@ const CloseButton = styled.button`
   top: 11px;
   padding: 0;
   
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #fafafa;
+    }
+  }
+
   @media (prefers-color-scheme: dark) {
     color: #424242;
     background: #232323;
@@ -122,7 +134,7 @@ const IconLink = styled.a`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #e0e0e0;
+      background-color: #F5F5F5;
     }
   }
 
@@ -161,7 +173,7 @@ const LinkButton = styled.a`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #e0e0e0;
+      background-color: #F5F5F5;
     }
   }
 
