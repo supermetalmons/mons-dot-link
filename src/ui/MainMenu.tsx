@@ -70,9 +70,9 @@ const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9f9f9;
+  background: #fbfbfb;
   border: none;
-  color: #777;
+  color: #cecece;
   cursor: pointer;
   font-size: 18px;
   font-weight: 230;
@@ -86,8 +86,8 @@ const CloseButton = styled.button`
   padding: 0;
   
   @media (prefers-color-scheme: dark) {
-    color: #ccc;
-    background: #252525;
+    color: #424242;
+    background: #232323;
   }
 `;
 
