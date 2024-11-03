@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
-import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, showInviteLinkAndAutomatchButtons } from "../ui/BottomControls";
+import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, showInviteLinkAndAutomatchButtons, setHomeVisible } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -65,6 +65,7 @@ export async function go() {
       updateLocation(location);
     });
     showInviteLinkAndAutomatchButtons();
+    setHomeVisible(true); // TODO: dev tmp, no need to show it here
   } else {
     isOnlineGame = true;
   }
@@ -123,6 +124,11 @@ export function didClickClaimVictoryByTimerButton() {
       })
       .catch(() => {});
   }
+}
+
+export function didClickHomeButton() {
+  // TODO: might need different navigation depending on the current game state
+  window.location.href = "/";
 }
 
 export function didClickStartTimerButton() {

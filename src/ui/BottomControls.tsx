@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy } from "react-icons/fa";
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy, FaHome } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton } from "../game/gameController";
 import { didClickInviteButton } from "../connection/connection";
 
 export enum PrimaryActionType {
@@ -184,6 +184,7 @@ const ResignButton = styled(ReactionButton)`
 let showVoiceReactionButton: () => void;
 let showResignButton: () => void;
 let showInviteLinkAndAutomatchButtons: () => void;
+let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableAndHideUndoResignAndTimerControls: () => void;
@@ -197,6 +198,7 @@ let showPrimaryAction: (action: PrimaryActionType) => void;
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
   const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
+  const [isHomeButtonVisible, setIsHomeButtonVisible] = useState(false);
 
   // TODO: refactor
   const [isInviteLoading, setIsInviteLoading] = useState(false);
@@ -311,6 +313,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsClaimVictoryButtonDisabled(false);
   };
 
+  setHomeVisible = (visible: boolean) => {
+    setIsHomeButtonVisible(visible);
+  };
+
   setUndoVisible = (visible: boolean) => {
     setIsUndoButtonVisible(visible);
   };
@@ -349,6 +355,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     event.stopPropagation();
     didClickStartTimerButton();
     setIsTimerButtonDisabled(true);
+  };
+
+  const handleHomeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    didClickHomeButton();
   };
 
   const handleClaimVictoryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -418,6 +429,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           <FaCommentAlt />
         </ControlButton>
       )}
+      {isHomeButtonVisible && (
+        <ControlButton onClick={handleHomeClick} aria-label="Home">
+          <FaHome />
+        </ControlButton>
+      )}
       <ControlButton onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
         {isMusicPlaying ? <FaStop /> : <FaMusic />}
       </ControlButton>
@@ -442,4 +458,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showVoiceReactionButton, showInviteLinkAndAutomatchButtons, showResignButton, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showVoiceReactionButton, showInviteLinkAndAutomatchButtons, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
