@@ -81,6 +81,7 @@ export function didFindYourOwnInviteThatNobodyJoined() {
 }
 
 export function didFindInviteThatCanBeJoined() {
+  setHomeVisible(true);
   showPrimaryAction(PrimaryActionType.JoinGame);
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
