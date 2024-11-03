@@ -183,7 +183,8 @@ const ResignButton = styled(ReactionButton)`
 
 let showVoiceReactionButton: () => void;
 let showResignButton: () => void;
-let showInviteLinkAndAutomatchButtons: () => void;
+let setInviteLinkActionVisible: (visible: boolean) => void;
+let setAutomatchVisible: (visible: boolean) => void;
 let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
@@ -270,11 +271,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsResignButtonVisible(true);
   };
 
-  showInviteLinkAndAutomatchButtons = () => {
-    setIsInviteLinkButtonVisible(true);
-    setIsAutomatchButtonVisible(true);
-  };
-
   hideTimerButtons = () => {
     if (hourglassEnableTimeoutRef.current) {
       clearTimeout(hourglassEnableTimeoutRef.current);
@@ -311,6 +307,14 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryButtonDisabled(false);
+  };
+
+  setInviteLinkActionVisible = (visible: boolean) => {
+    setIsInviteLinkButtonVisible(visible);
+  };
+
+  setAutomatchVisible = (visible: boolean) => {
+    setIsAutomatchButtonVisible(visible);
   };
 
   setHomeVisible = (visible: boolean) => {
@@ -468,4 +472,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showVoiceReactionButton, showInviteLinkAndAutomatchButtons, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
