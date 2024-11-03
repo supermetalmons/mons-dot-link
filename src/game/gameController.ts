@@ -15,6 +15,7 @@ export let initialFen = "";
 export let isWatchOnly = false;
 export let isOnlineGame = false;
 
+let didStartLocalGame = false;
 let isGameOver = false;
 let isReconnect = false;
 let didConnect = false;
@@ -303,6 +304,14 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
       if (isOnlineGame && !isRemoteInput) {
         sendMove(moveFen, gameFen);
+      }
+
+      if (!isOnlineGame && !didStartLocalGame) {
+        didStartLocalGame = true;
+        setHomeVisible(true);
+        setUndoVisible(true);
+        setInviteLinkActionVisible(false);
+        setAutomatchVisible(false);
       }
 
       currentInputs = [];
