@@ -197,6 +197,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   // TODO: refactor
   const [isInviteLoading, setIsInviteLoading] = useState(false);
   const [didCreateInvite, setDidCreateInvite] = useState(false);
+  const [automatchButtonText, setAutomatchButtonText] = useState("⚡️ Automatch");
 
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
@@ -359,6 +360,14 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setPrimaryAction(PrimaryActionType.None);
   };
 
+  const handleAutomatchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setAutomatchButtonText("Soon");
+    setTimeout(() => {
+      setAutomatchButtonText("⚡️ Automatch");
+    }, 500);
+  };
+
   const getPrimaryActionButtonText = () => {
     switch (primaryAction) {
       case PrimaryActionType.JoinGame:
@@ -375,7 +384,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
         {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
       </BottomPillButton>
-      {/* <BottomPillButton onClick={handlePrimaryActionClick}>{"⚡️ Automatch"}</BottomPillButton> */}
+      <BottomPillButton onClick={handleAutomatchClick}>{automatchButtonText}</BottomPillButton>
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
