@@ -108,12 +108,12 @@ const BottomPillButton = styled.button<{ isBlue?: boolean }>`
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: ${(props) => (props.isBlue ? "#004785" : "#208c2c")};
+        background-color: ${(props) => (props.isBlue ? "#0063B8" : "#29b739")};
       }
     }
 
     &:active {
-      background-color: ${(props) => (props.isBlue ? "#003d71" : "#1b7825")};
+      background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
     }
   }
 `;
@@ -373,7 +373,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   return (
     <ControlsContainer>
       <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-        {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Game Link" : "✉️ New Game Link"}
+        {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
       </BottomPillButton>
       {/* <BottomPillButton onClick={handlePrimaryActionClick}>{"⚡️ Automatch"}</BottomPillButton> */}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
