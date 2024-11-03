@@ -201,11 +201,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
   const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
   const [isHomeButtonVisible, setIsHomeButtonVisible] = useState(false);
-
-  // TODO: refactor
   const [isInviteLoading, setIsInviteLoading] = useState(false);
   const [didCreateInvite, setDidCreateInvite] = useState(false);
   const [automatchButtonTmpState, setAutomatchButtonTmpState] = useState(false);
+  const [inviteCopiedTmpState, setInviteCopiedTmpState] = useState(false);
 
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
@@ -250,14 +249,18 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
-  // TODO: refactor and prettify
   const handleInviteClick = () => {
     setIsInviteLoading(true);
     didClickInviteButton((result: boolean) => {
       if (result) {
+        if (didCreateInvite) {
+          setInviteCopiedTmpState(true);
+          setTimeout(() => {
+            setInviteCopiedTmpState(false);
+          }, 699);
+        }
         setIsInviteLoading(false);
         setDidCreateInvite(true);
-        // TODO: handle invite copy here too
       } else {
         setIsInviteLoading(false);
       }
@@ -412,7 +415,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     <ControlsContainer>
       {isInviteLinkButtonVisible && (
         <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-          {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
+          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
