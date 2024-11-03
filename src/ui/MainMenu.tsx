@@ -79,7 +79,7 @@ const MenuTitle = styled.div`
 `;
 
 const CloseButton = styled.button`
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   background: #fbfbfb;
@@ -97,21 +97,13 @@ const CloseButton = styled.button`
   top: 11px;
   padding: 0;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #fafafa;
-    }
+  @media (hover: none) {
+    display: flex;
   }
 
   @media (prefers-color-scheme: dark) {
     color: #424242;
     background: #232323;
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: #242424;
-      }
-    }
   }
 `;
 
