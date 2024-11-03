@@ -66,7 +66,6 @@ export async function go() {
     });
     setInviteLinkActionVisible(true);
     setAutomatchVisible(true);
-    setHomeVisible(true);
   } else {
     isOnlineGame = true;
   }
@@ -75,7 +74,8 @@ export async function go() {
 }
 
 export function didFindYourOwnInviteThatNobodyJoined() {
-  // TODO: show copy invite link button
+  setInviteLinkActionVisible(true);
+  setHomeVisible(true);
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
