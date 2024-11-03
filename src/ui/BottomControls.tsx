@@ -183,6 +183,7 @@ const ResignButton = styled(ReactionButton)`
 
 let showVoiceReactionButton: () => void;
 let showResignButton: () => void;
+let showInviteLinkAndAutomatchButtons: () => void;
 let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableAndHideUndoResignAndTimerControls: () => void;
@@ -194,6 +195,9 @@ let enableTimerVictoryClaim: () => void;
 let showPrimaryAction: (action: PrimaryActionType) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
+  const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
+  const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
+
   // TODO: refactor
   const [isInviteLoading, setIsInviteLoading] = useState(false);
   const [didCreateInvite, setDidCreateInvite] = useState(false);
@@ -262,6 +266,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   showResignButton = () => {
     setIsResignButtonVisible(true);
+  };
+
+  showInviteLinkAndAutomatchButtons = () => {
+    setIsInviteLinkButtonVisible(true);
+    setIsAutomatchButtonVisible(true);
   };
 
   hideTimerButtons = () => {
@@ -381,10 +390,12 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-        {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
-      </BottomPillButton>
-      <BottomPillButton onClick={handleAutomatchClick}>{automatchButtonText}</BottomPillButton>
+      {isInviteLinkButtonVisible && (
+        <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
+          {isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
+        </BottomPillButton>
+      )}
+      {isAutomatchButtonVisible && <BottomPillButton onClick={handleAutomatchClick}>{automatchButtonText}</BottomPillButton>}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
@@ -431,4 +442,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showVoiceReactionButton, showResignButton, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showVoiceReactionButton, showInviteLinkAndAutomatchButtons, showResignButton, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
