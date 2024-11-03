@@ -22,7 +22,7 @@ const RockButton = styled.div`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #F8F8F8;
+      background-color: #f8f8f8;
     }
   }
 
@@ -48,7 +48,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   position: absolute;
   top: -5px;
   left: -6px;
-  background-color: #FFF;
+  background-color: #fff;
   border-radius: 10px;
   padding: 6px;
   display: flex;
@@ -62,7 +62,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   z-index: 1;
 
   @media (prefers-color-scheme: dark) {
-    background-color: #1E1E1E;
+    background-color: #1e1e1e;
   }
 `;
 
@@ -96,7 +96,7 @@ const CloseButton = styled.button`
   right: 6px;
   top: 11px;
   padding: 0;
-  
+
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       background-color: #fafafa;
@@ -146,7 +146,7 @@ const IconLink = styled.a`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #F5F5F5;
+      background-color: #f5f5f5;
     }
   }
 
@@ -185,7 +185,7 @@ const LinkButton = styled.a`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #F5F5F5;
+      background-color: #f5f5f5;
     }
   }
 
@@ -225,7 +225,13 @@ const MainMenu: React.FC = () => {
   }, [isMenuOpen]);
 
   return (
-    <RockButtonContainer ref={menuRef}>
+    <RockButtonContainer
+      ref={menuRef}
+      onMouseLeave={() => {
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          setIsMenuOpen(false);
+        }
+      }}>
       <RockMenu isOpen={isMenuOpen}>
         <MenuTitle>Super Metal Mons</MenuTitle>
         <CloseButton onClick={() => setIsMenuOpen(false)}>×</CloseButton>
