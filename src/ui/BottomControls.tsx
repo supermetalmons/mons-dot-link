@@ -121,7 +121,7 @@ const BottomPillButton = styled.button<{ isBlue?: boolean }>`
 const ReactionPicker = styled.div`
   position: absolute;
   bottom: 40px;
-  right: 63px;
+  right: 103px;
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -156,7 +156,7 @@ const ReactionButton = styled.button`
 `;
 
 const ResignConfirmation = styled(ReactionPicker)`
-  right: 90px;
+  right: 130px;
   bottom: 40px;
   padding: 12px;
 `;
