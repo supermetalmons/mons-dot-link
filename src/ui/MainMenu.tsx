@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { logoBase64 } from "../content/uiAssets";
-import { didClickInviteButton } from "../connection/connection";
 import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 import styled from "styled-components";
 
@@ -13,90 +12,112 @@ const RockButtonContainer = styled.div`
 
 const RockButton = styled.div`
   display: block;
-  background-color: #fff;
+  background-color: #f9f9f9;
   border: none;
   border-radius: 10px;
-  padding: 5px;
+  padding: 3px 6px;
   cursor: pointer;
-
-  @media (prefers-color-scheme: dark) {
-    background-color: #1a1b1f;
-  }
+  position: relative;
+  z-index: 2;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      transform: scale(1.05);
+      background-color: #f8f8f8;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #252525;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #262626;
+      }
     }
   }
 
   img {
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     opacity: 1;
     display: block;
   }
 `;
 
-const RockMenu = styled.div`
+const RockMenuWrapper = styled.div<{ isOpen: boolean }>`
   position: absolute;
-  top: calc(100% + 12px);
-  left: 0;
+  top: -25px;
+  left: -26px;
+  padding: 20px;
+  pointer-events: ${props => props.isOpen ? "auto" : "none"};
+`;
+
+const RockMenu = styled.div<{ isOpen: boolean }>`
+  position: relative;
   background-color: #fff;
-  border-radius: 12px;
-  padding: 8px;
+  border-radius: 10px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  gap: 6px;
+  box-shadow: ${(props) => (props.isOpen ? "0 6px 20px rgba(0, 0, 0, 0.12)" : "none")};
   min-width: 230px;
+  transform-origin: top left;
+  opacity: ${(props) => (props.isOpen ? 1 : 0)};
+  pointer-events: ${(props) => (props.isOpen ? "auto" : "none")};
+  z-index: 1;
 
   @media (prefers-color-scheme: dark) {
     background-color: #1e1e1e;
   }
 `;
 
-const NewGameButton = styled.button`
-  background-color: #0e76fd;
-  height: 55px;
-  text-align: left;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: 600;
-  transition: background-color 0.1s ease;
+const MenuTitle = styled.div`
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  margin: 10px 0 0 16px;
+  cursor: default;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #0c66db;
-    }
+  @media (prefers-color-scheme: dark) {
+    color: #f5f5f5;
   }
+`;
 
-  &:active {
-    background-color: #0a56b9;
+const CloseButton = styled.button`
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #fbfbfb;
+  border: none;
+  color: #cecece;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 230;
+  line-height: 18px;
+  position: absolute;
+  border-radius: 50%;
+  height: 26px;
+  width: 26px;
+  right: 6px;
+  top: 11px;
+  padding: 0;
+
+  @media (hover: none) {
+    display: flex;
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: #3898ff;
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: #4ca5ff;
-      }
-    }
-
-    &:active {
-      background-color: #2688f0;
-    }
+    color: #424242;
+    background: #232323;
   }
 `;
 
 const IconRow = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  margin-top: 12px;
 
   a {
     color: #000;
@@ -119,20 +140,20 @@ const IconLink = styled.a`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #e0e0e0;
+      background-color: #f5f5f5;
     }
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: #2a2a2a;
+    background-color: #252525;
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #3a3a3a;
+        background-color: #272727;
       }
     }
   }
@@ -146,33 +167,33 @@ const IconLink = styled.a`
 const LinkRow = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 `;
 
 const LinkButton = styled.a`
   flex: 1;
-  padding: 32px 0px;
+  padding: 27px 0px;
   text-align: center;
   font-size: 0.55rem;
   border-radius: 8px;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
   color: #333;
   text-decoration: none;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: #e0e0e0;
+      background-color: #f5f5f5;
     }
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: #2a2a2a;
+    background-color: #252525;
     color: #f5f5f5;
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: #3a3a3a;
+        background-color: #272727;
       }
     }
   }
@@ -180,27 +201,11 @@ const LinkButton = styled.a`
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isInviteLoading, setIsInviteLoading] = useState(false);
-  const [didCreateInvite, setDidCreateInvite] = useState(false);
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleInviteClick = () => {
-    setIsInviteLoading(true);
-    didClickInviteButton((result: boolean) => {
-      if (result) {
-        setIsInviteLoading(false);
-        setDidCreateInvite(true);
-        console.log("Invite created successfully");
-        // TODO: handle invite copy here too
-      } else {
-        setIsInviteLoading(false);
-        console.error("Failed to create invite");
-      }
-    });
   };
 
   useEffect(() => {
@@ -219,26 +224,16 @@ const MainMenu: React.FC = () => {
 
   return (
     <RockButtonContainer ref={menuRef}>
-      <RockButton
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleMenu();
-        }}
-        onMouseEnter={() => setIsMenuOpen(true)}>
-        <img src={logoBase64} alt="Rock" />
-      </RockButton>
-      {isMenuOpen && (
-        <RockMenu>
-          <NewGameButton onClick={handleInviteClick} disabled={isInviteLoading}>
-            {isInviteLoading ? (
-              <span className="activity-indicator">loading...</span>
-            ) : (
-              <span className="button-text" style={{ fontWeight: 777 }}>
-                {didCreateInvite ? "Copy Invite" : "New Game"}
-              </span>
-            )}
-          </NewGameButton>
+      <RockMenuWrapper
+        isOpen={isMenuOpen}
+        onMouseLeave={() => {
+          if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            setIsMenuOpen(false);
+          }
+        }}>
+        <RockMenu isOpen={isMenuOpen}>
+          <MenuTitle>Super Metal Mons</MenuTitle>
+          <CloseButton onClick={() => setIsMenuOpen(false)}>×</CloseButton>
           <IconRow>
             <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
@@ -268,7 +263,16 @@ const MainMenu: React.FC = () => {
             </LinkButton>
           </LinkRow>
         </RockMenu>
-      )}
+      </RockMenuWrapper>
+      <RockButton
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleMenu();
+        }}
+        onMouseEnter={() => setIsMenuOpen(true)}>
+        <img src={logoBase64} alt="Rock" />
+      </RockButton>
     </RockButtonContainer>
   );
 };

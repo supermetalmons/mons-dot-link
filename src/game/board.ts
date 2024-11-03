@@ -71,6 +71,18 @@ function initializeBoardElements() {
   controlsLayer = document.getElementById("controlsLayer");
 }
 
+export function hideBoardPlayersInfo() {
+  if (opponentAvatar && playerAvatar) {
+    SVG.setHidden(opponentAvatar, true);
+    SVG.setHidden(playerAvatar, true);
+  }
+
+  if (playerScoreText && opponentScoreText) {
+    playerScoreText.textContent = "";
+    opponentScoreText.textContent = "";
+  }
+}
+
 export function resetForNewGame() {
   if (isWatchOnly) {
     playerSideMetadata.displayName = undefined;

@@ -34,9 +34,15 @@ export function didClickInviteButton(completion: any) {
     writeInviteLinkToClipboard();
     completion(true);
   } else {
-    newInviteId = generateNewInviteId();
-    writeInviteLinkToClipboard();
-    createNewMatchInvite(completion);
+    if (isCreateNewInviteFlow) {
+      newInviteId = generateNewInviteId();
+      writeInviteLinkToClipboard();
+      createNewMatchInvite(completion);
+    } else {
+      newInviteId = initialPath;
+      writeInviteLinkToClipboard();
+      completion(true);
+    }
   }
 }
 

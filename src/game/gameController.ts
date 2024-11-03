@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
-import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType } from "../ui/BottomControls";
+import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -15,9 +15,11 @@ export let initialFen = "";
 export let isWatchOnly = false;
 export let isOnlineGame = false;
 
+let didStartLocalGame = false;
 let isGameOver = false;
 let isReconnect = false;
 let didConnect = false;
+let isWaitingForInviteToGetAccepted = false;
 
 let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
@@ -64,7 +66,8 @@ export async function go() {
       const location = new Location(loc.i, loc.j);
       updateLocation(location);
     });
-    setUndoVisible(true);
+    setInviteLinkActionVisible(true);
+    setAutomatchVisible(true);
   } else {
     isOnlineGame = true;
   }
@@ -73,11 +76,14 @@ export async function go() {
 }
 
 export function didFindYourOwnInviteThatNobodyJoined() {
-  // TODO: show copy invite link button
+  setInviteLinkActionVisible(true);
+  setHomeVisible(true);
+  setIsReadyToCopyExistingInviteLink();
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
 export function didFindInviteThatCanBeJoined() {
+  setHomeVisible(true);
   showPrimaryAction(PrimaryActionType.JoinGame);
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
@@ -123,6 +129,11 @@ export function didClickClaimVictoryByTimerButton() {
       })
       .catch(() => {});
   }
+}
+
+export function didClickHomeButton() {
+  // TODO: might need different navigation depending on the current game state
+  window.location.href = "/";
 }
 
 export function didClickStartTimerButton() {
@@ -178,14 +189,14 @@ export function isPlayerSideTurn(): boolean {
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
-  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver || isWaitingForInviteToGetAccepted) {
     return;
   }
   processInput(AssistedInputKind.None, inputModifier);
 }
 
 export function didClickSquare(location: Location) {
-  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver || isWaitingForInviteToGetAccepted) {
     return;
   }
   processInput(AssistedInputKind.None, InputModifier.None, location);
@@ -293,6 +304,14 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
       if (isOnlineGame && !isRemoteInput) {
         sendMove(moveFen, gameFen);
+      }
+
+      if (!isOnlineGame && !didStartLocalGame) {
+        didStartLocalGame = true;
+        setHomeVisible(true);
+        setUndoVisible(true);
+        setInviteLinkActionVisible(false);
+        setAutomatchVisible(false);
       }
 
       currentInputs = [];
@@ -608,6 +627,7 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   Board.resetForNewGame();
+  setHomeVisible(true);
   isOnlineGame = true;
   currentInputs = [];
 
@@ -827,9 +847,20 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   showRematchInterface();
 }
 
+export function didCreateNewGameInvite() {
+  setHomeVisible(true);
+  setAutomatchVisible(false);
+  Board.hideBoardPlayersInfo();
+  hideAllMoveStatuses();
+  isWaitingForInviteToGetAccepted = true;
+  Board.runMonsBoardAsDisplayWaitingAnimation();
+}
+
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
+    isWaitingForInviteToGetAccepted = false;
+    setInviteLinkActionVisible(false);
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver && !isWatchOnly) {

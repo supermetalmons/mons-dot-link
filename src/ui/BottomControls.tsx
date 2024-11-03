@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy } from "react-icons/fa";
+import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy, FaHome } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didCreateNewGameInvite } from "../game/gameController";
+import { didClickInviteButton } from "../connection/connection";
 
 export enum PrimaryActionType {
   None = "none",
@@ -82,8 +83,8 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
   }
 `;
 
-const PrimaryGameNavigationButton = styled.button<{ isBlue?: boolean }>`
-  background-color: ${props => props.isBlue ? '#0074D9' : '#2ecc40'};
+const BottomPillButton = styled.button<{ isBlue?: boolean }>`
+  background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
   color: white;
   border: none;
   border-radius: 20px;
@@ -94,25 +95,25 @@ const PrimaryGameNavigationButton = styled.button<{ isBlue?: boolean }>`
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: ${props => props.isBlue ? '#0063B8' : '#29b739'};
+      background-color: ${(props) => (props.isBlue ? "#0063B8" : "#29b739")};
     }
   }
 
   &:active {
-    background-color: ${props => props.isBlue ? '#005299' : '#25a233'};
+    background-color: ${(props) => (props.isBlue ? "#005299" : "#25a233")};
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: ${props => props.isBlue ? '#005299' : '#25a233'};
+    background-color: ${(props) => (props.isBlue ? "#005299" : "#25a233")};
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: ${props => props.isBlue ? '#004785' : '#208c2c'};
+        background-color: ${(props) => (props.isBlue ? "#0063B8" : "#29b739")};
       }
     }
 
     &:active {
-      background-color: ${props => props.isBlue ? '#003d71' : '#1b7825'};
+      background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
     }
   }
 `;
@@ -120,7 +121,7 @@ const PrimaryGameNavigationButton = styled.button<{ isBlue?: boolean }>`
 const ReactionPicker = styled.div`
   position: absolute;
   bottom: 40px;
-  right: 63px;
+  right: 103px;
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -155,7 +156,7 @@ const ReactionButton = styled.button`
 `;
 
 const ResignConfirmation = styled(ReactionPicker)`
-  right: 90px;
+  right: 130px;
   bottom: 40px;
   padding: 12px;
 `;
@@ -182,9 +183,13 @@ const ResignButton = styled(ReactionButton)`
 
 let showVoiceReactionButton: () => void;
 let showResignButton: () => void;
+let setInviteLinkActionVisible: (visible: boolean) => void;
+let setAutomatchVisible: (visible: boolean) => void;
+let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableAndHideUndoResignAndTimerControls: () => void;
+let setIsReadyToCopyExistingInviteLink: () => void;
 let hideTimerButtons: () => void;
 let showTimerButtonProgressing: (currentProgress: number, target: number, enableWhenTargetReached: boolean) => void;
 let hideReactionPicker: () => void;
@@ -193,6 +198,14 @@ let enableTimerVictoryClaim: () => void;
 let showPrimaryAction: (action: PrimaryActionType) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
+  const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
+  const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
+  const [isHomeButtonVisible, setIsHomeButtonVisible] = useState(false);
+  const [isInviteLoading, setIsInviteLoading] = useState(false);
+  const [didCreateInvite, setDidCreateInvite] = useState(false);
+  const [automatchButtonTmpState, setAutomatchButtonTmpState] = useState(false);
+  const [inviteCopiedTmpState, setInviteCopiedTmpState] = useState(false);
+
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
   const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(false);
@@ -236,12 +249,36 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     };
   }, []);
 
+  const handleInviteClick = () => {
+    setIsInviteLoading(true);
+    didClickInviteButton((result: boolean) => {
+      if (result) {
+        if (didCreateInvite) {
+          setInviteCopiedTmpState(true);
+          setTimeout(() => {
+            setInviteCopiedTmpState(false);
+          }, 699);
+        } else {
+          didCreateNewGameInvite();
+        }
+        setIsInviteLoading(false);
+        setDidCreateInvite(true);
+      } else {
+        setIsInviteLoading(false);
+      }
+    });
+  };
+
   showVoiceReactionButton = () => {
     setIsVoiceReactionButtonVisible(true);
   };
 
   showResignButton = () => {
     setIsResignButtonVisible(true);
+  };
+
+  setIsReadyToCopyExistingInviteLink = () => {
+    setDidCreateInvite(true);
   };
 
   hideTimerButtons = () => {
@@ -280,6 +317,18 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryButtonDisabled(false);
+  };
+
+  setInviteLinkActionVisible = (visible: boolean) => {
+    setIsInviteLinkButtonVisible(visible);
+  };
+
+  setAutomatchVisible = (visible: boolean) => {
+    setIsAutomatchButtonVisible(visible);
+  };
+
+  setHomeVisible = (visible: boolean) => {
+    setIsHomeButtonVisible(visible);
   };
 
   setUndoVisible = (visible: boolean) => {
@@ -322,6 +371,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsTimerButtonDisabled(true);
   };
 
+  const handleHomeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    didClickHomeButton();
+  };
+
   const handleClaimVictoryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     didClickClaimVictoryByTimerButton();
@@ -340,6 +394,14 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setPrimaryAction(PrimaryActionType.None);
   };
 
+  const handleAutomatchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setAutomatchButtonTmpState(true);
+    setTimeout(() => {
+      setAutomatchButtonTmpState(false);
+    }, 500);
+  };
+
   const getPrimaryActionButtonText = () => {
     switch (primaryAction) {
       case PrimaryActionType.JoinGame:
@@ -353,9 +415,23 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      {/* <PrimaryGameNavigationButton onClick={handlePrimaryActionClick} isBlue={true}>{"✉️ New Game Link"}</PrimaryGameNavigationButton>
-      <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{"⚡️ Automatch"}</PrimaryGameNavigationButton> */}
-      {primaryAction !== PrimaryActionType.None && <PrimaryGameNavigationButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</PrimaryGameNavigationButton>}
+      {isInviteLinkButtonVisible && (
+        <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
+          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
+        </BottomPillButton>
+      )}
+      {isAutomatchButtonVisible && (
+        <BottomPillButton onClick={handleAutomatchClick}>
+          {automatchButtonTmpState ? (
+            "Soon"
+          ) : (
+            <>
+              👽 <span style={{ textDecoration: "underline" }}>Automatch</span>
+            </>
+          )}
+        </BottomPillButton>
+      )}
+      {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
           <FaTrophy />
@@ -375,6 +451,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       {isVoiceReactionButtonVisible && (
         <ControlButton onClick={toggleReactionPicker} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
           <FaCommentAlt />
+        </ControlButton>
+      )}
+      {isHomeButtonVisible && (
+        <ControlButton onClick={handleHomeClick} aria-label="Home">
+          <FaHome />
         </ControlButton>
       )}
       <ControlButton onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
@@ -401,4 +482,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showVoiceReactionButton, showResignButton, setUndoEnabled, setUndoVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
