@@ -840,7 +840,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 export function didCreateNewGameInvite() {
   setHomeVisible(true);
   setAutomatchVisible(false);
-  Board.removeHighlights();
+  Board.hideBoardPlayersInfo();
   hideAllMoveStatuses();
   isWaitingForInviteToGetAccepted = true;
   Board.runMonsBoardAsDisplayWaitingAnimation();
