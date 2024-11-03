@@ -839,6 +839,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
+    setInviteLinkActionVisible(false);
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver && !isWatchOnly) {
