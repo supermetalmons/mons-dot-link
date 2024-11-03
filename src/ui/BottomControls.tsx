@@ -197,7 +197,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   // TODO: refactor
   const [isInviteLoading, setIsInviteLoading] = useState(false);
   const [didCreateInvite, setDidCreateInvite] = useState(false);
-  const [automatchButtonText, setAutomatchButtonText] = useState("⚡️ Automatch");
+  const [automatchButtonText, setAutomatchButtonText] = useState("👽 Automatch");
 
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
@@ -364,7 +364,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     event.stopPropagation();
     setAutomatchButtonText("Soon");
     setTimeout(() => {
-      setAutomatchButtonText("⚡️ Automatch");
+      setAutomatchButtonText("👽 Automatch");
     }, 500);
   };
 
