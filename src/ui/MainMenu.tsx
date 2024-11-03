@@ -44,11 +44,12 @@ const RockButton = styled.div`
   }
 `;
 
-const RockMenuWrapper = styled.div`
+const RockMenuWrapper = styled.div<{ isOpen: boolean }>`
   position: absolute;
   top: -25px;
   left: -26px;
   padding: 20px;
+  pointer-events: ${props => props.isOpen ? "auto" : "none"};
 `;
 
 const RockMenu = styled.div<{ isOpen: boolean }>`
@@ -224,6 +225,7 @@ const MainMenu: React.FC = () => {
   return (
     <RockButtonContainer ref={menuRef}>
       <RockMenuWrapper
+        isOpen={isMenuOpen}
         onMouseLeave={() => {
           if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
             setIsMenuOpen(false);
