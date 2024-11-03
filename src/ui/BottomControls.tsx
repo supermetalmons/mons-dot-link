@@ -189,6 +189,7 @@ let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableAndHideUndoResignAndTimerControls: () => void;
+let setIsReadyToCopyExistingInviteLink: () => void;
 let hideTimerButtons: () => void;
 let showTimerButtonProgressing: (currentProgress: number, target: number, enableWhenTargetReached: boolean) => void;
 let hideReactionPicker: () => void;
@@ -269,6 +270,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   showResignButton = () => {
     setIsResignButtonVisible(true);
+  };
+
+  setIsReadyToCopyExistingInviteLink = () => {
+    setDidCreateInvite(true);
   };
 
   hideTimerButtons = () => {
@@ -472,4 +477,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
