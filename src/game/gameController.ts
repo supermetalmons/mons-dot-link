@@ -18,6 +18,7 @@ export let isOnlineGame = false;
 let isGameOver = false;
 let isReconnect = false;
 let didConnect = false;
+let isWaitingForInviteToGetAccepted = false;
 
 let whiteProcessedMovesCount = 0;
 let blackProcessedMovesCount = 0;
@@ -187,14 +188,14 @@ export function isPlayerSideTurn(): boolean {
 }
 
 export function didSelectInputModifier(inputModifier: InputModifier) {
-  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver || isWaitingForInviteToGetAccepted) {
     return;
   }
   processInput(AssistedInputKind.None, inputModifier);
 }
 
 export function didClickSquare(location: Location) {
-  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver) {
+  if ((isOnlineGame && !didConnect) || isWatchOnly || isGameOver || isWaitingForInviteToGetAccepted) {
     return;
   }
   processInput(AssistedInputKind.None, InputModifier.None, location);
@@ -836,9 +837,19 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   showRematchInterface();
 }
 
+export function didCreateNewGameInvite() {
+  setHomeVisible(true);
+  setAutomatchVisible(false);
+  Board.removeHighlights();
+  hideAllMoveStatuses();
+  isWaitingForInviteToGetAccepted = true;
+  Board.runMonsBoardAsDisplayWaitingAnimation();
+}
+
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
+    isWaitingForInviteToGetAccepted = false;
     setInviteLinkActionVisible(false);
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;

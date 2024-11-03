@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy, FaHome } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didCreateNewGameInvite } from "../game/gameController";
 import { didClickInviteButton } from "../connection/connection";
 
 export enum PrimaryActionType {
@@ -258,6 +258,8 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           setTimeout(() => {
             setInviteCopiedTmpState(false);
           }, 699);
+        } else {
+          didCreateNewGameInvite();
         }
         setIsInviteLoading(false);
         setDidCreateInvite(true);
