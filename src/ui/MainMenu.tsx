@@ -49,7 +49,7 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   top: -5px;
   left: -6px;
   background-color: #FFF;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -175,24 +175,13 @@ const LinkRow = styled.div`
 
 const LinkButton = styled.a`
   flex: 1;
-  padding: 20px 0px;
+  padding: 32px 0px;
   text-align: center;
   font-size: 0.55rem;
   border-radius: 8px;
   background-color: #f9f9f9;
   color: #333;
   text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-
-  img {
-    width: 32px;
-    height: 32px;
-    margin-bottom: 4px;
-    margin-top: 0px;
-  }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -254,20 +243,17 @@ const MainMenu: React.FC = () => {
         </IconRow>
         <LinkRow>
           <LinkButton href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
-            <img src="gen1.png" alt="Gen 1" />
             Gen 1
           </LinkButton>
           <LinkButton href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
-            <img src="gen2.png" alt="Gen 2" />
             Gen 2
           </LinkButton>
           <LinkButton href="https://supermetalmons.com" target="_blank" rel="noopener noreferrer">
-            <img src="irl.png" alt="IRL" />
             IRL
           </LinkButton>
         </LinkRow>
         <LinkRow>
-          <LinkButton href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer" style={{padding: "32px 0px"}}>
+          <LinkButton href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
             📈 Onchain Ratings
           </LinkButton>
         </LinkRow>
