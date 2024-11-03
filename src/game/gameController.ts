@@ -618,6 +618,7 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   Board.resetForNewGame();
+  setHomeVisible(true);
   isOnlineGame = true;
   currentInputs = [];
 
