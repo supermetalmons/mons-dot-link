@@ -1,58 +1,10 @@
 import { Sound } from "../utils/gameModels";
 import { getIsMuted } from "../ui/BottomControlsActions";
 import { Reaction } from "../connection/connectionModels";
-
-const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-const audioBuffers: { [key: string]: AudioBuffer } = {};
-const playingSounds: { [key: string]: AudioBufferSourceNode[] } = {};
-const loadingPromises: { [key: string]: Promise<AudioBuffer> } = {};
-
-async function loadAudio(path: string): Promise<AudioBuffer> {
-  if (audioBuffers[path]) {
-    return audioBuffers[path];
-  }
-
-  if (path in loadingPromises) {
-    return loadingPromises[path];
-  }
-
-  loadingPromises[path] = fetch(`/assets/${path}`)
-    .then((response) => response.arrayBuffer())
-    .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
-    .then((audioBuffer) => {
-      audioBuffers[path] = audioBuffer;
-      delete loadingPromises[path];
-      return audioBuffer;
-    });
-
-  return loadingPromises[path];
-}
+import { soundPlayer } from "../utils/SoundPlayer";
 
 function playSound(path: string) {
-  if (!playingSounds[path]) {
-    playingSounds[path] = [];
-  }
-
-  if (playingSounds[path].length >= 7) {
-    return;
-  }
-
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffers[path];
-  source.connect(audioContext.destination);
-  source.start(0);
-
-  playingSounds[path].push(source);
-
-  source.onended = () => {
-    const index = playingSounds[path].indexOf(source);
-    if (index > -1) {
-      playingSounds[path].splice(index, 1);
-    }
-    if (playingSounds[path].length === 0) {
-      delete playingSounds[path];
-    }
-  };
+  soundPlayer.playSound("/assets/" + path);
 }
 
 export async function playReaction(reaction: Reaction) {
@@ -61,7 +13,6 @@ export async function playReaction(reaction: Reaction) {
   }
 
   const path = `reactions/${reaction.kind}${reaction.variation}.wav`;
-  await loadAudio(path);
   playSound(path);
 }
 
@@ -153,7 +104,6 @@ export async function playSounds(sounds: Sound[]) {
     }
 
     const path = `sounds/${name}.wav`;
-    await loadAudio(path);
     playSound(path);
   }
 }
