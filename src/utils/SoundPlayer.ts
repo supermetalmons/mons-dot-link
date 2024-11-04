@@ -1,3 +1,4 @@
+import { getIsMuted } from "../ui/BottomControlsActions";
 import { isMobileOrVision } from "./misc";
 
 export class SoundPlayer {
@@ -22,7 +23,7 @@ export class SoundPlayer {
   }
 
   private startSilentAudioIfNeeded() {
-    if (isMobileOrVision) {
+    if (!getIsMuted() && isMobileOrVision) {
       this.silentAudio.play().catch((_) => {});
     }
   }
