@@ -847,7 +847,8 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   showRematchInterface();
 }
 
-export function didCreateNewGameInvite() {
+export function didClickInviteActionButtonBeforeThereIsInviteReady() {
+  if (!isCreateNewInviteFlow) return;
   setHomeVisible(true);
   setAutomatchVisible(false);
   Board.hideBoardPlayersInfo();

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy, FaHome } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didCreateNewGameInvite } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady } from "../game/gameController";
 import { didClickInviteButton } from "../connection/connection";
 
 export enum PrimaryActionType {
@@ -85,6 +85,7 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
 
 const BottomPillButton = styled.button<{ isBlue?: boolean }>`
   background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
+  height: 32px;
   color: white;
   border: none;
   border-radius: 20px;
@@ -250,6 +251,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   }, []);
 
   const handleInviteClick = () => {
+    if (!didCreateInvite) {
+      didClickInviteActionButtonBeforeThereIsInviteReady();
+    }
     setIsInviteLoading(true);
     didClickInviteButton((result: boolean) => {
       if (result) {
@@ -258,8 +262,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           setTimeout(() => {
             setInviteCopiedTmpState(false);
           }, 699);
-        } else {
-          didCreateNewGameInvite();
         }
         setIsInviteLoading(false);
         setDidCreateInvite(true);
