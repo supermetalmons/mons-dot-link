@@ -122,7 +122,7 @@ const BottomPillButton = styled.button<{ isBlue?: boolean }>`
 const ReactionPicker = styled.div`
   position: absolute;
   bottom: 40px;
-  right: 103px;
+  right: 142px;
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -157,7 +157,7 @@ const ReactionButton = styled.button`
 `;
 
 const ResignConfirmation = styled(ReactionPicker)`
-  right: 130px;
+  right: 88px;
   bottom: 40px;
   padding: 12px;
 `;
@@ -468,14 +468,14 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           <FaUndo />
         </ControlButton>
       )}
-      {isResignButtonVisible && (
-        <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
-          <FaFlag />
-        </ControlButton>
-      )}
       {isVoiceReactionButtonVisible && (
         <ControlButton onClick={toggleReactionPicker} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
           <FaCommentAlt />
+        </ControlButton>
+      )}
+      {isResignButtonVisible && (
+        <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
+          <FaFlag />
         </ControlButton>
       )}
       {isHomeButtonVisible && (
