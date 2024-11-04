@@ -5,11 +5,10 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
-import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink } from "../ui/BottomControls";
+import { showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
-let isLocalBotEnabled = false;
 
 export let initialFen = "";
 export let isWatchOnly = false;
@@ -98,6 +97,7 @@ function showRematchInterface() {
 function automove() {
   let output = game.automove();
   applyOutput(output, true, AssistedInputKind.None);
+  setAutomoveActionEnabled(true);
 }
 
 function didConfirmRematchProposal() {
@@ -312,6 +312,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         setUndoVisible(true);
         setInviteLinkActionVisible(false);
         setAutomatchVisible(false);
+        setAutomoveActionVisible(true);
       }
 
       currentInputs = [];
@@ -470,6 +471,11 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             disableAndHideUndoResignAndTimerControls();
             hideTimerCountdownDigits();
             showRematchInterface();
+
+            if (didStartLocalGame) {
+              setAutomoveActionVisible(false);
+            }
+
             break;
         }
       }
@@ -509,12 +515,13 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
       updateUndoButtonBasedOnGameState();
 
-      if (isLocalBotEnabled && !isOnlineGame && !isPlayerSideTurn() && !isGameOver) {
-        automove();
-      }
-
       break;
   }
+}
+
+export function didClickAutomoveButton() {
+  if (isOnlineGame || isGameOver) return;
+  automove();
 }
 
 function hasBothEthAddresses(): boolean {
