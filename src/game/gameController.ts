@@ -69,6 +69,7 @@ export async function go() {
     setAutomatchVisible(true);
   } else {
     isOnlineGame = true;
+    setHomeVisible(true);
   }
 
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
@@ -76,13 +77,11 @@ export async function go() {
 
 export function didFindYourOwnInviteThatNobodyJoined() {
   setInviteLinkActionVisible(true);
-  setHomeVisible(true);
   setIsReadyToCopyExistingInviteLink();
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
 export function didFindInviteThatCanBeJoined() {
-  setHomeVisible(true);
   showPrimaryAction(PrimaryActionType.JoinGame);
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
@@ -634,7 +633,6 @@ function hasItemAt(location: Location): boolean {
 
 function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   Board.resetForNewGame();
-  setHomeVisible(true);
   isOnlineGame = true;
   currentInputs = [];
 
