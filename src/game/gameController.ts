@@ -95,7 +95,7 @@ function showRematchInterface() {
 }
 
 function automove() {
-  let output = game.automove();
+  let output = game.smart_automove();
   applyOutput(output, true, AssistedInputKind.None);
   setAutomoveActionEnabled(true);
 }
