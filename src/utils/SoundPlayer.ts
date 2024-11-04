@@ -13,10 +13,14 @@ export class SoundPlayer {
 
   public initialize(): void {
     if (!this.isInitialized) {
-      this.isInitialized = true;
+      this.startSilentAudioIfNeeded();
       this.audioContext = new AudioContext();
-      this.silentAudio.play().catch((_) => {}); // TODO: only on ios
+      this.isInitialized = true;
     }
+  }
+
+  private startSilentAudioIfNeeded() {
+    this.silentAudio.play().catch((_) => {}); // TODO: only on ios
   }
 
   private async loadAudioBuffer(url: string): Promise<AudioBuffer> {
