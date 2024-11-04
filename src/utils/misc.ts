@@ -5,6 +5,8 @@ export const isDesktopSafari = (() => {
   return isSafari && !isIos;
 })();
 
+export const isMobileOrVision = /iPhone|iPad|iPod|Android|Windows Phone|IEMobile|Opera Mini|visionOS/i.test(navigator.userAgent);
+
 export const isModernAndPowerful = (() => {
   // TODO: come up with a way to return false when needed to make the game work properly on kindle
   return true;

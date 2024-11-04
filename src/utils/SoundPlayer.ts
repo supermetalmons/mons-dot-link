@@ -1,3 +1,5 @@
+import { isMobileOrVision } from "./misc";
+
 export class SoundPlayer {
   private audioContext!: AudioContext;
   private audioBufferCache: Map<string, AudioBuffer>;
@@ -20,7 +22,9 @@ export class SoundPlayer {
   }
 
   private startSilentAudioIfNeeded() {
-    this.silentAudio.play().catch((_) => {}); // TODO: only on ios
+    if (isMobileOrVision) {
+      this.silentAudio.play().catch((_) => {});
+    }
   }
 
   private async loadAudioBuffer(url: string): Promise<AudioBuffer> {
