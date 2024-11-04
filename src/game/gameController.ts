@@ -859,6 +859,7 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
   setHomeVisible(true);
   setAutomatchVisible(false);
   Board.hideBoardPlayersInfo();
+  Board.removeHighlights();
   hideAllMoveStatuses();
   isWaitingForInviteToGetAccepted = true;
   Board.runMonsBoardAsDisplayWaitingAnimation();
