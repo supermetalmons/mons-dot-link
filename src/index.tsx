@@ -75,11 +75,10 @@ root.render(
   </React.StrictMode>
 );
 
-const enableTouchDevicesTooltipPrevention = false;
+const enableTouchDevicesTooltipPrevention = true;
 let lastTouchStartTime = 0;
-const MIN_TIME_BETWEEN_TOUCHSTARTS = 500;
+const MIN_TIME_BETWEEN_TOUCHSTARTS = 475; // 500 is reliable. 450 does not protect.
 
-// 500 reliably prevents share popup while strongly slowing touches
 if (enableTouchDevicesTooltipPrevention) {
   document.addEventListener(
     "touchstart",
