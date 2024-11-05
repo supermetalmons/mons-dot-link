@@ -3,7 +3,7 @@ import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
-import { isDesktopSafari, isMobile, isModernAndPowerful } from "../utils/misc";
+import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
@@ -577,7 +577,7 @@ export function showItemSelection() {
   const bombButton = document.createElementNS(SVG.ns, "image");
   SVG.setImage(bombButton, assets.bomb);
   SVG.setFrameStr(bombButton, "25%", "40%", "20%", "20%");
-  bombButton.addEventListener("click", (event) => {
+  bombButton.addEventListener(defaultInputEventName, (event) => {
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Bomb);
     overlay.remove();
@@ -587,14 +587,14 @@ export function showItemSelection() {
   const potionButton = document.createElementNS(SVG.ns, "image");
   SVG.setImage(potionButton, assets.potion);
   SVG.setFrameStr(potionButton, "55%", "40%", "20%", "20%");
-  potionButton.addEventListener("click", (event) => {
+  potionButton.addEventListener(defaultInputEventName, (event) => {
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Potion);
     overlay.remove();
   });
   overlay.appendChild(potionButton);
 
-  background.addEventListener("click", (event) => {
+  background.addEventListener(defaultInputEventName, (event) => {
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Cancel);
     overlay.remove();
@@ -940,8 +940,7 @@ function pickAndDisplayDifferentEmoji(avatar: SVGElement, isOpponent: boolean) {
 export function setupBoard() {
   initializeBoardElements();
 
-  const eventName = isMobile ? "touchstart" : "click";
-  document.addEventListener(eventName, function (event) {
+  document.addEventListener(defaultInputEventName, function (event) {
     if (!didNotDismissAnythingWithOutsideTapJustNow()) {
       return;
     }

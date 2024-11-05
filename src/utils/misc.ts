@@ -7,6 +7,7 @@ export const isDesktopSafari = (() => {
 
 export const isMobile = /iPhone|iPad|iPod|Android|Windows Phone|IEMobile|Opera Mini/i.test(navigator.userAgent);
 export const isMobileOrVision = /iPhone|iPad|iPod|Android|Windows Phone|IEMobile|Opera Mini|visionOS/i.test(navigator.userAgent);
+export const defaultInputEventName = isMobile ? "touchstart" : "click";
 
 export const isModernAndPowerful = (() => {
   // TODO: come up with a way to return false when needed to make the game work properly on kindle
