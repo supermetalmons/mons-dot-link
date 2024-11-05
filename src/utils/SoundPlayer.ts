@@ -57,8 +57,8 @@ export class SoundPlayer {
     }
   }
 
-  public initialize(): void {
-    if (!this.isInitialized && (!getIsMuted() || !isMobileOrVision)) {
+  public initialize(force: boolean): void {
+    if (!this.isInitialized && (force || !getIsMuted() || !isMobileOrVision)) {
       if (isMobileOrVision) {
         const silentAudioUrl = this.createSilentAudioDataUrl(3);
         this.silentAudio = new Audio(silentAudioUrl);
@@ -86,9 +86,7 @@ export class SoundPlayer {
   }
 
   public didBecomeMuted(muted: boolean) {
-    if (!muted && !this.isInitialized) {
-      this.initialize();
-    } else if (muted) {
+    if (muted) {
       this.pauseSilentAudioIfNeeded();
     } else {
       this.startSilentAudioIfNeeded();
@@ -129,7 +127,7 @@ export const soundPlayer = new SoundPlayer();
 document.addEventListener(
   "touchend",
   async () => {
-    soundPlayer.initialize();
+    soundPlayer.initialize(false);
   },
   { once: true }
 );
@@ -137,11 +135,7 @@ document.addEventListener(
 document.addEventListener(
   "click",
   async () => {
-    soundPlayer.initialize();
+    soundPlayer.initialize(false);
   },
   { once: true }
 );
-
-export function didBecomeMuted(muted: boolean) {
-  soundPlayer.didBecomeMuted(muted);
-}
