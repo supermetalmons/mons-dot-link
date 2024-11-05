@@ -15,6 +15,7 @@ import { useAuthStatus, createAuthAdapter } from "./connection/authentication";
 import { signIn } from "./connection/connection";
 import BottomControls from "./ui/BottomControls";
 import { useBottomControlsActions } from "./ui/BottomControlsActions";
+import { isMobile } from "./utils/misc";
 
 const queryClient = new QueryClient();
 
@@ -75,11 +76,10 @@ root.render(
   </React.StrictMode>
 );
 
-const enableTouchDevicesTooltipPrevention = true;
 let lastTouchStartTime = 0;
 const MIN_TIME_BETWEEN_TOUCHSTARTS = 475; // 500 is reliable. 450 does not protect.
 
-if (enableTouchDevicesTooltipPrevention) {
+if (isMobile) {
   document.addEventListener(
     "touchstart",
     (e) => {

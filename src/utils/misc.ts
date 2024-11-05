@@ -5,6 +5,7 @@ export const isDesktopSafari = (() => {
   return isSafari && !isIos;
 })();
 
+export const isMobile = /iPhone|iPad|iPod|Android|Windows Phone|IEMobile|Opera Mini|visionOS/i.test(navigator.userAgent);
 export const isMobileOrVision = /iPhone|iPad|iPod|Android|Windows Phone|IEMobile|Opera Mini|visionOS/i.test(navigator.userAgent);
 
 export const isModernAndPowerful = (() => {

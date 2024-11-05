@@ -3,7 +3,7 @@ import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
-import { isDesktopSafari, isModernAndPowerful } from "../utils/misc";
+import { isDesktopSafari, isMobile, isModernAndPowerful } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
@@ -940,7 +940,8 @@ function pickAndDisplayDifferentEmoji(avatar: SVGElement, isOpponent: boolean) {
 export function setupBoard() {
   initializeBoardElements();
 
-  document.addEventListener("click", function (event) {
+  const eventName = isMobile ? "touchstart" : "click";
+  document.addEventListener(eventName, function (event) {
     if (!didNotDismissAnythingWithOutsideTapJustNow()) {
       return;
     }
