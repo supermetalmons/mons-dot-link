@@ -11,7 +11,7 @@ export class SoundPlayer {
     this.audioBufferCache = new Map();
     this.isInitialized = false;
 
-    const silentAudioUrl = this.createSilentAudioDataUrl(1);
+    const silentAudioUrl = this.createSilentAudioDataUrl(2);
     this.silentAudio = new Audio(silentAudioUrl);
     this.silentAudio.loop = true;
     this.silentAudio.volume = 0.01;
