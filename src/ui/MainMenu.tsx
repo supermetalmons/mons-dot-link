@@ -11,7 +11,7 @@ const RockButtonContainer = styled.div`
   z-index: 10;
 `;
 
-const RockButton = styled.div`
+const RockButton = styled.button`
   display: block;
   background-color: #f9f9f9;
   border: none;
