@@ -79,17 +79,23 @@ root.render(
 let lastTouchStartTime = 0;
 const MIN_TIME_BETWEEN_TOUCHSTARTS = 475; // 500 is reliable. 450 does not protect.
 
+function preventTouchstartIfNeeded(event: TouchEvent): boolean {
+  const currentTime = event.timeStamp;
+  const shouldPrevent = currentTime - lastTouchStartTime < MIN_TIME_BETWEEN_TOUCHSTARTS;
+  if (!shouldPrevent) {
+    lastTouchStartTime = currentTime;
+  } else {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  return shouldPrevent;
+}
+
 if (isMobile) {
   document.addEventListener(
     "touchstart",
     (e) => {
-      const currentTime = e.timeStamp;
-      if (currentTime - lastTouchStartTime < MIN_TIME_BETWEEN_TOUCHSTARTS) {
-        e.preventDefault();
-        e.stopPropagation();
-      } else {
-        lastTouchStartTime = currentTime;
-      }
+      preventTouchstartIfNeeded(e);
     },
     { passive: false }
   );
