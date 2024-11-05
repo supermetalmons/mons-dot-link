@@ -853,7 +853,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       SVG.setHidden(avatar, true);
     }
 
-    avatar.addEventListener("click", (event) => {
+    avatar.addEventListener(defaultInputEventName, (event) => {
       event.stopPropagation();
 
       const shouldChangeEmoji = canChangeEmoji(isOpponent);
