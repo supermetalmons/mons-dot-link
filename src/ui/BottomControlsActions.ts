@@ -6,6 +6,7 @@ import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
 import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
 import { hideReactionPicker } from "./BottomControls";
+import { isMobileOrVision } from "../utils/misc";
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
@@ -22,7 +23,10 @@ export interface BottomControlsActionsInterface {
   handleMusicToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-let globalIsMuted = localStorage.getItem("isMuted") === "true";
+let globalIsMuted: boolean = (() => {
+  const isMuted = localStorage.getItem("isMuted");
+  return isMuted === "true" || (isMuted === null && isMobileOrVision);
+})();
 
 export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const [isMuted, setIsMuted] = useState(globalIsMuted);
