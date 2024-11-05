@@ -5,6 +5,7 @@ import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton } from "../game/gameController";
 import { didClickInviteButton } from "../connection/connection";
+import { isMobile } from "../utils/misc";
 
 export enum PrimaryActionType {
   None = "none",
@@ -390,8 +391,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     didClickHomeButton();
   };
 
-  const handleAutomoveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
+  const handleAutomoveClick = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     setAutomoveActionEnabled(false);
     didClickAutomoveButton();
   };
@@ -459,12 +459,12 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       )}
       {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
       {isAutomoveButtonVisible && (
-        <ControlButton onClick={handleAutomoveClick} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
+        <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
           <FaRobot />
         </ControlButton>
       )}
       {isUndoButtonVisible && (
-        <ControlButton onClick={handleUndo} aria-label="Undo" disabled={isUndoDisabled}>
+        <ControlButton onClick={!isMobile ? handleUndo : undefined} onTouchStart={isMobile ? handleUndo : undefined} aria-label="Undo" disabled={isUndoDisabled}>
           <FaUndo />
         </ControlButton>
       )}

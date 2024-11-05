@@ -10,7 +10,7 @@ import { isMobileOrVision } from "../utils/misc";
 
 export interface BottomControlsActionsInterface {
   isMuted: boolean;
-  handleUndo: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  handleUndo: (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => void;
   handleMuteToggle: (event: React.MouseEvent<HTMLButtonElement>) => void;
   handleResign: (event: MouseEvent | React.MouseEvent<HTMLButtonElement>) => void;
   handleReactionSelect: (reaction: string) => void;
@@ -41,8 +41,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
     soundPlayer.didBecomeMuted(isMuted);
   }, [isMuted]);
 
-  const handleUndo = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
+  const handleUndo = useCallback((event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     didClickUndoButton();
     setIsUndoDisabled(!canHandleUndo());
   }, []);
