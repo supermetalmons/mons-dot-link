@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { logoBase64 } from "../content/uiAssets";
 import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 import styled from "styled-components";
+import { isMobile } from "../utils/misc";
 
 const RockButtonContainer = styled.div`
   position: absolute;
@@ -209,16 +210,16 @@ const MainMenu: React.FC = () => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleTapOutside = (event: any) => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         didDismissSomethingWithOutsideTapJustNow();
         setIsMenuOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleTapOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleTapOutside);
     };
   }, [isMenuOpen]);
 
@@ -265,12 +266,20 @@ const MainMenu: React.FC = () => {
         </RockMenu>
       </RockMenuWrapper>
       <RockButton
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleMenu();
-        }}
-        onMouseEnter={() => setIsMenuOpen(true)}>
+        {...(isMobile
+          ? {
+              onTouchStart: (e) => {
+                toggleMenu();
+              },
+            }
+          : {
+              onClick: (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu();
+              },
+              onMouseEnter: () => setIsMenuOpen(true),
+            })}>
         <img src={logoBase64} alt="Rock" />
       </RockButton>
     </RockButtonContainer>
