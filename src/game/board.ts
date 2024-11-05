@@ -7,6 +7,7 @@ import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
+import { preventTouchstartIfNeeded } from "..";
 
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
@@ -578,6 +579,7 @@ export function showItemSelection() {
   SVG.setImage(bombButton, assets.bomb);
   SVG.setFrameStr(bombButton, "25%", "40%", "20%", "20%");
   bombButton.addEventListener(defaultInputEventName, (event) => {
+    preventTouchstartIfNeeded(event);
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Bomb);
     overlay.remove();
@@ -588,6 +590,7 @@ export function showItemSelection() {
   SVG.setImage(potionButton, assets.potion);
   SVG.setFrameStr(potionButton, "55%", "40%", "20%", "20%");
   potionButton.addEventListener(defaultInputEventName, (event) => {
+    preventTouchstartIfNeeded(event);
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Potion);
     overlay.remove();
@@ -595,6 +598,7 @@ export function showItemSelection() {
   overlay.appendChild(potionButton);
 
   background.addEventListener(defaultInputEventName, (event) => {
+    preventTouchstartIfNeeded(event);
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Cancel);
     overlay.remove();
@@ -855,6 +859,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
     avatar.addEventListener(defaultInputEventName, (event) => {
       event.stopPropagation();
+      preventTouchstartIfNeeded(event);
 
       const shouldChangeEmoji = canChangeEmoji(isOpponent);
 
