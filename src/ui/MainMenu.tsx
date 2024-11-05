@@ -254,7 +254,7 @@ const MainMenu: React.FC = () => {
             <LinkButton href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
               Gen 2
             </LinkButton>
-            <LinkButton href="https://supermetalmons.com" target="_blank" rel="noopener noreferrer">
+            <LinkButton href="https://www.supermetalmons.com/products/base-set1-kit1" target="_blank" rel="noopener noreferrer">
               IRL
             </LinkButton>
           </LinkRow>
