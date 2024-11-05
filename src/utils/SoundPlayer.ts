@@ -6,16 +6,12 @@ export class SoundPlayer {
   private audioContext!: AudioContext;
   private audioBufferCache: Map<string, AudioBuffer>;
   private isInitialized: boolean;
-  private silentAudio: HTMLAudioElement;
+  private silentAudio: HTMLAudioElement | null;
 
   constructor() {
     this.audioBufferCache = new Map();
     this.isInitialized = false;
-
-    const silentAudioUrl = this.createSilentAudioDataUrl(3);
-    this.silentAudio = new Audio(silentAudioUrl);
-    this.silentAudio.loop = true;
-    this.silentAudio.volume = 0.01;
+    this.silentAudio = null;
   }
 
   createSilentAudioDataUrl(durationInSeconds: number) {
@@ -62,7 +58,14 @@ export class SoundPlayer {
   }
 
   public initialize(): void {
-    if (!this.isInitialized) {
+    if (!this.isInitialized && (!getIsMuted() || !isMobileOrVision)) {
+      if (isMobileOrVision) {
+        const silentAudioUrl = this.createSilentAudioDataUrl(3);
+        this.silentAudio = new Audio(silentAudioUrl);
+        this.silentAudio.loop = true;
+        this.silentAudio.volume = 0.01;
+      }
+
       this.startSilentAudioIfNeeded();
       this.audioContext = new AudioContext();
       this.isInitialized = true;
@@ -71,19 +74,21 @@ export class SoundPlayer {
 
   private startSilentAudioIfNeeded() {
     if (!getIsMuted() && isMobileOrVision) {
-      this.silentAudio.play().catch((_) => {});
+      this.silentAudio?.play().catch((_) => {});
       showMonsAlbumArtwork();
     }
   }
 
   private pauseSilentAudioIfNeeded() {
     if (isMobileOrVision) {
-      this.silentAudio.pause();
+      this.silentAudio?.pause();
     }
   }
 
   public didBecomeMuted(muted: boolean) {
-    if (muted) {
+    if (!muted && !this.isInitialized) {
+      this.initialize();
+    } else if (muted) {
       this.pauseSilentAudioIfNeeded();
     } else {
       this.startSilentAudioIfNeeded();
