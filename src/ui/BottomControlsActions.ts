@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { newReactionOfKind, playReaction } from "../content/sounds";
 import { startPlayingMusic, stopPlayingMusic } from "../content/music";
+import { didBecomeMuted } from "../utils/SoundPlayer";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
 import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
@@ -33,6 +34,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   useEffect(() => {
     localStorage.setItem("isMuted", isMuted.toString());
     globalIsMuted = isMuted;
+    didBecomeMuted(isMuted);
   }, [isMuted]);
 
   const handleUndo = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {

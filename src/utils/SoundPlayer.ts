@@ -28,6 +28,20 @@ export class SoundPlayer {
     }
   }
 
+  private pauseSilentAudioIfNeeded() {
+    if (isMobileOrVision) {
+      this.silentAudio.pause();
+    }
+  }
+
+  public didBecomeMuted(muted: boolean) {
+    if (muted) {
+      this.pauseSilentAudioIfNeeded();
+    } else {
+      this.startSilentAudioIfNeeded();
+    }
+  }
+
   private async loadAudioBuffer(url: string): Promise<AudioBuffer> {
     if (this.audioBufferCache.has(url)) {
       return this.audioBufferCache.get(url)!;
@@ -74,3 +88,7 @@ document.addEventListener(
   },
   { once: true }
 );
+
+export function didBecomeMuted(muted: boolean) {
+  soundPlayer.didBecomeMuted(muted);
+}
