@@ -1,3 +1,4 @@
+import { showMonsAlbumArtwork } from "../content/music";
 import { getIsMuted } from "../ui/BottomControlsActions";
 import { isMobileOrVision } from "./misc";
 
@@ -11,7 +12,7 @@ export class SoundPlayer {
     this.audioBufferCache = new Map();
     this.isInitialized = false;
 
-    const silentAudioUrl = this.createSilentAudioDataUrl(2);
+    const silentAudioUrl = this.createSilentAudioDataUrl(3);
     this.silentAudio = new Audio(silentAudioUrl);
     this.silentAudio.loop = true;
     this.silentAudio.volume = 0.01;
@@ -71,6 +72,7 @@ export class SoundPlayer {
   private startSilentAudioIfNeeded() {
     if (!getIsMuted() && isMobileOrVision) {
       this.silentAudio.play().catch((_) => {});
+      showMonsAlbumArtwork();
     }
   }
 
