@@ -462,7 +462,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       )}
       {isInviteLinkButtonVisible && (
         <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
+          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Link Game"}
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
