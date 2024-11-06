@@ -77,7 +77,7 @@ root.render(
 );
 
 let lastTouchStartTime = 0;
-const MIN_TIME_BETWEEN_TOUCHSTARTS = 475; // 500 is reliable. 450 does not protect.
+const MIN_TIME_BETWEEN_TOUCHSTARTS = 495; // 500 is reliable. 475 does not protect.
 
 export function preventTouchstartIfNeeded(event: TouchEvent | MouseEvent) {
   if (!isMobile) {
