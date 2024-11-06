@@ -84,38 +84,40 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
   }
 `;
 
-const BottomPillButton = styled.button<{ isBlue?: boolean }>`
-  background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
+const BottomPillButton = styled.button<{ isBlue?: boolean; isViewOnly?: boolean }>`
+  background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0074D9" : "#2ecc40")};
   height: 32px;
-  color: white;
+  color: ${(props) => (props.isViewOnly ? "#aaa" : "white")};
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
   font-weight: bold;
-  cursor: pointer;
+  cursor: ${(props) => (props.isViewOnly ? "default" : "pointer")};
   transition: background-color 0.3s ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: ${(props) => (props.isBlue ? "#0063B8" : "#29b739")};
+      background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0063B8" : "#29b739")};
     }
   }
 
   &:active {
-    background-color: ${(props) => (props.isBlue ? "#005299" : "#25a233")};
+    background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#005299" : "#25a233")};
   }
 
   @media (prefers-color-scheme: dark) {
-    background-color: ${(props) => (props.isBlue ? "#005299" : "#25a233")};
+    color: ${(props) => (props.isViewOnly ? "#777" : "white")};
+
+    background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#005299" : "#25a233")};
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: ${(props) => (props.isBlue ? "#0063B8" : "#29b739")};
+        background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#0063B8" : "#29b739")};
       }
     }
 
     &:active {
-      background-color: ${(props) => (props.isBlue ? "#0074D9" : "#2ecc40")};
+      background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#0074D9" : "#2ecc40")};
     }
   }
 `;
@@ -191,6 +193,7 @@ let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setAutomoveActionEnabled: (enabled: boolean) => void;
 let setAutomoveActionVisible: (visible: boolean) => void;
+let setWatchOnlyVisible: (visible: boolean) => void;
 let setUndoEnabled: (enabled: boolean) => void;
 let disableAndHideUndoResignAndTimerControls: () => void;
 let setIsReadyToCopyExistingInviteLink: () => void;
@@ -204,6 +207,7 @@ let showPrimaryAction: (action: PrimaryActionType) => void;
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
   const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
+  const [isWatchOnlyIndicatorVisible, setIsWatchOnlyIndicatorVisible] = useState(false);
   const [isHomeButtonVisible, setIsHomeButtonVisible] = useState(false);
   const [isInviteLoading, setIsInviteLoading] = useState(false);
   const [didCreateInvite, setDidCreateInvite] = useState(false);
@@ -350,6 +354,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsUndoButtonVisible(visible);
   };
 
+  setWatchOnlyVisible = (visible: boolean) => {
+    setIsWatchOnlyIndicatorVisible(visible);
+  };
+
   setUndoEnabled = (enabled: boolean) => {
     setIsUndoDisabled(!enabled);
   };
@@ -435,6 +443,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      {isWatchOnlyIndicatorVisible && (
+        <BottomPillButton isViewOnly={true} disabled={true}>
+          {"View Only"}
+        </BottomPillButton>
+      )}
       {isInviteLinkButtonVisible && (
         <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
           {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Game Link"}
@@ -507,4 +520,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
