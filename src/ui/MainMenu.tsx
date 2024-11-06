@@ -244,6 +244,17 @@ const LeaderboardTable = styled.table`
   }
 `;
 
+const LoadingText = styled.div`
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 40px 0;
+  color: #777;
+
+  @media (prefers-color-scheme: dark) {
+    color: #f5f5f5;
+  }
+`;
+
 const EASLink = styled.a`
   display: block;
   text-align: center;
@@ -265,6 +276,7 @@ export function hasMainMenuPopupsVisible(): boolean {
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<any>(null);
 
   getIsMenuOpen = () => isMenuOpen;
 
@@ -280,6 +292,20 @@ const MainMenu: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (showLeaderboard) {
+      setLeaderboardData(null);
+      const timer = setTimeout(() => {
+        setLeaderboardData([
+          { player: "Player 1", games: 69, rating: 2400 },
+          { player: "Player 2", games: 42, rating: 2350 },
+          { player: "Player 3", games: 23, rating: 2300 },
+        ]);
+      }, 13000);
+      return () => clearTimeout(timer);
+    }
+  }, [showLeaderboard]);
 
   useEffect(() => {
     const handleTapOutside = (event: any) => {
@@ -342,32 +368,28 @@ const MainMenu: React.FC = () => {
             <LinkButton onClick={() => setShowLeaderboard(true)}>🥱 Onchain Ratings ☆</LinkButton>
           </LinkRow>
           <LeaderboardContainer show={showLeaderboard}>
-            <LeaderboardTable>
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Games</th>
-                  <th>Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Player 1</td>
-                  <td>69</td>
-                  <td>2400</td>
-                </tr>
-                <tr>
-                  <td>Player 2</td>
-                  <td>42</td>
-                  <td>2350</td>
-                </tr>
-                <tr>
-                  <td>Player 3</td>
-                  <td>23</td>
-                  <td>2300</td>
-                </tr>
-              </tbody>
-            </LeaderboardTable>
+            {leaderboardData ? (
+              <LeaderboardTable>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Games</th>
+                    <th>Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboardData.map((row: any, index: number) => (
+                    <tr key={index}>
+                      <td>{row.player}</td>
+                      <td>{row.games}</td>
+                      <td>{row.rating}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </LeaderboardTable>
+            ) : (
+              <LoadingText>wip</LoadingText>
+            )}
             <EASLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
               View on EAS Explorer
             </EASLink>
