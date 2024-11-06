@@ -393,7 +393,7 @@ const MainMenu: React.FC = () => {
                 </tbody>
               </LeaderboardTable>
             ) : (
-              <LoadingText>wip</LoadingText>
+              <LoadingText>UPDATING...</LoadingText>
             )}
             <EASLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
               View on EAS Explorer
