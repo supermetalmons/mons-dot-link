@@ -17,7 +17,7 @@ export const isModernAndPowerful = (() => {
 export function generateNewInviteId(): string {
   const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let id = "";
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 11; i++) {
     id += letters.charAt(Math.floor(Math.random() * letters.length));
   }
   return id;
