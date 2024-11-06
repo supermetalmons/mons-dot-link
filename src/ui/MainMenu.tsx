@@ -53,7 +53,7 @@ const RockMenuWrapper = styled.div<{ isOpen: boolean }>`
   pointer-events: ${(props) => (props.isOpen ? "auto" : "none")};
 `;
 
-const RockMenu = styled.div<{ isOpen: boolean }>`
+const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
   position: relative;
   background-color: #fff;
   border-radius: 10px;
@@ -62,7 +62,10 @@ const RockMenu = styled.div<{ isOpen: boolean }>`
   flex-direction: column;
   gap: 6px;
   box-shadow: ${(props) => (props.isOpen ? "0 6px 20px rgba(0, 0, 0, 0.12)" : "none")};
-  min-width: 230px;
+
+  min-width: ${(props) => (props.showLeaderboard ? "230px" : "230px")};
+  min-height: ${(props) => (props.showLeaderboard ? "69dvh" : "auto")};
+
   transform-origin: top left;
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
   pointer-events: ${(props) => (props.isOpen ? "auto" : "none")};
@@ -77,8 +80,9 @@ const MenuTitle = styled.div`
   font-weight: bold;
   font-size: 16px;
   color: #333;
-  margin: 10px 0 0 16px;
+  margin: 10px 16px 0 53px;
   cursor: default;
+  text-align: left;
 
   @media (prefers-color-scheme: dark) {
     color: #f5f5f5;
@@ -114,11 +118,16 @@ const CloseButton = styled.button`
   }
 `;
 
-const IconRow = styled.div`
+const IconRow = styled.div<{ hide: boolean }>`
   display: flex;
   justify-content: space-between;
   gap: 6px;
   margin-top: 12px;
+
+  opacity: ${(props) => (props.hide ? 0 : 1)};
+  height: ${(props) => (props.hide ? 0 : "auto")};
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
 
   a {
     color: #000;
@@ -165,11 +174,15 @@ const IconLink = styled.a`
   }
 `;
 
-const LinkRow = styled.div`
+const LinkRow = styled.div<{ hide: boolean }>`
   display: flex;
   justify-content: space-between;
   gap: 6px;
   align-items: center;
+  opacity: ${(props) => (props.hide ? 0 : 1)};
+  height: ${(props) => (props.hide ? 0 : "auto")};
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
 `;
 
 const LinkButton = styled.a`
@@ -181,6 +194,7 @@ const LinkButton = styled.a`
   background-color: #f9f9f9;
   color: #333;
   text-decoration: none;
+  cursor: pointer;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -200,6 +214,36 @@ const LinkButton = styled.a`
   }
 `;
 
+const LeaderboardContainer = styled.div<{ show: boolean }>`
+  opacity: ${(props) => (props.show ? 1 : 0)};
+  height: ${(props) => (props.show ? "auto" : 0)};
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  margin-top: -6px;
+`;
+
+const LeaderboardTable = styled.table`
+  margin-top: -10px;
+  width: 100%;
+  border-collapse: collapse;
+  color: #333;
+
+  @media (prefers-color-scheme: dark) {
+    color: #f5f5f5;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+
+    @media (prefers-color-scheme: dark) {
+      border-bottom: 1px solid #333;
+    }
+  }
+`;
+
 let getIsMenuOpen: () => boolean;
 
 export function hasMainMenuPopupsVisible(): boolean {
@@ -208,13 +252,21 @@ export function hasMainMenuPopupsVisible(): boolean {
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   getIsMenuOpen = () => isMenuOpen;
 
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    if (showLeaderboard) {
+      setShowLeaderboard(false);
+    } else {
+      setIsMenuOpen(!isMenuOpen);
+      if (!isMenuOpen) {
+        setShowLeaderboard(false);
+      }
+    }
   };
 
   useEffect(() => {
@@ -222,6 +274,7 @@ const MainMenu: React.FC = () => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         didDismissSomethingWithOutsideTapJustNow();
         setIsMenuOpen(false);
+        setShowLeaderboard(false);
       }
     };
 
@@ -238,12 +291,19 @@ const MainMenu: React.FC = () => {
         onMouseLeave={() => {
           if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
             setIsMenuOpen(false);
+            setShowLeaderboard(false);
           }
         }}>
-        <RockMenu isOpen={isMenuOpen}>
+        <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
           <MenuTitle>Super Metal Mons</MenuTitle>
-          <CloseButton onClick={() => setIsMenuOpen(false)}>×</CloseButton>
-          <IconRow>
+          <CloseButton
+            onClick={() => {
+              setIsMenuOpen(false);
+              setShowLeaderboard(false);
+            }}>
+            ×
+          </CloseButton>
+          <IconRow hide={showLeaderboard}>
             <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" stroke="currentColor" stroke-width="0.2" />
@@ -255,7 +315,7 @@ const MainMenu: React.FC = () => {
               </svg>
             </IconLink>
           </IconRow>
-          <LinkRow>
+          <LinkRow hide={showLeaderboard}>
             <LinkButton href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
               Gen 1
             </LinkButton>
@@ -266,11 +326,37 @@ const MainMenu: React.FC = () => {
               IRL
             </LinkButton>
           </LinkRow>
-          <LinkRow>
-            <LinkButton href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
-              🥱 Onchain Ratings ☆
-            </LinkButton>
+          <LinkRow hide={showLeaderboard}>
+            <LinkButton onClick={() => setShowLeaderboard(true)}>🥱 Onchain Ratings ☆</LinkButton>
           </LinkRow>
+          <LeaderboardContainer show={showLeaderboard}>
+            <LeaderboardTable>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Games</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Player 1</td>
+                  <td>69</td>
+                  <td>2400</td>
+                </tr>
+                <tr>
+                  <td>Player 2</td>
+                  <td>42</td>
+                  <td>2350</td>
+                </tr>
+                <tr>
+                  <td>Player 3</td>
+                  <td>23</td>
+                  <td>2300</td>
+                </tr>
+              </tbody>
+            </LeaderboardTable>
+          </LeaderboardContainer>
         </RockMenu>
       </RockMenuWrapper>
       <RockButton
@@ -293,7 +379,5 @@ const MainMenu: React.FC = () => {
     </RockButtonContainer>
   );
 };
-
-// TODO: add emojipack when the layout is compact enough https://opensea.io/collection/theemojipack
 
 export default MainMenu;
