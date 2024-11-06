@@ -216,10 +216,12 @@ const LinkButton = styled.a`
 
 const LeaderboardContainer = styled.div<{ show: boolean }>`
   opacity: ${(props) => (props.show ? 1 : 0)};
-  height: ${(props) => (props.show ? "auto" : 0)};
+  height: ${(props) => (props.show ? "calc(69dvh - 80px)" : 0)};
   overflow: hidden;
-  transition: all 0.3s ease-in-out;
   margin-top: -6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 const LeaderboardTable = styled.table`
@@ -247,18 +249,21 @@ const LeaderboardTable = styled.table`
 const LoadingText = styled.div`
   text-align: center;
   font-size: 0.8rem;
-  padding: 40px 0;
   color: #777;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media (prefers-color-scheme: dark) {
-    color: #f5f5f5;
+    color: #afafaf;
   }
 `;
 
 const EASLink = styled.a`
   display: block;
   text-align: center;
-  padding-top: 24px;
+  padding: 0 0;
   text-decoration: none;
   font-size: 0.8rem;
 
