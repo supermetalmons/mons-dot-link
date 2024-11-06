@@ -244,6 +244,18 @@ const LeaderboardTable = styled.table`
   }
 `;
 
+const EASLink = styled.a`
+  display: block;
+  text-align: center;
+  padding-top: 24px;
+  text-decoration: none;
+  font-size: 0.8rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 let getIsMenuOpen: () => boolean;
 
 export function hasMainMenuPopupsVisible(): boolean {
@@ -356,6 +368,9 @@ const MainMenu: React.FC = () => {
                 </tr>
               </tbody>
             </LeaderboardTable>
+            <EASLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
+              View on EAS Explorer
+            </EASLink>
           </LeaderboardContainer>
         </RockMenu>
       </RockMenuWrapper>
