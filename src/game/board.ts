@@ -5,7 +5,8 @@ import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from 
 import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
-import { didNotDismissAnythingWithOutsideTapJustNow } from "../ui/BottomControls";
+import { didNotDismissAnythingWithOutsideTapJustNow, hasBottomPopupsVisible } from "../ui/BottomControls";
+import { hasMainMenuPopupsVisible } from "../ui/MainMenu";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 import { preventTouchstartIfNeeded } from "..";
 
@@ -946,7 +947,7 @@ export function setupBoard() {
   initializeBoardElements();
 
   document.addEventListener(defaultInputEventName, function (event) {
-    if (!didNotDismissAnythingWithOutsideTapJustNow()) {
+    if (!didNotDismissAnythingWithOutsideTapJustNow() || hasMainMenuPopupsVisible() || hasBottomPopupsVisible()) {
       return;
     }
 

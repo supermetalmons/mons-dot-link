@@ -185,6 +185,7 @@ const ResignButton = styled(ReactionButton)`
   }
 `;
 
+let hasBottomPopupsVisible: () => boolean;
 let showVoiceReactionButton: () => void;
 let showResignButton: () => void;
 let setInviteLinkActionVisible: (visible: boolean) => void;
@@ -321,6 +322,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         hourglassEnableTimeoutRef.current = undefined;
       }, timeUntilTarget);
     }
+  };
+
+  hasBottomPopupsVisible = () => {
+    return isReactionPickerVisible || isResignConfirmVisible;
   };
 
   enableTimerVictoryClaim = () => {
@@ -520,4 +525,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

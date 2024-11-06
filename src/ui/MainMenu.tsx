@@ -200,8 +200,16 @@ const LinkButton = styled.a`
   }
 `;
 
+let getIsMenuOpen: () => boolean;
+
+export function hasMainMenuPopupsVisible(): boolean {
+  return getIsMenuOpen();
+}
+
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  getIsMenuOpen = () => isMenuOpen;
 
   const menuRef = useRef<HTMLDivElement>(null);
 
