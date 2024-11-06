@@ -42,6 +42,7 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   }, [isMuted]);
 
   const handleUndo = useCallback((event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    if ((event.target as HTMLButtonElement).disabled) return;
     didClickUndoButton();
     setIsUndoDisabled(!canHandleUndo());
   }, []);

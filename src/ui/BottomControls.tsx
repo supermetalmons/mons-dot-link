@@ -125,7 +125,7 @@ const BottomPillButton = styled.button<{ isBlue?: boolean; isViewOnly?: boolean 
 const ReactionPicker = styled.div<{ offsetToTheRight?: boolean }>`
   position: absolute;
   bottom: 40px;
-  right: ${props => props.offsetToTheRight ? '100px' : '142px'};
+  right: ${(props) => (props.offsetToTheRight ? "100px" : "142px")};
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -386,6 +386,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   toggleReactionPicker = () => {
     if (!isReactionPickerVisible) {
+      if (isVoiceReactionDisabled) {
+        return;
+      }
       setIsResignConfirmVisible(false);
     }
     setIsReactionPickerVisible((prev) => !prev);
@@ -408,6 +411,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   const handleAutomoveClick = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    if (!isAutomoveButtonEnabled) return;
     setAutomoveActionEnabled(false);
     didClickAutomoveButton();
   };
