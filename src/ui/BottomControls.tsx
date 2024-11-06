@@ -122,10 +122,10 @@ const BottomPillButton = styled.button<{ isBlue?: boolean; isViewOnly?: boolean 
   }
 `;
 
-const ReactionPicker = styled.div`
+const ReactionPicker = styled.div<{ offsetToTheRight?: boolean }>`
   position: absolute;
   bottom: 40px;
-  right: 142px;
+  right: ${props => props.offsetToTheRight ? '100px' : '142px'};
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -511,7 +511,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
       </ControlButton>
       {isReactionPickerVisible && (
-        <ReactionPicker ref={pickerRef}>
+        <ReactionPicker ref={pickerRef} offsetToTheRight={!isResignButtonVisible}>
           <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
           <ReactionButton onClick={() => handleReactionSelect("wahoo")}>wahoo</ReactionButton>
           <ReactionButton onClick={() => handleReactionSelect("drop")}>drop</ReactionButton>
