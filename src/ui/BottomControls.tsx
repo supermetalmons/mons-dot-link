@@ -385,6 +385,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   toggleReactionPicker = () => {
+    if (!isReactionPickerVisible) {
+      setIsResignConfirmVisible(false);
+    }
     setIsReactionPickerVisible((prev) => !prev);
   };
 
@@ -487,7 +490,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         </ControlButton>
       )}
       {isVoiceReactionButtonVisible && (
-        <ControlButton onClick={toggleReactionPicker} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
+        <ControlButton onClick={!isMobile ? toggleReactionPicker : undefined} onTouchStart={isMobile ? toggleReactionPicker : undefined} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
           <FaCommentAlt />
         </ControlButton>
       )}
