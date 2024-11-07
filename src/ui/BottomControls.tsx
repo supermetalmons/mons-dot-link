@@ -201,6 +201,7 @@ let setAutomatchVisible: (visible: boolean) => void;
 let setAttestVictoryEnabled: (enabled: boolean) => void;
 let setAttestVictoryVisible: (visible: boolean) => void;
 
+let showButtonForTx: (hash: string) => void;
 let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setAutomoveActionEnabled: (enabled: boolean) => void;
@@ -229,6 +230,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [automatchButtonTmpState, setAutomatchButtonTmpState] = useState(false);
   const [inviteCopiedTmpState, setInviteCopiedTmpState] = useState(false);
 
+  const [txHash, setTxHash] = useState("");
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
   const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(false);
@@ -279,6 +281,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsAttestVictoryButtonEnabled(false);
   };
 
+  const didClickTxHashButton = () => {
+    window.open(`https://basescan.org/tx/${txHash}`, "_blank", "noopener,noreferrer");
+  };
+
   const handleInviteClick = () => {
     if (!didCreateInvite) {
       didClickInviteActionButtonBeforeThereIsInviteReady();
@@ -306,6 +312,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   showResignButton = () => {
     setIsResignButtonVisible(true);
+  };
+
+  showButtonForTx = (hash: string) => {
+    setTxHash(hash);
   };
 
   setIsReadyToCopyExistingInviteLink = () => {
@@ -487,6 +497,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      {txHash !== "" && (
+        <BottomPillButton onClick={didClickTxHashButton} isBlue={true}>
+          {"↗️ View on Explorer"}
+        </BottomPillButton>
+      )}
       {isAttestVictoryButtonVisible && (
         <BottomPillButton onClick={handleAttestVictoryClick} isPink={true} disabled={!isAttestVictoryButtonEnabled}>
           {"🎉 Attest Victory"}
@@ -569,4 +584,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
