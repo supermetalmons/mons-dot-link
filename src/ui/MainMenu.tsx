@@ -370,7 +370,7 @@ const MainMenu: React.FC = () => {
             </LinkButton>
           </LinkRow>
           <LinkRow hide={showLeaderboard}>
-            <LinkButton onClick={() => setShowLeaderboard(true)}>🥱 Onchain Ratings ☆</LinkButton>
+            <LinkButton onClick={() => setShowLeaderboard(true)}>Onchain Ratings</LinkButton>
           </LinkRow>
           <LeaderboardContainer show={showLeaderboard}>
             {leaderboardData ? (
