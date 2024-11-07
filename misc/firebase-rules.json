@@ -2,6 +2,10 @@
   "rules": {
     ".read": false,
     ".write": false,
+    "automatch": {
+      ".read": "auth != null && auth.token.admin === true",
+      ".write": "auth != null && auth.token.admin === true"
+    },
     "invites": {
       "$inviteId": {
         ".read": "(data.child('hostId').exists() && data.child('guestId').exists()) || (auth != null && (!data.child('password').exists() || auth.uid === data.child('hostId').val()))",
