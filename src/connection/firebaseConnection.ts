@@ -23,13 +23,12 @@ class FirebaseConnection {
 
   constructor() {
     const firebaseConfig = {
-      apiKey: process.env.REACT_APP_MONS_FIREBASE_API_KEY || "AIzaSyC709PHiVSQqIvCqaJwx3h9Mg55ysgBrRg",
-      authDomain: "mons-e34e5.firebaseapp.com",
-      databaseURL: "https://mons-e34e5-default-rtdb.firebaseio.com",
-      projectId: "mons-e34e5",
-      storageBucket: "mons-e34e5.appspot.com",
-      messagingSenderId: "949028813912",
-      appId: "1:949028813912:web:d06d6dfaa574ca920fde2d",
+      apiKey: process.env.REACT_APP_MONS_FIREBASE_API_KEY || "AIzaSyC8Ihr4kDd34z-RXe8XTBCFtFbXebifo5Y",
+      authDomain: "mons-link.firebaseapp.com",
+      projectId: "mons-link",
+      storageBucket: "mons-link.firebasestorage.app",
+      messagingSenderId: "390871694056",
+      appId: "1:390871694056:web:49d0679d38f3045030675d",
     };
 
     this.app = initializeApp(firebaseConfig);
@@ -79,7 +78,7 @@ class FirebaseConnection {
           const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
           set(ref(this.db, `invites/${this.inviteId}/guestRematches`), newGuestProposalsString)
             .then(() => {
-              console.log("Successfully sent guestRematches"); 
+              console.log("Successfully sent guestRematches");
               window.location.reload(); // TODO: dev tmp, handle with no reloading
             })
             .catch((error) => {
@@ -110,10 +109,10 @@ class FirebaseConnection {
       if (proposerRematchesLength === 0 && otherPlayerRematchesLength === 0) {
         return "1";
       } else if (proposerRematchesLength >= otherPlayerRematchesLength) {
-        return null
+        return null;
       } else if (proposerRematchesLength < otherPlayerRematchesLength) {
         if (proposerRematchesLength === 0) {
-          return "1"
+          return "1";
         } else {
           return null;
         }
