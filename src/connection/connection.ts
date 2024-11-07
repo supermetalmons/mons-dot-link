@@ -25,7 +25,8 @@ export function sendRematchProposal() {
 
 export function setupConnection(autojoin: boolean) {
   if (!isCreateNewInviteFlow) {
-    connectToGame(initialPath, autojoin);
+    const shouldAutojoin = autojoin || initialPath.startsWith("auto-");
+    connectToGame(initialPath, shouldAutojoin);
   }
 }
 
