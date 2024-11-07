@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy, FaHome, FaRobot } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton } from "../game/gameController";
+import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton } from "../game/gameController";
 import { didClickInviteButton } from "../connection/connection";
 import { isMobile } from "../utils/misc";
 
@@ -195,6 +195,7 @@ let hasBottomPopupsVisible: () => boolean;
 let showVoiceReactionButton: () => void;
 let showResignButton: () => void;
 let setInviteLinkActionVisible: (visible: boolean) => void;
+let setAutomatchEnabled: (enabled: boolean) => void;
 let setAutomatchVisible: (visible: boolean) => void;
 let setAttestVictoryVisible: (visible: boolean) => void;
 let setHomeVisible: (visible: boolean) => void;
@@ -217,6 +218,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isAttestVictoryButtonVisible, setIsAttestVictoryButtonVisible] = useState(false);
   const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
   const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
+  const [isAutomatchButtonEnabled, setIsAutomatchButtonEnabled] = useState(true);
   const [isWatchOnlyIndicatorVisible, setIsWatchOnlyIndicatorVisible] = useState(false);
   const [isHomeButtonVisible, setIsHomeButtonVisible] = useState(false);
   const [isInviteLoading, setIsInviteLoading] = useState(false);
@@ -357,6 +359,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsAttestVictoryButtonVisible(visible);
   };
 
+  setAutomatchEnabled = (enabled: boolean) => {
+    setIsAutomatchButtonEnabled(enabled);
+  };
+
   setAutomatchVisible = (visible: boolean) => {
     setIsAutomatchButtonVisible(visible);
   };
@@ -454,6 +460,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   const handleAutomatchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    didClickAutomatchButton();
     setAutomatchButtonTmpState(true);
     setTimeout(() => {
       setAutomatchButtonTmpState(false);
@@ -489,7 +496,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
-        <BottomPillButton onClick={handleAutomatchClick}>
+        <BottomPillButton onClick={handleAutomatchClick} disabled={!isAutomatchButtonEnabled}>
           {automatchButtonTmpState ? (
             "Soon"
           ) : (
@@ -555,4 +562,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

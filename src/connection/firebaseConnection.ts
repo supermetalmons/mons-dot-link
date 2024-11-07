@@ -167,6 +167,17 @@ class FirebaseConnection {
     }
   }
 
+  public async automatch(): Promise<any> {
+    try {
+      const automatch = httpsCallable(this.functions, "automatch");
+      const response = await automatch();
+      return response.data;
+    } catch (error) {
+      console.error("Error calling automatch:", error);
+      throw error;
+    }
+  }
+
   public async prepareOnchainVictoryTx(): Promise<any> {
     try {
       const attestVictoryFunction = httpsCallable(this.functions, "attestMatchVictory");

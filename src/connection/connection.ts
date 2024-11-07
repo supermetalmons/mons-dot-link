@@ -81,6 +81,10 @@ export async function startTimer(): Promise<any> {
   return firebaseConnection.startTimer();
 }
 
+export async function sendAutomatchRequest(): Promise<any> {
+  return firebaseConnection.automatch();
+}
+
 export async function claimVictoryByTimer(): Promise<any> {
   return firebaseConnection.claimVictoryByTimer();
 }

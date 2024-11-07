@@ -4,7 +4,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
+import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
 import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
@@ -84,6 +84,15 @@ export function didFindYourOwnInviteThatNobodyJoined() {
 export function didFindInviteThatCanBeJoined() {
   showPrimaryAction(PrimaryActionType.JoinGame);
   Board.runMonsBoardAsDisplayWaitingAnimation();
+}
+
+let didSendTmpDevAutomatchRequest = false;
+
+export function didClickAutomatchButton() {
+  if (!didSendTmpDevAutomatchRequest) {
+    didSendTmpDevAutomatchRequest = true;
+    sendAutomatchRequest();
+  }  
 }
 
 function showRematchInterface() {
