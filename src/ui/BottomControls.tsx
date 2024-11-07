@@ -197,7 +197,10 @@ let showResignButton: () => void;
 let setInviteLinkActionVisible: (visible: boolean) => void;
 let setAutomatchEnabled: (enabled: boolean) => void;
 let setAutomatchVisible: (visible: boolean) => void;
+
+let setAttestVictoryEnabled: (enabled: boolean) => void;
 let setAttestVictoryVisible: (visible: boolean) => void;
+
 let setHomeVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setAutomoveActionEnabled: (enabled: boolean) => void;
@@ -357,6 +360,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   setAttestVictoryVisible = (visible: boolean) => {
     setIsAttestVictoryButtonVisible(visible);
+  };
+
+  setAttestVictoryEnabled = (enabled: boolean) => {
+    setIsAttestVictoryButtonEnabled(enabled);
   };
 
   setAutomatchEnabled = (enabled: boolean) => {
@@ -562,4 +569,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -28,6 +28,7 @@ let didSetBlackProcessedMovesCount = false;
 let currentGameModelMatchId: string | null = null;
 let whiteFlatMovesString: string | null = null;
 let blackFlatMovesString: string | null = null;
+let victoryTx: any;
 
 let game: MonsWeb.MonsGameModel;
 let playerSideColor: MonsWeb.Color;
@@ -86,13 +87,13 @@ export function didFindInviteThatCanBeJoined() {
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
-let didSendTmpDevAutomatchRequest = false;
+let didSendTmpDevAutomatchRequest = false; // TODO: remove dev tmp
 
 export function didClickAutomatchButton() {
   if (!didSendTmpDevAutomatchRequest) {
     didSendTmpDevAutomatchRequest = true;
     sendAutomatchRequest();
-  }  
+  }
 }
 
 function showRematchInterface() {
@@ -565,11 +566,21 @@ function verifyMovesIfNeeded(matchId: string, flatMovesString: string, color: st
 }
 
 export function didClickAttestVictoryButton() {
+  if (victoryTx) {
+    saveOnchainRating(victoryTx);
+    return;
+  }
+
   prepareOnchainVictoryTx()
-  .then((res) => {
-    saveOnchainRating(res);
-  })
-  .catch(() => {});
+    .then((res) => {
+      if (res && res.schema) {
+        victoryTx = res;
+      }
+      saveOnchainRating(res);
+    })
+    .catch(() => {
+      setAttestVictoryEnabled(true);
+    });
 }
 
 function suggestSavingOnchainRating() {
@@ -578,7 +589,13 @@ function suggestSavingOnchainRating() {
 
 async function saveOnchainRating(txData: any) {
   const { sendEasTx } = await import("../connection/eas");
-  sendEasTx(txData);
+  try {
+    const txHash = await sendEasTx(txData);
+    console.log(txHash);
+    // TODO: view tx button
+  } catch {
+    setAttestVictoryEnabled(true);
+  }
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
