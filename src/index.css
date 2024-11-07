@@ -48,21 +48,6 @@ body {
   width: 100vw;
 }
 
-.background-iframe {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  border: none;
-  z-index: -1;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
 .connect-button-container {
   position: absolute;
   top: 9pt;
