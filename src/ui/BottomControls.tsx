@@ -86,15 +86,15 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
   }
 `;
 
-const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isViewOnly?: boolean }>`
-  background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0074D9" : props.isPink ? "#ff69b4" : "#2ecc40")};
+const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isViewOnly?: boolean; disabled?: boolean }>`
+  background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0074D9" : props.isPink && props.disabled ? "#ffd1dc" : props.isPink ? "#ff69b4" : "#2ecc40")};
   height: 32px;
-  color: ${(props) => (props.isViewOnly ? "#aaa" : "white")};
+  color: ${(props) => (props.isPink && props.disabled ? "#fff" : props.isViewOnly ? "#aaa" : "white")};
   border: none;
   border-radius: 20px;
   padding: 0px 16px;
   font-weight: bold;
-  cursor: ${(props) => (props.isViewOnly ? "default" : "pointer")};
+  cursor: ${(props) => (props.isViewOnly || (props.isPink && props.disabled) ? "default" : "pointer")};
   transition: background-color 0.3s ease;
   text-align: center;
   display: flex;
@@ -103,27 +103,27 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0063B8" : props.isPink ? "#ff4da6" : "#29b739")};
+      background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0063B8" : props.isPink && props.disabled ? "#ffd1dc" : props.isPink ? "#ff4da6" : "#29b739")};
     }
   }
 
   &:active {
-    background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#005299" : props.isPink ? "#d1477b" : "#25a233")};
+    background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#005299" : props.isPink && props.disabled ? "#ffd1dc" : props.isPink ? "#d1477b" : "#25a233")};
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${(props) => (props.isViewOnly ? "#777" : "white")};
+    color: ${(props) => (props.isPink && props.disabled ? "rgba(204, 204, 204, 0.77)" : props.isViewOnly ? "#777" : "white")};
 
-    background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#005299" : props.isPink ? "#ff4da6" : "#25a233")};
+    background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#005299" : props.isPink && props.disabled ? "#664d57" : props.isPink ? "#ff4da6" : "#25a233")};
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#0063B8" : props.isPink ? "#ff69b4" : "#29b739")};
+        background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#0063B8" : props.isPink && props.disabled ? "#664d57" : props.isPink ? "#ff69b4" : "#29b739")};
       }
     }
 
     &:active {
-      background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#0074D9" : props.isPink ? "#ff85c0" : "#2ecc40")};
+      background-color: ${(props) => (props.isViewOnly ? "#333" : props.isBlue ? "#0074D9" : props.isPink && props.disabled ? "#664d57" : props.isPink ? "#ff85c0" : "#2ecc40")};
     }
   }
 `;
