@@ -457,7 +457,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     <ControlsContainer>
       {isWatchOnlyIndicatorVisible && (
         <BottomPillButton isViewOnly={true} disabled={true}>
-          {"View Only"}
+          {"👓 Spectating"}
         </BottomPillButton>
       )}
       {isInviteLinkButtonVisible && (
