@@ -77,7 +77,7 @@ root.render(
 );
 
 let lastTouchStartTime = 0;
-const MIN_TIME_BETWEEN_TOUCHSTARTS = 495; // 500 is reliable. 475 does not protect.
+const MIN_TIME_BETWEEN_TOUCHSTARTS = 500; // have seen a tooltip with 495
 
 export function preventTouchstartIfNeeded(event: TouchEvent | MouseEvent) {
   if (!isMobile) {
