@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -87,13 +87,25 @@ export function didFindInviteThatCanBeJoined() {
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
-let didSendTmpDevAutomatchRequest = false; // TODO: remove dev tmp
-
 export function didClickAutomatchButton() {
-  if (!didSendTmpDevAutomatchRequest) {
-    didSendTmpDevAutomatchRequest = true;
-    sendAutomatchRequest();
-  }
+  setHomeVisible(true);
+  setInviteLinkActionVisible(false);
+  Board.hideBoardPlayersInfo();
+  Board.removeHighlights();
+  hideAllMoveStatuses();
+  isWaitingForInviteToGetAccepted = true;
+  Board.runMonsBoardAsDisplayWaitingAnimation();
+
+  sendAutomatchRequest()
+    .then((response) => {
+      if (response.inviteId) {
+        // TODO: navigate without reloading the page
+        window.location.href = "/" + response.inviteId;
+      }
+    })
+    .catch(() => {
+      setAutomatchEnabled(true);
+    });
 }
 
 function showRematchInterface() {

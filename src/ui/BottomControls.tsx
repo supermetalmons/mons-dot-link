@@ -377,6 +377,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   setAutomatchEnabled = (enabled: boolean) => {
+    setAutomatchButtonTmpState(false);
     setIsAutomatchButtonEnabled(enabled);
   };
 
@@ -478,10 +479,8 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const handleAutomatchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     didClickAutomatchButton();
+    setAutomatchEnabled(false);
     setAutomatchButtonTmpState(true);
-    setTimeout(() => {
-      setAutomatchButtonTmpState(false);
-    }, 500);
   };
 
   const getPrimaryActionButtonText = () => {
@@ -520,7 +519,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       {isAutomatchButtonVisible && (
         <BottomPillButton onClick={handleAutomatchClick} disabled={!isAutomatchButtonEnabled}>
           {automatchButtonTmpState ? (
-            "Soon"
+            "Automatching..."
           ) : (
             <>
               👽 <span style={{ textDecoration: "underline" }}>Automatch</span>
