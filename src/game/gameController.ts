@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal } from "../connection/connection";
-import { setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -462,7 +462,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
             if (isVictory && !isWatchOnly && hasBothEthAddresses()) {
               setTimeout(() => {
-                suggestSavingOnchainRating(false);
+                suggestSavingOnchainRating();
               }, 420);
             }
 
@@ -555,16 +555,16 @@ function verifyMovesIfNeeded(matchId: string, flatMovesString: string, color: st
   }
 }
 
-function suggestSavingOnchainRating(onResign: boolean) {
-  const reason = onResign ? "🫡 opponent resigned" : "🎉 you win";
-  const shouldSave = global.confirm(reason + "\n\n💾 save victory onchain");
-  if (shouldSave) {
-    prepareOnchainVictoryTx()
-      .then((res) => {
-        saveOnchainRating(res);
-      })
-      .catch(() => {});
-  }
+export function didClickAttestVictoryButton() {
+  prepareOnchainVictoryTx()
+  .then((res) => {
+    saveOnchainRating(res);
+  })
+  .catch(() => {});
+}
+
+function suggestSavingOnchainRating() {
+  setAttestVictoryVisible(true);
 }
 
 async function saveOnchainRating(txData: any) {
@@ -810,7 +810,7 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
     playSounds([Sound.Victory]);
     if (hasBothEthAddresses()) {
       setTimeout(() => {
-        suggestSavingOnchainRating(false);
+        suggestSavingOnchainRating();
       }, 420);
     }
   } else if (!onConnect) {
@@ -838,7 +838,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
   if (!onConnect && !justConfirmedResignYourself) {
     playSounds([Sound.Victory]);
     if (!isWatchOnly && hasBothEthAddresses()) {
-      suggestSavingOnchainRating(true);
+      suggestSavingOnchainRating();
     }
   }
 
