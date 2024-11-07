@@ -197,6 +197,7 @@ let showResignButton: () => void;
 let setInviteLinkActionVisible: (visible: boolean) => void;
 let setAutomatchEnabled: (enabled: boolean) => void;
 let setAutomatchVisible: (visible: boolean) => void;
+let setAutomatchWaitingState: (waiting: boolean) => void;
 
 let setAttestVictoryEnabled: (enabled: boolean) => void;
 let setAttestVictoryVisible: (visible: boolean) => void;
@@ -366,6 +367,12 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   setInviteLinkActionVisible = (visible: boolean) => {
     setIsInviteLinkButtonVisible(visible);
+  };
+
+  setAutomatchWaitingState = (waiting: boolean) => {
+    setAutomatchVisible(true);
+    setAutomatchEnabled(false);
+    setAutomatchButtonTmpState(true);
   };
 
   setAttestVictoryVisible = (visible: boolean) => {
@@ -583,4 +590,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

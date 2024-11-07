@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -76,9 +76,13 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
-export function didFindYourOwnInviteThatNobodyJoined() {
-  setInviteLinkActionVisible(true);
-  setIsReadyToCopyExistingInviteLink();
+export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
+  if (isAutomatch) {
+    setAutomatchWaitingState(true);
+  } else {
+    setInviteLinkActionVisible(true);
+    setIsReadyToCopyExistingInviteLink();
+  }
   Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
@@ -912,6 +916,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     Board.stopMonsBoardAsDisplayAnimations();
     isWaitingForInviteToGetAccepted = false;
     setInviteLinkActionVisible(false);
+    setAutomatchVisible(false);
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver && !isWatchOnly) {
