@@ -169,6 +169,12 @@ class FirebaseConnection {
 
   public async automatch(): Promise<any> {
     try {
+      if (!this.auth.currentUser) {
+        const uid = await this.signIn();
+        if (!uid) {
+          throw new Error("Failed to authenticate user");
+        }
+      }
       const automatch = httpsCallable(this.functions, "automatch");
       const response = await automatch();
       return response.data;
