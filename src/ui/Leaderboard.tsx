@@ -63,6 +63,11 @@ const LeaderboardTable = styled.table`
 const TableWrapper = styled.div`
   overflow-y: auto;
   flex: 1;
+  -webkit-overflow-scrolling: touch;
+
+  ::-webkit-scrollbar {
+    z-index: 2;
+  }
 `;
 
 const LoadingText = styled.div`
