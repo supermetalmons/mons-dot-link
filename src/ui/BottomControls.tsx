@@ -93,6 +93,9 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   border: none;
   border-radius: 20px;
   padding: 0px 16px;
+  @media screen and (max-width: 300pt) {
+    padding: 0px 10px;
+  }
   font-weight: bold;
   cursor: ${(props) => (props.isViewOnly || (props.isPink && props.disabled) ? "default" : "pointer")};
   transition: background-color 0.3s ease;
@@ -503,6 +506,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      {isAutomoveButtonVisible && (
+        <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
+          <FaRobot />
+        </ControlButton>
+      )}
       {txHash !== "" && (
         <BottomPillButton onClick={didClickTxHashButton} isBlue={true}>
           {"↗️ View on Explorer"}
@@ -541,11 +549,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         </ControlButton>
       )}
       {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
-      {isAutomoveButtonVisible && (
-        <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
-          <FaRobot />
-        </ControlButton>
-      )}
       {isUndoButtonVisible && (
         <ControlButton onClick={!isMobile ? handleUndo : undefined} onTouchStart={isMobile ? handleUndo : undefined} aria-label="Undo" disabled={isUndoDisabled}>
           <FaUndo />

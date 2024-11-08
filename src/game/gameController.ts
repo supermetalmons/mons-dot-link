@@ -68,6 +68,8 @@ export async function go() {
     });
     setInviteLinkActionVisible(true);
     setAutomatchVisible(true);
+    setAutomoveActionVisible(true);
+    processInput(AssistedInputKind.None, InputModifier.None, new Location(10, 5));
   } else {
     isOnlineGame = true;
     setHomeVisible(true);
@@ -93,6 +95,7 @@ export function didFindInviteThatCanBeJoined() {
 
 export function didClickAutomatchButton() {
   setHomeVisible(true);
+  setAutomoveActionVisible(false);
   setInviteLinkActionVisible(false);
   Board.hideBoardPlayersInfo();
   Board.removeHighlights();
@@ -339,7 +342,6 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         setUndoVisible(true);
         setInviteLinkActionVisible(false);
         setAutomatchVisible(false);
-        setAutomoveActionVisible(true);
       }
 
       currentInputs = [];
@@ -904,6 +906,7 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
   if (!isCreateNewInviteFlow) return;
   setHomeVisible(true);
   setAutomatchVisible(false);
+  setAutomoveActionVisible(false);
   Board.hideBoardPlayersInfo();
   Board.removeHighlights();
   hideAllMoveStatuses();
@@ -915,6 +918,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
     isWaitingForInviteToGetAccepted = false;
+    setAutomoveActionVisible(false);
     setInviteLinkActionVisible(false);
     setAutomatchVisible(false);
     didConnectTo(match, matchPlayerUid, matchId);
