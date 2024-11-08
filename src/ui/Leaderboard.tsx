@@ -46,15 +46,15 @@ const LeaderboardTable = styled.table`
     }
 
     &:nth-child(1) {
-      width: 51.5%;
+      width: 46%;
       text-align: left;
     }
     &:nth-child(2) {
-      width: 24.5%;
+      width: 27%;
       text-align: left;
     }
     &:nth-child(3) {
-      width: 24%;
+      width: 27%;
       text-align: left;
     }
   }
@@ -133,7 +133,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
             <tbody>
               {data.map((row: any, index: number) => (
                 <tr key={index}>
-                  <td>{row.player}</td>
+                  <td>{row.player.slice(2, 6) + "..." + row.player.slice(-4)}</td>
                   <td>{row.games}</td>
                   <RatingCell win={row.win}>{row.rating}</RatingCell>
                 </tr>
