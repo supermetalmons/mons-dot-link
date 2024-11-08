@@ -20,6 +20,17 @@ const LeaderboardTable = styled.table`
     color: #f5f5f5;
   }
 
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 1;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #1e1e1e;
+    }
+  }
+
   th,
   td {
     padding: 10px;
