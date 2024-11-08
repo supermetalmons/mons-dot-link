@@ -7,8 +7,13 @@ export type RatingData = {
   id: string;
   recipient: string;
 };
+let cachedLeaderboard: RatingData[] | null = null;
 
 export async function getLeaderboard(): Promise<RatingData[]> {
+  if (cachedLeaderboard && cachedLeaderboard.length > 0) {
+    return cachedLeaderboard;
+  }
+
   const easQuery = `
     query Attestation {
       attestations(
@@ -64,6 +69,10 @@ export async function getLeaderboard(): Promise<RatingData[]> {
       });
     }
   });
+
+  if (ratings.length > 0) {
+    cachedLeaderboard = ratings;
+  }
 
   return ratings;
 }
