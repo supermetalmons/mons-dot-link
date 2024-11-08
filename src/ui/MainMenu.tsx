@@ -3,7 +3,7 @@ import { logoBase64 } from "../content/uiAssets";
 import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 import styled from "styled-components";
 import { isMobile } from "../utils/misc";
-import { Leaderboard } from './Leaderboard';
+import { Leaderboard } from "./Leaderboard";
 
 const RockButtonContainer = styled.div`
   position: absolute;
@@ -64,7 +64,7 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
   gap: 6px;
   box-shadow: ${(props) => (props.isOpen ? "0 6px 20px rgba(0, 0, 0, 0.12)" : "none")};
 
-  min-width: ${(props) => (props.showLeaderboard ? "230px" : "230px")};
+  min-width: ${(props) => (props.showLeaderboard ? "min(340px, 81dvw)" : "230px")};
   min-height: ${(props) => (props.showLeaderboard ? "69dvh" : "auto")};
 
   transform-origin: top left;
