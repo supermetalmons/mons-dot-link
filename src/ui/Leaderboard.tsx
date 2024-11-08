@@ -3,16 +3,15 @@ import styled from "styled-components";
 
 export const LeaderboardContainer = styled.div<{ show: boolean }>`
   opacity: ${(props) => (props.show ? 1 : 0)};
-  height: ${(props) => (props.show ? "calc(69dvh - 80px)" : 0)};
+  height: ${(props) => (props.show ? "calc(69dvh - 10px)" : 0)};
+  margin-top: ${(props) => (props.show ? "-18px" : "-6px")};
   overflow: hidden;
-  margin-top: -6px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 `;
 
 const LeaderboardTable = styled.table`
-  margin-top: -10px;
   width: 100%;
   border-collapse: collapse;
   color: #333;
@@ -36,7 +35,6 @@ const LeaderboardTable = styled.table`
 const TableWrapper = styled.div`
   overflow-y: auto;
   flex: 1;
-  margin-bottom: 10px;
 `;
 
 const LoadingText = styled.div`
@@ -50,18 +48,6 @@ const LoadingText = styled.div`
 
   @media (prefers-color-scheme: dark) {
     color: #afafaf;
-  }
-`;
-
-const EASLink = styled.a`
-  display: block;
-  text-align: center;
-  padding: 0 0;
-  text-decoration: none;
-  font-size: 0.8rem;
-
-  &:hover {
-    text-decoration: underline;
   }
 `;
 
@@ -125,9 +111,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
       ) : (
         <LoadingText>UPDATING...</LoadingText>
       )}
-      <EASLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
-        View on EAS Explorer
-      </EASLink>
     </LeaderboardContainer>
   );
 };
