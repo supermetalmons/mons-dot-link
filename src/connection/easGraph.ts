@@ -6,6 +6,7 @@ export type RatingData = {
   rating: number;
   id: string;
   recipient: string;
+  win: boolean;
 };
 let cachedLeaderboard: RatingData[] | null = null;
 
@@ -59,13 +60,15 @@ export async function getLeaderboard(): Promise<RatingData[]> {
 
     const nonceItem = decodedData.find((item: any) => item.name === "nonce");
     const ratingItem = decodedData.find((item: any) => item.name === "newRating");
+    const winItem = decodedData.find((item: any) => item.name === "win");
 
-    if (nonceItem && ratingItem && typeof nonceItem.value.value === "number" && typeof ratingItem.value.value === "number") {
+    if (nonceItem && ratingItem && winItem && typeof nonceItem.value.value === "number" && typeof ratingItem.value.value === "number" && typeof winItem.value.value === "boolean") {
       ratings.push({
         numberOfGames: nonceItem.value.value + 1,
         rating: ratingItem.value.value,
         id: attestation.id,
         recipient: attestation.recipient,
+        win: winItem.value.value,
       });
     }
   });
@@ -124,13 +127,15 @@ export async function fetchRatingsFromEAS(recipients: string[]): Promise<{ [key:
 
     const nonceItem = decodedData.find((item: any) => item.name === "nonce");
     const ratingItem = decodedData.find((item: any) => item.name === "newRating");
+    const winItem = decodedData.find((item: any) => item.name === "win");
 
-    if (nonceItem && ratingItem && typeof nonceItem.value.value === "number" && typeof ratingItem.value.value === "number") {
+    if (nonceItem && ratingItem && winItem && typeof nonceItem.value.value === "number" && typeof ratingItem.value.value === "number" && typeof winItem.value.value === "boolean") {
       ratingsDict[attestation.recipient] = {
         numberOfGames: nonceItem.value.value + 1,
         rating: ratingItem.value.value,
         id: attestation.id,
         recipient: attestation.recipient,
+        win: winItem.value.value,
       };
     }
   });
@@ -142,6 +147,7 @@ export async function fetchRatingsFromEAS(recipients: string[]): Promise<{ [key:
         rating: 1500,
         id: "",
         recipient: recipient,
+        win: false,
       };
     }
   });

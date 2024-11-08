@@ -68,6 +68,15 @@ const LoadingText = styled.div`
   }
 `;
 
+const RatingCell = styled.td<{ win: boolean }>`
+  color: ${(props) => (props.win ? "#2e7d32" : "#c62828")};
+  font-weight: 444;
+
+  @media (prefers-color-scheme: dark) {
+    color: ${(props) => (props.win ? "#66bb6a" : "#ef5350")};
+  }
+`;
+
 interface LeaderboardProps {
   show: boolean;
 }
@@ -83,6 +92,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
             player: entry.recipient,
             games: entry.numberOfGames,
             rating: Math.round(entry.rating),
+            win: entry.win,
           }));
           setData(leaderboardData);
         })
@@ -109,7 +119,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
                 <tr key={index}>
                   <td>{row.player}</td>
                   <td>{row.games}</td>
-                  <td>{row.rating}</td>
+                  <RatingCell win={row.win}>{row.rating}</RatingCell>
                 </tr>
               ))}
             </tbody>
