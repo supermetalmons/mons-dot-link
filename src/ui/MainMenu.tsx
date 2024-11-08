@@ -84,9 +84,38 @@ const MenuTitle = styled.div`
   margin: 10px 16px 0 53px;
   cursor: default;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
   @media (prefers-color-scheme: dark) {
     color: #f5f5f5;
+  }
+`;
+
+const EasLink = styled.a`
+  font-size: 12px;
+  background: #e6f3ff;
+  color: #0066cc;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-decoration: none;
+  
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: #d9edff;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: #1a3d5c;
+    color: #66b3ff;
+    
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: #234b6e;
+      }
+    }
   }
 `;
 
@@ -266,7 +295,14 @@ const MainMenu: React.FC = () => {
           }
         }}>
         <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
-          <MenuTitle>Super Metal Mons</MenuTitle>
+          <MenuTitle>
+            Super Metal Mons
+            {showLeaderboard && (
+              <EasLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
+                ✓ EAS
+              </EasLink>
+            )}
+          </MenuTitle>
           <CloseButton
             onClick={() => {
               setIsMenuOpen(false);
