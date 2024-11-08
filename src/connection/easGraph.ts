@@ -7,6 +7,7 @@ export type RatingData = {
   id: string;
   recipient: string;
   win: boolean;
+  ensName?: string | null;
 };
 let cachedLeaderboard: RatingData[] | null = null;
 
@@ -74,6 +75,12 @@ export async function getLeaderboard(): Promise<RatingData[]> {
   });
 
   if (ratings.length > 0) {
+    const { ensCache } = await import("../utils/ensResolver");
+    ratings.forEach((rating) => {
+      if (rating.recipient in ensCache) {
+        rating.ensName = ensCache[rating.recipient];
+      }
+    });
     cachedLeaderboard = ratings;
   }
 

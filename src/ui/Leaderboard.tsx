@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { getLeaderboard } from "../connection/easGraph";
+import { resolveENS } from "../utils/ensResolver";
 
 export const LeaderboardContainer = styled.div<{ show: boolean }>`
   opacity: ${(props) => (props.show ? 1 : 0)};
@@ -17,6 +18,7 @@ const LeaderboardTable = styled.table`
   border-collapse: collapse;
   color: #333;
   table-layout: fixed;
+  font-size: 0.85rem;
 
   @media (prefers-color-scheme: dark) {
     color: #f5f5f5;
@@ -27,6 +29,7 @@ const LeaderboardTable = styled.table`
     top: 0;
     background-color: #fff;
     z-index: 1;
+    font-size: 1rem;
 
     @media (prefers-color-scheme: dark) {
       background-color: #1e1e1e;
@@ -46,15 +49,15 @@ const LeaderboardTable = styled.table`
     }
 
     &:nth-child(1) {
-      width: 46%;
+      width: 50%;
       text-align: left;
     }
     &:nth-child(2) {
-      width: 27%;
+      width: 25%;
       text-align: left;
     }
     &:nth-child(3) {
-      width: 27%;
+      width: 25%;
       text-align: left;
     }
   }
@@ -111,8 +114,17 @@ interface LeaderboardProps {
   show: boolean;
 }
 
+interface LeaderboardEntry {
+  player: string;
+  games: number;
+  rating: number;
+  win: boolean;
+  id: string;
+  ensName?: string | null;
+}
+
 export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
-  const [data, setData] = useState<any[] | null>(null);
+  const [data, setData] = useState<LeaderboardEntry[] | null>(null);
 
   useEffect(() => {
     if (show) {
@@ -124,8 +136,21 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
             rating: Math.round(entry.rating),
             win: entry.win,
             id: entry.id,
+            ensName: null,
           }));
           setData(leaderboardData);
+
+          leaderboardData.forEach(async (entry, index) => {
+            const ensName = await resolveENS(entry.player);
+            if (ensName) {
+              setData((prevData) => {
+                if (!prevData) return prevData;
+                const newData = [...prevData];
+                newData[index] = { ...newData[index], ensName };
+                return newData;
+              });
+            }
+          });
         })
         .catch((error) => {
           console.error("Failed to fetch leaderboard data:", error);
@@ -150,9 +175,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
               </tr>
             </thead>
             <tbody>
-              {data.map((row: any, index: number) => (
+              {data.map((row: LeaderboardEntry, index: number) => (
                 <tr key={index} onClick={() => handleRowClick(row.id)}>
-                  <td>{row.player.slice(2, 6) + "..." + row.player.slice(-4)}</td>
+                  <td>{row.ensName || row.player.slice(2, 6) + "..." + row.player.slice(-4)}</td>
                   <td>{row.games}</td>
                   <RatingCell win={row.win}>{row.rating}</RatingCell>
                 </tr>
