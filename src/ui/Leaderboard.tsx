@@ -36,15 +36,26 @@ const LeaderboardTable = styled.table`
   th,
   td {
     padding: 10px;
-    text-align: left;
     border-bottom: 1px solid #ddd;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 50%;
 
     @media (prefers-color-scheme: dark) {
       border-bottom: 1px solid #333;
+    }
+
+    &:nth-child(1) {
+      width: 51.5%;
+      text-align: left;
+    }
+    &:nth-child(2) {
+      width: 24.5%;
+      text-align: left;
+    }
+    &:nth-child(3) {
+      width: 24%;
+      text-align: left;
     }
   }
 `;
