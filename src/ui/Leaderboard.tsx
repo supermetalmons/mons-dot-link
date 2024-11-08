@@ -29,7 +29,7 @@ const LeaderboardTable = styled.table`
     top: 0;
     background-color: #fff;
     z-index: 1;
-    font-size: 1rem;
+    font-size: 0.93rem;
 
     @media (prefers-color-scheme: dark) {
       background-color: #1e1e1e;
@@ -49,15 +49,15 @@ const LeaderboardTable = styled.table`
     }
 
     &:nth-child(1) {
-      width: 50%;
+      width: 53%;
       text-align: left;
     }
     &:nth-child(2) {
-      width: 25%;
+      width: 24%;
       text-align: left;
     }
     &:nth-child(3) {
-      width: 25%;
+      width: 23%;
       text-align: left;
     }
   }
