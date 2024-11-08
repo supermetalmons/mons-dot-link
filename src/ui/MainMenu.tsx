@@ -85,8 +85,9 @@ const MenuTitle = styled.div`
   cursor: default;
   text-align: left;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
+  min-height: 20px;
 
   @media (prefers-color-scheme: dark) {
     color: #f5f5f5;
@@ -100,7 +101,8 @@ const EasLink = styled.a`
   padding: 2px 8px;
   border-radius: 12px;
   text-decoration: none;
-  
+  margin-left: 6px;
+
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       background: #d9edff;
@@ -110,7 +112,7 @@ const EasLink = styled.a`
   @media (prefers-color-scheme: dark) {
     background: #1a3d5c;
     color: #66b3ff;
-    
+
     @media (hover: hover) and (pointer: fine) {
       &:hover {
         background: #234b6e;
