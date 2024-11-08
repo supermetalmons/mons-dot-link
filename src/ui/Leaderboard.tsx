@@ -58,6 +58,20 @@ const LeaderboardTable = styled.table`
       text-align: left;
     }
   }
+
+  tbody tr {
+    cursor: pointer;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+
+        @media (prefers-color-scheme: dark) {
+          background-color: rgba(255, 255, 255, 0.04);
+        }
+      }
+    }
+  }
 `;
 
 const TableWrapper = styled.div`
@@ -109,6 +123,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
             games: entry.numberOfGames,
             rating: Math.round(entry.rating),
             win: entry.win,
+            id: entry.id,
           }));
           setData(leaderboardData);
         })
@@ -117,6 +132,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
         });
     }
   }, [show]);
+
+  const handleRowClick = (id: string) => {
+    window.open(`https://base.easscan.org/attestation/view/${id}`, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <LeaderboardContainer show={show}>
@@ -132,7 +151,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ show }) => {
             </thead>
             <tbody>
               {data.map((row: any, index: number) => (
-                <tr key={index}>
+                <tr key={index} onClick={() => handleRowClick(row.id)}>
                   <td>{row.player.slice(2, 6) + "..." + row.player.slice(-4)}</td>
                   <td>{row.games}</td>
                   <RatingCell win={row.win}>{row.rating}</RatingCell>
