@@ -69,7 +69,6 @@ export async function go() {
     setInviteLinkActionVisible(true);
     setAutomatchVisible(true);
     setAutomoveActionVisible(true);
-    processInput(AssistedInputKind.None, InputModifier.None, new Location(10, 5));
   } else {
     isOnlineGame = true;
     setHomeVisible(true);
