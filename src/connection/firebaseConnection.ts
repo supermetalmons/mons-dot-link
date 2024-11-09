@@ -37,6 +37,14 @@ class FirebaseConnection {
     this.functions = getFunctions(this.app);
   }
 
+  public isAutomatch(): boolean {
+    if (this.inviteId) {
+      return this.inviteId.startsWith("auto_");
+    } else {
+      return false;
+    }
+  }
+
   public sendRematchProposal(): void {
     // TODO: send correct props to the correct field
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite

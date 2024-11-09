@@ -4,7 +4,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
+import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
 import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
@@ -490,9 +490,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             }
 
             if (isVictory && !isWatchOnly && hasBothEthAddresses()) {
-              setTimeout(() => {
-                suggestSavingOnchainRating();
-              }, 420);
+              suggestSavingOnchainRating();
             }
 
             isGameOver = true;
@@ -603,7 +601,9 @@ export function didClickAttestVictoryButton() {
 }
 
 function suggestSavingOnchainRating() {
-  setAttestVictoryVisible(true);
+  if (isAutomatch()) {
+    setAttestVictoryVisible(true);
+  }
 }
 
 async function saveOnchainRating(txData: any) {
@@ -858,9 +858,7 @@ function handleVictoryByTimer(onConnect: boolean, winnerColor: string, justClaim
   if (justClaimedByYourself) {
     playSounds([Sound.Victory]);
     if (hasBothEthAddresses()) {
-      setTimeout(() => {
-        suggestSavingOnchainRating();
-      }, 420);
+      suggestSavingOnchainRating();
     }
   } else if (!onConnect) {
     if (!isWatchOnly) {

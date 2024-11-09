@@ -23,6 +23,10 @@ export function sendRematchProposal() {
   firebaseConnection.sendRematchProposal();
 }
 
+export function isAutomatch(): boolean {
+  return firebaseConnection.isAutomatch();
+}
+
 export function setupConnection(autojoin: boolean) {
   if (!isCreateNewInviteFlow) {
     const shouldAutojoin = autojoin || initialPath.startsWith("auto_");
