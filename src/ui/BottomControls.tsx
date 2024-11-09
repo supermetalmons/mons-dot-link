@@ -36,6 +36,12 @@ const ControlsContainer = styled.div`
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+
+  @media screen and (max-width: 360px) {
+    gap: 6px;
+    right: 6px;
+    left: 6px;
+  }
 `;
 
 export const ControlButton = styled.button<{ disabled?: boolean }>`
@@ -95,6 +101,18 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   padding: 0px 16px;
   @media screen and (max-width: 300pt) {
     padding: 0px 10px;
+  }
+  @media screen and (max-width: 420px) {
+    padding: 0px 10px;
+  }
+  @media screen and (max-width: 295pt) {
+    padding: 0px 8px;
+  }
+  @media screen and (max-width: 375px) {
+    font-size: 0.74rem;
+  }
+  @media screen and (max-width: 320px) {
+    font-size: 0.63rem;
   }
   font-weight: bold;
   cursor: ${(props) => (props.isViewOnly || (props.isPink && props.disabled) ? "default" : "pointer")};
