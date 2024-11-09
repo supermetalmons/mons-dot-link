@@ -221,7 +221,8 @@ const LinkButton = styled.a`
   flex: 1;
   padding: 27px 0px;
   text-align: center;
-  font-size: 0.55rem;
+  font-size: 0.81rem;
+  font-weight: 600;
   border-radius: 8px;
   background-color: #f9f9f9;
   color: #333;
