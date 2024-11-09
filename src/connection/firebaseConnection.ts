@@ -373,7 +373,7 @@ class FirebaseConnection {
         if (guestId) {
           this.observeMatch(guestId, matchId);
         } else {
-          didFindYourOwnInviteThatNobodyJoined(inviteId.startsWith("automatch"));
+          didFindYourOwnInviteThatNobodyJoined(inviteId.startsWith("auto_"));
           const inviteRef = ref(this.db, `invites/${inviteId}`);
           onValue(inviteRef, (snapshot) => {
             const updatedInvite: Invite | null = snapshot.val();
