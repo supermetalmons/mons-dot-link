@@ -175,8 +175,9 @@ class FirebaseConnection {
           throw new Error("Failed to authenticate user");
         }
       }
+      const emojiId = getPlayersEmojiId();
       const automatch = httpsCallable(this.functions, "automatch");
-      const response = await automatch();
+      const response = await automatch({ emojiId });
       return response.data;
     } catch (error) {
       console.error("Error calling automatch:", error);
@@ -372,7 +373,7 @@ class FirebaseConnection {
         if (guestId) {
           this.observeMatch(guestId, matchId);
         } else {
-          didFindYourOwnInviteThatNobodyJoined(inviteId.startsWith("auto-"));
+          didFindYourOwnInviteThatNobodyJoined(inviteId.startsWith("automatch"));
           const inviteRef = ref(this.db, `invites/${inviteId}`);
           onValue(inviteRef, (snapshot) => {
             const updatedInvite: Invite | null = snapshot.val();
