@@ -167,6 +167,7 @@ class FirebaseConnection {
 
   public async startTimer(): Promise<any> {
     try {
+      await this.ensureAuthenticated();
       const startTimerFunction = httpsCallable(this.functions, "startMatchTimer");
       const opponentId = this.getOpponentId();
       const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: opponentId });
@@ -179,6 +180,7 @@ class FirebaseConnection {
 
   public async claimVictoryByTimer(): Promise<any> {
     try {
+      await this.ensureAuthenticated();
       const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimMatchVictoryByTimer");
       const opponentId = this.getOpponentId();
       const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: opponentId });
@@ -189,14 +191,18 @@ class FirebaseConnection {
     }
   }
 
+  private async ensureAuthenticated(): Promise<void> {
+    if (!this.auth.currentUser) {
+      const uid = await this.signIn();
+      if (!uid) {
+        throw new Error("Failed to authenticate user");
+      }
+    }
+  }
+
   public async automatch(): Promise<any> {
     try {
-      if (!this.auth.currentUser) {
-        const uid = await this.signIn();
-        if (!uid) {
-          throw new Error("Failed to authenticate user");
-        }
-      }
+      await this.ensureAuthenticated();
       const emojiId = getPlayersEmojiId();
       const automatch = httpsCallable(this.functions, "automatch");
       const response = await automatch({ emojiId });
@@ -207,31 +213,27 @@ class FirebaseConnection {
     }
   }
 
+  public async verifyEthAddress(message: string, signature: string): Promise<any> {
+    try {
+      await this.ensureAuthenticated();
+      const verifyEthAddressFunction = httpsCallable(this.functions, "verifyEthAddress");
+      const response = await verifyEthAddressFunction({ message, signature });
+      return response.data;
+    } catch (error) {
+      console.error("Error verifying Ethereum address:", error);
+      throw error;
+    }
+  }
+
   public async prepareOnchainVictoryTx(): Promise<any> {
     try {
+      await this.ensureAuthenticated();
       const attestVictoryFunction = httpsCallable(this.functions, "attestMatchVictory");
       const opponentId = this.getOpponentId();
       const response = await attestVictoryFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: opponentId });
       return response.data;
     } catch (error) {
       console.error("Error preparing onchain victory tx:", error);
-      throw error;
-    }
-  }
-
-  public async verifyEthAddress(message: string, signature: string): Promise<any> {
-    try {
-      if (!this.auth.currentUser) {
-        const uid = await this.signIn();
-        if (!uid) {
-          throw new Error("Failed to authenticate user");
-        }
-      }
-      const verifyEthAddressFunction = httpsCallable(this.functions, "verifyEthAddress");
-      const response = await verifyEthAddressFunction({ message, signature });
-      return response.data;
-    } catch (error) {
-      console.error("Error verifying Ethereum address:", error);
       throw error;
     }
   }
