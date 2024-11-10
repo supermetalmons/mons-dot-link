@@ -153,10 +153,22 @@ class FirebaseConnection {
     }
   }
 
+  public getOpponentId(): string {
+    if (!this.latestInvite || !this.uid) {
+      return "";
+    }
+
+    if (this.latestInvite.hostId === this.uid) {
+      return this.latestInvite.guestId ?? "";
+    } else {
+      return this.latestInvite.hostId ?? "";
+    }
+  }
+
   public async startTimer(): Promise<any> {
     try {
       const startTimerFunction = httpsCallable(this.functions, "startMatchTimer");
-      const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
+      const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: this.getOpponentId() });
       return response.data;
     } catch (error) {
       console.error("Error starting a timer:", error);
@@ -167,7 +179,7 @@ class FirebaseConnection {
   public async claimVictoryByTimer(): Promise<any> {
     try {
       const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimMatchVictoryByTimer");
-      const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId });
+      const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: this.getOpponentId() });
       return response.data;
     } catch (error) {
       console.error("Error claiming victory by timer:", error);
