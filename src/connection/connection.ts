@@ -9,6 +9,12 @@ let newInviteId = "";
 let didCreateNewGameInvite = false;
 let currentUid: string | null = "";
 
+export function connectToAutomatch(inviteId: string) {
+  newInviteId = inviteId;
+  updatePath(newInviteId);
+  connectToGame(inviteId, true);
+}
+
 export async function subscribeToAuthChanges(callback: (uid: string | null) => void) {
   const connection = await getFirebaseConnection();
   connection.subscribeToAuthChanges((newUid: string | null) => {

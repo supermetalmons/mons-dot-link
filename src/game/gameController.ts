@@ -4,8 +4,8 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState } from "../ui/BottomControls";
+import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch } from "../connection/connection";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -78,13 +78,11 @@ export async function go() {
 }
 
 export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
-  if (isAutomatch) {
-    setAutomatchWaitingState(true);
-  } else {
+  if (!isAutomatch) {
     setInviteLinkActionVisible(true);
     setIsReadyToCopyExistingInviteLink();
+    Board.runMonsBoardAsDisplayWaitingAnimation();
   }
-  Board.runMonsBoardAsDisplayWaitingAnimation();
 }
 
 export function didFindInviteThatCanBeJoined() {
@@ -104,9 +102,9 @@ export function didClickAutomatchButton() {
 
   sendAutomatchRequest()
     .then((response) => {
-      if (response.inviteId) {
-        // TODO: navigate without reloading the page
-        window.location.href = "/" + response.inviteId;
+      const automatchInviteId = response.inviteId;
+      if (automatchInviteId) {
+        connectToAutomatch(automatchInviteId);
       }
     })
     .catch(() => {
