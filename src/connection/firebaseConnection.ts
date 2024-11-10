@@ -210,7 +210,8 @@ class FirebaseConnection {
   public async prepareOnchainVictoryTx(): Promise<any> {
     try {
       const attestVictoryFunction = httpsCallable(this.functions, "attestMatchVictory");
-      const response = await attestVictoryFunction({ inviteId: this.inviteId, matchId: this.matchId });
+      const opponentId = this.getOpponentId();
+      const response = await attestVictoryFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: opponentId });
       return response.data;
     } catch (error) {
       console.error("Error preparing onchain victory tx:", error);
