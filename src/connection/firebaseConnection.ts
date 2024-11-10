@@ -168,7 +168,8 @@ class FirebaseConnection {
   public async startTimer(): Promise<any> {
     try {
       const startTimerFunction = httpsCallable(this.functions, "startMatchTimer");
-      const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: this.getOpponentId() });
+      const opponentId = this.getOpponentId();
+      const response = await startTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: opponentId });
       return response.data;
     } catch (error) {
       console.error("Error starting a timer:", error);
@@ -179,7 +180,8 @@ class FirebaseConnection {
   public async claimVictoryByTimer(): Promise<any> {
     try {
       const claimVictoryByTimerFunction = httpsCallable(this.functions, "claimMatchVictoryByTimer");
-      const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: this.getOpponentId() });
+      const opponentId = this.getOpponentId();
+      const response = await claimVictoryByTimerFunction({ inviteId: this.inviteId, matchId: this.matchId, opponentId: opponentId });
       return response.data;
     } catch (error) {
       console.error("Error claiming victory by timer:", error);
