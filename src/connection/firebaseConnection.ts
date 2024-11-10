@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, Database, ref, set, onValue, off, get } from "firebase/database";
+import { getDatabase, Database, ref, set, onValue, off, get, update } from "firebase/database";
 import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
@@ -470,14 +470,6 @@ class FirebaseConnection {
       guestId: null,
     };
 
-    set(ref(this.db, `invites/${inviteId}`), invite)
-      .then(() => {
-        console.log("Invite created successfully");
-      })
-      .catch((error) => {
-        console.error("Error creating invite:", error);
-      });
-
     const match: Match = {
       version: controllerVersion,
       color: hostColor,
@@ -496,9 +488,17 @@ class FirebaseConnection {
     const matchId = inviteId;
     this.matchId = matchId;
 
-    set(ref(this.db, `players/${uid}/matches/${matchId}`), match).catch((error) => {
-      console.error("Error creating player match:", error);
-    });
+    const updates: { [key: string]: any } = {};
+    updates[`players/${uid}/matches/${matchId}`] = match;
+    updates[`invites/${inviteId}`] = invite;
+    update(ref(this.db), updates)
+      .then(() => {
+        console.log("Match and invite created successfully");
+      })
+      .catch((error) => {
+        console.error("Error creating match and invite:", error);
+      });
+
     const inviteRef = ref(this.db, `invites/${inviteId}`);
     onValue(inviteRef, (snapshot) => {
       const updatedInvite: Invite | null = snapshot.val();
