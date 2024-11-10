@@ -391,9 +391,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   setAutomatchWaitingState = (waiting: boolean) => {
-    setAutomatchVisible(true);
-    setAutomatchEnabled(false);
-    setAutomatchButtonTmpState(true);
+    if (waiting) {
+      setAutomatchVisible(true);
+      setAutomatchEnabled(false);
+      setAutomatchButtonTmpState(true);
+    }
   };
 
   setAttestVictoryVisible = (visible: boolean) => {
@@ -550,9 +552,9 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
-        <BottomPillButton onClick={handleAutomatchClick} disabled={!isAutomatchButtonEnabled}>
+        <BottomPillButton onClick={handleAutomatchClick} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
           {automatchButtonTmpState ? (
-            "Automatching..."
+            "🥁 Automatching..."
           ) : (
             <>
               👽 <span style={{ textDecoration: "underline" }}>Automatch</span>

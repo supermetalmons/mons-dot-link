@@ -149,6 +149,8 @@ export function runExperimentalMonsBoardAsDisplayAnimation() {
 }
 
 export function runMonsBoardAsDisplayWaitingAnimation() {
+  if (monsBoardDisplayAnimationTimeout) return;
+
   let radius = 0;
   const maxRadius = 5;
 

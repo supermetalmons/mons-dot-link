@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -81,6 +81,9 @@ export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
   if (!isAutomatch) {
     setInviteLinkActionVisible(true);
     setIsReadyToCopyExistingInviteLink();
+    Board.runMonsBoardAsDisplayWaitingAnimation();
+  } else if (!isCreateNewInviteFlow) {
+    setAutomatchWaitingState(true);
     Board.runMonsBoardAsDisplayWaitingAnimation();
   }
 }
