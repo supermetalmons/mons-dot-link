@@ -504,6 +504,7 @@ class FirebaseConnection {
       const updatedInvite: Invite | null = snapshot.val();
       if (updatedInvite && updatedInvite.guestId) {
         console.log(`Guest ${updatedInvite.guestId} joined the invite ${inviteId}`);
+        this.latestInvite = updatedInvite;
         this.observeMatch(updatedInvite.guestId, matchId);
         off(inviteRef);
       }
