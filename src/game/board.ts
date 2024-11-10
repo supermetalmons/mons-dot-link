@@ -87,13 +87,9 @@ export function hideBoardPlayersInfo() {
 
 export function resetForNewGame() {
   if (isWatchOnly) {
-    playerSideMetadata.displayName = undefined;
-    playerSideMetadata.ethAddress = undefined;
-    playerSideMetadata.uid = "";
+    playerSideMetadata = newEmptyPlayerMetadata();
   }
-  opponentSideMetadata.displayName = undefined;
-  opponentSideMetadata.ethAddress = undefined;
-  opponentSideMetadata.uid = "";
+  opponentSideMetadata = newEmptyPlayerMetadata();
   renderPlayersNamesLabels();
 
   if (opponentAvatar && playerAvatar) {

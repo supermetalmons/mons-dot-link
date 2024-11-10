@@ -66,10 +66,12 @@ export function resolveEthAddress(address: string, uid: string, onSuccess: () =>
 }
 
 export function getRating(address: string): number | undefined {
+  if (!address) return undefined;
   return allRatingsDict[address]?.rating;
 }
 
 export function getEnsName(address: string): string | undefined {
+  if (!address) return undefined;
   return ensDict[address]?.name;
 }
 
