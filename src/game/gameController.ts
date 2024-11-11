@@ -68,7 +68,6 @@ export async function go() {
     });
     setInviteLinkActionVisible(true);
     setAutomatchVisible(true);
-    setAutomoveActionVisible(true);
   } else {
     isOnlineGame = true;
     setHomeVisible(true);
@@ -342,6 +341,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         setUndoVisible(true);
         setInviteLinkActionVisible(false);
         setAutomatchVisible(false);
+        setAutomoveActionVisible(true);
       }
 
       currentInputs = [];

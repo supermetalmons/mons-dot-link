@@ -102,6 +102,9 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   @media screen and (max-width: 300pt) {
     padding: 0px 10px;
   }
+  @media screen and (max-width: 430px) {
+    font-size: 0.77rem;
+  }
   @media screen and (max-width: 420px) {
     padding: 0px 10px;
   }
@@ -109,7 +112,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
     padding: 0px 8px;
   }
   @media screen and (max-width: 375px) {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
   }
   @media screen and (max-width: 320px) {
     font-size: 0.63rem;
@@ -243,6 +246,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isAttestVictoryButtonEnabled, setIsAttestVictoryButtonEnabled] = useState(true);
   const [isAttestVictoryButtonVisible, setIsAttestVictoryButtonVisible] = useState(false);
   const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
+  const [isBotGameButtonVisible, setIsBotGameButtonVisible] = useState(false);
   const [isAutomatchButtonVisible, setIsAutomatchButtonVisible] = useState(false);
   const [isAutomatchButtonEnabled, setIsAutomatchButtonEnabled] = useState(true);
   const [isWatchOnlyIndicatorVisible, setIsWatchOnlyIndicatorVisible] = useState(false);
@@ -553,15 +557,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       )}
       {isAutomatchButtonVisible && (
         <BottomPillButton onClick={handleAutomatchClick} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
-          {automatchButtonTmpState ? (
-            "🥁 Automatching..."
-          ) : (
-            <>
-              👽 <span style={{ textDecoration: "underline" }}>Automatch</span>
-            </>
-          )}
+          {automatchButtonTmpState ? "🥁 Automatching..." : <>👽 Automatch</>}
         </BottomPillButton>
       )}
+      {isBotGameButtonVisible && <BottomPillButton isBlue={true}>{"🤖 Play with Bot"}</BottomPillButton>}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
