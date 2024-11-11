@@ -152,7 +152,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
 const ReactionPicker = styled.div<{ offsetToTheRight?: boolean }>`
   position: absolute;
   bottom: 40px;
-  right: ${(props) => (props.offsetToTheRight ? "100px" : "142px")};
+  right: ${(props) => (props.offsetToTheRight ? "22px" : "64px")};
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -187,7 +187,7 @@ const ReactionButton = styled.button`
 `;
 
 const ResignConfirmation = styled(ReactionPicker)`
-  right: 88px;
+  right: 10px;
   bottom: 40px;
   padding: 12px;
 `;
