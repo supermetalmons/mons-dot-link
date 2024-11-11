@@ -1,8 +1,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
-import { useCallback } from "react";
 import ReactDOM from "react-dom/client";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -16,6 +15,17 @@ import { signIn } from "./connection/connection";
 import BottomControls from "./ui/BottomControls";
 import { useBottomControlsActions } from "./ui/BottomControlsActions";
 import { isMobile } from "./utils/misc";
+import { FaVolumeUp, FaMusic, FaVolumeMute, FaStop } from "react-icons/fa";
+import { isMobileOrVision } from "./utils/misc";
+import { soundPlayer } from "./utils/SoundPlayer";
+import { startPlayingMusic, stopPlayingMusic } from "./content/music";
+
+let globalIsMuted: boolean = (() => {
+  const isMuted = localStorage.getItem("isMuted");
+  return isMuted === "true" || (isMuted === null && isMobileOrVision);
+})();
+
+export const getIsMuted = (): boolean => globalIsMuted;
 
 const queryClient = new QueryClient();
 
@@ -23,9 +33,32 @@ const App = () => {
   const { authStatus, setAuthStatus } = useAuthStatus();
   const authenticationAdapter = createAuthAdapter(setAuthStatus);
   const bottomControlsActions = useBottomControlsActions();
+  const [isMuted, setIsMuted] = useState(globalIsMuted);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
-  const handleConnectClick = useCallback(() => {
-    signIn();
+  useEffect(() => {
+    localStorage.setItem("isMuted", isMuted.toString());
+    globalIsMuted = isMuted;
+    soundPlayer.didBecomeMuted(isMuted);
+  }, [isMuted]);
+
+  const handleMuteToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsMuted((prev) => !prev);
+    soundPlayer.initialize(true);
+  }, []);
+
+  const handleMusicToggle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsMusicPlaying((prev) => {
+      if (prev) {
+        stopPlayingMusic();
+        return false;
+      } else {
+        startPlayingMusic();
+        return true;
+      }
+    });
   }, []);
 
   return (
@@ -40,15 +73,27 @@ const App = () => {
               darkMode: darkTheme(),
             }}>
             <div className="app-container">
-              <div className="connect-button-container" onClick={handleConnectClick}>
-                <ConnectButton
-                  showBalance={false}
-                  chainStatus="none"
-                  accountStatus={{
-                    smallScreen: "avatar",
-                    largeScreen: "full",
-                  }}
-                />
+              <div className="top-buttons-container">
+                {authStatus !== "loading" && (
+                  <div className="music-control-buttons">
+                    <button className="music-button" onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
+                      {isMusicPlaying ? <FaStop /> : <FaMusic />}
+                    </button>
+                    <button className="sound-button" onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
+                      {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
+                    </button>
+                  </div>
+                )}
+                <div className="connect-button-container">
+                  <ConnectButton
+                    showBalance={false}
+                    chainStatus="none"
+                    accountStatus={{
+                      smallScreen: "avatar",
+                      largeScreen: "full",
+                    }}
+                  />
+                </div>
               </div>
               <BoardComponent />
               <MainMenu />
@@ -95,3 +140,5 @@ if (isMobile) {
     { passive: false }
   );
 }
+
+signIn();

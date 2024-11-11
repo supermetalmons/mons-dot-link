@@ -1,5 +1,5 @@
 import { showMonsAlbumArtwork } from "../content/music";
-import { getIsMuted } from "../ui/BottomControlsActions";
+import { getIsMuted } from "../index";
 import { isMobileOrVision } from "./misc";
 
 export class SoundPlayer {

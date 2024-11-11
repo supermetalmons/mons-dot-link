@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FaUndo, FaVolumeUp, FaVolumeMute, FaFlag, FaCommentAlt, FaMusic, FaStop, FaTrophy, FaHome, FaRobot } from "react-icons/fa";
+import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot } from "react-icons/fa";
 import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton } from "../game/gameController";
@@ -266,7 +266,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isClaimVictoryVisible, setIsClaimVictoryVisible] = useState(false);
   const [isClaimVictoryButtonDisabled, setIsClaimVictoryButtonDisabled] = useState(false);
   const [timerConfig, setTimerConfig] = useState({ duration: 90, progress: 0, requestDate: Date.now() });
-  const { isMuted, handleUndo, handleMuteToggle, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled, isMusicPlaying, handleMusicToggle } = actions;
+  const { handleUndo, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -589,12 +589,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
           <FaHome />
         </ControlButton>
       )}
-      <ControlButton onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
-        {isMusicPlaying ? <FaStop /> : <FaMusic />}
-      </ControlButton>
-      <ControlButton onClick={handleMuteToggle} aria-label={isMuted ? "Unmute" : "Mute"}>
-        {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-      </ControlButton>
       {isReactionPickerVisible && (
         <ReactionPicker ref={pickerRef} offsetToTheRight={!isResignButtonVisible}>
           <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>

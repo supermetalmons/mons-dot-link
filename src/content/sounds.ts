@@ -1,5 +1,5 @@
 import { Sound } from "../utils/gameModels";
-import { getIsMuted } from "../ui/BottomControlsActions";
+import { getIsMuted } from "../index";
 import { Reaction } from "../connection/connectionModels";
 import { soundPlayer } from "../utils/SoundPlayer";
 

@@ -48,12 +48,6 @@ body {
   width: 100vw;
 }
 
-.connect-button-container {
-  position: absolute;
-  top: 9pt;
-  right: 9pt;
-}
-
 .board-svg {
   display: block;
   margin: auto;
@@ -121,4 +115,69 @@ img {
   -ms-user-select: none;
   user-select: none;
   touch-action: none;
+}
+
+.top-buttons-container {
+  position: absolute;
+  top: 9pt;
+  right: 9pt;
+  display: flex;
+  align-items: center;
+}
+
+.music-control-buttons {
+  display: flex;
+  margin-right: 10px;
+  border-radius: 14px;
+  background-color: #f9f9f9de;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #252525d5;
+  }
+}
+
+.music-button,
+.sound-button {
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: #767787c9;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: #767787ef;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #767787a9;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: #767787f0;
+      }
+    }
+  }
+}
+
+.sound-button {
+  margin-right: 11px;
+}
+
+.music-button {
+  margin-left: 11px;
+  margin-right: 8px;
 }
