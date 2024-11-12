@@ -13,6 +13,7 @@ const experimentalDrawingDevMode = false;
 export let initialFen = "";
 export let isWatchOnly = false;
 export let isOnlineGame = false;
+export let isGameWithBot = false;
 
 let didStartLocalGame = false;
 let isGameOver = false;
@@ -31,6 +32,7 @@ let blackFlatMovesString: string | null = null;
 let victoryTx: any;
 
 let game: MonsWeb.MonsGameModel;
+let botPlayerColor: MonsWeb.Color;
 let playerSideColor: MonsWeb.Color;
 let resignedColor: MonsWeb.Color;
 let winnerByTimerColor: MonsWeb.Color;
@@ -96,8 +98,13 @@ export function didClickStartBotGameButton() {
   setAutomatchVisible(false);
   setBotGameOptionVisible(false);
   setAutomoveActionVisible(true);
-  // TODO: flip the board
-  // TODO: start making bot moves
+  Board.flipEmojis();
+  Board.setBoardFlipped(true);
+  Board.resetForNewGame();
+  setNewBoard();
+  botPlayerColor = MonsWeb.Color.White;
+  isGameWithBot = true;
+  automove();
 }
 
 export function didFindInviteThatCanBeJoined() {
@@ -553,6 +560,10 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 
       if (mightKeepHighlightOnLocation !== undefined && !mustReleaseHighlight) {
         processInput(AssistedInputKind.KeepSelectionAfterMove, InputModifier.None, mightKeepHighlightOnLocation);
+      }
+
+      if (isGameWithBot && game.active_color() === botPlayerColor && !isGameOver) {
+        setTimeout(() => automove(), 777);
       }
 
       updateUndoButtonBasedOnGameState();

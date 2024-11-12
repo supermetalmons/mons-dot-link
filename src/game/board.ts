@@ -136,6 +136,14 @@ export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean)
   }
 }
 
+export function flipEmojis() {
+  const newPlayerEmoji = opponentSideMetadata.emojiId;
+  const newOpponentEmoji = playerSideMetadata.emojiId;
+  
+  updateEmojiIfNeeded(newPlayerEmoji, false);
+  updateEmojiIfNeeded(newOpponentEmoji, true);
+}
+
 export function getPlayersEmojiId(): number {
   return parseInt(playerSideMetadata.emojiId !== "" ? playerSideMetadata.emojiId : "1");
 }

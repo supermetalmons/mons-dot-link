@@ -6,6 +6,7 @@ import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton } from "../game/gameController";
 import { didClickInviteButton } from "../connection/connection";
 import { isMobile } from "../utils/misc";
+import { soundPlayer } from "../utils/SoundPlayer";
 
 export enum PrimaryActionType {
   None = "none",
@@ -313,6 +314,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   };
 
   const handleInviteClick = () => {
+    soundPlayer.initialize(false);
     if (!didCreateInvite) {
       didClickInviteActionButtonBeforeThereIsInviteReady();
     }
@@ -511,17 +513,20 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   const handlePrimaryActionClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    soundPlayer.initialize(false);
     didClickPrimaryActionButton(primaryAction);
     setPrimaryAction(PrimaryActionType.None);
   };
 
   const handleBotGameClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    soundPlayer.initialize(false);
     didClickStartBotGameButton();
   };
 
   const handleAutomatchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    soundPlayer.initialize(false);
     didClickAutomatchButton();
     setAutomatchEnabled(false);
     setAutomatchButtonTmpState(true);
