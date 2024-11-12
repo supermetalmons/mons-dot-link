@@ -227,7 +227,7 @@ export function didClickUndoButton() {
 }
 
 export function canChangeEmoji(opponents: boolean): boolean {
-  if (isOnlineGame) {
+  if (isOnlineGame || isGameWithBot) {
     return opponents ? false : !isWatchOnly;
   } else {
     return isPlayerSideTurn() ? !opponents : opponents;
@@ -488,16 +488,18 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
             break;
           case MonsWeb.EventModelKind.NextTurn:
             sounds.push(Sound.EndTurn);
-            if (!isWatchOnly && isOnlineGame) {
+            if ((!isWatchOnly && isOnlineGame) || isGameWithBot) {
               const playerTurn = isPlayerSideTurn();
               if (playerTurn) {
                 popOpponentsEmoji = true;
               }
-              if (playerTurn) {
-                hideTimerButtons();
-                setUndoVisible(true);
-              } else {
-                showTimerButtonProgressing(0, 90, true);
+              if (isOnlineGame) {
+                if (playerTurn) {
+                  hideTimerButtons();
+                  setUndoVisible(true);
+                } else {
+                  showTimerButtonProgressing(0, 90, true);
+                }
               }
             }
             hideTimerCountdownDigits();
