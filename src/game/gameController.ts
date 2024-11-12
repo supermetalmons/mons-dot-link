@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -106,7 +106,7 @@ export function didClickStartBotGameButton() {
   botPlayerColor = MonsWeb.Color.White;
   playerSideColor = MonsWeb.Color.Black;
   isGameWithBot = true;
-  showVoiceReactionButton();
+  showVoiceReactionButton(true);
   automove();
 }
 
@@ -143,6 +143,7 @@ function showRematchInterface() {
     return;
   }
   showPrimaryAction(PrimaryActionType.Rematch);
+  setEndMatchVisible(true);
 }
 
 function automove() {
@@ -157,10 +158,18 @@ function automove() {
 
 function didConfirmRematchProposal() {
   setAttestVictoryVisible(false);
+  setEndMatchVisible(false);
   showButtonForTx("");
   Board.runMonsBoardAsDisplayWaitingAnimation();
   sendRematchProposal();
   // TODO: implement
+}
+
+export function didClickEndMatchButton() {
+  showPrimaryAction(PrimaryActionType.None);
+  setEndMatchConfirmed(true);
+  showVoiceReactionButton(false);
+  // TODO: send end match indicator
 }
 
 export function didClickPrimaryActionButton(action: PrimaryActionType) {
@@ -727,7 +736,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
   currentInputs = [];
 
   if (!isWatchOnly) {
-    showVoiceReactionButton();
+    showVoiceReactionButton(true);
   }
 
   Board.updateEmojiIfNeeded(match.emojiId.toString(), isWatchOnly ? match.color === "black" : true);
