@@ -147,7 +147,7 @@ function showRematchInterface() {
 
 function automove() {
   let output = game.smart_automove();
-  applyOutput(output, true, AssistedInputKind.None);
+  applyOutput(output, false, true, AssistedInputKind.None);
   if (!isGameWithBot || isPlayerSideTurn()) {
     setAutomoveActionEnabled(true);
   } else {
@@ -223,7 +223,7 @@ export function canHandleUndo(): boolean {
 export function didClickUndoButton() {
   if (canHandleUndo()) {
     const output = game.takeback();
-    applyOutput(output, false, AssistedInputKind.None);
+    applyOutput(output, false, false, AssistedInputKind.None);
   }
 }
 
@@ -259,7 +259,7 @@ export function didClickSquare(location: Location) {
   processInput(AssistedInputKind.None, InputModifier.None, location);
 }
 
-function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assistedInputKind: AssistedInputKind, inputLocation?: Location) {
+function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, isBotInput: boolean, assistedInputKind: AssistedInputKind, inputLocation?: Location) {
   switch (output.kind) {
     case MonsWeb.OutputModelKind.InvalidInput:
       const shouldTryToReselect = assistedInputKind === AssistedInputKind.None && currentInputs.length > 1 && inputLocation && !currentInputs[0].equals(inputLocation);
@@ -377,7 +377,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
       const events = output.events();
       let locationsToUpdate: Location[] = [];
       let mightKeepHighlightOnLocation: Location | undefined;
-      let mustReleaseHighlight = isRemoteInput;
+      let mustReleaseHighlight = isRemoteInput || isBotInput;
       let sounds: Sound[] = [];
       let traces: Trace[] = [];
       let popOpponentsEmoji = false;
@@ -498,6 +498,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
                 if (playerTurn) {
                   hideTimerButtons();
                   setUndoVisible(true);
+                  setAutomoveActionVisible(true);
                 } else {
                   showTimerButtonProgressing(0, 90, true);
                 }
@@ -555,7 +556,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         updateBoardMoveStatuses();
       }
 
-      if (isRemoteInput) {
+      if (isRemoteInput || isBotInput) {
         for (const trace of traces) {
           Board.drawTrace(trace);
         }
@@ -586,7 +587,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
 }
 
 export function didClickAutomoveButton() {
-  if (isOnlineGame || isGameOver) return;
+  if (isGameOver) return;
   automove();
 }
 
@@ -691,7 +692,7 @@ function processInput(assistedInputKind: AssistedInputKind, inputModifier: Input
   } else {
     output = game.process_input(gameInput);
   }
-  applyOutput(output, false, assistedInputKind, inputLocation);
+  applyOutput(output, false, false, assistedInputKind, inputLocation);
 }
 
 function updateLocation(location: Location) {
@@ -775,6 +776,7 @@ function didConnectTo(match: Match, matchPlayerUid: string, matchId: string) {
     if (isPlayerSideTurn()) {
       hideTimerButtons();
       setUndoVisible(true);
+      setAutomoveActionVisible(true);
     } else {
       showTimerButtonProgressing(0, 90, true);
     }
@@ -1011,7 +1013,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     for (let i = processedMovesCount; i < movesCount; i++) {
       const moveFen = movesFens[i];
       const output = game.process_input_fen(moveFen);
-      applyOutput(output, true, AssistedInputKind.None);
+      applyOutput(output, true, false, AssistedInputKind.None);
     }
 
     setProcessedMovesCountForColor(match.color, movesCount);

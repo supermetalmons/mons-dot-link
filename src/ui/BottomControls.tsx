@@ -369,6 +369,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
     setIsTimerButtonDisabled(true);
     setIsStartTimerVisible(true);
+    setIsAutomoveButtonVisible(false);
     setIsUndoButtonVisible(false);
     setIsClaimVictoryVisible(false);
     setTimerConfig({ duration: target, progress: currentProgress, requestDate: Date.now() });
@@ -389,6 +390,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   enableTimerVictoryClaim = () => {
     setIsClaimVictoryVisible(true);
     setIsUndoButtonVisible(false);
+    setIsAutomoveButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryButtonDisabled(false);
   };
@@ -457,6 +459,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   disableAndHideUndoResignAndTimerControls = () => {
     setIsUndoDisabled(true);
     setIsUndoButtonVisible(false);
+    setIsAutomoveButtonVisible(false);
     setIsResignButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryVisible(false);
