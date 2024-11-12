@@ -103,6 +103,7 @@ export function didClickStartBotGameButton() {
   Board.resetForNewGame();
   setNewBoard();
   botPlayerColor = MonsWeb.Color.White;
+  playerSideColor = MonsWeb.Color.Black;
   isGameWithBot = true;
   automove();
 }
@@ -145,7 +146,11 @@ function showRematchInterface() {
 function automove() {
   let output = game.smart_automove();
   applyOutput(output, true, AssistedInputKind.None);
-  setAutomoveActionEnabled(true);
+  if (!isGameWithBot || isPlayerSideTurn()) {
+    setAutomoveActionEnabled(true);
+  } else {
+    setAutomoveActionEnabled(false);
+  }
 }
 
 function didConfirmRematchProposal() {
@@ -206,7 +211,7 @@ export function didClickConfirmResignButton() {
 export function canHandleUndo(): boolean {
   if (isWatchOnly || isGameOver) {
     return false;
-  } else if (isOnlineGame) {
+  } else if (isOnlineGame || isGameWithBot) {
     return game.can_takeback(playerSideColor);
   } else {
     return game.can_takeback(game.active_color());
@@ -566,6 +571,10 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         setTimeout(() => automove(), 777);
       }
 
+      if (isGameWithBot && !isPlayerSideTurn()) {
+        setAutomoveActionEnabled(false);
+      }
+
       updateUndoButtonBasedOnGameState();
 
       break;
@@ -649,7 +658,7 @@ async function saveOnchainRating(txData: any) {
 }
 
 function processInput(assistedInputKind: AssistedInputKind, inputModifier: InputModifier, inputLocation?: Location) {
-  if (isOnlineGame) {
+  if (isOnlineGame || isGameWithBot) {
     if (game.active_color() !== playerSideColor) {
       return;
     }
