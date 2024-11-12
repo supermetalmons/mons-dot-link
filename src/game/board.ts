@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
-import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly } from "./gameController";
+import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
@@ -144,7 +144,7 @@ export function showOpponentAsBotPlayer() {
 export function flipEmojis() {
   const newPlayerEmoji = opponentSideMetadata.emojiId;
   const newOpponentEmoji = playerSideMetadata.emojiId;
-  
+
   updateEmojiIfNeeded(newPlayerEmoji, false);
   updateEmojiIfNeeded(newOpponentEmoji, true);
 }
@@ -236,21 +236,26 @@ export function didGetEthAddress(address: string, uid: string) {
 function renderPlayersNamesLabels() {
   if (!playerNameText || !opponentNameText) return;
 
-  if (!isOnlineGame || opponentSideMetadata.uid === "") {
+  if ((!isOnlineGame || opponentSideMetadata.uid === "") && !isGameWithBot) {
     playerNameText.textContent = "";
     opponentNameText.textContent = "";
   } else {
     const placeholderName = "anon";
 
-    let playerNameString = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
-    let opponentNameString = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+    let playerNameString = "";
+    let opponentNameString = "";
 
-    const ratingPrefix = " • ";
-    if (playerSideMetadata.rating !== undefined) {
-      playerNameString += ratingPrefix + `${playerSideMetadata.rating}`;
-    }
-    if (opponentSideMetadata.rating !== undefined) {
-      opponentNameString += ratingPrefix + `${opponentSideMetadata.rating}`;
+    if (!isGameWithBot) {
+      playerNameString = playerSideMetadata.displayName === undefined ? placeholderName : playerSideMetadata.displayName;
+      opponentNameString = opponentSideMetadata.displayName === undefined ? placeholderName : opponentSideMetadata.displayName;
+
+      const ratingPrefix = " • ";
+      if (playerSideMetadata.rating !== undefined) {
+        playerNameString += ratingPrefix + `${playerSideMetadata.rating}`;
+      }
+      if (opponentSideMetadata.rating !== undefined) {
+        opponentNameString += ratingPrefix + `${opponentSideMetadata.rating}`;
+      }
     }
 
     const currentTime = Date.now();
