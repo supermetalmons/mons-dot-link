@@ -817,6 +817,10 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     });
 
     nameText.addEventListener("mouseenter", () => {
+      if (!isOpponent && !isWatchOnly) {
+        return;
+      }
+
       if (canRedirectToEthAddress(isOpponent)) {
         SVG.setFill(nameText, "#0071F9");
       }

@@ -548,11 +548,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
-      {isAutomoveButtonVisible && (
-        <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
-          <FaRobot />
-        </ControlButton>
-      )}
       {txHash !== "" && (
         <BottomPillButton onClick={didClickTxHashButton} isBlue={true}>
           {"↗️ View on Explorer"}
@@ -593,6 +588,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       {isUndoButtonVisible && (
         <ControlButton onClick={!isMobile ? handleUndo : undefined} onTouchStart={isMobile ? handleUndo : undefined} aria-label="Undo" disabled={isUndoDisabled}>
           <FaUndo />
+        </ControlButton>
+      )}
+      {isAutomoveButtonVisible && (
+        <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
+          <FaRobot />
         </ControlButton>
       )}
       {isVoiceReactionButtonVisible && (
