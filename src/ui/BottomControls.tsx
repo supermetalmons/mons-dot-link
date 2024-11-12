@@ -230,6 +230,7 @@ let setAttestVictoryVisible: (visible: boolean) => void;
 
 let showButtonForTx: (hash: string) => void;
 let setHomeVisible: (visible: boolean) => void;
+let setEndMatchVisible: (visible: boolean) => void;
 let setUndoVisible: (visible: boolean) => void;
 let setAutomoveActionEnabled: (enabled: boolean) => void;
 let setAutomoveActionVisible: (visible: boolean) => void;
@@ -246,6 +247,7 @@ let showPrimaryAction: (action: PrimaryActionType) => void;
 
 const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isAttestVictoryButtonEnabled, setIsAttestVictoryButtonEnabled] = useState(true);
+  const [isEndMatchButtonVisible, setIsEndMatchButtonVisible] = useState(false);
   const [isAttestVictoryButtonVisible, setIsAttestVictoryButtonVisible] = useState(false);
   const [isInviteLinkButtonVisible, setIsInviteLinkButtonVisible] = useState(false);
   const [isBotGameButtonVisible, setIsBotGameButtonVisible] = useState(false);
@@ -395,6 +397,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsClaimVictoryButtonDisabled(false);
   };
 
+  setEndMatchVisible = (visible: boolean) => {
+    setIsEndMatchButtonVisible(visible);
+  };
+
   setBotGameOptionVisible = (visible: boolean) => {
     setIsBotGameButtonVisible(visible);
   };
@@ -508,6 +514,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsClaimVictoryButtonDisabled(true);
   };
 
+  const handleEndMatchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    // TODO: implement
+  };
+
   const handleConfirmResign = () => {
     const event = new MouseEvent("click") as unknown as React.MouseEvent<HTMLButtonElement>;
     setIsResignConfirmVisible(false);
@@ -540,7 +551,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
       case PrimaryActionType.JoinGame:
         return "Join Game";
       case PrimaryActionType.Rematch:
-        return "Play Again";
+        return "🕹️ Play Again";
       default:
         return "";
     }
@@ -548,6 +559,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
 
   return (
     <ControlsContainer>
+      {isEndMatchButtonVisible && (
+        <BottomPillButton onClick={handleEndMatchClick} isBlue={true}>
+          {"🏁 End Match"}
+        </BottomPillButton>
+      )}
       {txHash !== "" && (
         <BottomPillButton onClick={didClickTxHashButton} isBlue={true}>
           {"↗️ View on Explorer"}
@@ -628,4 +644,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setBotGameOptionVisible, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setEndMatchVisible, setBotGameOptionVisible, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
