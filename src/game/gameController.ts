@@ -100,6 +100,7 @@ export function didClickStartBotGameButton() {
   setAutomoveActionVisible(true);
   Board.flipEmojis();
   Board.setBoardFlipped(true);
+  Board.showOpponentAsBotPlayer();
   Board.resetForNewGame();
   setNewBoard();
   botPlayerColor = MonsWeb.Color.White;

@@ -136,6 +136,11 @@ export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean)
   }
 }
 
+export function showOpponentAsBotPlayer() {
+  if (!opponentAvatar) return;
+  SVG.setImage(opponentAvatar, emojis.pc);
+}
+
 export function flipEmojis() {
   const newPlayerEmoji = opponentSideMetadata.emojiId;
   const newOpponentEmoji = playerSideMetadata.emojiId;
