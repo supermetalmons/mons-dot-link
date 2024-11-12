@@ -106,6 +106,7 @@ export function didClickStartBotGameButton() {
   botPlayerColor = MonsWeb.Color.White;
   playerSideColor = MonsWeb.Color.Black;
   isGameWithBot = true;
+  showVoiceReactionButton();
   automove();
 }
 

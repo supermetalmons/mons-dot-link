@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { newReactionOfKind, playReaction } from "../content/sounds";
 import { sendVoiceReaction } from "../connection/connection";
 import { showVoiceReactionText } from "../game/board";
-import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo } from "../game/gameController";
+import { didClickUndoButton, didClickConfirmResignButton, canHandleUndo, isGameWithBot } from "../game/gameController";
 import { hideReactionPicker } from "./BottomControls";
 
 export interface BottomControlsActionsInterface {
@@ -36,13 +36,22 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
   const handleReactionSelect = useCallback((reaction: string) => {
     hideReactionPicker();
     const reactionObj = newReactionOfKind(reaction);
-    sendVoiceReaction(reactionObj);
     playReaction(reactionObj);
     showVoiceReactionText(reaction, false);
-    setIsVoiceReactionDisabled(true);
-    setTimeout(() => {
-      setIsVoiceReactionDisabled(false);
-    }, 9999);
+    if (!isGameWithBot) {
+      sendVoiceReaction(reactionObj);
+      setIsVoiceReactionDisabled(true);
+      setTimeout(() => {
+        setIsVoiceReactionDisabled(false);
+      }, 9999);
+    } else {
+      const responseReaction = reaction;
+      const responseReactionObj = newReactionOfKind(responseReaction);
+      setTimeout(() => {
+        playReaction(responseReactionObj);
+        showVoiceReactionText(reaction, true);
+      }, 2000);
+    }
   }, []);
 
   return {

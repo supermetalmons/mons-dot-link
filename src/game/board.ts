@@ -326,6 +326,8 @@ function recalculateDisplayNames() {
 }
 
 export function showVoiceReactionText(reactionText: string, opponents: boolean) {
+  // TODO: make it show up in bot game
+
   const currentTime = Date.now();
 
   if (opponents) {
