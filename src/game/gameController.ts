@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -68,6 +68,7 @@ export async function go() {
     });
     setInviteLinkActionVisible(true);
     setAutomatchVisible(true);
+    setBotGameOptionVisible(true);
   } else {
     isOnlineGame = true;
     setHomeVisible(true);
@@ -87,6 +88,18 @@ export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
   }
 }
 
+export function didClickStartBotGameButton() {
+  didStartLocalGame = true;
+  setHomeVisible(true);
+  setUndoVisible(true);
+  setInviteLinkActionVisible(false);
+  setAutomatchVisible(false);
+  setBotGameOptionVisible(false);
+  setAutomoveActionVisible(true);
+  // TODO: flip the board
+  // TODO: start making bot moves
+}
+
 export function didFindInviteThatCanBeJoined() {
   showPrimaryAction(PrimaryActionType.JoinGame);
   Board.runMonsBoardAsDisplayWaitingAnimation();
@@ -96,6 +109,7 @@ export function didClickAutomatchButton() {
   setHomeVisible(true);
   setAutomoveActionVisible(false);
   setInviteLinkActionVisible(false);
+  setBotGameOptionVisible(false);
   Board.hideBoardPlayersInfo();
   Board.removeHighlights();
   hideAllMoveStatuses();
@@ -341,6 +355,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, assist
         setUndoVisible(true);
         setInviteLinkActionVisible(false);
         setAutomatchVisible(false);
+        setBotGameOptionVisible(false);
         setAutomoveActionVisible(true);
       }
 
@@ -904,6 +919,7 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
   if (!isCreateNewInviteFlow) return;
   setHomeVisible(true);
   setAutomatchVisible(false);
+  setBotGameOptionVisible(false);
   setAutomoveActionVisible(false);
   Board.hideBoardPlayersInfo();
   Board.removeHighlights();
@@ -919,6 +935,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     setAutomoveActionVisible(false);
     setInviteLinkActionVisible(false);
     setAutomatchVisible(false);
+    setBotGameOptionVisible(false);
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver && !isWatchOnly) {
