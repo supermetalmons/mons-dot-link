@@ -46,12 +46,18 @@ class FirebaseConnection {
   }
 
   public sendEndMatchIndicator(): void {
-    // TODO: implement
+    if (!this.latestInvite || this.rematchSeriesEndIsIndicated()) return;
+    const endingAsHost = this.latestInvite.hostId === this.uid;
+    const currentRematchesString = endingAsHost ? this.latestInvite.hostRematches : this.latestInvite.guestRematches;
+    const updatedRematchesString = currentRematchesString ? currentRematchesString + "x" : "x";
+    set(ref(this.db, `invites/${this.inviteId}/${endingAsHost ? "hostRematches" : "guestRematches"}`), updatedRematchesString);
   }
 
   public sendRematchProposal(): void {
     // TODO: send correct props to the correct field
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
+
+    // TODO: handle rematchSeriesEndIsIndicated()
 
     const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
     if (!newRematchProposalIndex) {
@@ -105,8 +111,13 @@ class FirebaseConnection {
     // TODO: update this.latestInvite, this.myMatch, this.inviteId, this.matchId
   }
 
-  private getRematchIndexAvailableForNewProposal(): string | null {
+  private rematchSeriesEndIsIndicated(): boolean | null {
     if (!this.latestInvite) return null;
+    return this.latestInvite.guestRematches?.endsWith("x") || this.latestInvite.hostRematches?.endsWith("x") || false;
+  }
+
+  private getRematchIndexAvailableForNewProposal(): string | null {
+    if (!this.latestInvite || this.rematchSeriesEndIsIndicated()) return null;
 
     const proposingAsHost = this.latestInvite.hostId === this.uid;
     const guestRematchesLength = this.latestInvite.guestRematches ? this.latestInvite.guestRematches.length : 0;
@@ -286,8 +297,8 @@ class FirebaseConnection {
       return null;
     }
 
-    const guestRematchesString = this.latestInvite.guestRematches;
-    const hostRematchesString = this.latestInvite.hostRematches;
+    const guestRematchesString = this.latestInvite.guestRematches?.replace(/x+$/, "");
+    const hostRematchesString = this.latestInvite.hostRematches?.replace(/x+$/, "");
 
     if (!guestRematchesString || !hostRematchesString) {
       return null;
