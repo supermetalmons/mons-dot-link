@@ -228,6 +228,7 @@ let setAutomatchWaitingState: (waiting: boolean) => void;
 let setAttestVictoryEnabled: (enabled: boolean) => void;
 let setAttestVictoryVisible: (visible: boolean) => void;
 
+let showWaitingStateText: (text: string) => void;
 let showButtonForTx: (hash: string) => void;
 let setHomeVisible: (visible: boolean) => void;
 let setEndMatchVisible: (visible: boolean) => void;
@@ -263,6 +264,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [inviteCopiedTmpState, setInviteCopiedTmpState] = useState(false);
 
   const [txHash, setTxHash] = useState("");
+  const [waitingStateText, setWaitingStateText] = useState("");
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
   const [isUndoButtonVisible, setIsUndoButtonVisible] = useState(false);
@@ -347,6 +349,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsResignButtonVisible(true);
   };
 
+  showWaitingStateText = (text: string) => {
+    setWaitingStateText(text);
+  };
+  
   showButtonForTx = (hash: string) => {
     setTxHash(hash);
   };
@@ -601,6 +607,11 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         </BottomPillButton>
       )}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
+      {waitingStateText !== "" && (
+        <BottomPillButton disabled={true} isViewOnly={true}>
+          {waitingStateText}
+        </BottomPillButton>
+      )}
       {isClaimVictoryVisible && (
         <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
           <FaTrophy />
@@ -650,4 +661,4 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   );
 };
 
-export { BottomControls as default, setEndMatchConfirmed, setEndMatchVisible, setBotGameOptionVisible, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, showWaitingStateText, setEndMatchConfirmed, setEndMatchVisible, setBotGameOptionVisible, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };

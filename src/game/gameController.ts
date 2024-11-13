@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
 import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch, sendEndMatchIndicator, rematchSeriesEndIsIndicated } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed, showWaitingStateText } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -82,7 +82,7 @@ export async function go() {
 export function didSendRematchProposalAndIsWaitingForResponse() {
   Board.runMonsBoardAsDisplayWaitingAnimation();
   setEndMatchVisible(true);
-  // TODO: show "Ready to Play" text indicator
+  showWaitingStateText("🥁 Ready to Play")
 }
 
 export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
@@ -162,6 +162,8 @@ export function didReceiveRematchesSeriesEndIndicator() {
   setEndMatchVisible(true);
   setEndMatchConfirmed(true);
   showVoiceReactionButton(false);
+  showWaitingStateText("");
+  Board.stopMonsBoardAsDisplayAnimations();
 }
 
 function automove() {
@@ -189,6 +191,8 @@ export function didClickEndMatchButton() {
   setEndMatchConfirmed(true);
   showVoiceReactionButton(false);
   sendEndMatchIndicator();
+  showWaitingStateText("");
+  Board.stopMonsBoardAsDisplayAnimations();
 }
 
 export function didClickPrimaryActionButton(action: PrimaryActionType) {
@@ -988,6 +992,7 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
+    showWaitingStateText("")
     setEndMatchVisible(false);
     isWaitingForInviteToGetAccepted = false;
     setAutomoveActionVisible(false);
