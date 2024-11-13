@@ -1,7 +1,7 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, Database, ref, set, onValue, off, get, update } from "firebase/database";
-import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined } from "../game/gameController";
+import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
 import { Match, Invite, Reaction } from "./connectionModels";
@@ -13,6 +13,7 @@ class FirebaseConnection {
   private auth: Auth;
   private db: Database;
   private functions: Functions;
+  private opponentRematchesRef: any = null;
 
   private uid: string | null = null;
 
@@ -350,6 +351,7 @@ class FirebaseConnection {
         }
 
         this.latestInvite = inviteData;
+        this.observeRematchOrEndMatchIndicators();
         const matchId = this.getLatestBothSidesApprovedMatchId();
         this.matchId = matchId;
 
@@ -520,8 +522,33 @@ class FirebaseConnection {
       if (updatedInvite && updatedInvite.guestId) {
         console.log(`Guest ${updatedInvite.guestId} joined the invite ${inviteId}`);
         this.latestInvite = updatedInvite;
+        this.observeRematchOrEndMatchIndicators();
         this.observeMatch(updatedInvite.guestId, matchId);
         off(inviteRef);
+      }
+    });
+  }
+
+  private observeRematchOrEndMatchIndicators() {
+    if (this.opponentRematchesRef || !this.latestInvite || this.rematchSeriesEndIsIndicated()) return;
+    const observeAsGuest = !(this.latestInvite.hostId === this.uid);
+
+    const observationPath = `invites/${this.inviteId}/${observeAsGuest ? "hostRematches" : "guestRematches"}`;
+    this.opponentRematchesRef = ref(this.db, observationPath);
+
+    onValue(this.opponentRematchesRef, (snapshot) => {
+      const rematchesString: string | null = snapshot.val();
+      if (rematchesString !== null) {
+        if (observeAsGuest) {
+          this.latestInvite!.hostRematches = rematchesString;
+        } else {
+          this.latestInvite!.guestRematches = rematchesString;
+        }
+        if (this.rematchSeriesEndIsIndicated()) {
+          didReceiveRematchesSeriesEndIndicator();
+          off(this.opponentRematchesRef);
+          this.opponentRematchesRef = null;
+        }
       }
     });
   }

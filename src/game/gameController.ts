@@ -143,14 +143,19 @@ function showRematchInterface() {
     return;
   }
   if (rematchSeriesEndIsIndicated()) {
-    showPrimaryAction(PrimaryActionType.None);
-    setEndMatchVisible(true);
-    setEndMatchConfirmed(true);
-    showVoiceReactionButton(false);
+    didReceiveRematchesSeriesEndIndicator();
   } else {
     showPrimaryAction(PrimaryActionType.Rematch);
     setEndMatchVisible(true);
   }
+}
+
+export function didReceiveRematchesSeriesEndIndicator() {
+  if (isWatchOnly) return;
+  showPrimaryAction(PrimaryActionType.None);
+  setEndMatchVisible(true);
+  setEndMatchConfirmed(true);
+  showVoiceReactionButton(false);
 }
 
 function automove() {
@@ -169,7 +174,6 @@ function didConfirmRematchProposal() {
   showButtonForTx("");
   Board.runMonsBoardAsDisplayWaitingAnimation();
   sendRematchProposal();
-  // TODO: implement
 }
 
 export function didClickEndMatchButton() {
