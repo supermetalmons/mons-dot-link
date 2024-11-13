@@ -78,32 +78,24 @@ class FirebaseConnection {
       timer: "",
     };
 
-    set(ref(this.db, `players/${this.uid}/matches/${nextMatchId}`), nextMatch)
+    const updates: { [key: string]: any } = {};
+    updates[`players/${this.uid}/matches/${nextMatchId}`] = nextMatch;
+
+    if (this.latestInvite?.hostId === this.uid) {
+      const newHostProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+      updates[`invites/${this.inviteId}/hostRematches`] = newHostProposalsString;
+    } else {
+      const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+      updates[`invites/${this.inviteId}/guestRematches`] = newGuestProposalsString;
+    }
+
+    update(ref(this.db), updates)
       .then(() => {
-        if (this.latestInvite?.hostId === this.uid) {
-          const newHostProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
-          set(ref(this.db, `invites/${this.inviteId}/hostRematches`), newHostProposalsString)
-            .then(() => {
-              console.log("Successfully sent hostRematches");
-              window.location.reload(); // TODO: dev tmp, handle with no reloading
-            })
-            .catch((error) => {
-              console.error("Error sending hostRematches:", error);
-            });
-        } else {
-          const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
-          set(ref(this.db, `invites/${this.inviteId}/guestRematches`), newGuestProposalsString)
-            .then(() => {
-              console.log("Successfully sent guestRematches");
-              window.location.reload(); // TODO: dev tmp, handle with no reloading
-            })
-            .catch((error) => {
-              console.error("Error sending guestRematches:", error);
-            });
-        }
+        console.log("Successfully updated match and rematches");
+        window.location.reload(); // TODO: dev tmp, handle with no reloading
       })
       .catch((error) => {
-        console.error("Error creating next match:", error);
+        console.error("Error updating match and rematches:", error);
       });
 
     // TODO: update this.latestInvite .hostRematches or .guestRematches, this.myMatch, this.matchId
