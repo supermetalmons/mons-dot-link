@@ -82,7 +82,7 @@ export async function go() {
 export function didSendRematchProposalAndIsWaitingForResponse() {
   Board.runMonsBoardAsDisplayWaitingAnimation();
   setEndMatchVisible(true);
-  showWaitingStateText("🥁 Ready to Play")
+  showWaitingStateText("Ready to Play")
 }
 
 export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
