@@ -99,6 +99,7 @@ class FirebaseConnection {
       });
 
     // TODO: update this.latestInvite .hostRematches or .guestRematches, this.myMatch, this.matchId
+    // TODO: might also want to stop previous match observers
   }
 
   public rematchSeriesEndIsIndicated(): boolean | null {
