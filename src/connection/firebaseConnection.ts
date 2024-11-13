@@ -45,6 +45,10 @@ class FirebaseConnection {
     }
   }
 
+  public sendEndMatchIndicator(): void {
+    // TODO: implement
+  }
+
   public sendRematchProposal(): void {
     // TODO: send correct props to the correct field
     // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite

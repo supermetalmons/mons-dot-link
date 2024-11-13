@@ -25,6 +25,10 @@ export async function subscribeToAuthChanges(callback: (uid: string | null) => v
   });
 }
 
+export function sendEndMatchIndicator() {
+  firebaseConnection.sendEndMatchIndicator();
+}
+
 export function sendRematchProposal() {
   firebaseConnection.sendRematchProposal();
 }
