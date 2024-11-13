@@ -174,6 +174,8 @@ function didConfirmRematchProposal() {
   showButtonForTx("");
   Board.runMonsBoardAsDisplayWaitingAnimation();
   sendRematchProposal();
+
+  // TODO: perform any necessary cleanup and start waiting for a next match
 }
 
 export function didClickEndMatchButton() {

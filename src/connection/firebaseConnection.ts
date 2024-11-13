@@ -55,15 +55,9 @@ class FirebaseConnection {
   }
 
   public sendRematchProposal(): void {
-    // TODO: send correct props to the correct field
-    // TODO: get existing opponent's rematch / start listening to opponent's proposals - or keep listening ever since connecting to an invite
-
-    // TODO: handle rematchSeriesEndIsIndicated()
-
     const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
     if (!newRematchProposalIndex || !this.latestInvite) {
-      // TODO: might need extra / different handling for existing proposal
-      window.location.reload(); // TODO: dev tmp, handle with no reloading
+      window.location.reload(); // TODO: dev tmp, handle with no reloading — just keep listening for an incoming rematch if needed
       return;
     }
 
@@ -112,7 +106,7 @@ class FirebaseConnection {
         console.error("Error creating next match:", error);
       });
 
-    // TODO: update this.latestInvite, this.myMatch, this.inviteId, this.matchId
+    // TODO: update this.latestInvite .hostRematches or .guestRematches, this.myMatch, this.matchId
   }
 
   public rematchSeriesEndIsIndicated(): boolean | null {
@@ -547,6 +541,9 @@ class FirebaseConnection {
         } else {
           this.latestInvite!.guestRematches = rematchesString;
         }
+
+        // TODO: handle if waiting for opponent's rematch
+
         if (this.rematchSeriesEndIsIndicated()) {
           didReceiveRematchesSeriesEndIndicator();
           off(this.opponentRematchesRef);
