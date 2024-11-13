@@ -1,7 +1,7 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, Database, ref, set, onValue, off, get, update } from "firebase/database";
-import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator } from "../game/gameController";
+import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator, didSendRematchProposalAndIsWaitingForResponse } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
 import { Match, Invite, Reaction } from "./connectionModels";
@@ -316,16 +316,25 @@ class FirebaseConnection {
     return lastNumber;
   }
 
-  private getLatestBothSidesApprovedMatchId(): string {
-    const commonRematchIndex = this.getLatestBothSidesApprovedRematchIndex();
-
-    if (!this.inviteId) {
+  private getLatestBothSidesApprovedOrProposedByMeMatchId(): string {
+    let rematchIndex = this.getLatestBothSidesApprovedRematchIndex();
+    if (!this.inviteId || !this.latestInvite) {
       return "";
-    } else if (!commonRematchIndex) {
-      return this.inviteId;
+    } else if (!this.rematchSeriesEndIsIndicated() && this.latestInvite.guestRematches?.length !== this.latestInvite.hostRematches?.length) {
+      const guestRematchesLength = this.latestInvite.guestRematches?.length ?? 0;
+      const hostRematchesLength = this.latestInvite.hostRematches?.length ?? 0;
+      const proposedMoreAsHost = this.latestInvite.hostId === this.uid && hostRematchesLength > guestRematchesLength;
+      const proposedMoreAsGuest = this.latestInvite.guestId === this.uid && guestRematchesLength > hostRematchesLength;
+      if (proposedMoreAsHost || proposedMoreAsGuest) {
+        rematchIndex = rematchIndex ? rematchIndex + 1 : 1;
+        didSendRematchProposalAndIsWaitingForResponse();
+      }
     }
-
-    return this.inviteId + commonRematchIndex.toString();
+    if (!rematchIndex) {
+      return this.inviteId;
+    } else {
+      return this.inviteId + rematchIndex.toString();
+    }
   }
 
   public connectToGame(uid: string, inviteId: string, autojoin: boolean): void {
@@ -342,7 +351,7 @@ class FirebaseConnection {
 
         this.latestInvite = inviteData;
         this.observeRematchOrEndMatchIndicators();
-        const matchId = this.getLatestBothSidesApprovedMatchId();
+        const matchId = this.getLatestBothSidesApprovedOrProposedByMeMatchId();
         this.matchId = matchId;
 
         if (!inviteData.guestId && inviteData.hostId !== uid) {

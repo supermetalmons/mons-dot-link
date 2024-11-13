@@ -79,6 +79,12 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
+export function didSendRematchProposalAndIsWaitingForResponse() {
+  Board.runMonsBoardAsDisplayWaitingAnimation();
+  setEndMatchVisible(true);
+  // TODO: show "Ready to Play" text indicator
+}
+
 export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
   if (!isAutomatch) {
     setInviteLinkActionVisible(true);
@@ -982,6 +988,7 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
+    setEndMatchVisible(false);
     isWaitingForInviteToGetAccepted = false;
     setAutomoveActionVisible(false);
     setInviteLinkActionVisible(false);
