@@ -61,14 +61,17 @@ class FirebaseConnection {
     // TODO: handle rematchSeriesEndIsIndicated()
 
     const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
-    if (!newRematchProposalIndex) {
+    if (!newRematchProposalIndex || !this.latestInvite) {
       // TODO: might need extra / different handling for existing proposal
       window.location.reload(); // TODO: dev tmp, handle with no reloading
       return;
     }
 
+    const proposingAsHost = this.latestInvite.hostId === this.uid;
     const emojiId = getPlayersEmojiId();
-    const newColor = this.myMatch?.color === "white" ? "black" : "white"; // TODO: make sure color is determined correctly
+    const proposalIndexIsEven = parseInt(newRematchProposalIndex, 10) % 2 === 0;
+    const initialGuestColor = this.latestInvite.hostColor === "white" ? "black" : "white";
+    const newColor = proposalIndexIsEven ? (proposingAsHost ? this.latestInvite.hostColor : initialGuestColor) : proposingAsHost ? initialGuestColor : this.latestInvite.hostColor;
 
     const nextMatchId = this.inviteId + newRematchProposalIndex;
     const nextMatch: Match = {

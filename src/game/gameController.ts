@@ -957,7 +957,10 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 
   Board.removeHighlights();
   Board.hideItemSelection();
-  Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+
+  if (!onConnect || (didSetWhiteProcessedMovesCount && didSetBlackProcessedMovesCount)) {
+    Board.updateScore(game.white_score(), game.black_score(), game.winner_color(), resignedColor, winnerByTimerColor);
+  }
   showRematchInterface();
 }
 
@@ -1004,7 +1007,7 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     }
   }
 
-  if (isGameOver) {
+  if (isGameOver && !(isWatchOnly && (!didSetWhiteProcessedMovesCount || !didSetBlackProcessedMovesCount))) {
     return;
   }
 
