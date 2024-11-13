@@ -35,6 +35,7 @@ const App = () => {
   const bottomControlsActions = useBottomControlsActions();
   const [isMuted, setIsMuted] = useState(globalIsMuted);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem("isMuted", isMuted.toString());
@@ -61,6 +62,10 @@ const App = () => {
     });
   }, []);
 
+  const handleToggleBackground = useCallback(() => {
+    setBackgroundImage((prev) => (prev ? null : "background.jpeg"));
+  }, []);
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -72,7 +77,7 @@ const App = () => {
               lightMode: lightTheme(),
               darkMode: darkTheme(),
             }}>
-            <div className="app-container">
+            <div className="app-container" style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
               <div className="top-buttons-container">
                 {authStatus !== "loading" && (
                   <div className="music-control-buttons">
