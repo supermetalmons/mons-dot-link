@@ -111,7 +111,7 @@ class FirebaseConnection {
     // TODO: update this.latestInvite, this.myMatch, this.inviteId, this.matchId
   }
 
-  private rematchSeriesEndIsIndicated(): boolean | null {
+  public rematchSeriesEndIsIndicated(): boolean | null {
     if (!this.latestInvite) return null;
     return this.latestInvite.guestRematches?.endsWith("x") || this.latestInvite.hostRematches?.endsWith("x") || false;
   }

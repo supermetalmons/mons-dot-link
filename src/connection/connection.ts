@@ -33,6 +33,10 @@ export function sendRematchProposal() {
   firebaseConnection.sendRematchProposal();
 }
 
+export function rematchSeriesEndIsIndicated(): boolean {
+  return firebaseConnection.rematchSeriesEndIsIndicated();
+}
+
 export function isAutomatch(): boolean {
   return firebaseConnection.isAutomatch();
 }
