@@ -141,6 +141,7 @@ export function didClickStartBotGameButton() {
   setAutomatchVisible(false);
   setBotGameOptionVisible(false);
   setAutomoveActionVisible(true);
+  showResignButton();
   Board.flipEmojis();
   Board.setBoardFlipped(true);
   Board.showOpponentAsBotPlayer();
