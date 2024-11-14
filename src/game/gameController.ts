@@ -79,10 +79,20 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
-export function didSendRematchProposalAndIsWaitingForResponse() {
+export function failedToCreateRematchProposal() {
+  setEndMatchVisible(true);
+  showPrimaryAction(PrimaryActionType.Rematch);
+}
+
+export function didJustCreateRematchProposalSuccessfully() {
+  setEndMatchVisible(true);
+  showWaitingStateText("Ready to Play");
+}
+
+export function didDiscoverExistingRematchProposalWaitingForResponse() {
   Board.runMonsBoardAsDisplayWaitingAnimation();
   setEndMatchVisible(true);
-  showWaitingStateText("Ready to Play")
+  showWaitingStateText("Ready to Play");
 }
 
 export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
@@ -182,8 +192,8 @@ function didConfirmRematchProposal() {
   showButtonForTx("");
   Board.runMonsBoardAsDisplayWaitingAnimation();
   sendRematchProposal();
-
-  // TODO: perform any necessary cleanup and start waiting for a next match
+  Board.hideBoardPlayersInfo();
+  showVoiceReactionButton(false);
 }
 
 export function didClickEndMatchButton() {
@@ -992,7 +1002,7 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
-    showWaitingStateText("")
+    showWaitingStateText("");
     setEndMatchVisible(false);
     isWaitingForInviteToGetAccepted = false;
     setAutomoveActionVisible(false);

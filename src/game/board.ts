@@ -83,6 +83,11 @@ export function hideBoardPlayersInfo() {
     playerScoreText.textContent = "";
     opponentScoreText.textContent = "";
   }
+
+  if (playerNameText && opponentNameText) {
+    playerNameText.textContent = "";
+    opponentNameText.textContent = "";
+  }
 }
 
 export function resetForNewGame() {

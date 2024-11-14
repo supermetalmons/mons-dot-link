@@ -1,7 +1,7 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, Database, ref, set, onValue, off, get, update } from "firebase/database";
-import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator, didSendRematchProposalAndIsWaitingForResponse } from "../game/gameController";
+import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator, didDiscoverExistingRematchProposalWaitingForResponse, didJustCreateRematchProposalSuccessfully, failedToCreateRematchProposal } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
 import { Match, Invite, Reaction } from "./connectionModels";
@@ -57,7 +57,6 @@ class FirebaseConnection {
   public sendRematchProposal(): void {
     const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
     if (!newRematchProposalIndex || !this.latestInvite) {
-      window.location.reload(); // TODO: dev tmp, handle with no reloading — just keep listening for an incoming rematch if needed
       return;
     }
 
@@ -92,10 +91,11 @@ class FirebaseConnection {
     update(ref(this.db), updates)
       .then(() => {
         console.log("Successfully updated match and rematches");
-        window.location.reload(); // TODO: dev tmp, handle with no reloading
+        didJustCreateRematchProposalSuccessfully();
       })
       .catch((error) => {
         console.error("Error updating match and rematches:", error);
+        failedToCreateRematchProposal();
       });
 
     // TODO: update this.latestInvite .hostRematches or .guestRematches, this.myMatch, this.matchId
@@ -327,7 +327,7 @@ class FirebaseConnection {
       const proposedMoreAsGuest = this.latestInvite.guestId === this.uid && guestRematchesLength > hostRematchesLength;
       if (proposedMoreAsHost || proposedMoreAsGuest) {
         rematchIndex = rematchIndex ? rematchIndex + 1 : 1;
-        didSendRematchProposalAndIsWaitingForResponse();
+        didDiscoverExistingRematchProposalWaitingForResponse();
       }
     }
     if (!rematchIndex) {
