@@ -352,7 +352,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   showWaitingStateText = (text: string) => {
     setWaitingStateText(text);
   };
-  
+
   showButtonForTx = (hash: string) => {
     setTxHash(hash);
   };
@@ -481,7 +481,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     setIsResignButtonVisible(false);
     setIsStartTimerVisible(false);
     setIsClaimVictoryVisible(false);
-    actions.setIsResignDisabled(true);
+    setIsResignConfirmVisible(false);
   };
 
   hideReactionPicker = () => {

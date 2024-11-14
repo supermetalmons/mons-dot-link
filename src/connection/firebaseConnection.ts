@@ -1,7 +1,7 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, Database, ref, set, onValue, off, get, update } from "firebase/database";
-import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator, didSendRematchProposalAndIsWaitingForResponse } from "../game/gameController";
+import { didFindInviteThatCanBeJoined, didReceiveMatchUpdate, initialFen, didRecoverMyMatch, enterWatchOnlyMode, didFindYourOwnInviteThatNobodyJoined, didReceiveRematchesSeriesEndIndicator, didDiscoverExistingRematchProposalWaitingForResponse, didJustCreateRematchProposalSuccessfully, failedToCreateRematchProposal } from "../game/gameController";
 import { getPlayersEmojiId, didGetEthAddress } from "../game/board";
 import { getFunctions, Functions, httpsCallable } from "firebase/functions";
 import { Match, Invite, Reaction } from "./connectionModels";
@@ -14,6 +14,8 @@ class FirebaseConnection {
   private db: Database;
   private functions: Functions;
   private opponentRematchesRef: any = null;
+  private matchRefs: { [key: string]: any } = {};
+  private ethAddressRefs: { [key: string]: any } = {};
 
   private uid: string | null = null;
 
@@ -56,18 +58,22 @@ class FirebaseConnection {
 
   public sendRematchProposal(): void {
     const newRematchProposalIndex = this.getRematchIndexAvailableForNewProposal();
-    if (!newRematchProposalIndex || !this.latestInvite) {
-      window.location.reload(); // TODO: dev tmp, handle with no reloading — just keep listening for an incoming rematch if needed
+    if (!newRematchProposalIndex || !this.latestInvite || !this.inviteId) {
       return;
     }
+
+    this.stopObservingAllMatches();
 
     const proposingAsHost = this.latestInvite.hostId === this.uid;
     const emojiId = getPlayersEmojiId();
     const proposalIndexIsEven = parseInt(newRematchProposalIndex, 10) % 2 === 0;
     const initialGuestColor = this.latestInvite.hostColor === "white" ? "black" : "white";
     const newColor = proposalIndexIsEven ? (proposingAsHost ? this.latestInvite.hostColor : initialGuestColor) : proposingAsHost ? initialGuestColor : this.latestInvite.hostColor;
+    const asHost = this.latestInvite?.hostId === this.uid;
+    let newRematchesProposalsString = "";
 
-    const nextMatchId = this.inviteId + newRematchProposalIndex;
+    const inviteId = this.inviteId;
+    const nextMatchId = inviteId + newRematchProposalIndex;
     const nextMatch: Match = {
       version: controllerVersion,
       color: newColor,
@@ -81,25 +87,32 @@ class FirebaseConnection {
     const updates: { [key: string]: any } = {};
     updates[`players/${this.uid}/matches/${nextMatchId}`] = nextMatch;
 
-    if (this.latestInvite?.hostId === this.uid) {
-      const newHostProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
-      updates[`invites/${this.inviteId}/hostRematches`] = newHostProposalsString;
+    if (asHost) {
+      newRematchesProposalsString = this.latestInvite.hostRematches ? this.latestInvite.hostRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+      updates[`invites/${this.inviteId}/hostRematches`] = newRematchesProposalsString;
     } else {
-      const newGuestProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
-      updates[`invites/${this.inviteId}/guestRematches`] = newGuestProposalsString;
+      newRematchesProposalsString = this.latestInvite?.guestRematches ? this.latestInvite.guestRematches + ";" + newRematchProposalIndex : newRematchProposalIndex;
+      updates[`invites/${this.inviteId}/guestRematches`] = newRematchesProposalsString;
     }
 
     update(ref(this.db), updates)
       .then(() => {
+        this.myMatch = nextMatch;
+        this.matchId = nextMatchId;
+        if (this.latestInvite) {
+          if (asHost) {
+            this.latestInvite.hostRematches = newRematchesProposalsString;
+          } else {
+            this.latestInvite.guestRematches = newRematchesProposalsString;
+          }
+        }
         console.log("Successfully updated match and rematches");
-        window.location.reload(); // TODO: dev tmp, handle with no reloading
+        didJustCreateRematchProposalSuccessfully(inviteId);
       })
       .catch((error) => {
         console.error("Error updating match and rematches:", error);
+        failedToCreateRematchProposal();
       });
-
-    // TODO: update this.latestInvite .hostRematches or .guestRematches, this.myMatch, this.matchId
-    // TODO: might also want to stop previous match observers
   }
 
   public rematchSeriesEndIsIndicated(): boolean | null {
@@ -327,7 +340,7 @@ class FirebaseConnection {
       const proposedMoreAsGuest = this.latestInvite.guestId === this.uid && guestRematchesLength > hostRematchesLength;
       if (proposedMoreAsHost || proposedMoreAsGuest) {
         rematchIndex = rematchIndex ? rematchIndex + 1 : 1;
-        didSendRematchProposalAndIsWaitingForResponse();
+        didDiscoverExistingRematchProposalWaitingForResponse();
       }
     }
     if (!rematchIndex) {
@@ -559,6 +572,10 @@ class FirebaseConnection {
     const matchRef = ref(this.db, `players/${playerId}/matches/${matchId}`);
     const ethAddressRef = ref(this.db, `players/${playerId}/ethAddress`);
 
+    const key = `${matchId}_${playerId}`;
+    this.matchRefs[key] = matchRef;
+    this.ethAddressRefs[key] = ethAddressRef;
+
     onValue(
       matchRef,
       (snapshot) => {
@@ -584,6 +601,16 @@ class FirebaseConnection {
         console.error("Error observing ETH address:", error);
       }
     );
+  }
+
+  private stopObservingAllMatches(): void {
+    for (const key in this.matchRefs) {
+      off(this.matchRefs[key]);
+      off(this.ethAddressRefs[key]);
+      console.log(`Stopped observing match and ETH address for key ${key}`);
+    }
+    this.matchRefs = {};
+    this.ethAddressRefs = {};
   }
 }
 

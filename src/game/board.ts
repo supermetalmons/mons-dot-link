@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
-import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot } from "./gameController";
+import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
@@ -82,6 +82,11 @@ export function hideBoardPlayersInfo() {
   if (playerScoreText && opponentScoreText) {
     playerScoreText.textContent = "";
     opponentScoreText.textContent = "";
+  }
+
+  if (playerNameText && opponentNameText) {
+    playerNameText.textContent = "";
+    opponentNameText.textContent = "";
   }
 }
 
@@ -234,7 +239,7 @@ export function didGetEthAddress(address: string, uid: string) {
 }
 
 function renderPlayersNamesLabels() {
-  if (!playerNameText || !opponentNameText) return;
+  if (!playerNameText || !opponentNameText || isWaitingForRematchResponse) return;
 
   if ((!isOnlineGame || opponentSideMetadata.uid === "") && !isGameWithBot) {
     playerNameText.textContent = "";

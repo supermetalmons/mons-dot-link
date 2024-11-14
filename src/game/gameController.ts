@@ -4,7 +4,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch, sendEndMatchIndicator, rematchSeriesEndIsIndicated } from "../connection/connection";
+import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch, sendEndMatchIndicator, rematchSeriesEndIsIndicated, connectToGame } from "../connection/connection";
 import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed, showWaitingStateText } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
@@ -14,6 +14,7 @@ export let initialFen = "";
 export let isWatchOnly = false;
 export let isOnlineGame = false;
 export let isGameWithBot = false;
+export let isWaitingForRematchResponse = false;
 
 let didStartLocalGame = false;
 let isGameOver = false;
@@ -34,8 +35,8 @@ let victoryTx: any;
 let game: MonsWeb.MonsGameModel;
 let botPlayerColor: MonsWeb.Color;
 let playerSideColor: MonsWeb.Color;
-let resignedColor: MonsWeb.Color;
-let winnerByTimerColor: MonsWeb.Color;
+let resignedColor: MonsWeb.Color | undefined;
+let winnerByTimerColor: MonsWeb.Color | undefined;
 
 let lastReactionTime = 0;
 
@@ -79,10 +80,46 @@ export async function go() {
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
 }
 
-export function didSendRematchProposalAndIsWaitingForResponse() {
+export function failedToCreateRematchProposal() {
+  setEndMatchVisible(true);
+  showPrimaryAction(PrimaryActionType.Rematch);
+}
+
+export function didJustCreateRematchProposalSuccessfully(inviteId: string) {
+  setEndMatchVisible(true);
+  showWaitingStateText("Ready to Play");
+
+  isGameOver = false;
+  isReconnect = false;
+  didConnect = false;
+  isWaitingForInviteToGetAccepted = false;
+  isWaitingForRematchResponse = true;
+  whiteProcessedMovesCount = 0;
+  blackProcessedMovesCount = 0;
+  didSetWhiteProcessedMovesCount = false;
+  didSetBlackProcessedMovesCount = false;
+  currentGameModelMatchId = null;
+  whiteFlatMovesString = null;
+  blackFlatMovesString = null;
+  victoryTx = null;
+  playerSideColor = MonsWeb.Color.White;
+  game = MonsWeb.MonsGameModel.new();
+
+  resignedColor = undefined;
+  winnerByTimerColor = undefined;
+
+  lastReactionTime = 0;
+  currentInputs = [];
+  blackTimerStash = null;
+  whiteTimerStash = null;
+
+  connectToGame(inviteId, true);
+}
+
+export function didDiscoverExistingRematchProposalWaitingForResponse() {
   Board.runMonsBoardAsDisplayWaitingAnimation();
   setEndMatchVisible(true);
-  showWaitingStateText("Ready to Play")
+  showWaitingStateText("Ready to Play");
 }
 
 export function didFindYourOwnInviteThatNobodyJoined(isAutomatch: boolean) {
@@ -152,7 +189,9 @@ function showRematchInterface() {
     didReceiveRematchesSeriesEndIndicator();
   } else {
     showPrimaryAction(PrimaryActionType.Rematch);
-    setEndMatchVisible(true);
+    if (isOnlineGame) {
+      setEndMatchVisible(true);
+    }
   }
 }
 
@@ -177,13 +216,18 @@ function automove() {
 }
 
 function didConfirmRematchProposal() {
+  if (!isOnlineGame) {
+    window.location.href = "/";
+    return;
+  }
+
   setAttestVictoryVisible(false);
   setEndMatchVisible(false);
   showButtonForTx("");
   Board.runMonsBoardAsDisplayWaitingAnimation();
   sendRematchProposal();
-
-  // TODO: perform any necessary cleanup and start waiting for a next match
+  Board.hideBoardPlayersInfo();
+  showVoiceReactionButton(false);
 }
 
 export function didClickEndMatchButton() {
@@ -992,16 +1036,20 @@ export function didClickInviteActionButtonBeforeThereIsInviteReady() {
 export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matchId: string) {
   if (!didConnect) {
     Board.stopMonsBoardAsDisplayAnimations();
-    showWaitingStateText("")
+    showWaitingStateText("");
     setEndMatchVisible(false);
     isWaitingForInviteToGetAccepted = false;
     setAutomoveActionVisible(false);
     setInviteLinkActionVisible(false);
     setAutomatchVisible(false);
     setBotGameOptionVisible(false);
+    setEndMatchVisible(false);
+    showPrimaryAction(PrimaryActionType.None);
+    const wasWaitingForRematchResponse = isWaitingForRematchResponse;
+    isWaitingForRematchResponse = false;
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
-    if (!isReconnect && !isGameOver && !isWatchOnly) {
+    if ((!isReconnect || wasWaitingForRematchResponse) && !isGameOver && !isWatchOnly) {
       playSounds([Sound.DidConnect]);
     }
     return;
