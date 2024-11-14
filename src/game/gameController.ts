@@ -4,7 +4,7 @@ import * as Board from "./board";
 import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModifier, Trace } from "../utils/gameModels";
 import { colors } from "../content/colors";
 import { playSounds, playReaction } from "../content/sounds";
-import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch, sendEndMatchIndicator, rematchSeriesEndIsIndicated } from "../connection/connection";
+import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch, sendEndMatchIndicator, rematchSeriesEndIsIndicated, connectToGame } from "../connection/connection";
 import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed, showWaitingStateText } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
@@ -14,6 +14,7 @@ export let initialFen = "";
 export let isWatchOnly = false;
 export let isOnlineGame = false;
 export let isGameWithBot = false;
+export let isWaitingForRematchResponse = false;
 
 let didStartLocalGame = false;
 let isGameOver = false;
@@ -34,8 +35,8 @@ let victoryTx: any;
 let game: MonsWeb.MonsGameModel;
 let botPlayerColor: MonsWeb.Color;
 let playerSideColor: MonsWeb.Color;
-let resignedColor: MonsWeb.Color;
-let winnerByTimerColor: MonsWeb.Color;
+let resignedColor: MonsWeb.Color | undefined;
+let winnerByTimerColor: MonsWeb.Color | undefined;
 
 let lastReactionTime = 0;
 
@@ -84,9 +85,35 @@ export function failedToCreateRematchProposal() {
   showPrimaryAction(PrimaryActionType.Rematch);
 }
 
-export function didJustCreateRematchProposalSuccessfully() {
+export function didJustCreateRematchProposalSuccessfully(inviteId: string) {
   setEndMatchVisible(true);
   showWaitingStateText("Ready to Play");
+
+  isGameOver = false;
+  isReconnect = false;
+  didConnect = false;
+  isWaitingForInviteToGetAccepted = false;
+  isWaitingForRematchResponse = true;
+  whiteProcessedMovesCount = 0;
+  blackProcessedMovesCount = 0;
+  didSetWhiteProcessedMovesCount = false;
+  didSetBlackProcessedMovesCount = false;
+  currentGameModelMatchId = null;
+  whiteFlatMovesString = null;
+  blackFlatMovesString = null;
+  victoryTx = null;
+  playerSideColor = MonsWeb.Color.White;
+  game = MonsWeb.MonsGameModel.new();
+
+  resignedColor = undefined;
+  winnerByTimerColor = undefined;
+
+  lastReactionTime = 0;
+  currentInputs = [];
+  blackTimerStash = null;
+  whiteTimerStash = null;
+
+  connectToGame(inviteId, true);
 }
 
 export function didDiscoverExistingRematchProposalWaitingForResponse() {
@@ -1009,6 +1036,9 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     setInviteLinkActionVisible(false);
     setAutomatchVisible(false);
     setBotGameOptionVisible(false);
+    setEndMatchVisible(false);
+    showPrimaryAction(PrimaryActionType.None);
+    isWaitingForRematchResponse = false;
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
     if (!isReconnect && !isGameOver && !isWatchOnly) {

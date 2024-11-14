@@ -29,7 +29,6 @@ export const useBottomControlsActions = (): BottomControlsActionsInterface => {
 
   const handleResign = useCallback((event: MouseEvent | React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    setIsResignDisabled(true);
     didClickConfirmResignButton();
   }, []);
 
