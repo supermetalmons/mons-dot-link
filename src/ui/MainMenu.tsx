@@ -77,7 +77,7 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
   }
 `;
 const MenuTitle = styled.div`
-  font-weight: bold;
+  font-weight: 995;
   font-size: 23px;
   color: #333;
   margin: 6px 16px 0 53px;
