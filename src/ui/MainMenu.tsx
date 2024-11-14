@@ -95,6 +95,7 @@ const MenuTitle = styled.div`
 
 const EasLink = styled.a`
   font-size: 12px;
+  font-weight: 700;
   background: #e6f3ff;
   color: #0066cc;
   padding: 2px 8px;
