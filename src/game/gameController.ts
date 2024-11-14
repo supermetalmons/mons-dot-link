@@ -1045,10 +1045,11 @@ export function didReceiveMatchUpdate(match: Match, matchPlayerUid: string, matc
     setBotGameOptionVisible(false);
     setEndMatchVisible(false);
     showPrimaryAction(PrimaryActionType.None);
+    const wasWaitingForRematchResponse = isWaitingForRematchResponse;
     isWaitingForRematchResponse = false;
     didConnectTo(match, matchPlayerUid, matchId);
     didConnect = true;
-    if (!isReconnect && !isGameOver && !isWatchOnly) {
+    if ((!isReconnect || wasWaitingForRematchResponse) && !isGameOver && !isWatchOnly) {
       playSounds([Sound.DidConnect]);
     }
     return;
