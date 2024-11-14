@@ -189,7 +189,9 @@ function showRematchInterface() {
     didReceiveRematchesSeriesEndIndicator();
   } else {
     showPrimaryAction(PrimaryActionType.Rematch);
-    setEndMatchVisible(true);
+    if (isOnlineGame) {
+      setEndMatchVisible(true);
+    }
   }
 }
 
@@ -214,6 +216,11 @@ function automove() {
 }
 
 function didConfirmRematchProposal() {
+  if (!isOnlineGame) {
+    window.location.href = "/";
+    return;
+  }
+
   setAttestVictoryVisible(false);
   setEndMatchVisible(false);
   showButtonForTx("");
