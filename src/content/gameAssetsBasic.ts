@@ -1,0 +1,20 @@
+export const gameAssets = {
+    drainer: "",
+    angel: "",
+    demon: "",
+    spirit: "",
+    mystic: "",
+    mana: "",
+    drainerB: "",
+    angelB: "",
+    demonB: "",
+    spiritB: "",
+    mysticB: "",
+    manaB: "",
+    bombOrPotion: "",
+    bomb: "",
+    potion: "",
+    supermana: "",
+    supermanaSimple: "",
+  };
+  

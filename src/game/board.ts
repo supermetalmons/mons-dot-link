@@ -23,7 +23,7 @@ let showsOpponentEndOfGameSuffix = false;
 let countdownInterval: NodeJS.Timeout | null = null;
 let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
 
-const assets = (await import("../content/gameAssets")).gameAssets;
+const assets = (await import("../content/gameAssetsPixel")).gameAssets;
 
 let board: HTMLElement | null;
 let highlightsLayer: HTMLElement | null;
