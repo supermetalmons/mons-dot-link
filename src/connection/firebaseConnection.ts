@@ -40,6 +40,45 @@ class FirebaseConnection {
     this.functions = getFunctions(this.app);
   }
 
+  public async signIn(): Promise<string | undefined> {
+    try {
+      await signInAnonymously(this.auth);
+      // TODO: make it work with custom sign in with eth
+      const uid = this.auth.currentUser?.uid;
+      return uid;
+    } catch (error) {
+      console.error("Failed to sign in anonymously:", error);
+      return undefined;
+    }
+  }
+
+  public async verifyEthAddress(message: string, signature: string): Promise<any> {
+    try {
+      await this.ensureAuthenticated();
+      const verifyEthAddressFunction = httpsCallable(this.functions, "verifyEthAddress");
+      const response = await verifyEthAddressFunction({ message, signature });
+      return response.data;
+    } catch (error) {
+      console.error("Error verifying Ethereum address:", error);
+      throw error;
+    }
+  }
+
+  public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
+    onAuthStateChanged(this.auth, (user) => {
+      callback(user ? user.uid : null);
+    });
+  }
+
+  private async ensureAuthenticated(): Promise<void> {
+    if (!this.auth.currentUser) {
+      const uid = await this.signIn();
+      if (!uid) {
+        throw new Error("Failed to authenticate user");
+      }
+    }
+  }
+
   public isAutomatch(): boolean {
     if (this.inviteId) {
       return this.inviteId.startsWith("auto_");
@@ -155,23 +194,6 @@ class FirebaseConnection {
     }
   }
 
-  public subscribeToAuthChanges(callback: (uid: string | null) => void): void {
-    onAuthStateChanged(this.auth, (user) => {
-      callback(user ? user.uid : null);
-    });
-  }
-
-  public async signIn(): Promise<string | undefined> {
-    try {
-      await signInAnonymously(this.auth);
-      const uid = this.auth.currentUser?.uid;
-      return uid;
-    } catch (error) {
-      console.error("Failed to sign in anonymously:", error);
-      return undefined;
-    }
-  }
-
   public getOpponentId(): string {
     if (!this.latestInvite || !this.uid) {
       return "";
@@ -210,15 +232,6 @@ class FirebaseConnection {
     }
   }
 
-  private async ensureAuthenticated(): Promise<void> {
-    if (!this.auth.currentUser) {
-      const uid = await this.signIn();
-      if (!uid) {
-        throw new Error("Failed to authenticate user");
-      }
-    }
-  }
-
   public async automatch(): Promise<any> {
     try {
       await this.ensureAuthenticated();
@@ -228,18 +241,6 @@ class FirebaseConnection {
       return response.data;
     } catch (error) {
       console.error("Error calling automatch:", error);
-      throw error;
-    }
-  }
-
-  public async verifyEthAddress(message: string, signature: string): Promise<any> {
-    try {
-      await this.ensureAuthenticated();
-      const verifyEthAddressFunction = httpsCallable(this.functions, "verifyEthAddress");
-      const response = await verifyEthAddressFunction({ message, signature });
-      return response.data;
-    } catch (error) {
-      console.error("Error verifying Ethereum address:", error);
       throw error;
     }
   }
