@@ -131,6 +131,11 @@ img {
   border-radius: 14px;
   background-color: #f9f9f9de;
 
+
+  @media (max-width: 320px) {
+    margin-right: 6px;
+  }
+
   @media (prefers-color-scheme: dark) {
     background-color: #252525d5;
   }
@@ -176,13 +181,26 @@ img {
 
 .sound-button {
   margin-right: 11px;
+  
+  @media (max-width: 380px) {
+    margin-right: 6px;
+  }
 }
 
 .brush-button {
   margin-left: 11px;
+  
+  @media (max-width: 380px) {
+    margin-left: 6px;
+  }
 }
 
 .music-button {
   margin-left: 8px;
   margin-right: 8px;
+  
+  @media (max-width: 380px) {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
 }
