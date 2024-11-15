@@ -78,7 +78,7 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
 `;
 const MenuTitle = styled.div`
   font-weight: 995;
-  font-size: 23px;
+  font-size: 24px;
   color: #333;
   margin: 6px 16px 0 53px;
   cursor: default;
@@ -299,7 +299,7 @@ const MainMenu: React.FC = () => {
         }}>
         <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
           <MenuTitle>
-            MONS.LINK
+            <i>MONS.LINK</i>
             {showLeaderboard && (
               <EasLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
                 ✓ EAS

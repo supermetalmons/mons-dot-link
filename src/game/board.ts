@@ -23,7 +23,7 @@ let showsOpponentEndOfGameSuffix = false;
 let countdownInterval: NodeJS.Timeout | null = null;
 let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
 
-export const isPixelBoard = false;
+export const isPixelBoard = true;
 const assets = (await import(`../content/gameAssets/${isPixelBoard ? "gameAssetsPixel" : "gameAssetsBasic"}`)).gameAssets;
 
 let board: HTMLElement | null;
