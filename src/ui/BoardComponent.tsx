@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { go } from "../game/gameController";
+import { isPixelBoard } from "../game/board";
 
 const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
@@ -11,11 +12,37 @@ const BoardComponent: React.FC = () => {
     }
   }, []);
 
-  const colorGray = "#BEBEBE";
-  const colorLightGray = "#E8E8E8";
-  const colorBlue = "#030DF4";
-  const colorDarkGray = "#4F4F4F";
-  const colorLightBlue = "#88A8F8";
+  const colorSets = {
+    pixelBoard: {
+      gray: "#BEBEBE",
+      lightGray: "#E8E8E8",
+      blue: "#030DF4",
+      darkGray: "#4F4F4F",
+      lightBlue: "#88A8F8",
+    },
+    basicBoard: {
+      gray: "#C9C9C9",
+      lightGray: "#FDFDFD",
+      blue: "#1805FF",
+      darkGray: "#EDB2FF",
+      lightBlue: "#53EEFF",
+    },
+    funBoard: {
+      gray: "#FF69B4", // Hot Pink
+      lightGray: "#FFD700", // Gold
+      blue: "#00FF00", // Lime
+      darkGray: "#FF4500", // Orange Red
+      lightBlue: "#1E90FF", // Dodger Blue
+    },
+  };
+
+  const currentColorSet = isPixelBoard ? colorSets.pixelBoard : colorSets.basicBoard;
+
+  const colorGray = currentColorSet.gray;
+  const colorLightGray = currentColorSet.lightGray;
+  const colorBlue = currentColorSet.blue;
+  const colorDarkGray = currentColorSet.darkGray;
+  const colorLightBlue = currentColorSet.lightBlue;
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 14.1" shapeRendering="crispEdges" overflow="visible">
