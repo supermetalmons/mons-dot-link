@@ -14,7 +14,7 @@ import { useAuthStatus, createAuthAdapter } from "./connection/authentication";
 import { signIn } from "./connection/connection";
 import BottomControls from "./ui/BottomControls";
 import { isMobile } from "./utils/misc";
-import { FaVolumeUp, FaMusic, FaVolumeMute, FaStop } from "react-icons/fa";
+import { FaVolumeUp, FaMusic, FaVolumeMute, FaStop, FaPaintBrush } from "react-icons/fa";
 import { isMobileOrVision } from "./utils/misc";
 import { soundPlayer } from "./utils/SoundPlayer";
 import { startPlayingMusic, stopPlayingMusic } from "./content/music";
@@ -25,6 +25,8 @@ let globalIsMuted: boolean = (() => {
 })();
 
 export const getIsMuted = (): boolean => globalIsMuted;
+
+const isCustomBackgroundsFeatureEnabled = false;
 
 const queryClient = new QueryClient();
 
@@ -78,7 +80,12 @@ const App = () => {
             <div className="app-container" style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
               <div className="top-buttons-container">
                 {authStatus !== "loading" && (
-                  <div className="music-control-buttons">
+                  <div className="small-top-control-buttons">
+                    {isCustomBackgroundsFeatureEnabled && (
+                      <button className="brush-button" onClick={handleToggleBackground} aria-label={backgroundImage ? "Remove Background" : "Add Background"}>
+                        <FaPaintBrush />
+                      </button>
+                    )}
                     <button className="music-button" onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
                       {isMusicPlaying ? <FaStop /> : <FaMusic />}
                     </button>

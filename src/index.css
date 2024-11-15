@@ -125,7 +125,7 @@ img {
   align-items: center;
 }
 
-.music-control-buttons {
+.small-top-control-buttons {
   display: flex;
   margin-right: 10px;
   border-radius: 14px;
@@ -137,7 +137,8 @@ img {
 }
 
 .music-button,
-.sound-button {
+.sound-button,
+.brush-button {
   border: none;
   cursor: pointer;
   font-size: 13px;
@@ -175,6 +176,10 @@ img {
 
 .sound-button {
   margin-right: 11px;
+}
+
+.brush-button {
+  margin-left: 11px;
 }
 
 .music-button {
