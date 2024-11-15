@@ -1,9 +1,53 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
-import { isPixelBoard } from "../game/board";
+
+const colorSets = {
+  pixelBoard: {
+    gray: "#BEBEBE",
+    lightGray: "#E8E8E8",
+    blue: "#030DF4",
+    darkGray: "#4F4F4F",
+    lightBlue: "#88A8F8",
+  },
+  basicBoard: {
+    gray: "#C9C9C9",
+    lightGray: "#FDFDFD",
+    blue: "#1805FF",
+    darkGray: "#EDB2FF",
+    lightBlue: "#53EEFF",
+  },
+};
+
+type ColorSetKey = keyof typeof colorSets;
+
+let currentColorSetKey: ColorSetKey = (() => {
+  const stored = localStorage.getItem("boardStyle");
+  return stored && stored in colorSets ? (stored as ColorSetKey) : "pixelBoard";
+})();
+
+const listeners: Array<() => void> = [];
+
+export const toggleBoardStyle = () => {
+  const keys = Object.keys(colorSets) as ColorSetKey[];
+  const currentIndex = keys.indexOf(currentColorSetKey);
+  currentColorSetKey = keys[(currentIndex + 1) % keys.length];
+  localStorage.setItem("boardStyle", currentColorSetKey);
+  listeners.forEach((listener) => listener());
+};
+
+export const subscribeToColorSetChanges = (listener: () => void) => {
+  listeners.push(listener);
+  return () => {
+    const index = listeners.indexOf(listener);
+    if (index > -1) {
+      listeners.splice(index, 1);
+    }
+  };
+};
 
 const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
+  const [currentColorSet, setCurrentColorSet] = useState(colorSets[currentColorSetKey]);
 
   useEffect(() => {
     if (!initializationRef.current) {
@@ -12,31 +56,16 @@ const BoardComponent: React.FC = () => {
     }
   }, []);
 
-  const colorSets = {
-    pixelBoard: {
-      gray: "#BEBEBE",
-      lightGray: "#E8E8E8",
-      blue: "#030DF4",
-      darkGray: "#4F4F4F",
-      lightBlue: "#88A8F8",
-    },
-    basicBoard: {
-      gray: "#C9C9C9",
-      lightGray: "#FDFDFD",
-      blue: "#1805FF",
-      darkGray: "#EDB2FF",
-      lightBlue: "#53EEFF",
-    },
-    funBoard: {
-      gray: "#FF69B4", // Hot Pink
-      lightGray: "#FFD700", // Gold
-      blue: "#00FF00", // Lime
-      darkGray: "#FF4500", // Orange Red
-      lightBlue: "#1E90FF", // Dodger Blue
-    },
-  };
+  useEffect(() => {
+    const updateColorSet = () => {
+      setCurrentColorSet(colorSets[currentColorSetKey]);
+    };
 
-  const currentColorSet = isPixelBoard ? colorSets.pixelBoard : colorSets.basicBoard;
+    const unsubscribe = subscribeToColorSetChanges(updateColorSet);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const colorGray = currentColorSet.gray;
   const colorLightGray = currentColorSet.lightGray;

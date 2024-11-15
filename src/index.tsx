@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { ConnectButton, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 
-import BoardComponent from "./ui/BoardComponent";
+import BoardComponent, { toggleBoardStyle } from "./ui/BoardComponent";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from "./connection/authentication";
@@ -66,6 +66,11 @@ const App = () => {
     setBackgroundImage((prev) => (prev ? null : "background.jpeg"));
   }, []);
 
+  const handleToggleBoardStyle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    toggleBoardStyle();
+  }, []);
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -86,6 +91,9 @@ const App = () => {
                         <FaPaintBrush />
                       </button>
                     )}
+                    <button className="brush-button" onClick={handleToggleBoardStyle}>
+                        <FaPaintBrush />
+                      </button>
                     <button className="music-button" onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
                       {isMusicPlaying ? <FaStop /> : <FaMusic />}
                     </button>
