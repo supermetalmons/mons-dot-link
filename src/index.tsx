@@ -13,7 +13,6 @@ import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from "./connection/authentication";
 import { signIn } from "./connection/connection";
 import BottomControls from "./ui/BottomControls";
-import { useBottomControlsActions } from "./ui/BottomControlsActions";
 import { isMobile } from "./utils/misc";
 import { FaVolumeUp, FaMusic, FaVolumeMute, FaStop } from "react-icons/fa";
 import { isMobileOrVision } from "./utils/misc";
@@ -32,7 +31,6 @@ const queryClient = new QueryClient();
 const App = () => {
   const { authStatus, setAuthStatus } = useAuthStatus();
   const authenticationAdapter = createAuthAdapter(setAuthStatus);
-  const bottomControlsActions = useBottomControlsActions();
   const [isMuted, setIsMuted] = useState(globalIsMuted);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
@@ -102,7 +100,7 @@ const App = () => {
               </div>
               <BoardComponent />
               <MainMenu />
-              <BottomControls actions={bottomControlsActions} />
+              <BottomControls />
             </div>
           </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>

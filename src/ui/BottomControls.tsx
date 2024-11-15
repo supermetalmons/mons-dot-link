@@ -1,12 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot } from "react-icons/fa";
-import { BottomControlsActionsInterface } from "./BottomControlsActions";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
-import { didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton } from "../game/gameController";
-import { didClickInviteButton } from "../connection/connection";
+import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
+import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
 import { isMobile } from "../utils/misc";
 import { soundPlayer } from "../utils/SoundPlayer";
+import { playReaction } from "../content/sounds";
+import { newReactionOfKind } from "../content/sounds";
+import { showVoiceReactionText } from "../game/board";
 
 export enum PrimaryActionType {
   None = "none",
@@ -23,10 +25,6 @@ export function didDismissSomethingWithOutsideTapJustNow() {
 export function didNotDismissAnythingWithOutsideTapJustNow(): boolean {
   let delta = Date.now() - latestModalOutsideTapDismissDate;
   return delta >= 42;
-}
-
-interface BottomControlsProps {
-  actions: BottomControlsActionsInterface;
 }
 
 const ControlsContainer = styled.div`
@@ -247,7 +245,7 @@ let toggleReactionPicker: () => void;
 let enableTimerVictoryClaim: () => void;
 let showPrimaryAction: (action: PrimaryActionType) => void;
 
-const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
+const BottomControls: React.FC = () => {
   const [isAttestVictoryButtonEnabled, setIsAttestVictoryButtonEnabled] = useState(true);
   const [isEndMatchButtonVisible, setIsEndMatchButtonVisible] = useState(false);
   const [isEndMatchConfirmed, setIsEndMatchConfirmed] = useState(false);
@@ -262,8 +260,10 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [didCreateInvite, setDidCreateInvite] = useState(false);
   const [automatchButtonTmpState, setAutomatchButtonTmpState] = useState(false);
   const [inviteCopiedTmpState, setInviteCopiedTmpState] = useState(false);
+  const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
 
   const [txHash, setTxHash] = useState("");
+  const [isUndoDisabled, setIsUndoDisabled] = useState(true);
   const [waitingStateText, setWaitingStateText] = useState("");
   const [isStartTimerVisible, setIsStartTimerVisible] = useState(false);
   const [primaryAction, setPrimaryAction] = useState<PrimaryActionType>(PrimaryActionType.None);
@@ -278,7 +278,6 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
   const [isClaimVictoryVisible, setIsClaimVictoryVisible] = useState(false);
   const [isClaimVictoryButtonDisabled, setIsClaimVictoryButtonDisabled] = useState(false);
   const [timerConfig, setTimerConfig] = useState({ duration: 90, progress: 0, requestDate: Date.now() });
-  const { handleUndo, handleResign, handleReactionSelect, setIsUndoDisabled, isVoiceReactionDisabled, isUndoDisabled, isResignDisabled } = actions;
 
   const pickerRef = useRef<HTMLDivElement>(null);
   const voiceReactionButtonRef = useRef<HTMLButtonElement>(null);
@@ -531,10 +530,37 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
     didClickEndMatchButton();
   };
 
-  const handleConfirmResign = () => {
-    const event = new MouseEvent("click") as unknown as React.MouseEvent<HTMLButtonElement>;
+  const handleReactionSelect = useCallback((reaction: string) => {
+    hideReactionPicker();
+    const reactionObj = newReactionOfKind(reaction);
+    playReaction(reactionObj);
+    showVoiceReactionText(reaction, false);
+    if (!isGameWithBot) {
+      sendVoiceReaction(reactionObj);
+      setIsVoiceReactionDisabled(true);
+      setTimeout(() => {
+        setIsVoiceReactionDisabled(false);
+      }, 9999);
+    } else {
+      const responseReaction = reaction;
+      const responseReactionObj = newReactionOfKind(responseReaction);
+      setTimeout(() => {
+        playReaction(responseReactionObj);
+        showVoiceReactionText(reaction, true);
+      }, 2000);
+    }
+  }, []);
+
+  const handleUndo = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    if ((event.target as HTMLButtonElement).disabled) return;
+    didClickUndoButton();
+    setIsUndoDisabled(!canHandleUndo());
+  };
+
+  const handleConfirmResign = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setIsResignConfirmVisible(false);
-    handleResign(event);
+    didClickConfirmResignButton();
   };
 
   const handlePrimaryActionClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -634,7 +660,7 @@ const BottomControls: React.FC<BottomControlsProps> = ({ actions }) => {
         </ControlButton>
       )}
       {isResignButtonVisible && (
-        <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={isResignDisabled}>
+        <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={false}>
           <FaFlag />
         </ControlButton>
       )}
