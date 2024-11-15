@@ -23,7 +23,8 @@ let showsOpponentEndOfGameSuffix = false;
 let countdownInterval: NodeJS.Timeout | null = null;
 let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
 
-const assets = (await import("../content/gameAssets/gameAssetsPixel")).gameAssets;
+export const isPixelBoard = true;
+const assets = (await import(`../content/gameAssets/${isPixelBoard ? "gameAssetsPixel" : "gameAssetsBasic"}`)).gameAssets;
 
 let board: HTMLElement | null;
 let highlightsLayer: HTMLElement | null;
@@ -1172,7 +1173,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     container.appendChild(img);
     itemsLayer?.appendChild(container);
     items[key] = container;
-  } else if (sparkles) {
+  } else if (sparkles && isPixelBoard) {
     const container = document.createElementNS(SVG.ns, "g");
     const sparkles = createSparklingContainer(location);
     SVG.setOrigin(img, location.j, location.i);
@@ -1372,6 +1373,8 @@ function getTraceColors(): string[] {
 }
 
 function addWaves(location: Location) {
+  if (!isPixelBoard) return;
+
   location = inBoardCoordinates(location);
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
