@@ -372,6 +372,9 @@ class FirebaseConnection {
           if (autojoin) {
             set(ref(this.db, `invites/${inviteId}/guestId`), uid)
               .then(() => {
+                if (this.latestInvite) {
+                  this.latestInvite.guestId = uid;
+                }
                 this.getOpponentsMatchAndCreateOwnMatch(matchId, inviteData.hostId);
               })
               .catch((error) => {
@@ -433,6 +436,9 @@ class FirebaseConnection {
           onValue(inviteRef, (snapshot) => {
             const updatedInvite: Invite | null = snapshot.val();
             if (updatedInvite && updatedInvite.guestId) {
+              if (this.latestInvite) {
+                this.latestInvite.guestId = updatedInvite.guestId;
+              }
               this.observeMatch(updatedInvite.guestId, matchId);
               off(inviteRef);
             }
