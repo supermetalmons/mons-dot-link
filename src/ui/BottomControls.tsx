@@ -93,16 +93,20 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
 
 const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isViewOnly?: boolean; disabled?: boolean }>`
   /* Base colors */
+
   --color-white: white;
   --color-text-on-pink-disabled: rgba(204, 204, 204, 0.77);
 
-  --color-green: #2ecc40;
-  --color-green-hover: #29b739;
-  --color-green-active: #25a233;
+  --color-tint: #007aff;
+  --color-dark-tint: #0b84ff;
 
-  --color-blue: #0074d9;
-  --color-blue-hover: #0063b8;
-  --color-blue-active: #005299;
+  --color-default: #007aff;
+  --color-default-hover: #0069d9;
+  --color-default-active: #0056b3;
+
+  --color-blue: #f0f0f0;
+  --color-blue-hover: #e0e0e0;
+  --color-blue-active: #d0d0d0;
 
   --color-pink: #ff69b4;
   --color-pink-hover: #ff4da6;
@@ -113,13 +117,14 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   --color-view-only-text: #aaa;
 
   /* Dark mode colors */
-  --color-dark-green: #25a233;
-  --color-dark-green-hover: #29b739;
-  --color-dark-green-active: #2ecc40;
 
-  --color-dark-blue: #005299;
-  --color-dark-blue-hover: #0063b8;
-  --color-dark-blue-active: #0074d9;
+  --color-dark-default: #0b84ff;
+  --color-dark-default-hover: #1a91ff;
+  --color-dark-default-active: #299fff;
+
+  --color-dark-blue: #333;
+  --color-dark-blue-hover: #444;
+  --color-dark-blue-active: #555;
 
   --color-dark-pink: #ff4da6;
   --color-dark-pink-hover: #ff69b4;
@@ -129,10 +134,11 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   --color-dark-view-only: #333;
   --color-dark-view-only-text: #777;
 
-  background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink)" : "var(--color-green)")};
-  height: 32px;
-  font-weight: 900;
-  color: ${(props) => (props.isPink && props.disabled ? "var(--color-white)" : props.isViewOnly ? "var(--color-view-only-text)" : "var(--color-white)")};
+  background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink)" : "var(--color-default)")};
+  height: 40px;
+  font-weight: 888;
+  font-size: 0.88rem;
+  color: ${(props) => (props.isPink && props.disabled ? "var(--color-white)" : props.isViewOnly ? "var(--color-view-only-text)" : props.isBlue ? "var(--color-tint)" : "var(--color-white)")};
   border: none;
   border-radius: 12px;
   padding: 0px 16px;
@@ -163,27 +169,27 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue-hover)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink-hover)" : "var(--color-green-hover)")};
+      background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue-hover)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink-hover)" : "var(--color-default-hover)")};
     }
   }
 
   &:active {
-    background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue-active)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink-active)" : "var(--color-green-active)")};
+    background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue-active)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink-active)" : "var(--color-default-active)")};
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${(props) => (props.isPink && props.disabled ? "var(--color-text-on-pink-disabled)" : props.isViewOnly ? "var(--color-dark-view-only-text)" : "var(--color-white)")};
+    color: ${(props) => (props.isPink && props.disabled ? "var(--color-text-on-pink-disabled)" : props.isViewOnly ? "var(--color-dark-view-only-text)" : props.isBlue ? "var(--color-dark-tint)" : "var(--color-white)")};
 
-    background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink)" : "var(--color-dark-green)")};
+    background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink)" : "var(--color-dark-default)")};
 
     @media (hover: hover) and (pointer: fine) {
       &:hover {
-        background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue-hover)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink-hover)" : "var(--color-dark-green-hover)")};
+        background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue-hover)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink-hover)" : "var(--color-dark-default-hover)")};
       }
     }
 
     &:active {
-      background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue-active)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink-active)" : "var(--color-dark-green-active)")};
+      background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue-active)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink-active)" : "var(--color-dark-default-active)")};
     }
   }
 `;
