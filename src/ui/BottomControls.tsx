@@ -44,8 +44,8 @@ const ControlsContainer = styled.div`
 `;
 
 export const ControlButton = styled.button<{ disabled?: boolean }>`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: #f0f0f0;
   border: none;
@@ -632,7 +632,7 @@ const BottomControls: React.FC = () => {
       case PrimaryActionType.JoinGame:
         return "Join Game";
       case PrimaryActionType.Rematch:
-        return "🕹️ Play Again";
+        return "Play Again";
       default:
         return "";
     }
@@ -652,7 +652,7 @@ const BottomControls: React.FC = () => {
       )}
       {isAttestVictoryButtonVisible && (
         <BottomPillButton onClick={handleAttestVictoryClick} isPink={true} disabled={!isAttestVictoryButtonEnabled}>
-          {"🎉 Attest Victory"}
+          {"Attest Victory"}
         </BottomPillButton>
       )}
       {isWatchOnlyIndicatorVisible && (
