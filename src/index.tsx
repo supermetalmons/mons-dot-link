@@ -26,8 +26,6 @@ let globalIsMuted: boolean = (() => {
 
 export const getIsMuted = (): boolean => globalIsMuted;
 
-const isCustomBackgroundsFeatureEnabled = false;
-
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -35,7 +33,6 @@ const App = () => {
   const authenticationAdapter = createAuthAdapter(setAuthStatus);
   const [isMuted, setIsMuted] = useState(globalIsMuted);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem("isMuted", isMuted.toString());
@@ -62,10 +59,6 @@ const App = () => {
     });
   }, []);
 
-  const handleToggleBackground = useCallback(() => {
-    setBackgroundImage((prev) => (prev ? null : "background.jpeg"));
-  }, []);
-
   const handleToggleBoardStyle = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     toggleBoardStyle();
   };
@@ -81,15 +74,10 @@ const App = () => {
               lightMode: lightTheme(),
               darkMode: darkTheme(),
             }}>
-            <div className="app-container" style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
+            <div className="app-container">
               <div className="top-buttons-container">
                 {authStatus !== "loading" && (
                   <div className="small-top-control-buttons">
-                    {isCustomBackgroundsFeatureEnabled && (
-                      <button className="brush-button" onClick={handleToggleBackground} aria-label={backgroundImage ? "Remove Background" : "Add Background"}>
-                        <FaPaintBrush />
-                      </button>
-                    )}
                     <button className="brush-button" onClick={!isMobile ? handleToggleBoardStyle : undefined} onTouchStart={isMobile ? handleToggleBoardStyle : undefined}>
                       <FaPaintBrush />
                     </button>

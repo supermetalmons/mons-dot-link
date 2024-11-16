@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
+import * as Board from "../game/board";
 
 const colorSets = {
   defaultBoard: {
@@ -47,6 +48,9 @@ export const toggleBoardStyle = () => {
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
   localStorage.setItem("boardStyle", currentColorSetKey);
   listeners.forEach((listener) => listener());
+  if (currentIndex === keys.length - 1) {
+    Board.toggleItemsStyle();
+  }
 };
 
 export const subscribeToColorSetChanges = (listener: () => void) => {

@@ -23,8 +23,13 @@ let showsOpponentEndOfGameSuffix = false;
 let countdownInterval: NodeJS.Timeout | null = null;
 let monsBoardDisplayAnimationTimeout: NodeJS.Timeout | null = null;
 
-export const isPixelBoard = true;
-const assets = (await import(`../content/gameAssets/${isPixelBoard ? "gameAssetsPixel" : "gameAssetsBasic"}`)).gameAssets;
+export enum AssetsStyle {
+  Pixel = "Pixel",
+  Basic = "Basic"
+}
+
+export let currentAssetsStyle = AssetsStyle.Pixel;
+const assets = (await import(`../content/gameAssets/gameAssets${currentAssetsStyle}`)).gameAssets;
 
 let board: HTMLElement | null;
 let highlightsLayer: HTMLElement | null;
@@ -65,7 +70,13 @@ const bombOrPotion = loadImage(assets.bombOrPotion);
 const bomb = loadImage(assets.bomb);
 const supermana = loadImage(assets.supermana);
 const supermanaSimple = loadImage(assets.supermanaSimple);
+
 const emojis = (await import("../content/emojis")).emojis;
+
+export function toggleItemsStyle() {
+  // TODO: implement
+  console.log("will toggle items style");
+}
 
 function initializeBoardElements() {
   board = document.getElementById("monsboard");
@@ -1173,7 +1184,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     container.appendChild(img);
     itemsLayer?.appendChild(container);
     items[key] = container;
-  } else if (sparkles && isPixelBoard) {
+  } else if (sparkles && currentAssetsStyle === AssetsStyle.Pixel) {
     const container = document.createElementNS(SVG.ns, "g");
     const sparkles = createSparklingContainer(location);
     SVG.setOrigin(img, location.j, location.i);
@@ -1373,7 +1384,7 @@ function getTraceColors(): string[] {
 }
 
 function addWaves(location: Location) {
-  if (!isPixelBoard) return;
+  if (currentAssetsStyle !== AssetsStyle.Pixel) return;
 
   location = inBoardCoordinates(location);
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
