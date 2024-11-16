@@ -94,9 +94,10 @@ export const ControlButton = styled.button<{ disabled?: boolean }>`
 const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isViewOnly?: boolean; disabled?: boolean }>`
   background-color: ${(props) => (props.isViewOnly ? "#f0f0f0" : props.isBlue ? "#0074D9" : props.isPink && props.disabled ? "#ffd1dc" : props.isPink ? "#ff69b4" : "#2ecc40")};
   height: 32px;
+  font-weight: 900;
   color: ${(props) => (props.isPink && props.disabled ? "#fff" : props.isViewOnly ? "#aaa" : "white")};
   border: none;
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 0px 16px;
   @media screen and (max-width: 300pt) {
     padding: 0px 10px;
@@ -116,7 +117,6 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   @media screen and (max-width: 320px) {
     font-size: 0.63rem;
   }
-  font-weight: bold;
   cursor: ${(props) => (props.isViewOnly || (props.isPink && props.disabled) ? "default" : "pointer")};
   transition: background-color 0.3s ease;
   text-align: center;
@@ -619,17 +619,17 @@ const BottomControls: React.FC = () => {
       )}
       {isInviteLinkButtonVisible && (
         <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Link Game"}
+          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "New Link Game"}
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
         <BottomPillButton onClick={handleAutomatchClick} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
-          {automatchButtonTmpState ? "🥁 Automatching..." : <>👽 Automatch</>}
+          {automatchButtonTmpState ? "🥁 Automatching..." : <>Automatch</>}
         </BottomPillButton>
       )}
       {isBotGameButtonVisible && (
         <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
-          {"🤖 Play with Bot"}
+          {"Play with Bot"}
         </BottomPillButton>
       )}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}

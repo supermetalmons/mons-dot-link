@@ -16,6 +16,13 @@ const colorSets = {
     darkGray: "#EDB2FF",
     lightBlue: "#53EEFF",
   },
+  funBoard: {
+    gray: "#FF69B4", // Hot Pink
+    lightGray: "#FFD700", // Gold
+    blue: "#00FF00", // Lime
+    darkGray: "#FF4500", // Orange Red
+    lightBlue: "#1E90FF", // Dodger Blue
+  },
 };
 
 type ColorSetKey = keyof typeof colorSets;
