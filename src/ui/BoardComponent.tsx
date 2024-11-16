@@ -2,19 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
 
 const colorSets = {
-  pixelBoard: {
-    gray: "#BEBEBE",
-    lightGray: "#E8E8E8",
-    blue: "#030DF4",
-    darkGray: "#4F4F4F",
-    lightBlue: "#88A8F8",
-  },
   basicBoard: {
     gray: "#C9C9C9",
     lightGray: "#FDFDFD",
     blue: "#1805FF",
     darkGray: "#EDB2FF",
     lightBlue: "#53EEFF",
+  },
+  pixelBoard: {
+    gray: "#BEBEBE",
+    lightGray: "#E8E8E8",
+    blue: "#030DF4",
+    darkGray: "#4F4F4F",
+    lightBlue: "#88A8F8",
   },
   darkAndYellow: {
     gray: "#181818",
@@ -36,7 +36,7 @@ type ColorSetKey = keyof typeof colorSets;
 
 let currentColorSetKey: ColorSetKey = (() => {
   const stored = localStorage.getItem("boardStyle");
-  return stored && stored in colorSets ? (stored as ColorSetKey) : "pixelBoard";
+  return stored && stored in colorSets ? (stored as ColorSetKey) : "basicBoard";
 })();
 
 const listeners: Array<() => void> = [];
