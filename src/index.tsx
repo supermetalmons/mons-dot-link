@@ -66,10 +66,9 @@ const App = () => {
     setBackgroundImage((prev) => (prev ? null : "background.jpeg"));
   }, []);
 
-  const handleToggleBoardStyle = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
+  const handleToggleBoardStyle = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     toggleBoardStyle();
-  }, []);
+  };
 
   return (
     <WagmiProvider config={config}>
@@ -91,9 +90,9 @@ const App = () => {
                         <FaPaintBrush />
                       </button>
                     )}
-                    <button className="brush-button" onClick={handleToggleBoardStyle}>
-                        <FaPaintBrush />
-                      </button>
+                    <button className="brush-button" onClick={!isMobile ? handleToggleBoardStyle : undefined} onTouchStart={isMobile ? handleToggleBoardStyle : undefined}>
+                      <FaPaintBrush />
+                    </button>
                     <button className="music-button" onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
                       {isMusicPlaying ? <FaStop /> : <FaMusic />}
                     </button>
