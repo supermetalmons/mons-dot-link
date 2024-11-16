@@ -16,6 +16,13 @@ const colorSets = {
     darkGray: "#EDB2FF",
     lightBlue: "#53EEFF",
   },
+  darkAndYellow: {
+    gray: "#181818",
+    lightGray: "#4A4A4A",
+    blue: "#FDF30B",
+    darkGray: "#BAB8B9",
+    lightBlue: "#816306",
+  },
   funBoard: {
     gray: "#FF69B4", // Hot Pink
     lightGray: "#FFD700", // Gold
