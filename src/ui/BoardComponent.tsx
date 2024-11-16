@@ -2,19 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
 
 const colorSets = {
-  basicBoard: {
-    gray: "#C9C9C9",
-    lightGray: "#FDFDFD",
-    blue: "#1805FF",
-    darkGray: "#EDB2FF",
-    lightBlue: "#53EEFF",
-  },
-  pixelBoard: {
+  defaultBoard: {
     gray: "#BEBEBE",
     lightGray: "#E8E8E8",
     blue: "#030DF4",
     darkGray: "#4F4F4F",
     lightBlue: "#88A8F8",
+  },
+  originalBoard: {
+    gray: "#C9C9C9",
+    lightGray: "#FDFDFD",
+    blue: "#1805FF",
+    darkGray: "#EDB2FF",
+    lightBlue: "#53EEFF",
   },
   darkAndYellow: {
     gray: "#181818",
@@ -24,11 +24,11 @@ const colorSets = {
     lightBlue: "#816306",
   },
   funBoard: {
-    gray: "#FF69B4", // Hot Pink
-    lightGray: "#FFD700", // Gold
-    blue: "#00FF00", // Lime
-    darkGray: "#FF4500", // Orange Red
-    lightBlue: "#1E90FF", // Dodger Blue
+    gray: "#FF69B4",
+    lightGray: "#FFD700",
+    blue: "#00FF00",
+    darkGray: "#FF4500",
+    lightBlue: "#1E90FF",
   },
 };
 
@@ -36,7 +36,7 @@ type ColorSetKey = keyof typeof colorSets;
 
 let currentColorSetKey: ColorSetKey = (() => {
   const stored = localStorage.getItem("boardStyle");
-  return stored && stored in colorSets ? (stored as ColorSetKey) : "basicBoard";
+  return stored && stored in colorSets ? (stored as ColorSetKey) : "defaultBoard";
 })();
 
 const listeners: Array<() => void> = [];
@@ -89,14 +89,18 @@ const BoardComponent: React.FC = () => {
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 14.1" shapeRendering="crispEdges" overflow="visible">
-      <defs>
-        <pattern id="chessPattern" patternUnits="userSpaceOnUse" width="2" height="2">
-          <rect width="1" height="1" fill={colorGray} />
-          <rect x="1" y="1" width="1" height="1" fill={colorGray} />
-        </pattern>
-      </defs>
       <rect y="1" width="11" height="11" fill={colorLightGray} />
-      <rect y="1" width="11" height="11" fill="url(#chessPattern)" />
+      {Array.from({ length: 11 }, (_, row) =>
+        Array.from({ length: 11 }, (_, col) => {
+          const x = col;
+          const y = row + 1;
+          if ((row + col) % 2 === 1) {
+            return <rect key={`square-${row}-${col}`} x={x} y={y} width="1" height="1" fill={colorGray} />;
+          }
+          return null;
+        })
+      )}
+
       <rect x="5" y="6" width="1" height="1" fill={colorBlue} />
       <rect x="0" y="1" width="1" height="1" fill={colorBlue} />
       <rect x="10" y="11" width="1" height="1" fill={colorBlue} />
@@ -114,6 +118,7 @@ const BoardComponent: React.FC = () => {
       <rect x="3" y="7" width="1" height="1" fill={colorLightBlue} />
       <rect x="5" y="7" width="1" height="1" fill={colorLightBlue} />
       <rect x="7" y="7" width="1" height="1" fill={colorLightBlue} />
+
       <g id="monsboard"></g>
       <g id="highlightsLayer"></g>
       <g id="itemsLayer"></g>
