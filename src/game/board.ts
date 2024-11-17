@@ -72,7 +72,7 @@ let supermanaSimple: SVGElement;
 
 const emojis = (await import("../content/emojis")).emojis;
 
-async function initializeAssets() {
+async function initializeAssets(onStart: boolean) {
   assets = (await import(`../content/gameAssets/gameAssets${currentAssetsSet}`)).gameAssets;
   drainer = loadImage(assets.drainer, "drainer");
   angel = loadImage(assets.angel, "angel");
@@ -90,14 +90,22 @@ async function initializeAssets() {
   bomb = loadImage(assets.bomb, "bomb");
   supermana = loadImage(assets.supermana, "supermana");
   supermanaSimple = loadImage(assets.supermanaSimple, "supermanaSimple");
+
+  if (onStart) {
+    Object.values(AssetsSet)
+      .filter((set) => set !== currentAssetsSet)
+      .forEach((set) => {
+        import(`../content/gameAssets/gameAssets${set}`).catch(() => {});
+      });
+  }
 }
 
-await initializeAssets();
+await initializeAssets(true);
 
 export async function toggleItemsStyleSet() {
   currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
   localStorage.setItem("currentAssetsSet", currentAssetsSet);
-  await initializeAssets();
+  await initializeAssets(false);
   const updateExistingItems = (elements: { [key: string]: SVGElement }) => {
     Object.values(elements).forEach((element) => {
       const images = element.tagName === "image" ? [element] : Array.from(element.getElementsByTagName("image"));
