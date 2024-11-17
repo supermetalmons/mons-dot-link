@@ -58,7 +58,8 @@ export class SoundPlayer {
   }
 
   public initialize(force: boolean): void {
-    if (!this.isInitialized && (force || !getIsMuted() || !isMobileOrVision)) {
+    if (this.isInitialized) return;
+    if (force || !getIsMuted()) {
       if (isMobileOrVision) {
         const silentAudioUrl = this.createSilentAudioDataUrl(3);
         this.silentAudio = new Audio(silentAudioUrl);
