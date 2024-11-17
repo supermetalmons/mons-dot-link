@@ -46,37 +46,58 @@ let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
 let activeTimer: SVGElement | null = null;
 
-export enum AssetsSet {
+enum AssetsSet {
   Pixel = "Pixel",
-  Basic = "Basic",
+  Original = "Original",
 }
 
-export let currentAssetsSet = AssetsSet.Pixel;
-const assets = (await import(`../content/gameAssets/gameAssets${currentAssetsSet}`)).gameAssets;
-
-const drainer = loadImage(assets.drainer);
-const angel = loadImage(assets.angel);
-const demon = loadImage(assets.demon);
-const spirit = loadImage(assets.spirit);
-const mystic = loadImage(assets.mystic);
-const mana = loadImage(assets.mana);
-const drainerB = loadImage(assets.drainerB);
-const angelB = loadImage(assets.angelB);
-const demonB = loadImage(assets.demonB);
-const spiritB = loadImage(assets.spiritB);
-const mysticB = loadImage(assets.mysticB);
-const manaB = loadImage(assets.manaB);
-const bombOrPotion = loadImage(assets.bombOrPotion);
-const bomb = loadImage(assets.bomb);
-const supermana = loadImage(assets.supermana);
-const supermanaSimple = loadImage(assets.supermanaSimple);
+let currentAssetsSet = AssetsSet.Pixel;
+let assets: any;
+let drainer: SVGElement;
+let angel: SVGElement;
+let demon: SVGElement;
+let spirit: SVGElement;
+let mystic: SVGElement;
+let mana: SVGElement;
+let drainerB: SVGElement;
+let angelB: SVGElement;
+let demonB: SVGElement;
+let spiritB: SVGElement;
+let mysticB: SVGElement;
+let manaB: SVGElement;
+let bombOrPotion: SVGElement;
+let bomb: SVGElement;
+let supermana: SVGElement;
+let supermanaSimple: SVGElement;
 
 const emojis = (await import("../content/emojis")).emojis;
 
-export function toggleItemsStyleSet() {
-  // TODO: implement
-  // TODO: make sure it also works when the board as display animation is in progress
-  console.log("will toggle items set");
+async function initializeAssets() {
+  assets = (await import(`../content/gameAssets/gameAssets${currentAssetsSet}`)).gameAssets;
+  drainer = loadImage(assets.drainer);
+  angel = loadImage(assets.angel);
+  demon = loadImage(assets.demon);
+  spirit = loadImage(assets.spirit);
+  mystic = loadImage(assets.mystic);
+  mana = loadImage(assets.mana);
+  drainerB = loadImage(assets.drainerB);
+  angelB = loadImage(assets.angelB);
+  demonB = loadImage(assets.demonB);
+  spiritB = loadImage(assets.spiritB);
+  mysticB = loadImage(assets.mysticB);
+  manaB = loadImage(assets.manaB);
+  bombOrPotion = loadImage(assets.bombOrPotion);
+  bomb = loadImage(assets.bomb);
+  supermana = loadImage(assets.supermana);
+  supermanaSimple = loadImage(assets.supermanaSimple);
+}
+
+await initializeAssets();
+
+export async function toggleItemsStyleSet() {
+  // TODO: implement toggling existing visible items
+  // currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
+  // await initializeAssets();
 }
 
 function loadImage(data: string) {
