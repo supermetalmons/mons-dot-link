@@ -147,6 +147,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   }
   @media screen and (max-width: 430px) {
     font-size: 0.77rem;
+    font-weight: 750;
   }
   @media screen and (max-width: 420px) {
     padding: 0px 10px;
@@ -156,6 +157,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   }
   @media screen and (max-width: 375px) {
     font-size: 0.72rem;
+    font-weight: 720;
   }
   @media screen and (max-width: 320px) {
     font-size: 0.63rem;
