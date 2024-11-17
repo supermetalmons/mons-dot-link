@@ -74,37 +74,51 @@ const emojis = (await import("../content/emojis")).emojis;
 
 async function initializeAssets() {
   assets = (await import(`../content/gameAssets/gameAssets${currentAssetsSet}`)).gameAssets;
-  drainer = loadImage(assets.drainer);
-  angel = loadImage(assets.angel);
-  demon = loadImage(assets.demon);
-  spirit = loadImage(assets.spirit);
-  mystic = loadImage(assets.mystic);
-  mana = loadImage(assets.mana);
-  drainerB = loadImage(assets.drainerB);
-  angelB = loadImage(assets.angelB);
-  demonB = loadImage(assets.demonB);
-  spiritB = loadImage(assets.spiritB);
-  mysticB = loadImage(assets.mysticB);
-  manaB = loadImage(assets.manaB);
-  bombOrPotion = loadImage(assets.bombOrPotion);
-  bomb = loadImage(assets.bomb);
-  supermana = loadImage(assets.supermana);
-  supermanaSimple = loadImage(assets.supermanaSimple);
+  drainer = loadImage(assets.drainer, "drainer");
+  angel = loadImage(assets.angel, "angel");
+  demon = loadImage(assets.demon, "demon");
+  spirit = loadImage(assets.spirit, "spirit");
+  mystic = loadImage(assets.mystic, "mystic");
+  mana = loadImage(assets.mana, "mana");
+  drainerB = loadImage(assets.drainerB, "drainerB");
+  angelB = loadImage(assets.angelB, "angelB");
+  demonB = loadImage(assets.demonB, "demonB");
+  spiritB = loadImage(assets.spiritB, "spiritB");
+  mysticB = loadImage(assets.mysticB, "mysticB");
+  manaB = loadImage(assets.manaB, "manaB");
+  bombOrPotion = loadImage(assets.bombOrPotion, "bombOrPotion");
+  bomb = loadImage(assets.bomb, "bomb");
+  supermana = loadImage(assets.supermana, "supermana");
+  supermanaSimple = loadImage(assets.supermanaSimple, "supermanaSimple");
 }
 
 await initializeAssets();
 
 export async function toggleItemsStyleSet() {
-  // TODO: implement toggling existing visible items
-  // currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
-  // await initializeAssets();
+  currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
+  await initializeAssets();
+  const updateExistingItems = (elements: { [key: string]: SVGElement }) => {
+    Object.values(elements).forEach((element) => {
+      const images = element.tagName === "image" ? [element] : Array.from(element.getElementsByTagName("image"));
+      images.forEach((img) => {
+        const assetType = img.getAttribute("data-asset-type");
+        if (assetType && assets[assetType]) {
+          SVG.setImage(img, assets[assetType]);
+        }
+      });
+    });
+  };
+
+  updateExistingItems(items);
+  updateExistingItems(basesPlaceholders);
 }
 
-function loadImage(data: string) {
+function loadImage(data: string, assetType: string) {
   const image = document.createElementNS(SVG.ns, "image");
   SVG.setImage(image, data);
   SVG.setSize(image, 1, 1);
   image.setAttribute("class", "item");
+  image.setAttribute("data-asset-type", assetType);
   return image;
 }
 
@@ -769,7 +783,7 @@ function seeIfShouldOffsetFromBorders(): boolean {
 }
 
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
-  const statusMove = loadImage(emojis.statusMove);
+  const statusMove = loadImage(emojis.statusMove, "statusMoveEmoji");
 
   let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
   const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
@@ -911,7 +925,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       }
     }
 
-    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji);
+    const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji, "avatar");
     avatar.style.pointerEvents = "auto";
     SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
     controlsLayer?.append(avatar);
