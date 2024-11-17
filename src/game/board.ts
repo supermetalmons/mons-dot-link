@@ -2,7 +2,7 @@ import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
-import { colors } from "../content/colors";
+import { colors, currentAssetsSet, AssetsSet } from "../content/boardStyles";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow, hasBottomPopupsVisible } from "../ui/BottomControls";
@@ -46,12 +46,6 @@ let opponentAvatar: SVGElement | undefined;
 let playerAvatar: SVGElement | undefined;
 let activeTimer: SVGElement | null = null;
 
-enum AssetsSet {
-  Pixel = "Pixel",
-  Original = "Original",
-}
-
-let currentAssetsSet = (localStorage.getItem("currentAssetsSet") as AssetsSet) || AssetsSet.Pixel;
 let assets: any;
 let drainer: SVGElement;
 let angel: SVGElement;
@@ -102,9 +96,7 @@ async function initializeAssets(onStart: boolean) {
 
 await initializeAssets(true);
 
-export async function toggleItemsStyleSet() {
-  currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
-  localStorage.setItem("currentAssetsSet", currentAssetsSet);
+export async function didToggleItemsStyleSet() {
   await initializeAssets(false);
   const updateExistingItems = (elements: { [key: string]: SVGElement }) => {
     Object.values(elements).forEach((element) => {

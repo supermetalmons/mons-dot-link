@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { ConnectButton, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 
-import BoardComponent, { toggleBoardStyle } from "./ui/BoardComponent";
+import BoardComponent, { didClickBrushButton } from "./ui/BoardComponent";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from "./connection/authentication";
@@ -60,7 +60,7 @@ const App = () => {
   }, []);
 
   const handleToggleBoardStyle = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
-    toggleBoardStyle();
+    didClickBrushButton();
   };
 
   return (

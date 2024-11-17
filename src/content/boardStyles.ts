@@ -1,5 +1,12 @@
 import * as Board from "../game/board";
 
+export enum AssetsSet {
+  Pixel = "Pixel",
+  Original = "Original",
+}
+
+export let currentAssetsSet = (localStorage.getItem("currentAssetsSet") as AssetsSet) || AssetsSet.Pixel;
+
 export const colors = {
   attackTarget: "#941651",
   destination: "#009500",
@@ -93,12 +100,14 @@ let currentColorSetKey: ColorSetKey = (() => {
   return stored && stored in colorSets ? (stored as ColorSetKey) : "default";
 })();
 
-export const toggleColorSet = () => {
+export const toggleBoardStyle = () => {
   const keys = Object.keys(colorSets) as ColorSetKey[];
   const currentIndex = keys.indexOf(currentColorSetKey);
 
   if (currentIndex === keys.length - 1) {
-    Board.toggleItemsStyleSet();
+    currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
+    localStorage.setItem("currentAssetsSet", currentAssetsSet);
+    Board.didToggleItemsStyleSet();
   }
 
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
