@@ -3,14 +3,14 @@ import { go } from "../game/gameController";
 import * as Board from "../game/board";
 
 const colorSets = {
-  defaultBoard: {
+  default: {
     gray: "#BEBEBE",
     lightGray: "#E8E8E8",
     blue: "#030DF4",
     darkGray: "#4F4F4F",
     lightBlue: "#88A8F8",
   },
-  originalBoard: {
+  original: {
     gray: "#C9C9C9",
     lightGray: "#FDFDFD",
     blue: "#1805FF",
@@ -24,7 +24,7 @@ const colorSets = {
     darkGray: "#BAB8B9",
     lightBlue: "#816306",
   },
-  funBoard: {
+  fun: {
     gray: "#FF69B4",
     lightGray: "#FFD700",
     blue: "#00FF00",
@@ -36,8 +36,8 @@ const colorSets = {
 type ColorSetKey = keyof typeof colorSets;
 
 let currentColorSetKey: ColorSetKey = (() => {
-  const stored = localStorage.getItem("boardStyle");
-  return stored && stored in colorSets ? (stored as ColorSetKey) : "defaultBoard";
+  const stored = localStorage.getItem("boardColorSet");
+  return stored && stored in colorSets ? (stored as ColorSetKey) : "default";
 })();
 
 const listeners: Array<() => void> = [];
@@ -46,10 +46,10 @@ export const toggleBoardStyle = () => {
   const keys = Object.keys(colorSets) as ColorSetKey[];
   const currentIndex = keys.indexOf(currentColorSetKey);
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
-  localStorage.setItem("boardStyle", currentColorSetKey);
+  localStorage.setItem("boardColorSet", currentColorSetKey);
   listeners.forEach((listener) => listener());
   if (currentIndex === keys.length - 1) {
-    Board.toggleItemsStyle();
+    Board.toggleItemsStyleSet();
   }
 };
 
