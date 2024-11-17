@@ -51,7 +51,7 @@ enum AssetsSet {
   Original = "Original",
 }
 
-let currentAssetsSet = AssetsSet.Pixel;
+let currentAssetsSet = localStorage.getItem("currentAssetsSet") as AssetsSet || AssetsSet.Pixel;
 let assets: any;
 let drainer: SVGElement;
 let angel: SVGElement;
@@ -96,6 +96,7 @@ await initializeAssets();
 
 export async function toggleItemsStyleSet() {
   currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
+  localStorage.setItem("currentAssetsSet", currentAssetsSet);
   await initializeAssets();
   const updateExistingItems = (elements: { [key: string]: SVGElement }) => {
     Object.values(elements).forEach((element) => {
