@@ -632,7 +632,7 @@ const BottomControls: React.FC = () => {
       case PrimaryActionType.JoinGame:
         return "Join Game";
       case PrimaryActionType.Rematch:
-        return "Play Again";
+        return "🕹️ Play Again";
       default:
         return "";
     }
@@ -652,7 +652,7 @@ const BottomControls: React.FC = () => {
       )}
       {isAttestVictoryButtonVisible && (
         <BottomPillButton onClick={handleAttestVictoryClick} isPink={true} disabled={!isAttestVictoryButtonEnabled}>
-          {"Attest Victory"}
+          {"🎉 Attest Victory"}
         </BottomPillButton>
       )}
       {isWatchOnlyIndicatorVisible && (
@@ -662,17 +662,17 @@ const BottomControls: React.FC = () => {
       )}
       {isInviteLinkButtonVisible && (
         <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "New Link Game"}
+          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Link Game"}
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
         <BottomPillButton onClick={handleAutomatchClick} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
-          {automatchButtonTmpState ? "🥁 Automatching..." : <>Automatch</>}
+          {automatchButtonTmpState ? "🥁 Automatching..." : <>👽 Automatch</>}
         </BottomPillButton>
       )}
       {isBotGameButtonVisible && (
         <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
-          {"Play with Bot"}
+          {"🤖 Play with Bot"}
         </BottomPillButton>
       )}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
