@@ -103,6 +103,7 @@ export const toggleColorSet = () => {
 
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
   localStorage.setItem("boardColorSet", currentColorSetKey);
+  Board.didToggleBoardColors();
 };
 
 export const getCurrentColorSet = () => colorSets[currentColorSetKey];

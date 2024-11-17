@@ -1420,17 +1420,17 @@ function getWavesFrame(location: Location, frameIndex: number) {
         const baseBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(baseBottomRect, x, y, width, pixel);
         SVG.setFill(baseBottomRect, baseColor);
-        baseBottomRect.setAttribute("class", "base-bottom-rect");
+        baseBottomRect.setAttribute("class", `waves-animation-base-rect waves-animation-${i % 2 === 0 ? "wave1" : "wave2"}`);
 
         const slidingBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(slidingBottomRect, x + width, y, 0, pixel);
         SVG.setFill(slidingBottomRect, colors.manaPool);
-        slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
+        slidingBottomRect.setAttribute("class", "waves-animation-sliding-bottom waves-animation-mana");
 
         const slidingTopRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(slidingTopRect, x + width, y - pixel, 0, pixel);
         SVG.setFill(slidingTopRect, baseColor);
-        slidingTopRect.setAttribute("class", "sliding-top-rect");
+        slidingTopRect.setAttribute("class", `waves-animation-sliding-top waves-animation-${i % 2 === 0 ? "wave1" : "wave2"}`);
 
         frame.appendChild(baseBottomRect);
         frame.appendChild(slidingTopRect);
@@ -1441,9 +1441,9 @@ function getWavesFrame(location: Location, frameIndex: number) {
       const prevKey = location.toString() + (frameIndex - 1).toString();
       const frame = wavesFrames[prevKey].cloneNode(true) as SVGElement;
 
-      const baseBottomRects = frame.querySelectorAll(".base-bottom-rect");
-      const slidingBottomRects = frame.querySelectorAll(".sliding-bottom-rect");
-      const slidingTopRects = frame.querySelectorAll(".sliding-top-rect");
+      const baseBottomRects = frame.querySelectorAll(".waves-animation-base-rect");
+      const slidingBottomRects = frame.querySelectorAll(".waves-animation-sliding-bottom");
+      const slidingTopRects = frame.querySelectorAll(".waves-animation-sliding-top");
 
       for (let i = 0; i < baseBottomRects.length; i++) {
         const baseBottomRect = baseBottomRects[i];
@@ -1479,6 +1479,36 @@ function getWavesFrame(location: Location, frameIndex: number) {
     }
   }
   return wavesFrames[key];
+}
+
+export function didToggleBoardColors() {
+  const wave1Color = colors.wave1;
+  const wave2Color = colors.wave2;
+  const manaColor = colors.manaPool;
+
+  Object.values(wavesFrames).forEach((frame) => {
+    const wave1Elements = frame.querySelectorAll(".waves-animation-wave1");
+    const wave2Elements = frame.querySelectorAll(".waves-animation-wave2");
+    const manaElements = frame.querySelectorAll(".waves-animation-mana");
+
+    wave1Elements.forEach((element) => {
+      if (element instanceof SVGElement) {
+        SVG.setFill(element, wave1Color);
+      }
+    });
+
+    wave2Elements.forEach((element) => {
+      if (element instanceof SVGElement) {
+        SVG.setFill(element, wave2Color);
+      }
+    });
+
+    manaElements.forEach((element) => {
+      if (element instanceof SVGElement) {
+        SVG.setFill(element, manaColor);
+      }
+    });
+  });
 }
 
 function inBoardCoordinates(location: Location): Location {
