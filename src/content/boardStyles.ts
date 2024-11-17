@@ -64,15 +64,6 @@ export const colorSets = {
     wave1: "#6666FF",
     wave2: "#00FCFF",
   },
-  original: {
-    darkSquare: "#C9C9C9",
-    lightSquare: "#FDFDFD",
-    manaPool: "#1805FF",
-    pickupItemSquare: "#EDB2FF",
-    simpleManaSquare: "#53EEFF",
-    wave1: "#4444DD",
-    wave2: "#00D4D4",
-  },
   darkAndYellow: {
     darkSquare: "#181818",
     lightSquare: "#4A4A4A",
