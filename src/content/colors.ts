@@ -21,9 +21,17 @@ export const colors = {
   },
   itemSelectionBackground: "rgba(0, 0, 0, 0.5)",
   scoreText: "gray",
-  wave1: "#6666FF",
-  wave2: "#00FCFF",
-  pool: "#030DF4",
+
+  get wave1() {
+    return colorSets[currentColorSetKey].wave1;
+  },
+  get wave2() {
+    return colorSets[currentColorSetKey].wave2;
+  },
+  get manaPool() {
+    return colorSets[currentColorSetKey].manaPool;
+  },
+
   sparkleLight: "#FEFEFE",
   sparkleDark: "#000",
   startFromStroke: "#fbbf24",
@@ -35,6 +43,8 @@ export type ColorSet = {
   manaPool: string;
   pickupItemSquare: string;
   simpleManaSquare: string;
+  wave1: string;
+  wave2: string;
 };
 
 export const colorSets = {
@@ -44,6 +54,8 @@ export const colorSets = {
     manaPool: "#030DF4",
     pickupItemSquare: "#4F4F4F",
     simpleManaSquare: "#88A8F8",
+    wave1: "#6666FF",
+    wave2: "#00FCFF",
   },
   original: {
     darkSquare: "#C9C9C9",
@@ -51,6 +63,8 @@ export const colorSets = {
     manaPool: "#1805FF",
     pickupItemSquare: "#EDB2FF",
     simpleManaSquare: "#53EEFF",
+    wave1: "#4444DD",
+    wave2: "#00D4D4",
   },
   darkAndYellow: {
     darkSquare: "#181818",
@@ -58,6 +72,8 @@ export const colorSets = {
     manaPool: "#FDF30B",
     pickupItemSquare: "#BAB8B9",
     simpleManaSquare: "#816306",
+    wave1: "#D39F00",
+    wave2: "#DBCF03",
   },
   fun: {
     darkSquare: "#FF69B4",
@@ -65,6 +81,8 @@ export const colorSets = {
     manaPool: "#00FF00",
     pickupItemSquare: "#FF4500",
     simpleManaSquare: "#1E90FF",
+    wave1: "#FF1493",
+    wave2: "#FF69B4",
   },
 } as const;
 
@@ -78,11 +96,11 @@ let currentColorSetKey: ColorSetKey = (() => {
 export const toggleColorSet = () => {
   const keys = Object.keys(colorSets) as ColorSetKey[];
   const currentIndex = keys.indexOf(currentColorSetKey);
-  
+
   if (currentIndex === keys.length - 1) {
     Board.toggleItemsStyleSet();
   }
-  
+
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
   localStorage.setItem("boardColorSet", currentColorSetKey);
 };

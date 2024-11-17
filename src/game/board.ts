@@ -1424,7 +1424,7 @@ function getWavesFrame(location: Location, frameIndex: number) {
 
         const slidingBottomRect = document.createElementNS(SVG.ns, "rect");
         SVG.setFrame(slidingBottomRect, x + width, y, 0, pixel);
-        SVG.setFill(slidingBottomRect, colors.pool);
+        SVG.setFill(slidingBottomRect, colors.manaPool);
         slidingBottomRect.setAttribute("class", "sliding-bottom-rect");
 
         const slidingTopRect = document.createElementNS(SVG.ns, "rect");
