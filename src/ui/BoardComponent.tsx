@@ -1,58 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
-import * as Board from "../game/board";
-
-const colorSets = {
-  default: {
-    darkSquare: "#BEBEBE",
-    lightSquare: "#E8E8E8",
-    manaPool: "#030DF4",
-    pickupItemSquare: "#4F4F4F",
-    simpleManaSquare: "#88A8F8",
-  },
-  original: {
-    darkSquare: "#C9C9C9",
-    lightSquare: "#FDFDFD",
-    manaPool: "#1805FF",
-    pickupItemSquare: "#EDB2FF",
-    simpleManaSquare: "#53EEFF",
-  },
-  darkAndYellow: {
-    darkSquare: "#181818",
-    lightSquare: "#4A4A4A",
-    manaPool: "#FDF30B",
-    pickupItemSquare: "#BAB8B9",
-    simpleManaSquare: "#816306",
-  },
-  fun: {
-    darkSquare: "#FF69B4",
-    lightSquare: "#FFD700",
-    manaPool: "#00FF00",
-    pickupItemSquare: "#FF4500",
-    simpleManaSquare: "#1E90FF",
-  },
-};
-
-type ColorSetKey = keyof typeof colorSets;
-
-let currentColorSetKey: ColorSetKey = (() => {
-  const stored = localStorage.getItem("boardColorSet");
-  return stored && stored in colorSets ? (stored as ColorSetKey) : "default";
-})();
+import { ColorSet, getCurrentColorSet, getCurrentColorSetKey, getNextColorSetKey, setCurrentColorSetKey } from "../content/colors";
 
 const listeners: Array<() => void> = [];
-
-export const toggleBoardStyle = () => {
-  const keys = Object.keys(colorSets) as ColorSetKey[];
-  const currentIndex = keys.indexOf(currentColorSetKey);
-  currentColorSetKey = keys[(currentIndex + 1) % keys.length];
-  localStorage.setItem("boardColorSet", currentColorSetKey);
-
-  listeners.forEach((listener) => listener());
-  if (currentIndex === keys.length - 1) {
-    Board.toggleItemsStyleSet();
-  }
-};
 
 export const subscribeToColorSetChanges = (listener: () => void) => {
   listeners.push(listener);
@@ -64,9 +14,16 @@ export const subscribeToColorSetChanges = (listener: () => void) => {
   };
 };
 
+export const toggleBoardStyle = () => {
+  const currentKey = getCurrentColorSetKey();
+  const nextKey = getNextColorSetKey(currentKey);
+  setCurrentColorSetKey(nextKey);
+  listeners.forEach((listener) => listener());
+};
+
 const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
-  const [currentColorSet, setCurrentColorSet] = useState(colorSets[currentColorSetKey]);
+  const [currentColorSet, setCurrentColorSet] = useState<ColorSet>(getCurrentColorSet());
 
   useEffect(() => {
     if (!initializationRef.current) {
@@ -77,7 +34,7 @@ const BoardComponent: React.FC = () => {
 
   useEffect(() => {
     const updateColorSet = () => {
-      setCurrentColorSet(colorSets[currentColorSetKey]);
+      setCurrentColorSet(getCurrentColorSet());
     };
 
     const unsubscribe = subscribeToColorSetChanges(updateColorSet);

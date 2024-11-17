@@ -1,3 +1,5 @@
+import * as Board from "../game/board";
+
 export const colors = {
   attackTarget: "#941651",
   destination: "#009500",
@@ -26,3 +28,69 @@ export const colors = {
   sparkleDark: "#000",
   startFromStroke: "#fbbf24",
 };
+
+export type ColorSet = {
+  darkSquare: string;
+  lightSquare: string;
+  manaPool: string;
+  pickupItemSquare: string;
+  simpleManaSquare: string;
+};
+
+export const colorSets = {
+  default: {
+    darkSquare: "#BEBEBE",
+    lightSquare: "#E8E8E8",
+    manaPool: "#030DF4",
+    pickupItemSquare: "#4F4F4F",
+    simpleManaSquare: "#88A8F8",
+  },
+  original: {
+    darkSquare: "#C9C9C9",
+    lightSquare: "#FDFDFD",
+    manaPool: "#1805FF",
+    pickupItemSquare: "#EDB2FF",
+    simpleManaSquare: "#53EEFF",
+  },
+  darkAndYellow: {
+    darkSquare: "#181818",
+    lightSquare: "#4A4A4A",
+    manaPool: "#FDF30B",
+    pickupItemSquare: "#BAB8B9",
+    simpleManaSquare: "#816306",
+  },
+  fun: {
+    darkSquare: "#FF69B4",
+    lightSquare: "#FFD700",
+    manaPool: "#00FF00",
+    pickupItemSquare: "#FF4500",
+    simpleManaSquare: "#1E90FF",
+  },
+} as const;
+
+export type ColorSetKey = keyof typeof colorSets;
+
+let currentColorSetKey: ColorSetKey = (() => {
+  const stored = localStorage.getItem("boardColorSet");
+  return stored && stored in colorSets ? (stored as ColorSetKey) : "default";
+})();
+
+export const getNextColorSetKey = (current: ColorSetKey): ColorSetKey => {
+  const keys = Object.keys(colorSets) as ColorSetKey[];
+  const currentIndex = keys.indexOf(current);
+
+  if (currentIndex === keys.length - 1) {
+    Board.toggleItemsStyleSet();
+  }
+
+  return keys[(currentIndex + 1) % keys.length];
+};
+
+export const getCurrentColorSetKey = () => currentColorSetKey;
+
+export const setCurrentColorSetKey = (key: ColorSetKey) => {
+  currentColorSetKey = key;
+  localStorage.setItem("boardColorSet", key);
+};
+
+export const getCurrentColorSet = () => colorSets[currentColorSetKey];
