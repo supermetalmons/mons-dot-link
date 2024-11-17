@@ -4,32 +4,32 @@ import * as Board from "../game/board";
 
 const colorSets = {
   default: {
-    gray: "#BEBEBE",
-    lightGray: "#E8E8E8",
-    blue: "#030DF4",
-    darkGray: "#4F4F4F",
-    lightBlue: "#88A8F8",
+    darkSquare: "#BEBEBE",
+    lightSquare: "#E8E8E8",
+    manaPool: "#030DF4",
+    pickupItemSquare: "#4F4F4F",
+    simpleManaSquare: "#88A8F8",
   },
   original: {
-    gray: "#C9C9C9",
-    lightGray: "#FDFDFD",
-    blue: "#1805FF",
-    darkGray: "#EDB2FF",
-    lightBlue: "#53EEFF",
+    darkSquare: "#C9C9C9",
+    lightSquare: "#FDFDFD",
+    manaPool: "#1805FF",
+    pickupItemSquare: "#EDB2FF",
+    simpleManaSquare: "#53EEFF",
   },
   darkAndYellow: {
-    gray: "#181818",
-    lightGray: "#4A4A4A",
-    blue: "#FDF30B",
-    darkGray: "#BAB8B9",
-    lightBlue: "#816306",
+    darkSquare: "#181818",
+    lightSquare: "#4A4A4A",
+    manaPool: "#FDF30B",
+    pickupItemSquare: "#BAB8B9",
+    simpleManaSquare: "#816306",
   },
   fun: {
-    gray: "#FF69B4",
-    lightGray: "#FFD700",
-    blue: "#00FF00",
-    darkGray: "#FF4500",
-    lightBlue: "#1E90FF",
+    darkSquare: "#FF69B4",
+    lightSquare: "#FFD700",
+    manaPool: "#00FF00",
+    pickupItemSquare: "#FF4500",
+    simpleManaSquare: "#1E90FF",
   },
 };
 
@@ -47,6 +47,7 @@ export const toggleBoardStyle = () => {
   const currentIndex = keys.indexOf(currentColorSetKey);
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
   localStorage.setItem("boardColorSet", currentColorSetKey);
+
   listeners.forEach((listener) => listener());
   if (currentIndex === keys.length - 1) {
     Board.toggleItemsStyleSet();
@@ -85,43 +86,43 @@ const BoardComponent: React.FC = () => {
     };
   }, []);
 
-  const colorGray = currentColorSet.gray;
-  const colorLightGray = currentColorSet.lightGray;
-  const colorBlue = currentColorSet.blue;
-  const colorDarkGray = currentColorSet.darkGray;
-  const colorLightBlue = currentColorSet.lightBlue;
+  const colorDarkSquare = currentColorSet.darkSquare;
+  const colorLightSquare = currentColorSet.lightSquare;
+  const colorManaPool = currentColorSet.manaPool;
+  const colorPickupItemSquare = currentColorSet.pickupItemSquare;
+  const colorSimpleManaSquare = currentColorSet.simpleManaSquare;
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 14.1" shapeRendering="crispEdges" overflow="visible">
-      <rect y="1" width="11" height="11" fill={colorLightGray} />
+      <rect y="1" width="11" height="11" fill={colorLightSquare} />
       {Array.from({ length: 11 }, (_, row) =>
         Array.from({ length: 11 }, (_, col) => {
           const x = col;
           const y = row + 1;
           if ((row + col) % 2 === 1) {
-            return <rect key={`square-${row}-${col}`} x={x} y={y} width="1" height="1" fill={colorGray} />;
+            return <rect key={`square-${row}-${col}`} x={x} y={y} width="1" height="1" fill={colorDarkSquare} />;
           }
           return null;
         })
       )}
 
-      <rect x="5" y="6" width="1" height="1" fill={colorBlue} />
-      <rect x="0" y="1" width="1" height="1" fill={colorBlue} />
-      <rect x="10" y="11" width="1" height="1" fill={colorBlue} />
-      <rect x="10" y="1" width="1" height="1" fill={colorBlue} />
-      <rect x="0" y="11" width="1" height="1" fill={colorBlue} />
-      <rect x="0" y="6" width="1" height="1" fill={colorDarkGray} />
-      <rect x="10" y="6" width="1" height="1" fill={colorDarkGray} />
-      <rect x="4" y="4" width="1" height="1" fill={colorLightBlue} />
-      <rect x="6" y="4" width="1" height="1" fill={colorLightBlue} />
-      <rect x="4" y="8" width="1" height="1" fill={colorLightBlue} />
-      <rect x="6" y="8" width="1" height="1" fill={colorLightBlue} />
-      <rect x="3" y="5" width="1" height="1" fill={colorLightBlue} />
-      <rect x="5" y="5" width="1" height="1" fill={colorLightBlue} />
-      <rect x="7" y="5" width="1" height="1" fill={colorLightBlue} />
-      <rect x="3" y="7" width="1" height="1" fill={colorLightBlue} />
-      <rect x="5" y="7" width="1" height="1" fill={colorLightBlue} />
-      <rect x="7" y="7" width="1" height="1" fill={colorLightBlue} />
+      <rect x="5" y="6" width="1" height="1" fill={colorManaPool} />
+      <rect x="0" y="1" width="1" height="1" fill={colorManaPool} />
+      <rect x="10" y="11" width="1" height="1" fill={colorManaPool} />
+      <rect x="10" y="1" width="1" height="1" fill={colorManaPool} />
+      <rect x="0" y="11" width="1" height="1" fill={colorManaPool} />
+      <rect x="0" y="6" width="1" height="1" fill={colorPickupItemSquare} />
+      <rect x="10" y="6" width="1" height="1" fill={colorPickupItemSquare} />
+      <rect x="4" y="4" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="6" y="4" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="4" y="8" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="6" y="8" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="3" y="5" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="5" y="5" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="7" y="5" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="3" y="7" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="5" y="7" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="7" y="7" width="1" height="1" fill={colorSimpleManaSquare} />
 
       <g id="monsboard"></g>
       <g id="highlightsLayer"></g>
