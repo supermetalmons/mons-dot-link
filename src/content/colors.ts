@@ -75,22 +75,16 @@ let currentColorSetKey: ColorSetKey = (() => {
   return stored && stored in colorSets ? (stored as ColorSetKey) : "default";
 })();
 
-export const getNextColorSetKey = (current: ColorSetKey): ColorSetKey => {
+export const toggleColorSet = () => {
   const keys = Object.keys(colorSets) as ColorSetKey[];
-  const currentIndex = keys.indexOf(current);
-
+  const currentIndex = keys.indexOf(currentColorSetKey);
+  
   if (currentIndex === keys.length - 1) {
     Board.toggleItemsStyleSet();
   }
-
-  return keys[(currentIndex + 1) % keys.length];
-};
-
-export const getCurrentColorSetKey = () => currentColorSetKey;
-
-export const setCurrentColorSetKey = (key: ColorSetKey) => {
-  currentColorSetKey = key;
-  localStorage.setItem("boardColorSet", key);
+  
+  currentColorSetKey = keys[(currentIndex + 1) % keys.length];
+  localStorage.setItem("boardColorSet", currentColorSetKey);
 };
 
 export const getCurrentColorSet = () => colorSets[currentColorSetKey];

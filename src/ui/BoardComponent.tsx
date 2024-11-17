@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
-import { ColorSet, getCurrentColorSet, getCurrentColorSetKey, getNextColorSetKey, setCurrentColorSetKey } from "../content/colors";
+import { ColorSet, getCurrentColorSet, toggleColorSet } from "../content/colors";
 
 const listeners: Array<() => void> = [];
 
@@ -15,9 +15,7 @@ export const subscribeToColorSetChanges = (listener: () => void) => {
 };
 
 export const toggleBoardStyle = () => {
-  const currentKey = getCurrentColorSetKey();
-  const nextKey = getNextColorSetKey(currentKey);
-  setCurrentColorSetKey(nextKey);
+  toggleColorSet();
   listeners.forEach((listener) => listener());
 };
 
