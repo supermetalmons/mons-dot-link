@@ -44,8 +44,8 @@ const ControlsContainer = styled.div`
 `;
 
 export const ControlButton = styled.button<{ disabled?: boolean }>`
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background-color: #f0f0f0;
   border: none;
@@ -135,7 +135,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   --color-dark-view-only-text: #777;
 
   background-color: ${(props) => (props.isViewOnly ? "var(--color-view-only)" : props.isBlue ? "var(--color-blue)" : props.isPink && props.disabled ? "var(--color-pink-disabled)" : props.isPink ? "var(--color-pink)" : "var(--color-default)")};
-  height: 40px;
+  height: 32px;
   font-weight: 888;
   font-size: 0.88rem;
   color: ${(props) => (props.isPink && props.disabled ? "var(--color-white)" : props.isViewOnly ? "var(--color-view-only-text)" : props.isBlue ? "var(--color-tint)" : "var(--color-white)")};
@@ -196,8 +196,8 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
 
 const ReactionPicker = styled.div<{ offsetToTheRight?: boolean }>`
   position: absolute;
-  bottom: 48px;
-  right: ${(props) => (props.offsetToTheRight ? "36px" : "81px")};
+  bottom: 40px;
+  right: ${(props) => (props.offsetToTheRight ? "22px" : "64px")};
   background-color: #f0f0f0;
   border-radius: 8px;
   padding: 8px;
@@ -232,8 +232,8 @@ const ReactionButton = styled.button`
 `;
 
 const ResignConfirmation = styled(ReactionPicker)`
-  right: 18px;
-  bottom: 48px;
+  right: 10px;
+  bottom: 40px;
   padding: 12px;
 `;
 
