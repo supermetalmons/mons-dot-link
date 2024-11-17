@@ -5,7 +5,7 @@ export enum AssetsSet {
   Original = "Original",
 }
 
-export let currentAssetsSet = (localStorage.getItem("currentAssetsSet") as AssetsSet) || AssetsSet.Pixel;
+export let currentAssetsSet = AssetsSet.Pixel;
 
 export const colors = {
   attackTarget: "#941651",
@@ -82,15 +82,6 @@ export const colorSets = {
     wave1: "#D39F00",
     wave2: "#DBCF03",
   },
-  fun: {
-    darkSquare: "#FF69B4",
-    lightSquare: "#FFD700",
-    manaPool: "#00FF00",
-    pickupItemSquare: "#FF4500",
-    simpleManaSquare: "#1E90FF",
-    wave1: "#FF1493",
-    wave2: "#FF69B4",
-  },
 } as const;
 
 export type ColorSetKey = keyof typeof colorSets;
@@ -103,13 +94,6 @@ let currentColorSetKey: ColorSetKey = (() => {
 export const toggleBoardStyle = () => {
   const keys = Object.keys(colorSets) as ColorSetKey[];
   const currentIndex = keys.indexOf(currentColorSetKey);
-
-  if (currentIndex === keys.length - 1) {
-    currentAssetsSet = currentAssetsSet === AssetsSet.Pixel ? AssetsSet.Original : AssetsSet.Pixel;
-    localStorage.setItem("currentAssetsSet", currentAssetsSet);
-    Board.didToggleItemsStyleSet();
-  }
-
   currentColorSetKey = keys[(currentIndex + 1) % keys.length];
   localStorage.setItem("boardColorSet", currentColorSetKey);
   Board.didToggleBoardColors();
