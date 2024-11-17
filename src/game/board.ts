@@ -120,6 +120,13 @@ export async function toggleItemsStyleSet() {
 
   updateExistingItems(items);
   updateExistingItems(basesPlaceholders);
+
+  if (board) {
+    const pixelOnlyElements = board.querySelectorAll('[data-assets-pixel-only="true"]');
+    pixelOnlyElements.forEach((element) => {
+      SVG.setHidden(element as SVGElement, currentAssetsSet !== AssetsSet.Pixel);
+    });
+  }
 }
 
 function loadImage(data: string, assetType: string) {
