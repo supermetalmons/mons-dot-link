@@ -121,12 +121,10 @@ export async function toggleItemsStyleSet() {
   updateExistingItems(items);
   updateExistingItems(basesPlaceholders);
 
-  if (board) {
-    const pixelOnlyElements = board.querySelectorAll('[data-assets-pixel-only="true"]');
-    pixelOnlyElements.forEach((element) => {
-      SVG.setHidden(element as SVGElement, currentAssetsSet !== AssetsSet.Pixel);
-    });
-  }
+  const allPixelOnlyElements = [...(board?.querySelectorAll('[data-assets-pixel-only="true"]') ?? []), ...(itemsLayer?.querySelectorAll('[data-assets-pixel-only="true"]') ?? [])];
+  allPixelOnlyElements.forEach((element) => {
+    SVG.setHidden(element as SVGElement, currentAssetsSet !== AssetsSet.Pixel);
+  });
 }
 
 function loadImage(data: string, assetType: string) {
@@ -1438,8 +1436,6 @@ function getTraceColors(): string[] {
 }
 
 function addWaves(location: Location) {
-  if (currentAssetsSet !== AssetsSet.Pixel) return;
-
   location = inBoardCoordinates(location);
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
   wavesSquareElement.setAttribute("data-assets-pixel-only", "true");
