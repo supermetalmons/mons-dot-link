@@ -51,7 +51,7 @@ enum AssetsSet {
   Original = "Original",
 }
 
-let currentAssetsSet = localStorage.getItem("currentAssetsSet") as AssetsSet || AssetsSet.Pixel;
+let currentAssetsSet = (localStorage.getItem("currentAssetsSet") as AssetsSet) || AssetsSet.Pixel;
 let assets: any;
 let drainer: SVGElement;
 let angel: SVGElement;
@@ -1221,7 +1221,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     container.appendChild(img);
     itemsLayer?.appendChild(container);
     items[key] = container;
-  } else if (sparkles && currentAssetsSet === AssetsSet.Pixel) {
+  } else if (sparkles) {
     const container = document.createElementNS(SVG.ns, "g");
     const sparkles = createSparklingContainer(location);
     SVG.setOrigin(img, location.j, location.i);
@@ -1239,6 +1239,8 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
 function createSparklingContainer(location: Location): SVGElement {
   const container = document.createElementNS(SVG.ns, "g");
   container.setAttribute("class", "item");
+  container.setAttribute("data-assets-pixel-only", "true");
+  SVG.setHidden(container, currentAssetsSet !== AssetsSet.Pixel);
 
   const mask = document.createElementNS(SVG.ns, "mask");
   mask.setAttribute("id", `mask-square-${location.toString()}`);
@@ -1425,6 +1427,8 @@ function addWaves(location: Location) {
 
   location = inBoardCoordinates(location);
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
+  wavesSquareElement.setAttribute("data-assets-pixel-only", "true");
+  SVG.setHidden(wavesSquareElement, currentAssetsSet !== AssetsSet.Pixel);
   wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
   SVG.setOpacity(wavesSquareElement, 0.5);
   board?.appendChild(wavesSquareElement);
