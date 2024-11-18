@@ -711,10 +711,12 @@ export function didClickAttestVictoryButton() {
       if (res && res.schema) {
         victoryTx = res;
       }
+      console.log("Will attest with tx:", victoryTx);
       saveOnchainRating(res);
     })
-    .catch(() => {
+    .catch((error) => {
       setAttestVictoryEnabled(true);
+      console.error("Failed to prepare victory tx:", error);
     });
 }
 
@@ -733,9 +735,11 @@ async function saveOnchainRating(txData: any) {
       showButtonForTx(txHash);
     } else {
       setAttestVictoryEnabled(true);
+      console.error("no tx hash");
     }
-  } catch {
+  } catch (error) {
     setAttestVictoryEnabled(true);
+    console.error("Error saving onchain rating:", error);
   }
 }
 

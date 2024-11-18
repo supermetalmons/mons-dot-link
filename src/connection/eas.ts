@@ -15,7 +15,7 @@ export async function sendEasTx(txData: any) {
 
   if (network.chainId !== BigInt(baseChainId)) {
     try {
-      await signer.provider.send('wallet_switchEthereumChain', [{ chainId: `0x${baseChainId.toString(16)}` }]);
+      await signer.provider.send("wallet_switchEthereumChain", [{ chainId: `0x${baseChainId.toString(16)}` }]);
     } catch (switchError) {
       throw new Error("Failed to switch to the Base network");
     }
