@@ -19,7 +19,7 @@ export async function getLeaderboard(): Promise<RatingData[]> {
   const easQuery = `
     query Attestation {
       attestations(
-        take: 20,
+        take: 30,
         skip: 0,
         orderBy: { time: desc },
         where: { 
@@ -76,6 +76,7 @@ export async function getLeaderboard(): Promise<RatingData[]> {
 
   if (ratings.length > 0) {
     const { ensCache } = await import("../utils/ensResolver");
+    ratings.sort((a, b) => b.rating - a.rating);
     ratings.forEach((rating) => {
       if (rating.recipient in ensCache) {
         rating.ensName = ensCache[rating.recipient];
