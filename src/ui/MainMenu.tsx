@@ -78,8 +78,10 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
 `;
 
 const MenuTitleText = styled.i`
+  margin-top: -2px;
+  margin-left: -1px;
   font-weight: 995;
-  font-size: 24px;
+  font-size: 25px;
   color: #333;
   cursor: default;
 
@@ -106,7 +108,7 @@ const EasLink = styled.a`
   border-radius: 12px;
   text-decoration: none;
   margin-left: 6px;
-  margin-top: 4px;
+  margin-top: 3px;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -159,7 +161,7 @@ const IconRow = styled.div<{ hide: boolean }>`
   display: flex;
   justify-content: space-between;
   gap: 6px;
-  margin-top: 12px;
+  margin-top: 9px;
 
   opacity: ${(props) => (props.hide ? 0 : 1)};
   height: ${(props) => (props.hide ? 0 : "auto")};
