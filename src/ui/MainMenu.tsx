@@ -76,21 +76,25 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
     background-color: #1e1e1e;
   }
 `;
-const MenuTitle = styled.div`
+
+const MenuTitleText = styled.i`
   font-weight: 995;
   font-size: 24px;
   color: #333;
-  margin: 6px 16px 0 53px;
   cursor: default;
+
+  @media (prefers-color-scheme: dark) {
+    color: #f5f5f5;
+  }
+`;
+
+const MenuTitle = styled.div`
+  margin: 6px 16px 0 53px;
   text-align: left;
   display: flex;
   align-items: flex-start;
   gap: 8px;
   min-height: 20px;
-
-  @media (prefers-color-scheme: dark) {
-    color: #f5f5f5;
-  }
 `;
 
 const EasLink = styled.a`
@@ -299,7 +303,7 @@ const MainMenu: React.FC = () => {
         }}>
         <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
           <MenuTitle>
-            <i>MONS.LINK</i>
+            <MenuTitleText>MONS.LINK</MenuTitleText>
             {showLeaderboard && (
               <EasLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
                 ✓ EAS
