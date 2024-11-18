@@ -106,6 +106,7 @@ const EasLink = styled.a`
   border-radius: 12px;
   text-decoration: none;
   margin-left: 6px;
+  margin-top: 4px;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
