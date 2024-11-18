@@ -355,8 +355,9 @@ const BottomControls: React.FC = () => {
   }, []);
 
   const handleAttestVictoryClick = () => {
-    didClickAttestVictoryButton();
+    if (!isAttestVictoryButtonEnabled) return;
     setIsAttestVictoryButtonEnabled(false);
+    didClickAttestVictoryButton();
   };
 
   const didClickTxHashButton = () => {
