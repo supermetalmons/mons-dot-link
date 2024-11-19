@@ -732,6 +732,7 @@ async function saveOnchainRating(txData: any) {
     const txHash = await sendEasTx(txData);
     if (txHash) {
       setAttestVictoryVisible(false);
+      setAttestVictoryEnabled(true);
       showButtonForTx(txHash);
     } else {
       setAttestVictoryEnabled(true);

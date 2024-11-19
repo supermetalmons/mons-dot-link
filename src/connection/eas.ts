@@ -8,7 +8,7 @@ async function getSigner(): Promise<any> {
 }
 
 export async function sendEasTx(txData: any) {
-  const signer = await getSigner();
+  let signer = await getSigner();
 
   const baseChainId = 8453;
   const network = await signer.provider.getNetwork();
@@ -16,6 +16,7 @@ export async function sendEasTx(txData: any) {
   if (network.chainId !== BigInt(baseChainId)) {
     try {
       await signer.provider.send("wallet_switchEthereumChain", [{ chainId: `0x${baseChainId.toString(16)}` }]);
+      signer = await getSigner();
     } catch (switchError) {
       throw new Error("Failed to switch to the Base network");
     }
