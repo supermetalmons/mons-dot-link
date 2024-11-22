@@ -68,17 +68,22 @@ const emojis = (await import("../content/emojis")).emojis;
 
 async function initializeAssets(onStart: boolean) {
   assets = (await import(`../content/gameAssets/gameAssets${currentAssetsSet}`)).gameAssets;
-  drainer = loadImage(assets.drainer, "drainer");
-  angel = loadImage(assets.angel, "angel");
-  demon = loadImage(assets.demon, "demon");
-  spirit = loadImage(assets.spirit, "spirit");
-  mystic = loadImage(assets.mystic, "mystic");
+
+  const sprites = (await import(`../content/gameAssets/monsSprites`)).gameAssets; // TODO: dev tmp
+  drainer = loadImage(sprites.greenseech_drainer, "drainer", true); // TODO: dev tmp
+  angel = loadImage(sprites.mummyfly_angel, "angel", true); // TODO: dev tmp
+  demon = loadImage(sprites.notchur_demon, "demon", true); // TODO: dev tmp
+  spirit = loadImage(sprites.owg_spirit, "spirit", true); // TODO: dev tmp
+  mystic = loadImage(sprites.chamgot_mystic, "mystic", true); // TODO: dev tmp
+
   mana = loadImage(assets.mana, "mana");
-  drainerB = loadImage(assets.drainerB, "drainerB");
-  angelB = loadImage(assets.angelB, "angelB");
-  demonB = loadImage(assets.demonB, "demonB");
-  spiritB = loadImage(assets.spiritB, "spiritB");
-  mysticB = loadImage(assets.mysticB, "mysticB");
+
+  drainerB = loadImage(sprites.deino_drainerB, "drainer", true); // TODO: dev tmp
+  angelB = loadImage(sprites.goxfold_angelB, "angel", true); // TODO: dev tmp
+  demonB = loadImage(sprites.borgalo_demonB, "demon", true); // TODO: dev tmp
+  spiritB = loadImage(sprites.melmut_spiritB, "spirit", true); // TODO: dev tmp
+  mysticB = loadImage(sprites.dart_mysticB, "mystic", true); // TODO: dev tmp
+
   manaB = loadImage(assets.manaB, "manaB");
   bombOrPotion = loadImage(assets.bombOrPotion, "bombOrPotion");
   bomb = loadImage(assets.bomb, "bomb");
@@ -119,13 +124,81 @@ export async function didToggleItemsStyleSet() {
   });
 }
 
-function loadImage(data: string, assetType: string) {
+function loadImage(data: string, assetType: string, isSpriteSheet: boolean = false): SVGElement {
   const image = document.createElementNS(SVG.ns, "image");
   SVG.setImage(image, data);
   SVG.setSize(image, 1, 1);
   image.setAttribute("class", "item");
   image.setAttribute("data-asset-type", assetType);
+  image.setAttribute("image-rendering", "pixelated");
+
+  if (isSpriteSheet) {
+    image.setAttribute("data-is-sprite-sheet", "true");
+    image.setAttribute("data-total-frames", "4");
+    image.setAttribute("data-frame-duration", "150");
+    image.setAttribute("data-frame-width", "1");
+    image.setAttribute("data-frame-height", "1");
+    const totalFrames = parseInt(image.getAttribute("data-total-frames") || "1", 10);
+    const frameWidth = parseFloat(image.getAttribute("data-frame-width") || "1");
+    const frameHeight = parseFloat(image.getAttribute("data-frame-height") || "1");
+    SVG.setSize(image, frameWidth * totalFrames, frameHeight);
+  }
+
   return image;
+}
+
+function startAnimation(image: SVGElement): void {
+  if (image.getAttribute("data-is-sprite-sheet") === "true") {
+    const totalFrames = parseInt(image.getAttribute("data-total-frames") || "1", 10);
+    const frameDuration = parseInt(image.getAttribute("data-frame-duration") || "150", 10);
+    const frameWidth = parseFloat(image.getAttribute("data-frame-width") || "1");
+    const frameHeight = parseFloat(image.getAttribute("data-frame-height") || "1");
+
+    const initialX = parseFloat(image.getAttribute("x") || "0");
+    const initialY = parseFloat(image.getAttribute("y") || "0");
+    const clipPathId = `clip-path-${Math.random().toString(36).substr(2, 9)}`;
+    const clipPath = document.createElementNS(SVG.ns, "clipPath");
+    clipPath.setAttribute("id", clipPathId);
+
+    const rect = document.createElementNS(SVG.ns, "rect");
+    rect.setAttribute("x", initialX.toString());
+    rect.setAttribute("y", initialY.toString());
+    rect.setAttribute("width", frameWidth.toString());
+    rect.setAttribute("height", frameHeight.toString());
+    clipPath.appendChild(rect);
+
+    // Append the clipPath to the <defs> in the SVG root
+    // TODO: should we modify item deletion too to include cleanup for these?
+    const svgRoot = image.ownerSVGElement;
+    if (svgRoot) {
+      let defs = svgRoot.querySelector("defs");
+      if (!defs) {
+        defs = document.createElementNS(SVG.ns, "defs");
+        svgRoot.insertBefore(defs, svgRoot.firstChild);
+      }
+      defs.appendChild(clipPath);
+    } else {
+      console.error("SVG root element not found.");
+      return;
+    }
+
+    image.setAttribute("clip-path", `url(#${clipPathId})`);
+    let currentFrame = 0;
+    let lastUpdateTime = Date.now();
+
+    function animate() {
+      const now = Date.now();
+      if (now - lastUpdateTime >= frameDuration) {
+        const x = initialX - currentFrame * frameWidth;
+        image.setAttribute("x", x.toString());
+        currentFrame = (currentFrame + 1) % totalFrames;
+        lastUpdateTime = now;
+      }
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
 }
 
 function initializeBoardElements() {
@@ -1238,6 +1311,9 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     SVG.setOrigin(img, location.j, location.i);
     itemsLayer?.appendChild(img);
     items[key] = img;
+
+    // TODO: call for other items too
+    startAnimation(img);
   }
 }
 
