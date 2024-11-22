@@ -38,6 +38,6 @@ rm -rf "$WEBP_DIR"
 GAME_ASSETS+="\n};"
 
 # Write to a JavaScript file
-echo -e "$GAME_ASSETS" > gameAssets.js
+echo -e "$GAME_ASSETS" > gameAssets.ts
 
-echo "Conversion, base64 encoding, and cleanup completed. gameAssets.js has been created."
+echo "Conversion, base64 encoding, and cleanup completed. gameAssets.ts has been created."
