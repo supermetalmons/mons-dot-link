@@ -4,6 +4,7 @@ import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 import styled from "styled-components";
 import { isMobile } from "../utils/misc";
 import { Leaderboard } from "./Leaderboard";
+import { toggleBoardExperimentMode } from "../game/board";
 
 const RockButtonContainer = styled.div`
   position: absolute;
@@ -263,6 +264,8 @@ export function hasMainMenuPopupsVisible(): boolean {
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const lastClickTime = useRef(0);
 
   getIsMenuOpen = () => isMenuOpen;
 
@@ -277,6 +280,21 @@ const MainMenu: React.FC = () => {
         setShowLeaderboard(false);
       }
     }
+  };
+
+  const handleTitleClick = () => {
+    const now = Date.now();
+    if (now - lastClickTime.current < 500) {
+      if (clickCount === 9) {
+        toggleBoardExperimentMode();
+        setClickCount(0);
+      } else {
+        setClickCount(clickCount + 1);
+      }
+    } else {
+      setClickCount(0);
+    }
+    lastClickTime.current = now;
   };
 
   useEffect(() => {
@@ -305,7 +323,7 @@ const MainMenu: React.FC = () => {
           }
         }}>
         <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
-          <MenuTitle>
+          <MenuTitle onClick={!isMobile ? handleTitleClick : undefined} onTouchStart={isMobile ? handleTitleClick : undefined}>
             <MenuTitleText>MONS.LINK</MenuTitleText>
             {showLeaderboard && (
               <EasLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">

@@ -10,7 +10,13 @@ import { hasMainMenuPopupsVisible } from "../ui/MainMenu";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 import { preventTouchstartIfNeeded } from "..";
 
-let isExperimentingWithSprites = false;
+let isExperimentingWithSprites = localStorage.getItem('isExperimentingWithSprites') === 'true';
+
+export function toggleBoardExperimentMode() {
+  isExperimentingWithSprites = !isExperimentingWithSprites;
+  localStorage.setItem('isExperimentingWithSprites', isExperimentingWithSprites.toString());
+  window.location.href = "/";
+}
 
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
