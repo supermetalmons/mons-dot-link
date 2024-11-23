@@ -1250,6 +1250,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
 
   itemsLayer?.appendChild(container);
   items[location.toString()] = container;
+  startAnimation(img);
 }
 
 function placeMonWithSupermana(item: SVGElement, location: Location) {
@@ -1266,6 +1267,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
 
   itemsLayer?.appendChild(container);
   items[location.toString()] = container;
+  startAnimation(img);
 }
 
 function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location) {
@@ -1282,6 +1284,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
 
   itemsLayer?.appendChild(container);
   items[location.toString()] = container;
+  startAnimation(img);
 }
 
 function placeItem(item: SVGElement, location: Location, fainted = false, sparkles = false) {
@@ -1311,10 +1314,8 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     SVG.setOrigin(img, location.j, location.i);
     itemsLayer?.appendChild(img);
     items[key] = img;
-
-    // TODO: call for other items too
-    startAnimation(img);
   }
+  startAnimation(img);
 }
 
 function createSparklingContainer(location: Location): SVGElement {
@@ -1400,6 +1401,7 @@ function setBase(item: SVGElement, location: Location) {
     SVG.setOpacity(img, 0.4);
     board?.appendChild(img);
     basesPlaceholders[key] = img;
+    // TODO: fix for sprites
   }
 }
 
