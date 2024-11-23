@@ -195,9 +195,6 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
     rect.setAttribute("height", frameHeight.toString());
     clipPath.appendChild(rect);
 
-    // Append the clipPath to the <defs> in the SVG root
-    // TODO: should we modify item deletion too to include cleanup for these?
-
     const svgRoot = image.ownerSVGElement;
     if (svgRoot) {
       let defs = svgRoot.querySelector("defs");
@@ -212,10 +209,13 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
     }
 
     image.setAttribute("clip-path", `url(#${clipPathId})`);
-    let currentFrame = 0;
-    let lastUpdateTime = Date.now();
+    image.setAttribute("data-clip-path-id", clipPathId);
 
     if (!keepStatic) {
+      let currentFrame = 0;
+      let lastUpdateTime = Date.now();
+      let animationFrameId: number;
+
       function animate() {
         const now = Date.now();
         if (now - lastUpdateTime >= frameDuration) {
@@ -224,10 +224,39 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
           currentFrame = (currentFrame + 1) % totalFrames;
           lastUpdateTime = now;
         }
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
+        image.setAttribute("data-animation-frame-id", animationFrameId.toString());
       }
 
       animate();
+    }
+  }
+}
+
+function removeItemAndCleanUpAnimation(item: SVGElement): void {
+  if (item.getAttribute("data-is-sprite-sheet") === "true") {
+    const animationFrameId = item.getAttribute("data-animation-frame-id");
+    if (animationFrameId) {
+      cancelAnimationFrame(parseInt(animationFrameId, 10));
+    }
+
+    const clipPathId = item.getAttribute("data-clip-path-id");
+    if (clipPathId) {
+      const svgRoot = item.ownerSVGElement;
+      if (svgRoot) {
+        const clipPath = svgRoot.querySelector(`#${clipPathId}`);
+        if (clipPath && clipPath.parentNode) {
+          clipPath.parentNode.removeChild(clipPath);
+        }
+      }
+    }
+
+    if (item.parentNode) {
+      item.parentNode.removeChild(item);
+    }
+  } else {
+    if (item.parentNode) {
+      item.parentNode.removeChild(item);
     }
   }
 }
@@ -271,17 +300,13 @@ export function resetForNewGame() {
   removeHighlights();
   for (const key in items) {
     const element = items[key];
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
+    removeItemAndCleanUpAnimation(element);
     delete items[key];
   }
 
   for (const key in basesPlaceholders) {
     const element = basesPlaceholders[key];
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
+    removeItemAndCleanUpAnimation(element);
     delete basesPlaceholders[key];
   }
 }
@@ -382,17 +407,13 @@ function colorPixel(location: Location, white: boolean) {
 function cleanAllPixels() {
   for (const key in items) {
     const element = items[key];
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
+    removeItemAndCleanUpAnimation(element);
     delete items[key];
   }
 
   for (const key in basesPlaceholders) {
     const element = basesPlaceholders[key];
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
+    removeItemAndCleanUpAnimation(element);
     delete basesPlaceholders[key];
   }
 }
@@ -545,9 +566,7 @@ export function removeItemsNotPresentIn(locations: Location[]) {
   for (const key in items) {
     if (!locationSet.has(key)) {
       const element = items[key];
-      if (element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
+      removeItemAndCleanUpAnimation(element);
       delete items[key];
     }
   }
@@ -555,9 +574,7 @@ export function removeItemsNotPresentIn(locations: Location[]) {
   for (const key in basesPlaceholders) {
     if (!locationSet.has(key)) {
       const element = basesPlaceholders[key];
-      if (element.parentNode) {
-        element.parentNode.removeChild(element);
-      }
+      removeItemAndCleanUpAnimation(element);
       delete basesPlaceholders[key];
     }
   }
@@ -608,7 +625,7 @@ export function removeItem(location: Location) {
   const locationKey = location.toString();
   const toRemove = items[locationKey];
   if (toRemove !== undefined) {
-    toRemove.remove();
+    removeItemAndCleanUpAnimation(toRemove);
     delete items[locationKey];
   }
 }
