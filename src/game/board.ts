@@ -169,16 +169,16 @@ function loadImage(data: string, assetType: string, isSpriteSheet: boolean = fal
   return image;
 }
 
-function startAnimation(image: SVGElement): void {
+function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
   if (image.getAttribute("data-is-sprite-sheet") === "true") {
     const totalFrames = parseInt(image.getAttribute("data-total-frames") || "1", 10);
-    const frameDuration = parseInt(image.getAttribute("data-frame-duration") || "150", 10);
+    const frameDuration = parseInt(image.getAttribute("data-frame-duration") || "200", 10);
     const frameWidth = parseFloat(image.getAttribute("data-frame-width") || "1");
     const frameHeight = parseFloat(image.getAttribute("data-frame-height") || "1");
 
     const initialX = parseFloat(image.getAttribute("x") || "0");
     const initialY = parseFloat(image.getAttribute("y") || "0");
-    const clipPathId = `clip-path-${Math.random().toString(36).substr(2, 9)}`;
+    const clipPathId = `clip-path-${Math.random().toString(36).slice(2, 11)}`;
     const clipPath = document.createElementNS(SVG.ns, "clipPath");
     clipPath.setAttribute("id", clipPathId);
 
@@ -209,18 +209,20 @@ function startAnimation(image: SVGElement): void {
     let currentFrame = 0;
     let lastUpdateTime = Date.now();
 
-    function animate() {
-      const now = Date.now();
-      if (now - lastUpdateTime >= frameDuration) {
-        const x = initialX - currentFrame * frameWidth;
-        image.setAttribute("x", x.toString());
-        currentFrame = (currentFrame + 1) % totalFrames;
-        lastUpdateTime = now;
+    if (!keepStatic) {
+      function animate() {
+        const now = Date.now();
+        if (now - lastUpdateTime >= frameDuration) {
+          const x = initialX - currentFrame * frameWidth;
+          image.setAttribute("x", x.toString());
+          currentFrame = (currentFrame + 1) % totalFrames;
+          lastUpdateTime = now;
+        }
+        requestAnimationFrame(animate);
       }
-      requestAnimationFrame(animate);
-    }
 
-    animate();
+      animate();
+    }
   }
 }
 
@@ -1338,7 +1340,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     itemsLayer?.appendChild(img);
     items[key] = img;
   }
-  startAnimation(img);
+  startAnimation(img, fainted);
 }
 
 function createSparklingContainer(location: Location): SVGElement {
@@ -1420,11 +1422,23 @@ function setBase(item: SVGElement, location: Location) {
     SVG.setHidden(basesPlaceholders[key], false);
   } else {
     const img = item.cloneNode() as SVGElement;
-    SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
+    const isSpriteSheet = img.getAttribute("data-is-sprite-sheet") === "true";
+
+    if (isSpriteSheet) {
+      img.setAttribute("data-frame-width", "0.6");
+      img.setAttribute("data-frame-height", "0.6");
+      SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6 * 4, 0.6);
+    } else {
+      SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
+    }
+
     SVG.setOpacity(img, 0.4);
     board?.appendChild(img);
     basesPlaceholders[key] = img;
-    // TODO: fix for sprites
+
+    if (isSpriteSheet) {
+      startAnimation(img, true);
+    }
   }
 }
 
