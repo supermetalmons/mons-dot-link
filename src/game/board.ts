@@ -10,6 +10,8 @@ import { hasMainMenuPopupsVisible } from "../ui/MainMenu";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 import { preventTouchstartIfNeeded } from "..";
 
+let isExperimentingWithSprites = true;
+
 export let playerSideMetadata = newEmptyPlayerMetadata();
 export let opponentSideMetadata = newEmptyPlayerMetadata();
 
@@ -69,21 +71,36 @@ const emojis = (await import("../content/emojis")).emojis;
 async function initializeAssets(onStart: boolean) {
   assets = (await import(`../content/gameAssets/gameAssets${currentAssetsSet}`)).gameAssets;
 
-  const sprites = (await import(`../content/gameAssets/monsSprites`)).gameAssets; // TODO: dev tmp
-  drainer = loadImage(sprites.greenseech_drainer, "drainer", true); // TODO: dev tmp
-  angel = loadImage(sprites.mummyfly_angel, "angel", true); // TODO: dev tmp
-  demon = loadImage(sprites.notchur_demon, "demon", true); // TODO: dev tmp
-  spirit = loadImage(sprites.owg_spirit, "spirit", true); // TODO: dev tmp
-  mystic = loadImage(sprites.chamgot_mystic, "mystic", true); // TODO: dev tmp
+  if (isExperimentingWithSprites) {
+    const sprites = (await import(`../content/gameAssets/monsSprites`)).gameAssets;
+    // TODO: load random ones
+
+    drainer = loadImage(sprites.greenseech_drainer, "drainer", true);
+    angel = loadImage(sprites.mummyfly_angel, "angel", true);
+    demon = loadImage(sprites.notchur_demon, "demon", true);
+    spirit = loadImage(sprites.owg_spirit, "spirit", true);
+    mystic = loadImage(sprites.chamgot_mystic, "mystic", true);
+
+    drainerB = loadImage(sprites.deino_drainer, "drainerB", true);
+    angelB = loadImage(sprites.goxfold_angel, "angelB", true);
+    demonB = loadImage(sprites.borgalo_demon, "demonB", true);
+    spiritB = loadImage(sprites.melmut_spirit, "spiritB", true);
+    mysticB = loadImage(sprites.dart_mystic, "mysticB", true);
+  } else {
+    drainer = loadImage(assets.drainer, "drainer");
+    angel = loadImage(assets.angel, "angel");
+    demon = loadImage(assets.demon, "demon");
+    spirit = loadImage(assets.spirit, "spirit");
+    mystic = loadImage(assets.mystic, "mystic");
+
+    drainerB = loadImage(assets.drainerB, "drainerB");
+    angelB = loadImage(assets.angelB, "angelB");
+    demonB = loadImage(assets.demonB, "demonB");
+    spiritB = loadImage(assets.spiritB, "spiritB");
+    mysticB = loadImage(assets.mysticB, "mysticB");
+  }
 
   mana = loadImage(assets.mana, "mana");
-
-  drainerB = loadImage(sprites.deino_drainer, "drainer", true); // TODO: dev tmp
-  angelB = loadImage(sprites.goxfold_angel, "angel", true); // TODO: dev tmp
-  demonB = loadImage(sprites.borgalo_demon, "demon", true); // TODO: dev tmp
-  spiritB = loadImage(sprites.melmut_spirit, "spirit", true); // TODO: dev tmp
-  mysticB = loadImage(sprites.dart_mystic, "mystic", true); // TODO: dev tmp
-
   manaB = loadImage(assets.manaB, "manaB");
   bombOrPotion = loadImage(assets.bombOrPotion, "bombOrPotion");
   bomb = loadImage(assets.bomb, "bomb");
@@ -169,6 +186,7 @@ function startAnimation(image: SVGElement): void {
 
     // Append the clipPath to the <defs> in the SVG root
     // TODO: should we modify item deletion too to include cleanup for these?
+
     const svgRoot = image.ownerSVGElement;
     if (svgRoot) {
       let defs = svgRoot.querySelector("defs");
