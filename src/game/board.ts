@@ -10,11 +10,11 @@ import { hasMainMenuPopupsVisible } from "../ui/MainMenu";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 import { preventTouchstartIfNeeded } from "..";
 
-let isExperimentingWithSprites = localStorage.getItem('isExperimentingWithSprites') === 'true';
+let isExperimentingWithSprites = localStorage.getItem("isExperimentingWithSprites") === "true";
 
 export function toggleBoardExperimentMode() {
   isExperimentingWithSprites = !isExperimentingWithSprites;
-  localStorage.setItem('isExperimentingWithSprites', isExperimentingWithSprites.toString());
+  localStorage.setItem("isExperimentingWithSprites", isExperimentingWithSprites.toString());
   window.location.reload();
 }
 
