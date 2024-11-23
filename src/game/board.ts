@@ -73,19 +73,24 @@ async function initializeAssets(onStart: boolean) {
 
   if (isExperimentingWithSprites) {
     const sprites = (await import(`../content/gameAssets/monsSprites`)).gameAssets;
-    // TODO: load random ones
+    const allKeys = Object.keys(sprites);
+    const getRandomSpriteOfType = (type: string) => {
+      const keys = allKeys.filter((k) => k.endsWith(`_${type}`));
+      const randomKey = keys[Math.floor(Math.random() * keys.length)] as keyof typeof sprites;
+      return sprites[randomKey];
+    };
 
-    drainer = loadImage(sprites.greenseech_drainer, "drainer", true);
-    angel = loadImage(sprites.mummyfly_angel, "angel", true);
-    demon = loadImage(sprites.notchur_demon, "demon", true);
-    spirit = loadImage(sprites.owg_spirit, "spirit", true);
-    mystic = loadImage(sprites.chamgot_mystic, "mystic", true);
+    drainer = loadImage(getRandomSpriteOfType("drainer"), "drainer", true);
+    angel = loadImage(getRandomSpriteOfType("angel"), "angel", true);
+    demon = loadImage(getRandomSpriteOfType("demon"), "demon", true);
+    spirit = loadImage(getRandomSpriteOfType("spirit"), "spirit", true);
+    mystic = loadImage(getRandomSpriteOfType("mystic"), "mystic", true);
 
-    drainerB = loadImage(sprites.deino_drainer, "drainerB", true);
-    angelB = loadImage(sprites.goxfold_angel, "angelB", true);
-    demonB = loadImage(sprites.borgalo_demon, "demonB", true);
-    spiritB = loadImage(sprites.melmut_spirit, "spiritB", true);
-    mysticB = loadImage(sprites.dart_mystic, "mysticB", true);
+    drainerB = loadImage(getRandomSpriteOfType("drainer"), "drainerB", true);
+    angelB = loadImage(getRandomSpriteOfType("angel"), "angelB", true);
+    demonB = loadImage(getRandomSpriteOfType("demon"), "demonB", true);
+    spiritB = loadImage(getRandomSpriteOfType("spirit"), "spiritB", true);
+    mysticB = loadImage(getRandomSpriteOfType("mystic"), "mysticB", true);
   } else {
     drainer = loadImage(assets.drainer, "drainer");
     angel = loadImage(assets.angel, "angel");
