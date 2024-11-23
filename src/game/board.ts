@@ -158,7 +158,10 @@ function loadImage(data: string, assetType: string, isSpriteSheet: boolean = fal
   SVG.setSize(image, 1, 1);
   image.setAttribute("class", "item");
   image.setAttribute("data-asset-type", assetType);
-  image.setAttribute("image-rendering", "pixelated");
+
+  if (assetType !== "avatar" && assetType !== "statusMoveEmoji") {
+    image.setAttribute("image-rendering", "pixelated");
+  }
 
   if (isSpriteSheet) {
     image.setAttribute("data-is-sprite-sheet", "true");
