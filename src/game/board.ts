@@ -237,17 +237,22 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
 }
 
 function removeItemAndCleanUpAnimation(item: SVGElement): void {
-  if (item.tagName === "g") {
+  let spriteSheetItem: SVGElement | null = null;
+  if (item.getAttribute("data-is-sprite-sheet") === "true") {
+    spriteSheetItem = item;
+  } else if (item.tagName === "g") {
     const spriteChild = Array.from(item.children).find((child) => child.getAttribute("data-is-sprite-sheet") === "true");
     if (spriteChild) {
-      removeItemAndCleanUpAnimation(spriteChild as SVGElement);
+      spriteSheetItem = spriteChild as SVGElement;
     }
-  } else if (item.getAttribute("data-is-sprite-sheet") === "true") {
-    (item as any).__isAnimating = false;
+  }
 
-    const clipPathId = item.getAttribute("data-clip-path-id");
+  if (spriteSheetItem) {
+    (spriteSheetItem as any).__isAnimating = false;
+
+    const clipPathId = spriteSheetItem.getAttribute("data-clip-path-id");
     if (clipPathId) {
-      const svgRoot = item.ownerSVGElement;
+      const svgRoot = spriteSheetItem.ownerSVGElement;
       if (svgRoot) {
         const clipPath = svgRoot.querySelector(`#${clipPathId}`);
         if (clipPath && clipPath.parentNode) {
