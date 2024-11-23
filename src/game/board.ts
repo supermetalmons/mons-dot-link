@@ -237,7 +237,12 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
 }
 
 function removeItemAndCleanUpAnimation(item: SVGElement): void {
-  if (item.getAttribute("data-is-sprite-sheet") === "true") {
+  if (item.tagName === "g") {
+    const spriteChild = Array.from(item.children).find((child) => child.getAttribute("data-is-sprite-sheet") === "true");
+    if (spriteChild) {
+      removeItemAndCleanUpAnimation(spriteChild as SVGElement);
+    }
+  } else if (item.getAttribute("data-is-sprite-sheet") === "true") {
     (item as any).__isAnimating = false;
 
     const clipPathId = item.getAttribute("data-clip-path-id");
@@ -250,14 +255,10 @@ function removeItemAndCleanUpAnimation(item: SVGElement): void {
         }
       }
     }
+  }
 
-    if (item.parentNode) {
-      item.parentNode.removeChild(item);
-    }
-  } else {
-    if (item.parentNode) {
-      item.parentNode.removeChild(item);
-    }
+  if (item.parentNode) {
+    item.parentNode.removeChild(item);
   }
 }
 
