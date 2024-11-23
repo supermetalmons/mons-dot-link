@@ -78,11 +78,11 @@ async function initializeAssets(onStart: boolean) {
 
   mana = loadImage(assets.mana, "mana");
 
-  drainerB = loadImage(sprites.deino_drainerB, "drainer", true); // TODO: dev tmp
-  angelB = loadImage(sprites.goxfold_angelB, "angel", true); // TODO: dev tmp
-  demonB = loadImage(sprites.borgalo_demonB, "demon", true); // TODO: dev tmp
-  spiritB = loadImage(sprites.melmut_spiritB, "spirit", true); // TODO: dev tmp
-  mysticB = loadImage(sprites.dart_mysticB, "mystic", true); // TODO: dev tmp
+  drainerB = loadImage(sprites.deino_drainer, "drainer", true); // TODO: dev tmp
+  angelB = loadImage(sprites.goxfold_angel, "angel", true); // TODO: dev tmp
+  demonB = loadImage(sprites.borgalo_demon, "demon", true); // TODO: dev tmp
+  spiritB = loadImage(sprites.melmut_spirit, "spirit", true); // TODO: dev tmp
+  mysticB = loadImage(sprites.dart_mystic, "mystic", true); // TODO: dev tmp
 
   manaB = loadImage(assets.manaB, "manaB");
   bombOrPotion = loadImage(assets.bombOrPotion, "bombOrPotion");
