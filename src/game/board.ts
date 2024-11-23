@@ -15,7 +15,7 @@ let isExperimentingWithSprites = localStorage.getItem('isExperimentingWithSprite
 export function toggleBoardExperimentMode() {
   isExperimentingWithSprites = !isExperimentingWithSprites;
   localStorage.setItem('isExperimentingWithSprites', isExperimentingWithSprites.toString());
-  window.location.href = "/";
+  window.location.reload();
 }
 
 export let playerSideMetadata = newEmptyPlayerMetadata();
