@@ -214,9 +214,13 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
     if (!keepStatic) {
       let currentFrame = 0;
       let lastUpdateTime = Date.now();
-      let animationFrameId: number;
+      (image as any).__isAnimating = true;
 
       function animate() {
+        if (!(image as any).__isAnimating) {
+          return;
+        }
+
         const now = Date.now();
         if (now - lastUpdateTime >= frameDuration) {
           const x = initialX - currentFrame * frameWidth;
@@ -224,8 +228,7 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
           currentFrame = (currentFrame + 1) % totalFrames;
           lastUpdateTime = now;
         }
-        animationFrameId = requestAnimationFrame(animate);
-        image.setAttribute("data-animation-frame-id", animationFrameId.toString());
+        requestAnimationFrame(animate);
       }
 
       animate();
@@ -235,10 +238,7 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
 
 function removeItemAndCleanUpAnimation(item: SVGElement): void {
   if (item.getAttribute("data-is-sprite-sheet") === "true") {
-    const animationFrameId = item.getAttribute("data-animation-frame-id");
-    if (animationFrameId) {
-      cancelAnimationFrame(parseInt(animationFrameId, 10));
-    }
+    (item as any).__isAnimating = false;
 
     const clipPathId = item.getAttribute("data-clip-path-id");
     if (clipPathId) {
