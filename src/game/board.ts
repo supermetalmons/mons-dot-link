@@ -1326,7 +1326,11 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   SVG.setOrigin(img, location.j, location.i);
 
   const carriedMana = supermanaSimple.cloneNode() as SVGElement;
-  SVG.setFrame(carriedMana, location.j + 0.13, location.i - 0.13, 0.74, 0.74);
+  if (item.getAttribute("data-is-sprite-sheet") === "true") {
+    SVG.setFrame(carriedMana, location.j + 0.13, location.i, 0.74, 0.74);
+  } else {
+    SVG.setFrame(carriedMana, location.j + 0.13, location.i - 0.13, 0.74, 0.74);
+  }
 
   const container = document.createElementNS(SVG.ns, "g");
   container.appendChild(img);
