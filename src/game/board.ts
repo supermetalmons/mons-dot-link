@@ -1110,8 +1110,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
         if (isDesktopSafari) {
           const scale = 1.8;
-          const sizeString = avatarSize.toString();
-          const newSizeString = (avatarSize * scale).toString();
+          const sizeString = (avatarSize * 100).toString();
+          const newSizeString = (avatarSize * 100 * scale).toString();
 
           avatar.animate(
             [
@@ -1124,7 +1124,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
               {
                 width: newSizeString,
                 height: newSizeString,
-                transform: `translate(0px, -0.77pt)`,
+                transform: `translate(0px, -77pt)`,
                 easing: "ease-in-out",
               },
               {
@@ -1140,7 +1140,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
             }
           );
         } else {
-          avatar.style.transformOrigin = "0px 13px";
+          avatar.style.transformOrigin = "0px 1300px";
           avatar.style.transform = "scale(1.8)";
           avatar.style.transition = "transform 0.3s";
           setTimeout(() => {
