@@ -975,7 +975,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
     SVG.setFill(numberText, colors.scoreText);
     SVG.setOpacity(numberText, 0.69);
-    numberText.setAttribute("font-size", "0.5");
+    numberText.setAttribute("font-size", "50");
     numberText.setAttribute("font-weight", "600");
     numberText.textContent = allHiddenInitially ? "" : "0";
     controlsLayer?.append(numberText);
@@ -989,7 +989,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
     SVG.setFill(timerText, "green");
     SVG.setOpacity(timerText, 0.69);
-    timerText.setAttribute("font-size", "0.5");
+    timerText.setAttribute("font-size", "50");
     timerText.setAttribute("font-weight", "600");
     timerText.textContent = "";
     controlsLayer?.append(timerText);
@@ -1003,7 +1003,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0));
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
-    nameText.setAttribute("font-size", "0.32");
+    nameText.setAttribute("font-size", "32");
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
     nameText.style.cursor = "pointer";
