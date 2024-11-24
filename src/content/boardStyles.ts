@@ -38,6 +38,12 @@ export const colors = {
   get manaPool() {
     return colorSets[currentColorSetKey].manaPool;
   },
+  get lightSquare() {
+    return colorSets[currentColorSetKey].lightSquare;
+  },
+  get darkSquare() {
+    return colorSets[currentColorSetKey].darkSquare;
+  },
 
   sparkleLight: "#FEFEFE",
   sparkleDark: "#000",

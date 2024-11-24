@@ -1475,8 +1475,7 @@ function setBase(item: SVGElement, location: Location) {
     }
 
     img.style.backgroundBlendMode = "saturation";
-    img.style.backgroundColor = "#bebebea0";
-    // TODO: bg color should depend on actual square bg color
+    img.style.backgroundColor = ((location.i + location.j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "a0";
 
     board?.appendChild(img);
     basesPlaceholders[key] = img;
@@ -1688,6 +1687,8 @@ export function didToggleBoardColors() {
   const wave1Color = colors.wave1;
   const wave2Color = colors.wave2;
   const manaColor = colors.manaPool;
+
+  // TODO: update base placeholders
 
   Object.values(wavesFrames).forEach((frame) => {
     const wave1Elements = frame.querySelectorAll(".wave1");
