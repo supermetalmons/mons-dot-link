@@ -1688,8 +1688,6 @@ export function didToggleBoardColors() {
   const wave2Color = colors.wave2;
   const manaColor = colors.manaPool;
 
-  // TODO: update base placeholders
-
   Object.values(wavesFrames).forEach((frame) => {
     const wave1Elements = frame.querySelectorAll(".wave1");
     const wave2Elements = frame.querySelectorAll(".wave2");
@@ -1712,6 +1710,12 @@ export function didToggleBoardColors() {
         SVG.setFill(element, manaColor);
       }
     });
+  });
+
+  Object.entries(basesPlaceholders).forEach(([key, element]) => {
+    const [i, j] = key.split("-").map(Number);
+    const squareColor = ((i + j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "a0";
+    element.style.backgroundColor = squareColor;
   });
 }
 
