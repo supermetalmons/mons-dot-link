@@ -794,7 +794,7 @@ export function showItemSelection() {
 
   const background = document.createElementNS(SVG.ns, "rect");
   SVG.setOrigin(background, 0, 1);
-  SVG.setSizeStr(background, "100%", "11");
+  SVG.setSizeStr(background, "100%", "1100");
   SVG.setFill(background, colors.itemSelectionBackground);
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
@@ -1278,7 +1278,7 @@ export function drawTrace(trace: Trace) {
   const dy = toCenter.y - fromCenter.y;
   const length = Math.sqrt(dx * dx + dy * dy);
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-  const transform = `translate(${fromCenter.x},${fromCenter.y}) rotate(${angle})`;
+  const transform = `translate(${fromCenter.x * 100},${fromCenter.y * 100}) rotate(${angle})`;
 
   SVG.setFrame(rect, 0, -0.1, length, 0.2);
   rect.setAttribute("transform", transform);
@@ -1365,7 +1365,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
   if (fainted) {
     SVG.setOrigin(img, 0, 0);
     const container = document.createElementNS(SVG.ns, "g");
-    container.setAttribute("transform", `translate(${location.j + 1}, ${location.i}) rotate(90)`);
+    container.setAttribute("transform", `translate(${(location.j + 1) * 100}, ${location.i * 100}) rotate(90)`);
     container.appendChild(img);
     itemsLayer?.appendChild(container);
     items[key] = container;
@@ -1592,7 +1592,7 @@ function addWaves(location: Location) {
   const wavesSquareElement = document.createElementNS(SVG.ns, "g");
   wavesSquareElement.setAttribute("data-assets-pixel-only", "true");
   SVG.setHidden(wavesSquareElement, currentAssetsSet !== AssetsSet.Pixel);
-  wavesSquareElement.setAttribute("transform", `translate(${location.j}, ${location.i})`);
+  wavesSquareElement.setAttribute("transform", `translate(${location.j * 100}, ${location.i * 100})`);
   SVG.setOpacity(wavesSquareElement, 0.5);
   board?.appendChild(wavesSquareElement);
 
@@ -1652,8 +1652,8 @@ function getWavesFrame(location: Location, frameIndex: number) {
         const baseBottomRect = baseBottomRects[i];
         const slidingBottomRect = slidingBottomRects[i];
         const slidingTopRect = slidingTopRects[i];
-        const baseX = parseFloat(baseBottomRect.getAttribute("x") ?? "0");
-        const baseWidth = parseFloat(baseBottomRect.getAttribute("width") ?? "0");
+        const baseX = parseFloat(baseBottomRect.getAttribute("x") ?? "0") / 100;
+        const baseWidth = parseFloat(baseBottomRect.getAttribute("width") ?? "0") / 100;
         let sliderX = baseX + baseWidth - pixel * frameIndex;
         const attemptedWidth = Math.min(frameIndex, 3) * pixel;
         const visibleWidth = (() => {
@@ -1673,10 +1673,10 @@ function getWavesFrame(location: Location, frameIndex: number) {
             return attemptedWidth;
           }
         })();
-        slidingBottomRect.setAttribute("x", sliderX.toString());
-        slidingTopRect.setAttribute("x", sliderX.toString());
-        slidingBottomRect.setAttribute("width", visibleWidth.toString());
-        slidingTopRect.setAttribute("width", visibleWidth.toString());
+        slidingBottomRect.setAttribute("x", (sliderX * 100).toString());
+        slidingTopRect.setAttribute("x", (sliderX * 100).toString());
+        slidingBottomRect.setAttribute("width", (visibleWidth * 100).toString());
+        slidingTopRect.setAttribute("width", (visibleWidth * 100).toString());
       }
       wavesFrames[key] = frame;
     }
