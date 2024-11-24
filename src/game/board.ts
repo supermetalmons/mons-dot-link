@@ -172,7 +172,9 @@ function loadBoardAssetImage(data: string, assetType: string, isSpriteSheet: boo
   foreignObject.style.backgroundRepeat = "no-repeat";
   foreignObject.setAttribute("class", "item");
   foreignObject.setAttribute("data-asset-type", assetType);
-  foreignObject.style.imageRendering = "pixelated"; // TODO: downsize regular assets from 192x192 to their original pixel art dimensions to avoid pixelated downscaling
+  if (currentAssetsSet === AssetsSet.Pixel) {
+    foreignObject.style.imageRendering = "pixelated";
+  }
   if (isSpriteSheet) {
     foreignObject.setAttribute("data-is-sprite-sheet", "true");
     foreignObject.setAttribute("data-total-frames", "4");

@@ -3,6 +3,7 @@ import * as Board from "../game/board";
 export enum AssetsSet {
   Pixel = "Pixel",
   Original = "Original",
+  Pangchiu = "Pangchiu",
 }
 
 export let currentAssetsSet = AssetsSet.Pixel;
