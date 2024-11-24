@@ -1479,7 +1479,7 @@ function setBase(item: SVGElement, location: Location) {
     }
 
     img.style.backgroundBlendMode = "saturation";
-    img.style.backgroundColor = ((location.i + location.j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "a0";
+    img.style.backgroundColor = ((location.i + location.j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "85";
 
     board?.appendChild(img);
     basesPlaceholders[key] = img;
@@ -1718,7 +1718,7 @@ export function didToggleBoardColors() {
 
   Object.entries(basesPlaceholders).forEach(([key, element]) => {
     const [i, j] = key.split("-").map(Number);
-    const squareColor = ((i + j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "a0";
+    const squareColor = ((i + j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "85";
     element.style.backgroundColor = squareColor;
   });
 }
