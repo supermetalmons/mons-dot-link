@@ -48,36 +48,36 @@ const BoardComponent: React.FC = () => {
   const colorSimpleManaSquare = currentColorSet.simpleManaSquare;
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 11 14.1" shapeRendering="crispEdges" overflow="visible">
-      <rect y="1" width="11" height="11" fill={colorLightSquare} />
+    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
+      <rect y="100" width="1100" height="1100" fill={colorLightSquare} />
       {Array.from({ length: 11 }, (_, row) =>
         Array.from({ length: 11 }, (_, col) => {
-          const x = col;
-          const y = row + 1;
+          const x = col * 100;
+          const y = (row + 1) * 100;
           if ((row + col) % 2 === 1) {
-            return <rect key={`square-${row}-${col}`} x={x} y={y} width="1" height="1" fill={colorDarkSquare} />;
+            return <rect key={`square-${row}-${col}`} x={x} y={y} width="100" height="100" fill={colorDarkSquare} />;
           }
           return null;
         })
       )}
 
-      <rect x="5" y="6" width="1" height="1" fill={colorManaPool} />
-      <rect x="0" y="1" width="1" height="1" fill={colorManaPool} />
-      <rect x="10" y="11" width="1" height="1" fill={colorManaPool} />
-      <rect x="10" y="1" width="1" height="1" fill={colorManaPool} />
-      <rect x="0" y="11" width="1" height="1" fill={colorManaPool} />
-      <rect x="0" y="6" width="1" height="1" fill={colorPickupItemSquare} />
-      <rect x="10" y="6" width="1" height="1" fill={colorPickupItemSquare} />
-      <rect x="4" y="4" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="6" y="4" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="4" y="8" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="6" y="8" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="3" y="5" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="5" y="5" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="7" y="5" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="3" y="7" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="5" y="7" width="1" height="1" fill={colorSimpleManaSquare} />
-      <rect x="7" y="7" width="1" height="1" fill={colorSimpleManaSquare} />
+      <rect x="500" y="600" width="100" height="100" fill={colorManaPool} />
+      <rect x="0" y="100" width="100" height="100" fill={colorManaPool} />
+      <rect x="1000" y="1100" width="100" height="100" fill={colorManaPool} />
+      <rect x="1000" y="100" width="100" height="100" fill={colorManaPool} />
+      <rect x="0" y="1100" width="100" height="100" fill={colorManaPool} />
+      <rect x="0" y="600" width="100" height="100" fill={colorPickupItemSquare} />
+      <rect x="1000" y="600" width="100" height="100" fill={colorPickupItemSquare} />
+      <rect x="400" y="400" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="600" y="400" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="400" y="800" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="600" y="800" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="300" y="500" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="500" y="500" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="700" y="500" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="300" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="500" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
+      <rect x="700" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
 
       <g id="monsboard"></g>
       <g id="highlightsLayer"></g>

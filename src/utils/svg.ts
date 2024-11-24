@@ -1,24 +1,24 @@
 export const ns = "http://www.w3.org/2000/svg";
 
 export function setFrame(element: SVGElement, x: number, y: number, width: number, height: number): void {
-  setFrameStr(element, x.toString(), y.toString(), width.toString(), height.toString());
+  setFrameStr(element, (x * 100).toString(), (y * 100).toString(), (width * 100).toString(), (height * 100).toString());
 }
 
 export function setX(element: SVGElement, x: number): void {
-  element.setAttribute("x", x.toString());
+  element.setAttribute("x", (x * 100).toString());
 }
 
 export function offsetX(element: SVGElement | undefined, delta: number): void {
   if (!element) return;
-  element.setAttribute("x", (parseFloat(element.getAttribute("x") || "0") + delta).toString());
+  element.setAttribute("x", (parseFloat(element.getAttribute("x") || "0") + delta * 100).toString());
 }
 
 export function setOrigin(element: SVGElement, x: number, y: number): void {
-  setOriginStr(element, x.toString(), y.toString());
+  setOriginStr(element, (x * 100).toString(), (y * 100).toString());
 }
 
 export function setSize(element: SVGElement, width: number, height: number): void {
-  setSizeStr(element, width.toString(), height.toString());
+  setSizeStr(element, (width * 100).toString(), (height * 100).toString());
 }
 
 export function setFrameStr(element: SVGElement, x: string, y: string, width: string, height: string): void {
@@ -38,9 +38,9 @@ export function setOriginStr(element: SVGElement, x: string, y: string): void {
 
 export function circle(centerX: number, centerY: number, radius: number): SVGElement {
   const circle = document.createElementNS(ns, "circle");
-  circle.setAttribute("cx", centerX.toString());
-  circle.setAttribute("cy", centerY.toString());
-  circle.setAttribute("r", radius.toString());
+  circle.setAttribute("cx", (centerX * 100).toString());
+  circle.setAttribute("cy", (centerY * 100).toString());
+  circle.setAttribute("r", (radius * 100).toString());
   return circle;
 }
 

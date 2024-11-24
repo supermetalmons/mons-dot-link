@@ -153,35 +153,45 @@ export async function didToggleItemsStyleSet() {
 }
 
 function loadImage(data: string, assetType: string, isSpriteSheet: boolean = false): SVGElement {
+  if (assetType !== "avatar" && assetType !== "statusMoveEmoji") {
+    return loadBoardAssetImage(data, assetType, isSpriteSheet);
+  }
   const image = document.createElementNS(SVG.ns, "image");
   SVG.setImage(image, data);
   SVG.setSize(image, 1, 1);
   image.setAttribute("class", "item");
   image.setAttribute("data-asset-type", assetType);
-
-  if (assetType !== "avatar" && assetType !== "statusMoveEmoji") {
-    image.setAttribute("image-rendering", "pixelated");
-  }
-
-  if (isSpriteSheet) {
-    image.setAttribute("data-is-sprite-sheet", "true");
-    image.setAttribute("data-total-frames", "4");
-    image.setAttribute("data-frame-duration", "150");
-    image.setAttribute("data-frame-width", "1");
-    image.setAttribute("data-frame-height", "1");
-    const totalFrames = parseInt(image.getAttribute("data-total-frames") || "1", 10);
-    const frameWidth = parseFloat(image.getAttribute("data-frame-width") || "1");
-    const frameHeight = parseFloat(image.getAttribute("data-frame-height") || "1");
-    SVG.setSize(image, frameWidth * totalFrames, frameHeight);
-  }
-
   return image;
+}
+
+function loadBoardAssetImage(data: string, assetType: string, isSpriteSheet: boolean = false): SVGElement {
+  const foreignObject = document.createElementNS(SVG.ns, "foreignObject");
+  SVG.setSize(foreignObject, 1, 1);
+  foreignObject.style.backgroundImage = `url(data:image/webp;base64,${data})`;
+  foreignObject.style.backgroundSize = "100%";
+  foreignObject.style.backgroundRepeat = "no-repeat";
+  foreignObject.setAttribute("class", "item");
+  foreignObject.setAttribute("data-asset-type", assetType);
+  foreignObject.style.imageRendering = "pixelated"; // TODO: downsize regular assets from 192x192 to their original pixel art dimensions to avoid pixelated downscaling
+  if (isSpriteSheet) {
+    foreignObject.setAttribute("data-is-sprite-sheet", "true");
+    foreignObject.setAttribute("data-total-frames", "4");
+    foreignObject.setAttribute("data-frame-duration", "169");
+    foreignObject.setAttribute("data-frame-width", "1");
+    foreignObject.setAttribute("data-frame-height", "1");
+    const totalFrames = parseInt(foreignObject.getAttribute("data-total-frames") || "1", 10);
+    const frameWidth = parseFloat(foreignObject.getAttribute("data-frame-width") || "1");
+    const frameHeight = parseFloat(foreignObject.getAttribute("data-frame-height") || "1");
+    SVG.setSize(foreignObject, frameWidth * totalFrames, frameHeight);
+  }
+
+  return foreignObject;
 }
 
 function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
   if (image.getAttribute("data-is-sprite-sheet") === "true") {
     const totalFrames = parseInt(image.getAttribute("data-total-frames") || "1", 10);
-    const frameDuration = parseInt(image.getAttribute("data-frame-duration") || "200", 10);
+    const frameDuration = parseInt(image.getAttribute("data-frame-duration") || "169", 10);
     const frameWidth = parseFloat(image.getAttribute("data-frame-width") || "1");
     const frameHeight = parseFloat(image.getAttribute("data-frame-height") || "1");
 
@@ -194,8 +204,8 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
     const rect = document.createElementNS(SVG.ns, "rect");
     rect.setAttribute("x", initialX.toString());
     rect.setAttribute("y", initialY.toString());
-    rect.setAttribute("width", frameWidth.toString());
-    rect.setAttribute("height", frameHeight.toString());
+    rect.setAttribute("width", (frameWidth * 100).toString());
+    rect.setAttribute("height", (frameHeight * 100).toString());
     clipPath.appendChild(rect);
 
     const svgRoot = image.ownerSVGElement;
@@ -226,7 +236,7 @@ function startAnimation(image: SVGElement, keepStatic: boolean = false): void {
 
         const now = Date.now();
         if (now - lastUpdateTime >= frameDuration) {
-          const x = initialX - currentFrame * frameWidth;
+          const x = initialX - currentFrame * frameWidth * 100;
           image.setAttribute("x", x.toString());
           currentFrame = (currentFrame + 1) % totalFrames;
           lastUpdateTime = now;
@@ -1170,8 +1180,8 @@ export function setupBoard() {
 
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
-      const rawX = parseInt(target.getAttribute("x") || "-1");
-      const rawY = parseInt(target.getAttribute("y") || "-1") - 1;
+      const rawX = parseInt(target.getAttribute("x") || "-100") / 100;
+      const rawY = parseInt(target.getAttribute("y") || "-100") / 100 - 1;
 
       const x = isFlipped ? 10 - rawX : rawX;
       const y = isFlipped ? 10 - rawY : rawY;
@@ -1464,7 +1474,10 @@ function setBase(item: SVGElement, location: Location) {
       SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
     }
 
-    SVG.setOpacity(img, 0.4);
+    img.style.backgroundBlendMode = "saturation";
+    img.style.backgroundColor = "#bebebea0";
+    // TODO: bg color should depend on actual square bg color
+
     board?.appendChild(img);
     basesPlaceholders[key] = img;
 
