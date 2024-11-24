@@ -1448,7 +1448,7 @@ function createSparkleParticle(location: Location, container: SVGElement, animat
       return;
     }
 
-    particle.setAttribute("y", (y - (velocity * timeDelta) / 1000).toString());
+    particle.setAttribute("y", ((y - (velocity * timeDelta) / 1000) * 100).toString());
     SVG.setOpacity(particle, Math.max(0, opacity - (0.15 * timeDelta) / 1000));
     requestAnimationFrame(animateParticle);
   }
@@ -1724,22 +1724,22 @@ function inBoardCoordinates(location: Location): Location {
 
 const sparkle = (() => {
   const svg = document.createElementNS(SVG.ns, "svg");
-  SVG.setSize(svg, 3, 3);
+  SVG.setSizeStr(svg, "3", "3");
   svg.setAttribute("viewBox", "0 0 3 3");
   SVG.setFill(svg, "transparent");
 
   const rect1 = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(rect1, 0, 1, 3, 1);
+  SVG.setFrameStr(rect1, "0", "1", "3", "1");
   SVG.setFill(rect1, colors.sparkleLight);
   svg.appendChild(rect1);
 
   const rect2 = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(rect2, 1, 0, 1, 3);
+  SVG.setFrameStr(rect2, "1", "0", "1", "3");
   SVG.setFill(rect2, colors.sparkleLight);
   svg.appendChild(rect2);
 
   const rect3 = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(rect3, 1, 1, 1, 1);
+  SVG.setFrameStr(rect3, "1", "1", "1", "1");
   SVG.setFill(rect3, colors.sparkleDark);
   svg.appendChild(rect3);
 
