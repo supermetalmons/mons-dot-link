@@ -798,7 +798,7 @@ export function hideItemSelection() {
   }
 }
 
-export function showItemSelection() {
+export function showItemSelection(): void {
   const overlay = document.createElementNS(SVG.ns, "g");
   itemSelectionOverlay = overlay;
 
@@ -809,63 +809,49 @@ export function showItemSelection() {
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
 
-  const bombButton = document.createElementNS(SVG.ns, "foreignObject");
-  SVG.setSize(bombButton, 1, 1);
-  bombButton.setAttribute("class", "item");
-  SVG.setFrameStr(bombButton, "25%", "30%", "20%", "20%");
+  function createItemButton(x: number, y: number, asset: string, modifier: InputModifier): void {
+    const button = document.createElementNS(SVG.ns, "foreignObject");
+    button.setAttribute("x", x.toString());
+    button.setAttribute("y", y.toString());
+    button.setAttribute("width", "300");
+    button.setAttribute("height", "300");
+    button.setAttribute("class", "item");
+    button.style.overflow = "visible";
 
-  const bombDiv = document.createElement("div");
-  bombDiv.style.width = "100%";
-  bombDiv.style.height = "100%";
-  bombDiv.style.backgroundImage = `url(data:image/webp;base64,${assets.bomb})`;
-  bombDiv.style.backgroundSize = "contain";
-  bombDiv.style.backgroundPosition = "center";
-  bombDiv.style.backgroundRepeat = "no-repeat";
-  if (currentAssetsSet === AssetsSet.Pixel) {
-    bombDiv.style.imageRendering = "pixelated";
+    const div = document.createElementNS("http://www.w3.org/1999/xhtml", "div") as HTMLDivElement;
+    div.style.width = "100%";
+    div.style.height = "100%";
+    div.style.display = "block";
+    div.style.margin = "0";
+    div.style.padding = "0";
+    div.style.backgroundImage = `url(data:image/webp;base64,${asset})`;
+    div.style.backgroundSize = "contain";
+    div.style.backgroundPosition = "center";
+    div.style.backgroundRepeat = "no-repeat";
+    if (currentAssetsSet === AssetsSet.Pixel) {
+      div.style.imageRendering = "pixelated";
+    }
+    button.appendChild(div);
+    overlay.appendChild(button);
+
+    const touchTarget = document.createElementNS(SVG.ns, "rect");
+    touchTarget.setAttribute("x", x.toString());
+    touchTarget.setAttribute("y", y.toString());
+    touchTarget.setAttribute("width", "300");
+    touchTarget.setAttribute("height", "300");
+    SVG.setFill(touchTarget, "transparent");
+    touchTarget.addEventListener(defaultInputEventName, (event) => {
+      preventTouchstartIfNeeded(event);
+      event.stopPropagation();
+      didSelectInputModifier(modifier);
+      overlay.remove();
+    });
+    overlay.appendChild(touchTarget);
   }
-  bombButton.appendChild(bombDiv);
-  overlay.appendChild(bombButton);
 
-  const bombTouchTarget = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrameStr(bombTouchTarget, "25%", "30%", "20%", "20%");
-  SVG.setFill(bombTouchTarget, "transparent");
-  bombTouchTarget.addEventListener(defaultInputEventName, (event) => {
-    preventTouchstartIfNeeded(event);
-    event.stopPropagation();
-    didSelectInputModifier(InputModifier.Bomb);
-    overlay.remove();
-  });
-  overlay.appendChild(bombTouchTarget);
+  createItemButton(250, 400, assets.bomb, InputModifier.Bomb);
 
-  const potionButton = document.createElementNS(SVG.ns, "foreignObject");
-  SVG.setSize(potionButton, 1, 1);
-  potionButton.setAttribute("class", "item");
-  SVG.setFrameStr(potionButton, "55%", "30%", "20%", "20%");
-
-  const potionDiv = document.createElement("div");
-  potionDiv.style.width = "100%";
-  potionDiv.style.height = "100%";
-  potionDiv.style.backgroundImage = `url(data:image/webp;base64,${assets.potion})`;
-  potionDiv.style.backgroundSize = "contain";
-  potionDiv.style.backgroundPosition = "center";
-  potionDiv.style.backgroundRepeat = "no-repeat";
-  if (currentAssetsSet === AssetsSet.Pixel) {
-    potionDiv.style.imageRendering = "pixelated";
-  }
-  potionButton.appendChild(potionDiv);
-  overlay.appendChild(potionButton);
-
-  const potionTouchTarget = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrameStr(potionTouchTarget, "55%", "30%", "20%", "20%");
-  SVG.setFill(potionTouchTarget, "transparent");
-  potionTouchTarget.addEventListener(defaultInputEventName, (event) => {
-    preventTouchstartIfNeeded(event);
-    event.stopPropagation();
-    didSelectInputModifier(InputModifier.Potion);
-    overlay.remove();
-  });
-  overlay.appendChild(potionTouchTarget);
+  createItemButton(550, 400, assets.potion, InputModifier.Potion);
 
   background.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
