@@ -811,14 +811,20 @@ export function showItemSelection() {
 
   const bombButton = document.createElementNS(SVG.ns, "foreignObject");
   SVG.setSize(bombButton, 1, 1);
-  bombButton.style.backgroundImage = `url(data:image/webp;base64,${assets.bomb})`;
-  bombButton.style.backgroundSize = "100%";
-  bombButton.style.backgroundRepeat = "no-repeat";
   bombButton.setAttribute("class", "item");
-  if (currentAssetsSet === AssetsSet.Pixel) {
-    bombButton.style.imageRendering = "pixelated";
-  }
   SVG.setFrameStr(bombButton, "25%", "30%", "20%", "20%");
+
+  const bombDiv = document.createElement("div");
+  bombDiv.style.width = "100%";
+  bombDiv.style.height = "100%";
+  bombDiv.style.backgroundImage = `url(data:image/webp;base64,${assets.bomb})`;
+  bombDiv.style.backgroundSize = "contain";
+  bombDiv.style.backgroundPosition = "center";
+  bombDiv.style.backgroundRepeat = "no-repeat";
+  if (currentAssetsSet === AssetsSet.Pixel) {
+    bombDiv.style.imageRendering = "pixelated";
+  }
+  bombButton.appendChild(bombDiv);
   overlay.appendChild(bombButton);
 
   const bombTouchTarget = document.createElementNS(SVG.ns, "rect");
@@ -834,14 +840,20 @@ export function showItemSelection() {
 
   const potionButton = document.createElementNS(SVG.ns, "foreignObject");
   SVG.setSize(potionButton, 1, 1);
-  potionButton.style.backgroundImage = `url(data:image/webp;base64,${assets.potion})`;
-  potionButton.style.backgroundSize = "100%";
-  potionButton.style.backgroundRepeat = "no-repeat";
   potionButton.setAttribute("class", "item");
-  if (currentAssetsSet === AssetsSet.Pixel) {
-    potionButton.style.imageRendering = "pixelated";
-  }
   SVG.setFrameStr(potionButton, "55%", "30%", "20%", "20%");
+
+  const potionDiv = document.createElement("div");
+  potionDiv.style.width = "100%";
+  potionDiv.style.height = "100%";
+  potionDiv.style.backgroundImage = `url(data:image/webp;base64,${assets.potion})`;
+  potionDiv.style.backgroundSize = "contain";
+  potionDiv.style.backgroundPosition = "center";
+  potionDiv.style.backgroundRepeat = "no-repeat";
+  if (currentAssetsSet === AssetsSet.Pixel) {
+    potionDiv.style.imageRendering = "pixelated";
+  }
+  potionButton.appendChild(potionDiv);
   overlay.appendChild(potionButton);
 
   const potionTouchTarget = document.createElementNS(SVG.ns, "rect");
