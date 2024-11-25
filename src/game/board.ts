@@ -1335,7 +1335,7 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   SVG.setOrigin(img, location.j, location.i);
 
   const carriedBomb = bomb.cloneNode() as SVGElement;
-  SVG.setFrame(carriedBomb, location.j + 0.52, location.i + 0.495, 0.54, 0.54);
+  SVG.setFrame(carriedBomb, location.j + 0.54, location.i + 0.52, 0.5, 0.5);
 
   const container = document.createElementNS(SVG.ns, "g");
   container.appendChild(img);
