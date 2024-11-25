@@ -811,13 +811,18 @@ export function showItemSelection() {
     bombButton.style.imageRendering = "pixelated";
   }
   SVG.setFrameStr(bombButton, "25%", "40%", "20%", "20%");
-  bombButton.addEventListener(defaultInputEventName, (event) => {
+  overlay.appendChild(bombButton);
+
+  const bombTouchTarget = document.createElementNS(SVG.ns, "rect");
+  SVG.setFrameStr(bombTouchTarget, "25%", "40%", "20%", "20%");
+  SVG.setFill(bombTouchTarget, "transparent");
+  bombTouchTarget.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Bomb);
     overlay.remove();
   });
-  overlay.appendChild(bombButton);
+  overlay.appendChild(bombTouchTarget);
 
   const potionButton = document.createElementNS(SVG.ns, "foreignObject");
   SVG.setSize(potionButton, 1, 1);
@@ -829,13 +834,18 @@ export function showItemSelection() {
     potionButton.style.imageRendering = "pixelated";
   }
   SVG.setFrameStr(potionButton, "55%", "40%", "20%", "20%");
-  potionButton.addEventListener(defaultInputEventName, (event) => {
+  overlay.appendChild(potionButton);
+
+  const potionTouchTarget = document.createElementNS(SVG.ns, "rect");
+  SVG.setFrameStr(potionTouchTarget, "55%", "40%", "20%", "20%");
+  SVG.setFill(potionTouchTarget, "transparent");
+  potionTouchTarget.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
     event.stopPropagation();
     didSelectInputModifier(InputModifier.Potion);
     overlay.remove();
   });
-  overlay.appendChild(potionButton);
+  overlay.appendChild(potionTouchTarget);
 
   background.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
