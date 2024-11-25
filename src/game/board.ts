@@ -801,10 +801,14 @@ export function showItemSelection() {
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
 
-  const bombButton = document.createElementNS(SVG.ns, "image");
-  SVG.setImage(bombButton, assets.bomb);
+  const bombButton = document.createElementNS(SVG.ns, "foreignObject");
+  SVG.setSize(bombButton, 1, 1);
+  bombButton.style.backgroundImage = `url(data:image/webp;base64,${assets.bomb})`;
+  bombButton.style.backgroundSize = "100%";
+  bombButton.style.backgroundRepeat = "no-repeat";
+  bombButton.setAttribute("class", "item");
   if (currentAssetsSet === AssetsSet.Pixel) {
-    bombButton.style.imageRendering = "pixelated"; // TODO: use foreign object for safari compatibility
+    bombButton.style.imageRendering = "pixelated";
   }
   SVG.setFrameStr(bombButton, "25%", "40%", "20%", "20%");
   bombButton.addEventListener(defaultInputEventName, (event) => {
@@ -815,10 +819,14 @@ export function showItemSelection() {
   });
   overlay.appendChild(bombButton);
 
-  const potionButton = document.createElementNS(SVG.ns, "image");
-  SVG.setImage(potionButton, assets.potion);
+  const potionButton = document.createElementNS(SVG.ns, "foreignObject");
+  SVG.setSize(potionButton, 1, 1);
+  potionButton.style.backgroundImage = `url(data:image/webp;base64,${assets.potion})`;
+  potionButton.style.backgroundSize = "100%";
+  potionButton.style.backgroundRepeat = "no-repeat";
+  potionButton.setAttribute("class", "item");
   if (currentAssetsSet === AssetsSet.Pixel) {
-    potionButton.style.imageRendering = "pixelated"; // TODO: use foreign object for safari compatibility
+    potionButton.style.imageRendering = "pixelated";
   }
   SVG.setFrameStr(potionButton, "55%", "40%", "20%", "20%");
   potionButton.addEventListener(defaultInputEventName, (event) => {
