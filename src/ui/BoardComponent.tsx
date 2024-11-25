@@ -50,7 +50,7 @@ const BoardComponent: React.FC = () => {
   const [isGridVisible, setIsGridVisible] = useState(true);
 
   const standardBoardTransform = "translate(0,100)";
-  const boardTransform = "translate(0,100) scale(0.81265509)";
+  const pangchiuBoardTransform = "translate(107,175) scale(0.81265509)";
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
@@ -87,9 +87,9 @@ const BoardComponent: React.FC = () => {
       </g>
 
       {!isGridVisible && <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" />}
-      <g id="monsboard" transform={isGridVisible ? standardBoardTransform : boardTransform}></g>
-      <g id="highlightsLayer" transform={isGridVisible ? standardBoardTransform : boardTransform}></g>
-      <g id="itemsLayer" transform={isGridVisible ? standardBoardTransform : boardTransform}></g>
+      <g id="monsboard" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
+      <g id="highlightsLayer" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
+      <g id="itemsLayer" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
       <g id="controlsLayer"></g>
     </svg>
   );
