@@ -795,7 +795,7 @@ export function showItemSelection() {
   itemSelectionOverlay = overlay;
 
   const background = document.createElementNS(SVG.ns, "rect");
-  SVG.setOrigin(background, 0, 1);
+  SVG.setOrigin(background, 0, 0);
   SVG.setSizeStr(background, "100%", "1100");
   SVG.setFill(background, colors.itemSelectionBackground);
   background.style.backdropFilter = "blur(1px)";
@@ -810,11 +810,11 @@ export function showItemSelection() {
   if (currentAssetsSet === AssetsSet.Pixel) {
     bombButton.style.imageRendering = "pixelated";
   }
-  SVG.setFrameStr(bombButton, "25%", "40%", "20%", "20%");
+  SVG.setFrameStr(bombButton, "25%", "30%", "20%", "20%");
   overlay.appendChild(bombButton);
 
   const bombTouchTarget = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrameStr(bombTouchTarget, "25%", "40%", "20%", "20%");
+  SVG.setFrameStr(bombTouchTarget, "25%", "30%", "20%", "20%");
   SVG.setFill(bombTouchTarget, "transparent");
   bombTouchTarget.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
@@ -833,11 +833,11 @@ export function showItemSelection() {
   if (currentAssetsSet === AssetsSet.Pixel) {
     potionButton.style.imageRendering = "pixelated";
   }
-  SVG.setFrameStr(potionButton, "55%", "40%", "20%", "20%");
+  SVG.setFrameStr(potionButton, "55%", "30%", "20%", "20%");
   overlay.appendChild(potionButton);
 
   const potionTouchTarget = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrameStr(potionTouchTarget, "55%", "40%", "20%", "20%");
+  SVG.setFrameStr(potionTouchTarget, "55%", "30%", "20%", "20%");
   SVG.setFill(potionTouchTarget, "transparent");
   potionTouchTarget.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
@@ -1207,7 +1207,7 @@ export function setupBoard() {
     const target = event.target as SVGElement;
     if (target && target.nodeName === "rect" && target.classList.contains("board-rect")) {
       const rawX = parseInt(target.getAttribute("x") || "-100") / 100;
-      const rawY = parseInt(target.getAttribute("y") || "-100") / 100 - 1;
+      const rawY = parseInt(target.getAttribute("y") || "-100") / 100;
 
       const x = isFlipped ? 10 - rawX : rawX;
       const y = isFlipped ? 10 - rawY : rawY;
@@ -1228,7 +1228,7 @@ export function setupBoard() {
   for (let y = 0; y < 11; y++) {
     for (let x = 0; x < 11; x++) {
       const rect = document.createElementNS(SVG.ns, "rect");
-      SVG.setFrame(rect, x, y + 1, 1, 1);
+      SVG.setFrame(rect, x, y, 1, 1);
       SVG.setFill(rect, "transparent");
       rect.classList.add("board-rect");
       itemsLayer?.appendChild(rect);
@@ -1393,12 +1393,13 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
   }
   const img = item.cloneNode() as SVGElement;
   if (fainted) {
-    SVG.setOrigin(img, 0, 0);
-    const container = document.createElementNS(SVG.ns, "g");
-    container.setAttribute("transform", `translate(${(location.j + 1) * 100}, ${location.i * 100}) rotate(90)`);
-    container.appendChild(img);
-    itemsLayer?.appendChild(container);
-    items[key] = container;
+    SVG.setOrigin(img, location.j, location.i);
+    const centerX = location.j * 100 + 50;
+    const centerY = location.i * 100 + 50;
+    img.style.transformOrigin = `${centerX}px ${centerY}px`;
+    img.style.transform = "rotate(90deg)";
+    itemsLayer?.appendChild(img);
+    items[key] = img;
   } else if (sparkles) {
     const container = document.createElementNS(SVG.ns, "g");
     const sparkles = createSparklingContainer(location);
@@ -1505,7 +1506,7 @@ function setBase(item: SVGElement, location: Location) {
     }
 
     img.style.backgroundBlendMode = "saturation";
-    img.style.backgroundColor = ((location.i + location.j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "85";
+    img.style.backgroundColor = ((location.i + location.j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
 
     board?.appendChild(img);
     basesPlaceholders[key] = img;
@@ -1744,16 +1745,16 @@ export function didToggleBoardColors() {
 
   Object.entries(basesPlaceholders).forEach(([key, element]) => {
     const [i, j] = key.split("-").map(Number);
-    const squareColor = ((i + j) % 2 !== 0 ? colors.lightSquare : colors.darkSquare) + "85";
+    const squareColor = ((i + j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
     element.style.backgroundColor = squareColor;
   });
 }
 
 function inBoardCoordinates(location: Location): Location {
   if (isFlipped) {
-    return new Location(11 - location.i, 10 - location.j);
+    return new Location(10 - location.i, 10 - location.j);
   } else {
-    return new Location(location.i + 1, location.j);
+    return new Location(location.i, location.j);
   }
 }
 

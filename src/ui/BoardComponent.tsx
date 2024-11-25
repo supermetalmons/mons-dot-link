@@ -79,9 +79,9 @@ const BoardComponent: React.FC = () => {
       <rect x="500" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
       <rect x="700" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
 
-      <g id="monsboard"></g>
-      <g id="highlightsLayer"></g>
-      <g id="itemsLayer"></g>
+      <g id="monsboard" transform="translate(0,100)"></g>
+      <g id="highlightsLayer" transform="translate(0,100)"></g>
+      <g id="itemsLayer" transform="translate(0,100)"></g>
       <g id="controlsLayer"></g>
     </svg>
   );
