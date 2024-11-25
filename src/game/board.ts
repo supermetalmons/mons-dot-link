@@ -803,6 +803,9 @@ export function showItemSelection() {
 
   const bombButton = document.createElementNS(SVG.ns, "image");
   SVG.setImage(bombButton, assets.bomb);
+  if (currentAssetsSet === AssetsSet.Pixel) {
+    bombButton.style.imageRendering = "pixelated"; // TODO: use foreign object for safari compatibility
+  }
   SVG.setFrameStr(bombButton, "25%", "40%", "20%", "20%");
   bombButton.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
@@ -814,6 +817,9 @@ export function showItemSelection() {
 
   const potionButton = document.createElementNS(SVG.ns, "image");
   SVG.setImage(potionButton, assets.potion);
+  if (currentAssetsSet === AssetsSet.Pixel) {
+    potionButton.style.imageRendering = "pixelated"; // TODO: use foreign object for safari compatibility
+  }
   SVG.setFrameStr(potionButton, "55%", "40%", "20%", "20%");
   potionButton.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
