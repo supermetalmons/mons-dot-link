@@ -167,14 +167,22 @@ function loadImage(data: string, assetType: string, isSpriteSheet: boolean = fal
 function loadBoardAssetImage(data: string, assetType: string, isSpriteSheet: boolean = false): SVGElement {
   const foreignObject = document.createElementNS(SVG.ns, "foreignObject");
   SVG.setSize(foreignObject, 1, 1);
-  foreignObject.style.backgroundImage = `url(data:image/webp;base64,${data})`;
-  foreignObject.style.backgroundSize = "100%";
-  foreignObject.style.backgroundRepeat = "no-repeat";
   foreignObject.setAttribute("class", "item");
   foreignObject.setAttribute("data-asset-type", assetType);
+
+  const div = document.createElement("div");
+  div.style.width = "100%";
+  div.style.height = "100%";
+  div.style.backgroundImage = `url(data:image/webp;base64,${data})`;
+  div.style.backgroundSize = "100%";
+  div.style.backgroundRepeat = "no-repeat";
+
   if (currentAssetsSet === AssetsSet.Pixel) {
-    foreignObject.style.imageRendering = "pixelated";
+    div.style.imageRendering = "pixelated";
   }
+
+  foreignObject.appendChild(div);
+
   if (isSpriteSheet) {
     foreignObject.setAttribute("data-is-sprite-sheet", "true");
     foreignObject.setAttribute("data-total-frames", "4");
@@ -1331,10 +1339,10 @@ export function hasBasePlaceholder(location: Location): boolean {
 
 function placeMonWithBomb(item: SVGElement, location: Location) {
   location = inBoardCoordinates(location);
-  const img = item.cloneNode() as SVGElement;
+  const img = item.cloneNode(true) as SVGElement;
   SVG.setOrigin(img, location.j, location.i);
 
-  const carriedBomb = bomb.cloneNode() as SVGElement;
+  const carriedBomb = bomb.cloneNode(true) as SVGElement;
   SVG.setFrame(carriedBomb, location.j + 0.54, location.i + 0.52, 0.5, 0.5);
 
   const container = document.createElementNS(SVG.ns, "g");
@@ -1348,10 +1356,10 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
 
 function placeMonWithSupermana(item: SVGElement, location: Location) {
   location = inBoardCoordinates(location);
-  const img = item.cloneNode() as SVGElement;
+  const img = item.cloneNode(true) as SVGElement;
   SVG.setOrigin(img, location.j, location.i);
 
-  const carriedMana = supermanaSimple.cloneNode() as SVGElement;
+  const carriedMana = supermanaSimple.cloneNode(true) as SVGElement;
   if (item.getAttribute("data-is-sprite-sheet") === "true") {
     SVG.setFrame(carriedMana, location.j + 0.13, location.i - 0.11, 0.74, 0.74);
   } else {
@@ -1369,10 +1377,10 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
 
 function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location) {
   location = inBoardCoordinates(location);
-  const img = item.cloneNode() as SVGElement;
+  const img = item.cloneNode(true) as SVGElement;
   SVG.setOrigin(img, location.j, location.i);
 
-  const carriedMana = mana.cloneNode() as SVGElement;
+  const carriedMana = mana.cloneNode(true) as SVGElement;
   SVG.setFrame(carriedMana, location.j + 0.35, location.i + 0.27, 0.93, 0.93);
 
   const container = document.createElementNS(SVG.ns, "g");
@@ -1391,7 +1399,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
   if (hasBasePlaceholder(logicalLocation)) {
     SVG.setHidden(basesPlaceholders[key], true);
   }
-  const img = item.cloneNode() as SVGElement;
+  const img = item.cloneNode(true) as SVGElement;
   if (fainted) {
     SVG.setOrigin(img, location.j, location.i);
     const centerX = location.j * 100 + 50;
@@ -1494,7 +1502,7 @@ function setBase(item: SVGElement, location: Location) {
   if (hasBasePlaceholder(logicalLocation)) {
     SVG.setHidden(basesPlaceholders[key], false);
   } else {
-    const img = item.cloneNode() as SVGElement;
+    const img = item.cloneNode(true) as SVGElement;
     const isSpriteSheet = img.getAttribute("data-is-sprite-sheet") === "true";
 
     if (isSpriteSheet) {
@@ -1505,8 +1513,9 @@ function setBase(item: SVGElement, location: Location) {
       SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
     }
 
-    img.style.backgroundBlendMode = "saturation";
-    img.style.backgroundColor = ((location.i + location.j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
+    const firstChild = img.children[0] as HTMLElement;
+    firstChild.style.backgroundBlendMode = "saturation";
+    firstChild.style.backgroundColor = ((location.i + location.j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
 
     board?.appendChild(img);
     basesPlaceholders[key] = img;
@@ -1746,7 +1755,8 @@ export function didToggleBoardColors() {
   Object.entries(basesPlaceholders).forEach(([key, element]) => {
     const [i, j] = key.split("-").map(Number);
     const squareColor = ((i + j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
-    element.style.backgroundColor = squareColor;
+    const firstChild = element.children[0] as HTMLElement;
+    firstChild.style.backgroundColor = squareColor;
   });
 }
 
