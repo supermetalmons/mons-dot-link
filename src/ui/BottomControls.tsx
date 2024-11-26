@@ -140,7 +140,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   font-size: 0.88rem;
   color: ${(props) => (props.isPink && props.disabled ? "var(--color-white)" : props.isViewOnly ? "var(--color-view-only-text)" : props.isBlue ? "var(--color-tint)" : "var(--color-white)")};
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 0px 16px;
   @media screen and (max-width: 300pt) {
     padding: 0px 10px;
@@ -665,17 +665,17 @@ const BottomControls: React.FC = () => {
       )}
       {isInviteLinkButtonVisible && (
         <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "✉️ New Link Game"}
+          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "Direct Game"}
         </BottomPillButton>
       )}
       {isAutomatchButtonVisible && (
-        <BottomPillButton onClick={handleAutomatchClick} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
-          {automatchButtonTmpState ? "🥁 Automatching..." : <>👽 Automatch</>}
+        <BottomPillButton onClick={handleAutomatchClick} isBlue={true} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
+          {automatchButtonTmpState ? "🥁 Automatching..." : <>Automatch</>}
         </BottomPillButton>
       )}
       {isBotGameButtonVisible && (
         <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
-          {"🤖 Play with Bot"}
+          {"Bot Game"}
         </BottomPillButton>
       )}
       {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
