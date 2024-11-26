@@ -6,7 +6,8 @@ export enum AssetsSet {
   Pangchiu = "Pangchiu",
 }
 
-export let currentAssetsSet = AssetsSet.Pixel;
+export let currentAssetsSet: any = AssetsSet.Pixel;
+export let isCustomPictureBoardEnabled = currentAssetsSet === AssetsSet.Pangchiu; // TODO: decouple board style from assets style
 
 export const colors = {
   attackTarget: "#941651",

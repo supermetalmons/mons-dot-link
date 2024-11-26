@@ -2,7 +2,7 @@ import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
-import { colors, currentAssetsSet, AssetsSet } from "../content/boardStyles";
+import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled } from "../content/boardStyles";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow, hasBottomPopupsVisible } from "../ui/BottomControls";
@@ -1500,8 +1500,28 @@ function setBase(item: SVGElement, location: Location) {
   if (hasBasePlaceholder(logicalLocation)) {
     SVG.setHidden(basesPlaceholders[key], false);
   } else {
-    const img = item.cloneNode(true) as SVGElement;
-    const isSpriteSheet = img.getAttribute("data-is-sprite-sheet") === "true";
+    let img: SVGElement;
+    const isSpriteSheet = item.getAttribute("data-is-sprite-sheet") === "true";
+    if (!isCustomPictureBoardEnabled) {
+      img = item.cloneNode(true) as SVGElement;
+      const firstChild = img.children[0] as HTMLElement;
+      firstChild.style.backgroundBlendMode = "saturation";
+      firstChild.style.backgroundColor = ((location.i + location.j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
+    } else {
+      img = document.createElementNS(SVG.ns, "image");
+      SVG.setOpacity(img, 0.5);
+      if (currentAssetsSet === AssetsSet.Pixel || isSpriteSheet) {
+        img.style.imageRendering = "pixelated";
+      }
+      const firstChild = item.children[0] as HTMLElement;
+      img.setAttribute("href", firstChild.style.backgroundImage.slice(5, -2));
+
+      if (isSpriteSheet) {
+        img.setAttribute("data-is-sprite-sheet", "true");
+        img.setAttribute("data-total-frames", item.getAttribute("data-total-frames") || "4");
+        img.setAttribute("data-frame-duration", item.getAttribute("data-frame-duration") || "169");
+      }
+    }
 
     if (isSpriteSheet) {
       img.setAttribute("data-frame-width", "0.6");
@@ -1510,10 +1530,6 @@ function setBase(item: SVGElement, location: Location) {
     } else {
       SVG.setFrame(img, location.j + 0.2, location.i + 0.2, 0.6, 0.6);
     }
-
-    const firstChild = img.children[0] as HTMLElement;
-    firstChild.style.backgroundBlendMode = "saturation";
-    firstChild.style.backgroundColor = ((location.i + location.j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
 
     board?.appendChild(img);
     basesPlaceholders[key] = img;
@@ -1750,12 +1766,14 @@ export function didToggleBoardColors() {
     });
   });
 
-  Object.entries(basesPlaceholders).forEach(([key, element]) => {
-    const [i, j] = key.split("-").map(Number);
-    const squareColor = ((i + j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
-    const firstChild = element.children[0] as HTMLElement;
-    firstChild.style.backgroundColor = squareColor;
-  });
+  if (!isCustomPictureBoardEnabled) {
+    Object.entries(basesPlaceholders).forEach(([key, element]) => {
+      const [i, j] = key.split("-").map(Number);
+      const squareColor = ((i + j) % 2 === 0 ? colors.lightSquare : colors.darkSquare) + "85";
+      const firstChild = element.children[0] as HTMLElement;
+      firstChild.style.backgroundColor = squareColor;
+    });
+  }
 }
 
 function inBoardCoordinates(location: Location): Location {
