@@ -7,7 +7,7 @@ export enum AssetsSet {
 }
 
 export let currentAssetsSet: any = AssetsSet.Pixel;
-// export let currentAssetsSet: any = AssetsSet.Pangchiu;
+// currentAssetsSet = AssetsSet.Pangchiu;
 export let isPangchiuBoard = currentAssetsSet === AssetsSet.Pangchiu;
 export let isCustomPictureBoardEnabled = isPangchiuBoard; // TODO: decouple board style from assets style
 

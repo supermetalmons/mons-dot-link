@@ -63,7 +63,7 @@ body {
   outline: none;
   -webkit-touch-callout: none;
   width: 100vw;
-  max-height: 77vh;
+  max-height: 83vh;
   touch-action: none;
   position: absolute;
   top: 52.5%;
@@ -181,7 +181,7 @@ img {
 
 .sound-button {
   margin-right: 11px;
-  
+
   @media (max-width: 380px) {
     margin-right: 6px;
   }
@@ -189,7 +189,7 @@ img {
 
 .brush-button {
   margin-left: 11px;
-  
+
   @media (max-width: 380px) {
     margin-left: 6px;
   }
@@ -198,7 +198,7 @@ img {
 .music-button {
   margin-left: 8px;
   margin-right: 8px;
-  
+
   @media (max-width: 380px) {
     margin-left: 4px;
     margin-right: 4px;
