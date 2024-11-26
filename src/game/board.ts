@@ -813,8 +813,8 @@ export function showItemSelection(): void {
     const button = document.createElementNS(SVG.ns, "foreignObject");
     button.setAttribute("x", x.toString());
     button.setAttribute("y", y.toString());
-    button.setAttribute("width", "300");
-    button.setAttribute("height", "300");
+    button.setAttribute("width", "340");
+    button.setAttribute("height", "340");
     button.setAttribute("class", "item");
     button.style.overflow = "visible";
 
@@ -837,8 +837,8 @@ export function showItemSelection(): void {
     const touchTarget = document.createElementNS(SVG.ns, "rect");
     touchTarget.setAttribute("x", x.toString());
     touchTarget.setAttribute("y", y.toString());
-    touchTarget.setAttribute("width", "300");
-    touchTarget.setAttribute("height", "300");
+    touchTarget.setAttribute("width", "340");
+    touchTarget.setAttribute("height", "340");
     SVG.setFill(touchTarget, "transparent");
     touchTarget.addEventListener(defaultInputEventName, (event) => {
       preventTouchstartIfNeeded(event);
@@ -849,9 +849,9 @@ export function showItemSelection(): void {
     overlay.appendChild(touchTarget);
   }
 
-  createItemButton(250, 400, assets.bomb, InputModifier.Bomb);
+  createItemButton(160, 365, assets.bomb, InputModifier.Bomb);
 
-  createItemButton(550, 400, assets.potion, InputModifier.Potion);
+  createItemButton(600, 365, assets.potion, InputModifier.Potion);
 
   background.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
