@@ -63,7 +63,6 @@ body {
   outline: none;
   -webkit-touch-callout: none;
   width: 100vw;
-  max-height: 83vh;
   touch-action: none;
   position: absolute;
   top: 52.5%;

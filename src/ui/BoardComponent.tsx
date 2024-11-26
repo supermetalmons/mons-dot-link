@@ -52,7 +52,7 @@ const BoardComponent: React.FC = () => {
   const pangchiuBoardTransform = "translate(107,175) scale(0.81265509)";
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
+    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" style={{ maxHeight: isGridVisible ? "83vh" : "95vh" }} viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
       <g style={{ display: isGridVisible ? "block" : "none" }}>
         <rect y="100" width="1100" height="1100" fill={colorLightSquare} />
         {Array.from({ length: 11 }, (_, row) =>
