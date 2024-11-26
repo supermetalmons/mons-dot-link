@@ -85,7 +85,12 @@ const BoardComponent: React.FC = () => {
         <rect x="700" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
       </g>
 
-      {!isGridVisible && <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" />}
+      {!isGridVisible && (
+        <>
+          <rect x="30" y="100" width="1040" height="1100" fill="#FEFCF6" />
+          <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" />
+        </>
+      )}
       <g id="monsboard" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
       <g id="highlightsLayer" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
       <g id="itemsLayer" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
