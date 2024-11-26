@@ -2,7 +2,7 @@ import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
-import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled } from "../content/boardStyles";
+import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled, isPangchiuBoard } from "../content/boardStyles";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow, hasBottomPopupsVisible } from "../ui/BottomControls";
@@ -1350,6 +1350,13 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   itemsLayer?.appendChild(container);
   items[location.toString()] = container;
   startAnimation(img);
+
+  if (isPangchiuBoard) {
+    const centerX = location.j * 100 + 50;
+    const centerY = location.i * 100 + 50;
+    img.style.transformOrigin = `${centerX}px ${centerY}px`;
+    img.style.transform = "scale(1.3)";
+  }
 }
 
 function placeMonWithSupermana(item: SVGElement, location: Location) {
@@ -1371,6 +1378,13 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   itemsLayer?.appendChild(container);
   items[location.toString()] = container;
   startAnimation(img);
+
+  if (isPangchiuBoard) {
+    const centerX = location.j * 100 + 50;
+    const centerY = location.i * 100 + 50;
+    img.style.transformOrigin = `${centerX}px ${centerY}px`;
+    img.style.transform = "scale(1.3)";
+  }
 }
 
 function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location) {
@@ -1388,6 +1402,13 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   itemsLayer?.appendChild(container);
   items[location.toString()] = container;
   startAnimation(img);
+
+  if (isPangchiuBoard) {
+    const centerX = location.j * 100 + 50;
+    const centerY = location.i * 100 + 50;
+    img.style.transformOrigin = `${centerX}px ${centerY}px`;
+    img.style.transform = "scale(1.3)";
+  }
 }
 
 function placeItem(item: SVGElement, location: Location, fainted = false, sparkles = false) {
@@ -1398,11 +1419,14 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
     SVG.setHidden(basesPlaceholders[key], true);
   }
   const img = item.cloneNode(true) as SVGElement;
+  const centerX = location.j * 100 + 50;
+  const centerY = location.i * 100 + 50;
+  img.style.transformOrigin = `${centerX}px ${centerY}px`;
+  if (isPangchiuBoard) {
+    img.style.transform = "scale(1.3)";
+  }
   if (fainted) {
     SVG.setOrigin(img, location.j, location.i);
-    const centerX = location.j * 100 + 50;
-    const centerY = location.i * 100 + 50;
-    img.style.transformOrigin = `${centerX}px ${centerY}px`;
     img.style.transform = "rotate(90deg)";
     itemsLayer?.appendChild(img);
     items[key] = img;
