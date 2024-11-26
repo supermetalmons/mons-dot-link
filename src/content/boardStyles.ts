@@ -6,8 +6,13 @@ export enum AssetsSet {
   Pangchiu = "Pangchiu",
 }
 
-export let currentAssetsSet: any = AssetsSet.Pixel;
-// currentAssetsSet = AssetsSet.Pangchiu;
+export let currentAssetsSet: AssetsSet = (localStorage.getItem("preferredAssetsSet") as AssetsSet) || AssetsSet.Pixel;
+
+export function setCurrentAssetsSet(set: AssetsSet) {
+  currentAssetsSet = set;
+  localStorage.setItem("preferredAssetsSet", set);
+}
+
 export let isPangchiuBoard = currentAssetsSet === AssetsSet.Pangchiu;
 export let isCustomPictureBoardEnabled = isPangchiuBoard; // TODO: decouple board style from assets style
 

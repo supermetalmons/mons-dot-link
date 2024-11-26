@@ -4,7 +4,7 @@ import { didDismissSomethingWithOutsideTapJustNow } from "./BottomControls";
 import styled from "styled-components";
 import { isMobile } from "../utils/misc";
 import { Leaderboard } from "./Leaderboard";
-import { toggleBoardExperimentMode } from "../game/board";
+import { toggleExperimentalMode } from "../game/board";
 
 const RockButtonContainer = styled.div`
   position: absolute;
@@ -255,6 +255,63 @@ const LinkButton = styled.a`
   }
 `;
 
+const MenuOverlay = styled.div`
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(3px);
+  border-radius: 0 0 10px 10px;
+  z-index: 2;
+
+  @media (prefers-color-scheme: dark) {
+    background: rgba(30, 30, 30, 0.93);
+  }
+`;
+
+const ExperimentalMenu = styled.div`
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  z-index: 3;
+`;
+
+const ExperimentButton = styled.button`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #f9f9f9;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: #252525;
+    color: #f5f5f5;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: #272727;
+      }
+    }
+  }
+`;
+
 let getIsMenuOpen: () => boolean;
 
 export function hasMainMenuPopupsVisible(): boolean {
@@ -265,6 +322,7 @@ const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [clickCount, setClickCount] = useState(0);
+  const [showExperimental, setShowExperimental] = useState(false);
   const lastClickTime = useRef(0);
 
   getIsMenuOpen = () => isMenuOpen;
@@ -277,6 +335,7 @@ const MainMenu: React.FC = () => {
     } else {
       setIsMenuOpen(!isMenuOpen);
       if (!isMenuOpen) {
+        setShowExperimental(false);
         setShowLeaderboard(false);
       }
     }
@@ -285,8 +344,8 @@ const MainMenu: React.FC = () => {
   const handleTitleClick = () => {
     const now = Date.now();
     if (now - lastClickTime.current < 500) {
-      if (clickCount === 9) {
-        toggleBoardExperimentMode();
+      if (clickCount === 1) {
+        showExperimentalFeaturesSelection();
         setClickCount(0);
       } else {
         setClickCount(clickCount + 1);
@@ -297,12 +356,17 @@ const MainMenu: React.FC = () => {
     lastClickTime.current = now;
   };
 
+  const showExperimentalFeaturesSelection = () => {
+    setShowExperimental(true);
+  };
+
   useEffect(() => {
     const handleTapOutside = (event: any) => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         didDismissSomethingWithOutsideTapJustNow();
         setIsMenuOpen(false);
         setShowLeaderboard(false);
+        setShowExperimental(false);
       }
     };
 
@@ -320,6 +384,7 @@ const MainMenu: React.FC = () => {
           if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
             setIsMenuOpen(false);
             setShowLeaderboard(false);
+            setShowExperimental(false);
           }
         }}>
         <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
@@ -334,10 +399,12 @@ const MainMenu: React.FC = () => {
           <CloseButton
             onClick={() => {
               setIsMenuOpen(false);
+              setShowExperimental(false);
               setShowLeaderboard(false);
             }}>
             ×
           </CloseButton>
+          {showExperimental && <MenuOverlay />}
           <IconRow hide={showLeaderboard}>
             <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
@@ -365,6 +432,28 @@ const MainMenu: React.FC = () => {
             <LinkButton onClick={() => setShowLeaderboard(true)}>Onchain Ratings</LinkButton>
           </LinkRow>
           <Leaderboard show={showLeaderboard} />
+          {showExperimental && (
+            <ExperimentalMenu>
+              <ExperimentButton
+                onClick={() => {
+                  toggleExperimentalMode(true, false, false);
+                }}>
+                default
+              </ExperimentButton>
+              <ExperimentButton
+                onClick={() => {
+                  toggleExperimentalMode(false, true, false);
+                }}>
+                animated mons
+              </ExperimentButton>
+              <ExperimentButton
+                onClick={() => {
+                  toggleExperimentalMode(false, false, true);
+                }}>
+                pangchiu wip
+              </ExperimentButton>
+            </ExperimentalMenu>
+          )}
         </RockMenu>
       </RockMenuWrapper>
       <RockButton

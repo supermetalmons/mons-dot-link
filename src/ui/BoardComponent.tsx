@@ -26,7 +26,6 @@ const BoardComponent: React.FC = () => {
   useEffect(() => {
     if (!initializationRef.current) {
       go();
-      setIsGridVisible(currentAssetsSet !== AssetsSet.Pangchiu);
       initializationRef.current = true;
     }
   }, []);
@@ -47,7 +46,7 @@ const BoardComponent: React.FC = () => {
   const colorManaPool = currentColorSet.manaPool;
   const colorPickupItemSquare = currentColorSet.pickupItemSquare;
   const colorSimpleManaSquare = currentColorSet.simpleManaSquare;
-  const [isGridVisible, setIsGridVisible] = useState(true);
+  const [isGridVisible] = useState(currentAssetsSet !== AssetsSet.Pangchiu);
 
   const standardBoardTransform = "translate(0,100)";
   const pangchiuBoardTransform = "translate(107,175) scale(0.81265509)";

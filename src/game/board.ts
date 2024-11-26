@@ -2,7 +2,7 @@ import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
-import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled, isPangchiuBoard } from "../content/boardStyles";
+import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled, isPangchiuBoard, setCurrentAssetsSet } from "../content/boardStyles";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
 import { didNotDismissAnythingWithOutsideTapJustNow, hasBottomPopupsVisible } from "../ui/BottomControls";
@@ -12,8 +12,17 @@ import { preventTouchstartIfNeeded } from "..";
 
 let isExperimentingWithSprites = localStorage.getItem("isExperimentingWithSprites") === "true";
 
-export function toggleBoardExperimentMode() {
-  isExperimentingWithSprites = !isExperimentingWithSprites;
+export function toggleExperimentalMode(defaultMode: boolean, animated: boolean, pangchiu: boolean) {
+  if (defaultMode) {
+    setCurrentAssetsSet(AssetsSet.Pixel);
+    isExperimentingWithSprites = false;
+  } else if (animated) {
+    setCurrentAssetsSet(AssetsSet.Pixel);
+    isExperimentingWithSprites = true;
+  } else if (pangchiu) {
+    setCurrentAssetsSet(AssetsSet.Pangchiu);
+    isExperimentingWithSprites = false;
+  }
   localStorage.setItem("isExperimentingWithSprites", isExperimentingWithSprites.toString());
   window.location.reload();
 }
