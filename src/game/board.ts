@@ -1364,7 +1364,8 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
     const centerX = location.j * 100 + 50;
     const centerY = location.i * 100 + 50;
     img.style.transformOrigin = `${centerX}px ${centerY}px`;
-    img.style.transform = "scale(1.3)";
+    img.style.transform = "scale(1.34)";
+    SVG.setFrame(carriedBomb, location.j + 0.54, location.i + 0.52, 0.75, 0.75);
   }
 }
 
@@ -1392,7 +1393,8 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
     const centerX = location.j * 100 + 50;
     const centerY = location.i * 100 + 50;
     img.style.transformOrigin = `${centerX}px ${centerY}px`;
-    img.style.transform = "scale(1.3)";
+    img.style.transform = "scale(1.34)";
+    SVG.setFrame(carriedMana, location.j - 0.03, location.i - 0.5, 1, 1);
   }
 }
 
@@ -1416,7 +1418,9 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
     const centerX = location.j * 100 + 50;
     const centerY = location.i * 100 + 50;
     img.style.transformOrigin = `${centerX}px ${centerY}px`;
-    img.style.transform = "scale(1.3)";
+    img.style.transform = "scale(1.34)";
+
+    SVG.setFrame(carriedMana, location.j + 0.23, location.i + 0.15, 1.34, 1.34);
   }
 }
 
@@ -1432,7 +1436,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
   const centerY = location.i * 100 + 50;
   img.style.transformOrigin = `${centerX}px ${centerY}px`;
   if (isPangchiuBoard) {
-    img.style.transform = "scale(1.3)";
+    img.style.transform = "scale(1.34)";
   }
   if (fainted) {
     SVG.setOrigin(img, location.j, location.i);
