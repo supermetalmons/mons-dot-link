@@ -22,6 +22,7 @@ export const didClickBrushButton = () => {
 const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
   const [currentColorSet, setCurrentColorSet] = useState<ColorSet>(getCurrentColorSet());
+  const [prefersDarkMode] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
     if (!initializationRef.current) {
@@ -87,7 +88,7 @@ const BoardComponent: React.FC = () => {
 
       {!isGridVisible && (
         <>
-          <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" style={{ backgroundColor: "#FEFCF6" }} />
+          <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" style={{ backgroundColor: prefersDarkMode ? "#7B6A4A" : "#FEFCF6" }} />
         </>
       )}
       <g id="monsboard" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
