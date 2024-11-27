@@ -976,6 +976,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
   const updateLayout = () => {
+    // TODO: adjust controls sizes as well
     const newShouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
     if (newShouldOffsetFromBorders !== shouldOffsetFromBorders) {
       shouldOffsetFromBorders = newShouldOffsetFromBorders;
