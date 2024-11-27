@@ -7,14 +7,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { ConnectButton, RainbowKitAuthenticationProvider, RainbowKitProvider, lightTheme, darkTheme } from "@rainbow-me/rainbowkit";
 
-import BoardComponent, { didClickBrushButton } from "./ui/BoardComponent";
+import BoardComponent from "./ui/BoardComponent";
 import MainMenu from "./ui/MainMenu";
 import { config } from "./utils/wagmi";
 import { useAuthStatus, createAuthAdapter } from "./connection/authentication";
 import { signIn } from "./connection/connection";
 import BottomControls from "./ui/BottomControls";
 import { isMobile } from "./utils/misc";
-import { FaVolumeUp, FaMusic, FaVolumeMute, FaStop, FaPaintBrush } from "react-icons/fa";
+import { FaVolumeUp, FaMusic, FaVolumeMute, FaStop, FaInfoCircle } from "react-icons/fa";
 import { isMobileOrVision } from "./utils/misc";
 import { soundPlayer } from "./utils/SoundPlayer";
 import { startPlayingMusic, stopPlayingMusic } from "./content/music";
@@ -59,8 +59,9 @@ const App = () => {
     });
   }, []);
 
-  const handleToggleBoardStyle = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
-    didClickBrushButton();
+  const handleInfoButtonClick = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    alert("🎯 score 5 points to win. bring mana 💦 to the corners.\n\n🔄 on your turn, except the first one:\n\n👟 move your mons up to a total of 5 spaces.\n🌟 use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 move one of your mana by 1 space — this ends your turn.\n\n☝️ you can carry mana with the central mon (he's a drainer). you can also see an angel, a potion, a bomb, and a supermana.");
   };
 
   return (
@@ -78,8 +79,8 @@ const App = () => {
               <div className="top-buttons-container">
                 {authStatus !== "loading" && (
                   <div className="small-top-control-buttons">
-                    <button className="brush-button" onClick={!isMobile ? handleToggleBoardStyle : undefined} onTouchStart={isMobile ? handleToggleBoardStyle : undefined}>
-                      <FaPaintBrush />
+                    <button className="info-button" onClick={!isMobile ? handleInfoButtonClick : undefined} onTouchStart={isMobile ? handleInfoButtonClick : undefined}>
+                      <FaInfoCircle />
                     </button>
                     <button className="music-button" onClick={handleMusicToggle} aria-label={isMusicPlaying ? "Stop Music" : "Play Music"}>
                       {isMusicPlaying ? <FaStop /> : <FaMusic />}

@@ -142,7 +142,7 @@ img {
 
 .music-button,
 .sound-button,
-.brush-button {
+.info-button {
   border: none;
   cursor: pointer;
   font-size: 13px;
@@ -186,7 +186,7 @@ img {
   }
 }
 
-.brush-button {
+.info-button {
   margin-left: 11px;
 
   @media (max-width: 380px) {

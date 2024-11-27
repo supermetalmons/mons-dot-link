@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot } from "react-icons/fa";
+import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush } from "react-icons/fa";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
 import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
+import { didClickBrushButton } from "./BoardComponent";
 import { isMobile } from "../utils/misc";
 import { soundPlayer } from "../utils/SoundPlayer";
 import { playReaction } from "../content/sounds";
@@ -31,7 +32,7 @@ const ControlsContainer = styled.div`
   position: fixed;
   bottom: 10px;
   right: 10px;
-  left: 10px;
+  left: 52px;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
@@ -40,6 +41,58 @@ const ControlsContainer = styled.div`
     gap: 6px;
     right: 6px;
     left: 6px;
+  }
+`;
+
+export const AppearanceToggleButton = styled.button<{ disabled?: boolean }>`
+  position: fixed;
+  bottom: 10px;
+  left: 9px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  opacity: 1;
+  background-color: #f0f0f0;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+
+  &:active {
+    background-color: #d0d0d0;
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+    color: #92939f;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #242424;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: #444;
+      }
+    }
+
+    &:active {
+      background-color: #555;
+    }
+
+    svg {
+      color: #5a5b66aa;
+    }
   }
 `;
 
@@ -641,95 +694,104 @@ const BottomControls: React.FC = () => {
     }
   };
 
+  const handleBrushClick = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    didClickBrushButton();
+  };
+
   return (
-    <ControlsContainer>
-      {isEndMatchButtonVisible && (
-        <BottomPillButton onClick={handleEndMatchClick} isBlue={!isEndMatchConfirmed} disabled={isEndMatchConfirmed} isViewOnly={isEndMatchConfirmed}>
-          {isEndMatchConfirmed ? "💨 Finished" : "🏁 End Match"}
-        </BottomPillButton>
-      )}
-      {txHash !== "" && (
-        <BottomPillButton onClick={didClickTxHashButton} isBlue={true}>
-          {"↗️ View on Explorer"}
-        </BottomPillButton>
-      )}
-      {isAttestVictoryButtonVisible && (
-        <BottomPillButton onClick={handleAttestVictoryClick} isPink={true} disabled={!isAttestVictoryButtonEnabled}>
-          {"🎉 Attest Victory"}
-        </BottomPillButton>
-      )}
-      {isWatchOnlyIndicatorVisible && (
-        <BottomPillButton isViewOnly={true} disabled={true}>
-          {"📺 Spectating"}
-        </BottomPillButton>
-      )}
-      {isInviteLinkButtonVisible && (
-        <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-          {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "Direct Game"}
-        </BottomPillButton>
-      )}
-      {isAutomatchButtonVisible && (
-        <BottomPillButton onClick={handleAutomatchClick} isBlue={true} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
-          {automatchButtonTmpState ? "🥁 Automatching..." : <>Automatch</>}
-        </BottomPillButton>
-      )}
-      {isBotGameButtonVisible && (
-        <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
-          {"Bot Game"}
-        </BottomPillButton>
-      )}
-      {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
-      {waitingStateText !== "" && (
-        <BottomPillButton disabled={true} isViewOnly={true}>
-          {waitingStateText}
-        </BottomPillButton>
-      )}
-      {isClaimVictoryVisible && (
-        <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
-          <FaTrophy />
-        </ControlButton>
-      )}
-      {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
-      {isUndoButtonVisible && (
-        <ControlButton onClick={!isMobile ? handleUndo : undefined} onTouchStart={isMobile ? handleUndo : undefined} aria-label="Undo" disabled={isUndoDisabled}>
-          <FaUndo />
-        </ControlButton>
-      )}
-      {isAutomoveButtonVisible && (
-        <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
-          <FaRobot />
-        </ControlButton>
-      )}
-      {isVoiceReactionButtonVisible && (
-        <ControlButton onClick={!isMobile ? toggleReactionPicker : undefined} onTouchStart={isMobile ? toggleReactionPicker : undefined} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
-          <FaCommentAlt />
-        </ControlButton>
-      )}
-      {isResignButtonVisible && (
-        <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={false}>
-          <FaFlag />
-        </ControlButton>
-      )}
-      {isHomeButtonVisible && (
-        <ControlButton onClick={handleHomeClick} aria-label="Home">
-          <FaHome />
-        </ControlButton>
-      )}
-      {isReactionPickerVisible && (
-        <ReactionPicker ref={pickerRef} offsetToTheRight={!isResignButtonVisible}>
-          <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
-          <ReactionButton onClick={() => handleReactionSelect("wahoo")}>wahoo</ReactionButton>
-          <ReactionButton onClick={() => handleReactionSelect("drop")}>drop</ReactionButton>
-          <ReactionButton onClick={() => handleReactionSelect("slurp")}>slurp</ReactionButton>
-          <ReactionButton onClick={() => handleReactionSelect("gg")}>gg</ReactionButton>
-        </ReactionPicker>
-      )}
-      {isResignConfirmVisible && (
-        <ResignConfirmation ref={resignConfirmRef}>
-          <ResignButton onClick={handleConfirmResign}>Resign</ResignButton>
-        </ResignConfirmation>
-      )}
-    </ControlsContainer>
+    <>
+      <AppearanceToggleButton onClick={!isMobile ? handleBrushClick : undefined} onTouchStart={isMobile ? handleBrushClick : undefined} aria-label="Appearance">
+        <FaPaintBrush />
+      </AppearanceToggleButton>
+      <ControlsContainer>
+        {isEndMatchButtonVisible && (
+          <BottomPillButton onClick={handleEndMatchClick} isBlue={!isEndMatchConfirmed} disabled={isEndMatchConfirmed} isViewOnly={isEndMatchConfirmed}>
+            {isEndMatchConfirmed ? "💨 Finished" : "🏁 End Match"}
+          </BottomPillButton>
+        )}
+        {txHash !== "" && (
+          <BottomPillButton onClick={didClickTxHashButton} isBlue={true}>
+            {"↗️ View on Explorer"}
+          </BottomPillButton>
+        )}
+        {isAttestVictoryButtonVisible && (
+          <BottomPillButton onClick={handleAttestVictoryClick} isPink={true} disabled={!isAttestVictoryButtonEnabled}>
+            {"🎉 Attest Victory"}
+          </BottomPillButton>
+        )}
+        {isWatchOnlyIndicatorVisible && (
+          <BottomPillButton isViewOnly={true} disabled={true}>
+            {"📺 Spectating"}
+          </BottomPillButton>
+        )}
+        {isInviteLinkButtonVisible && (
+          <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
+            {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "Direct Game"}
+          </BottomPillButton>
+        )}
+        {isAutomatchButtonVisible && (
+          <BottomPillButton onClick={handleAutomatchClick} isBlue={true} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
+            {automatchButtonTmpState ? "🥁 Automatching..." : <>Automatch</>}
+          </BottomPillButton>
+        )}
+        {isBotGameButtonVisible && (
+          <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
+            {"Bot Game"}
+          </BottomPillButton>
+        )}
+        {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
+        {waitingStateText !== "" && (
+          <BottomPillButton disabled={true} isViewOnly={true}>
+            {waitingStateText}
+          </BottomPillButton>
+        )}
+        {isClaimVictoryVisible && (
+          <ControlButton onClick={handleClaimVictoryClick} aria-label="Claim Victory" disabled={isClaimVictoryButtonDisabled}>
+            <FaTrophy />
+          </ControlButton>
+        )}
+        {isStartTimerVisible && <AnimatedHourglassButton config={timerConfig} onClick={handleTimerClick} disabled={isTimerButtonDisabled} />}
+        {isUndoButtonVisible && (
+          <ControlButton onClick={!isMobile ? handleUndo : undefined} onTouchStart={isMobile ? handleUndo : undefined} aria-label="Undo" disabled={isUndoDisabled}>
+            <FaUndo />
+          </ControlButton>
+        )}
+        {isAutomoveButtonVisible && (
+          <ControlButton onClick={!isMobile ? handleAutomoveClick : undefined} onTouchStart={isMobile ? handleAutomoveClick : undefined} aria-label="Bot" disabled={!isAutomoveButtonEnabled}>
+            <FaRobot />
+          </ControlButton>
+        )}
+        {isVoiceReactionButtonVisible && (
+          <ControlButton onClick={!isMobile ? toggleReactionPicker : undefined} onTouchStart={isMobile ? toggleReactionPicker : undefined} aria-label="Voice Reaction" ref={voiceReactionButtonRef} disabled={isVoiceReactionDisabled}>
+            <FaCommentAlt />
+          </ControlButton>
+        )}
+        {isResignButtonVisible && (
+          <ControlButton onClick={handleResignClick} aria-label="Resign" ref={resignButtonRef} disabled={false}>
+            <FaFlag />
+          </ControlButton>
+        )}
+        {isHomeButtonVisible && (
+          <ControlButton onClick={handleHomeClick} aria-label="Home">
+            <FaHome />
+          </ControlButton>
+        )}
+        {isReactionPickerVisible && (
+          <ReactionPicker ref={pickerRef} offsetToTheRight={!isResignButtonVisible}>
+            <ReactionButton onClick={() => handleReactionSelect("yo")}>yo</ReactionButton>
+            <ReactionButton onClick={() => handleReactionSelect("wahoo")}>wahoo</ReactionButton>
+            <ReactionButton onClick={() => handleReactionSelect("drop")}>drop</ReactionButton>
+            <ReactionButton onClick={() => handleReactionSelect("slurp")}>slurp</ReactionButton>
+            <ReactionButton onClick={() => handleReactionSelect("gg")}>gg</ReactionButton>
+          </ReactionPicker>
+        )}
+        {isResignConfirmVisible && (
+          <ResignConfirmation ref={resignConfirmRef}>
+            <ResignButton onClick={handleConfirmResign}>Resign</ResignButton>
+          </ResignConfirmation>
+        )}
+      </ControlsContainer>
+    </>
   );
 };
 
