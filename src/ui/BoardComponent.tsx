@@ -50,10 +50,10 @@ const BoardComponent: React.FC = () => {
   const [isGridVisible] = useState(currentAssetsSet !== AssetsSet.Pangchiu);
 
   const standardBoardTransform = "translate(0,100)";
-  const pangchiuBoardTransform = "translate(107,175) scale(0.81265509)";
+  const pangchiuBoardTransform = "translate(83,184) scale(0.85892388)";
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" style={{ maxHeight: isGridVisible ? "83vh" : "95vh" }} viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
+    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" style={{ maxHeight: isGridVisible ? "83vh" : "90vh", ...(isGridVisible ? {} : { top: "max(51%, 222.5pt);" }) }} viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
       <g style={{ display: isGridVisible ? "block" : "none" }}>
         <rect y="100" width="1100" height="1100" fill={colorLightSquare} />
         {Array.from({ length: 11 }, (_, row) =>
@@ -88,8 +88,8 @@ const BoardComponent: React.FC = () => {
 
       {!isGridVisible && (
         <>
-          <rect x="31" y="101" height="1098" width="1038" fill={prefersDarkMode ? "#7B6A4A" : "#FEFCF6"} />
-          <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" style={{ backgroundColor: prefersDarkMode ? "#7B6A4A" : "#FEFCF6" }} />
+          {/* <rect x="31" y="101" height="1098" width="1038" fill={prefersDarkMode ? "#7B6A4A" : "#FEFCF6"} /> */}
+          <image href="assets/bg/Pangchiu.jpg" x="0" y="100" width="1100" style={{ backgroundColor: prefersDarkMode ? "#7B6A4A" : "#FEFCF6" }} />
         </>
       )}
       <g id="monsboard" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
