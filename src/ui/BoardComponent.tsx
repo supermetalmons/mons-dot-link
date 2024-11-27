@@ -88,6 +88,7 @@ const BoardComponent: React.FC = () => {
 
       {!isGridVisible && (
         <>
+          <rect x="31" y="101" height="1098" width="1038" fill={prefersDarkMode ? "#7B6A4A" : "#FEFCF6"} />
           <image href="assets/bg/Pangchiu.png" x="30" y="100" height="1100" style={{ backgroundColor: prefersDarkMode ? "#7B6A4A" : "#FEFCF6" }} />
         </>
       )}
