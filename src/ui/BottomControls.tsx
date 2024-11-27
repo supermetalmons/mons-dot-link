@@ -52,46 +52,43 @@ export const AppearanceToggleButton = styled.button<{ disabled?: boolean }>`
   height: 32px;
   border-radius: 10px;
   opacity: 1;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9de;
   border: none;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #e0e0e0;
-    }
-  }
-
-  &:active {
-    background-color: #d0d0d0;
-  }
+  outline: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
 
   svg {
     width: 12px;
     height: 12px;
-    color: #92939f;
+    color: #76778788;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover svg {
+      color: #767787af;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
     background-color: #242424;
+    svg {
+      color: #767787a9;
+    }
 
     @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: #444;
+      &:hover svg {
+        color: #767787f0;
       }
-    }
-
-    &:active {
-      background-color: #555;
-    }
-
-    svg {
-      color: #5a5b66aa;
     }
   }
 `;
