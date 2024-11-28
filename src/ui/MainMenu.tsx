@@ -468,13 +468,15 @@ const MainMenu: React.FC = () => {
               </ExperimentButton>
               <BuildInfo>
                 {process.env.REACT_APP_BUILD_DATETIME
-                  ? `build ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleDateString([], {
-                      month: "short",
-                      day: "numeric",
-                    })} ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}`
+                  ? (() => {
+                      const date = new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000);
+                      const year = date.getUTCFullYear().toString().slice(-2);
+                      const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+                      const day = date.getUTCDate().toString().padStart(2, "0");
+                      const hours = date.getUTCHours().toString().padStart(2, "0");
+                      const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+                      return `build ${year}${month}${day}.${hours}.${minutes}`;
+                    })()
                   : "local dev"}
               </BuildInfo>
             </ExperimentalMenu>
