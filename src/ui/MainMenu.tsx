@@ -469,7 +469,6 @@ const MainMenu: React.FC = () => {
               <BuildInfo>
                 {process.env.REACT_APP_BUILD_DATETIME
                   ? `build ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleDateString([], {
-                      weekday: "short",
                       month: "short",
                       day: "numeric",
                     })} ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleTimeString([], {
