@@ -116,7 +116,7 @@ const InfoPopover = styled.div<{ isOpen: boolean }>`
 
 const InfoTitle = styled.h2`
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 15px 0;
   color: #333;
   text-align: left;
@@ -386,7 +386,7 @@ const ExperimentButton = styled.button`
   }
 `;
 
-const infoText = "💦 bring mana to the corners (pools).\n🎯 score 5 points to win.\n\n🔄 on your turn, except the first one:\n\n👟 move your mons up to a total of 5 spaces.\n🌟 use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 move one of your mana by 1 space to end your turn.\n\n☝️ you can carry mana with the central mon (he's a drainer). you can also see an angel, a potion, a bomb, and a supermana.";
+const infoText = "💦 Bring mana to the corners (pools).\n🎯 Score 5 points to win.\n\n🔄 On your turn, except the first one:\n\n👟 Move your mons up to a total of 5 spaces.\n🌟 Use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 Move one of your mana by 1 space to end your turn.\n\n☝️ You can carry mana with the central mon (he's a drainer). You can also see an angel, a potion, a bomb, and a supermana.";
 
 let getIsMenuOpen: () => boolean;
 export let toggleInfoVisibility: () => void;
@@ -576,7 +576,7 @@ const MainMenu: React.FC = () => {
         <CloseButton onClick={() => setIsInfoOpen(false)} style={{ display: "flex" }}>
           ×
         </CloseButton>
-        <InfoTitle>how to play</InfoTitle>
+        <InfoTitle>HOW TO PLAY MONS</InfoTitle>
         {infoText}
       </InfoPopover>
     </>
