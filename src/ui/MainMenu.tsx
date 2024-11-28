@@ -386,8 +386,6 @@ const ExperimentButton = styled.button`
   }
 `;
 
-const infoText = "💦 Bring mana to the corners (pools).\n🎯 Score 5 points to win.\n\n🔄 On your turn, except the first one:\n\n👟 Move your mons up to a total of 5 spaces.\n🌟 Use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 Move one of your mana by 1 space to end your turn.\n\n☝️ You can carry mana with the central mon (he's a drainer). You can also see an angel, a potion, a bomb, and a supermana.";
-
 let getIsMenuOpen: () => boolean;
 export let toggleInfoVisibility: () => void;
 
@@ -577,7 +575,7 @@ const MainMenu: React.FC = () => {
           ×
         </CloseButton>
         <InfoTitle>HOW TO PLAY MONS</InfoTitle>
-        {infoText}
+        💦 Bring mana to the corners (pools).<br/>🎯 Score 5 points to win.<br/><br/>🔄 On your turn, except the first one:<br/><br/>👟 Move your mons up to a total of 5 spaces.<br/>🌟 Use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.<br/>💧 Move one of your mana by 1 space to end your turn.<br/><br/>☝️ You can <u>carry mana with the central mon</u> (he's a drainer). You can also see an angel, a potion, a bomb, and a supermana.
       </InfoPopover>
     </>
   );
