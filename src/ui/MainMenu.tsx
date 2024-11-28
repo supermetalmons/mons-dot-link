@@ -22,6 +22,13 @@ const RockButton = styled.button`
   cursor: pointer;
   position: relative;
   z-index: 2;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-callout: none;
+  -webkit-highlight: none;
+  -webkit-tap-highlight-color: transparent;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -44,6 +51,12 @@ const RockButton = styled.button`
     height: 34px;
     opacity: 1;
     display: block;
+    -webkit-touch-callout: none;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
   }
 `;
 
@@ -147,6 +160,12 @@ const CloseButton = styled.button`
   right: 6px;
   top: 11px;
   padding: 0;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
 
   @media (hover: none) {
     display: flex;
@@ -236,6 +255,12 @@ const LinkButton = styled.a`
   color: #333;
   text-decoration: none;
   cursor: pointer;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
