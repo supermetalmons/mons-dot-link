@@ -290,6 +290,8 @@ const BuildInfo = styled.div`
   text-align: center;
   margin-top: auto;
   padding-bottom: 12px;
+  user-select: none;
+  cursor: default;
 
   @media (prefers-color-scheme: dark) {
     color: #9999a8af;
