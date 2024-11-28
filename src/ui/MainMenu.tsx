@@ -91,6 +91,41 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
   }
 `;
 
+const InfoPopover = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 63px;
+  right: min(14px, 2.3dvw);
+  font-size: 12px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: min(360px, 85dvw);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  opacity: ${(props) => (props.isOpen ? 1 : 0)};
+  pointer-events: ${(props) => (props.isOpen ? "auto" : "none")};
+  white-space: pre-wrap;
+  text-align: left;
+  cursor: default;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+  }
+`;
+
+const InfoTitle = styled.h2`
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  color: #333;
+  text-align: left;
+
+  @media (prefers-color-scheme: dark) {
+    color: #f5f5f5;
+  }
+`;
+
 const MenuTitleText = styled.i`
   margin-top: -2px;
   margin-left: -1px;
@@ -351,7 +386,10 @@ const ExperimentButton = styled.button`
   }
 `;
 
+const infoText = "💦 bring mana to the corners (pools).\n🎯 score 5 points to win.\n\n🔄 on your turn, except the first one:\n\n👟 move your mons up to a total of 5 spaces.\n🌟 use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 move one of your mana by 1 space to end your turn.\n\n☝️ you can carry mana with the central mon (he's a drainer). you can also see an angel, a potion, a bomb, and a supermana.";
+
 let getIsMenuOpen: () => boolean;
+export let toggleInfoVisibility: () => void;
 
 export function hasMainMenuPopupsVisible(): boolean {
   return getIsMenuOpen();
@@ -359,6 +397,7 @@ export function hasMainMenuPopupsVisible(): boolean {
 
 const MainMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const [showExperimental, setShowExperimental] = useState(false);
@@ -399,6 +438,10 @@ const MainMenu: React.FC = () => {
     setShowExperimental(true);
   };
 
+  toggleInfoVisibility = () => {
+    setIsInfoOpen(!isInfoOpen);
+  };
+
   useEffect(() => {
     const handleTapOutside = (event: any) => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -416,116 +459,127 @@ const MainMenu: React.FC = () => {
   }, [isMenuOpen]);
 
   return (
-    <RockButtonContainer ref={menuRef}>
-      <RockMenuWrapper
-        isOpen={isMenuOpen}
-        onMouseLeave={() => {
-          if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-            setIsMenuOpen(false);
-            setShowLeaderboard(false);
-            setShowExperimental(false);
-          }
-        }}>
-        <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
-          <MenuTitle onClick={!isMobile ? handleTitleClick : undefined} onTouchStart={isMobile ? handleTitleClick : undefined}>
-            <MenuTitleText>MONS.LINK</MenuTitleText>
-            {showLeaderboard && (
-              <EasLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
-                ✓ EAS
-              </EasLink>
-            )}
-          </MenuTitle>
-          <CloseButton
-            onClick={() => {
+    <>
+      <RockButtonContainer ref={menuRef}>
+        <RockMenuWrapper
+          isOpen={isMenuOpen}
+          onMouseLeave={() => {
+            if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
               setIsMenuOpen(false);
-              setShowExperimental(false);
               setShowLeaderboard(false);
-            }}>
-            ×
-          </CloseButton>
-          {showExperimental && <MenuOverlay />}
-          <IconRow hide={showLeaderboard}>
-            <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" stroke="currentColor" stroke-width="0.2" />
-              </svg>
-            </IconLink>
-            <IconLink href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-            </IconLink>
-          </IconRow>
-          <LinkRow hide={showLeaderboard}>
-            <LinkButton href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
-              Gen 1
-            </LinkButton>
-            <LinkButton href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
-              Gen 2
-            </LinkButton>
-            <LinkButton href="https://www.supermetalmons.com/products/base-set1-kit1" target="_blank" rel="noopener noreferrer">
-              IRL
-            </LinkButton>
-          </LinkRow>
-          <LinkRow hide={showLeaderboard}>
-            <LinkButton onClick={() => setShowLeaderboard(true)}>Onchain Ratings</LinkButton>
-          </LinkRow>
-          <Leaderboard show={showLeaderboard} />
-          {showExperimental && (
-            <ExperimentalMenu>
-              <ExperimentButton
-                onClick={() => {
-                  toggleExperimentalMode(true, false, false);
-                }}>
-                default
-              </ExperimentButton>
-              <ExperimentButton
-                onClick={() => {
-                  toggleExperimentalMode(false, true, false);
-                }}>
-                animated mons
-              </ExperimentButton>
-              <ExperimentButton
-                onClick={() => {
-                  toggleExperimentalMode(false, false, true);
-                }}>
-                pangchiu wip
-              </ExperimentButton>
-              <BuildInfo>
-                {process.env.REACT_APP_BUILD_DATETIME
-                  ? (() => {
-                      const date = new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000);
-                      const year = date.getUTCFullYear().toString().slice(-2);
-                      const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
-                      const day = date.getUTCDate().toString().padStart(2, "0");
-                      const hours = date.getUTCHours().toString().padStart(2, "0");
-                      const minutes = date.getUTCMinutes().toString().padStart(2, "0");
-                      return `build ${year}.${month}.${day} (${hours}.${minutes})`;
-                    })()
-                  : "local dev"}
-              </BuildInfo>
-            </ExperimentalMenu>
-          )}
-        </RockMenu>
-      </RockMenuWrapper>
-      <RockButton
-        {...(isMobile
-          ? {
-              onTouchStart: (e) => {
-                toggleMenu();
-              },
+              setShowExperimental(false);
             }
-          : {
-              onClick: (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleMenu();
-              },
-              onMouseEnter: () => setIsMenuOpen(true),
-            })}>
-        <img src={logoBase64} alt="Rock" />
-      </RockButton>
-    </RockButtonContainer>
+          }}>
+          <RockMenu isOpen={isMenuOpen} showLeaderboard={showLeaderboard}>
+            <MenuTitle onClick={!isMobile ? handleTitleClick : undefined} onTouchStart={isMobile ? handleTitleClick : undefined}>
+              <MenuTitleText>MONS.LINK</MenuTitleText>
+              {showLeaderboard && (
+                <EasLink href="https://base.easscan.org/schema/view/0x5c6e798cbb817442fa075e01b65d5d65d3ac35c2b05c1306e8771a1c8a3adb32" target="_blank" rel="noopener noreferrer">
+                  ✓ EAS
+                </EasLink>
+              )}
+            </MenuTitle>
+            <CloseButton
+              onClick={() => {
+                setIsMenuOpen(false);
+                setShowExperimental(false);
+                setShowLeaderboard(false);
+              }}>
+              ×
+            </CloseButton>
+            {showExperimental && <MenuOverlay />}
+            <IconRow hide={showLeaderboard}>
+              <IconLink href="https://x.com/supermetalx" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" stroke="currentColor" stroke-width="0.2" />
+                </svg>
+              </IconLink>
+              <IconLink href="https://github.com/supermetalmons" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                </svg>
+              </IconLink>
+            </IconRow>
+            <LinkRow hide={showLeaderboard}>
+              <LinkButton href="https://opensea.io/collection/supermetalmons" target="_blank" rel="noopener noreferrer">
+                Gen 1
+              </LinkButton>
+              <LinkButton href="https://opensea.io/collection/super-metal-mons-gen-2" target="_blank" rel="noopener noreferrer">
+                Gen 2
+              </LinkButton>
+              <LinkButton href="https://www.supermetalmons.com/products/base-set1-kit1" target="_blank" rel="noopener noreferrer">
+                IRL
+              </LinkButton>
+            </LinkRow>
+            <LinkRow hide={showLeaderboard}>
+              <LinkButton onClick={() => setShowLeaderboard(true)}>Onchain Ratings</LinkButton>
+            </LinkRow>
+            <Leaderboard show={showLeaderboard} />
+            {showExperimental && (
+              <ExperimentalMenu>
+                <ExperimentButton
+                  onClick={() => {
+                    toggleExperimentalMode(true, false, false);
+                  }}>
+                  default
+                </ExperimentButton>
+                <ExperimentButton
+                  onClick={() => {
+                    toggleExperimentalMode(false, true, false);
+                  }}>
+                  animated mons
+                </ExperimentButton>
+                <ExperimentButton
+                  onClick={() => {
+                    toggleExperimentalMode(false, false, true);
+                  }}>
+                  pangchiu wip
+                </ExperimentButton>
+                <BuildInfo>
+                  {process.env.REACT_APP_BUILD_DATETIME
+                    ? (() => {
+                        const date = new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000);
+                        const year = date.getUTCFullYear().toString().slice(-2);
+                        const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+                        const day = date.getUTCDate().toString().padStart(2, "0");
+                        const hours = date.getUTCHours().toString().padStart(2, "0");
+                        const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+                        return `build ${year}.${month}.${day} (${hours}.${minutes})`;
+                      })()
+                    : "local dev"}
+                </BuildInfo>
+              </ExperimentalMenu>
+            )}
+          </RockMenu>
+        </RockMenuWrapper>
+        <RockButton
+          {...(isMobile
+            ? {
+                onTouchStart: (e) => {
+                  toggleMenu();
+                  setIsInfoOpen(false);
+                },
+              }
+            : {
+                onClick: (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleMenu();
+                },
+                onMouseEnter: () => setIsMenuOpen(true),
+              })}>
+          <img src={logoBase64} alt="Rock" />
+        </RockButton>
+      </RockButtonContainer>
+
+      <InfoPopover isOpen={isInfoOpen}>
+        <CloseButton onClick={() => setIsInfoOpen(false)} style={{ display: "flex" }}>
+          ×
+        </CloseButton>
+        <InfoTitle>how to play</InfoTitle>
+        {infoText}
+      </InfoPopover>
+    </>
   );
 };
 
