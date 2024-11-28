@@ -474,7 +474,6 @@ const MainMenu: React.FC = () => {
                     })} ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
-                      second: "2-digit",
                     })}`
                   : "local dev"}
               </BuildInfo>
