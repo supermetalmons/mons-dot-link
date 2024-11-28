@@ -727,9 +727,9 @@ const BottomControls: React.FC = () => {
             {"📺 Spectating"}
           </BottomPillButton>
         )}
-        {isInviteLinkButtonVisible && (
+        {isInviteLinkButtonVisible && !didCreateInvite && (
           <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-            {inviteCopiedTmpState ? "Link is copied" : isInviteLoading ? "Creating a Link..." : didCreateInvite ? "🔗 Copy Link" : "Direct Game"}
+            {isInviteLoading ? "Creating a Link..." : "Direct Game"}
           </BottomPillButton>
         )}
         {isAutomatchButtonVisible && (
@@ -740,6 +740,11 @@ const BottomControls: React.FC = () => {
         {isBotGameButtonVisible && (
           <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
             {"Bot Game"}
+          </BottomPillButton>
+        )}
+        {isInviteLinkButtonVisible && didCreateInvite && (
+          <BottomPillButton onClick={handleInviteClick} isBlue={true}>
+            {inviteCopiedTmpState ? "Link is copied" : "🔗 Copy Link"}
           </BottomPillButton>
         )}
         {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
