@@ -284,6 +284,18 @@ const ExperimentalMenu = styled.div`
   z-index: 3;
 `;
 
+const BuildInfo = styled.div`
+  font-size: 13px;
+  color: #9999a8cc;
+  text-align: center;
+  margin-top: auto;
+  padding-bottom: 12px;
+
+  @media (prefers-color-scheme: dark) {
+    color: #9999a8af;
+  }
+`;
+
 const ExperimentButton = styled.button`
   padding: 10px 20px;
   border: none;
@@ -452,6 +464,7 @@ const MainMenu: React.FC = () => {
                 }}>
                 pangchiu wip
               </ExperimentButton>
+              <BuildInfo>{process.env.REACT_APP_BUILD_DATETIME ? `build ${process.env.REACT_APP_BUILD_DATETIME}` : "local dev"}</BuildInfo>
             </ExperimentalMenu>
           )}
         </RockMenu>
