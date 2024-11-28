@@ -822,15 +822,15 @@ export function showItemSelection(): void {
   }
 
   SVG.setFill(background, colors.itemSelectionBackground);
-  background.style.backdropFilter = "blur(1px)";
+  background.style.backdropFilter = "blur(3px)";
   overlay.appendChild(background);
 
   function createItemButton(x: number, y: number, asset: string, modifier: InputModifier): void {
     const button = document.createElementNS(SVG.ns, "foreignObject");
     button.setAttribute("x", x.toString());
     button.setAttribute("y", y.toString());
-    button.setAttribute("width", "340");
-    button.setAttribute("height", "340");
+    button.setAttribute("width", "315");
+    button.setAttribute("height", "315");
     button.setAttribute("class", "item");
     button.style.overflow = "visible";
 
@@ -853,8 +853,8 @@ export function showItemSelection(): void {
     const touchTarget = document.createElementNS(SVG.ns, "rect");
     touchTarget.setAttribute("x", x.toString());
     touchTarget.setAttribute("y", y.toString());
-    touchTarget.setAttribute("width", "340");
-    touchTarget.setAttribute("height", "340");
+    touchTarget.setAttribute("width", "315");
+    touchTarget.setAttribute("height", "315");
     SVG.setFill(touchTarget, "transparent");
     touchTarget.addEventListener(defaultInputEventName, (event) => {
       preventTouchstartIfNeeded(event);
@@ -865,9 +865,9 @@ export function showItemSelection(): void {
     overlay.appendChild(touchTarget);
   }
 
-  createItemButton(160, 365, assets.bomb, InputModifier.Bomb);
+  createItemButton(220, 365, assets.bomb, InputModifier.Bomb);
 
-  createItemButton(600, 365, assets.potion, InputModifier.Potion);
+  createItemButton(565, 365, assets.potion, InputModifier.Potion);
 
   background.addEventListener(defaultInputEventName, (event) => {
     preventTouchstartIfNeeded(event);
