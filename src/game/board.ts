@@ -812,8 +812,15 @@ export function showItemSelection(): void {
   itemSelectionOverlay = overlay;
 
   const background = document.createElementNS(SVG.ns, "rect");
-  SVG.setOrigin(background, 0, 0);
-  SVG.setSizeStr(background, "100%", "1100");
+  if (isPangchiuBoard) {
+    SVG.setOrigin(background, -0.83, -0.84);
+    background.style.transform = `scale(${1 / 0.85892388})`;
+    SVG.setSizeStr(background, "100%", "1163.5");
+  } else {
+    SVG.setOrigin(background, 0, 0);
+    SVG.setSizeStr(background, "100%", "1100");
+  }
+
   SVG.setFill(background, colors.itemSelectionBackground);
   background.style.backdropFilter = "blur(1px)";
   overlay.appendChild(background);
@@ -1009,7 +1016,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   opponentSideMetadata.emojiId = opponentEmojiId;
 
   for (const isOpponent of [true, false]) {
-    const y = isOpponent ? 0.333 : (isPangchiuBoard ? 12.7 : 12.169);
+    const y = isOpponent ? 0.333 : isPangchiuBoard ? 12.7 : 12.169;
     const avatarOffsetY = isOpponent ? 0.23 : -0.1;
     const avatarSize = 0.777;
 
