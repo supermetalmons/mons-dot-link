@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush } from "react-icons/fa";
+import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope } from "react-icons/fa";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
 import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
@@ -729,16 +729,31 @@ const BottomControls: React.FC = () => {
         )}
         {isInviteLinkButtonVisible && !didCreateInvite && (
           <BottomPillButton onClick={handleInviteClick} isBlue={true} disabled={isInviteLoading}>
-            {isInviteLoading ? "Creating a Link..." : "Direct Game"}
+            {isInviteLoading ? (
+              "Creating a Link..."
+            ) : (
+              <>
+                <FaEnvelope style={{ marginRight: "6px", fontSize: "0.9em" }} />
+                {"Direct Game"}
+              </>
+            )}
           </BottomPillButton>
         )}
         {isAutomatchButtonVisible && (
           <BottomPillButton onClick={handleAutomatchClick} isBlue={true} isViewOnly={automatchButtonTmpState} disabled={!isAutomatchButtonEnabled}>
-            {automatchButtonTmpState ? "🥁 Automatching..." : <>Automatch</>}
+            {automatchButtonTmpState ? (
+              "🥁 Automatching..."
+            ) : (
+              <>
+                <FaStar style={{ marginRight: "6px", fontSize: "0.9em" }} />
+                {"Automatch"}
+              </>
+            )}
           </BottomPillButton>
         )}
         {isBotGameButtonVisible && (
           <BottomPillButton onClick={handleBotGameClick} isBlue={true}>
+            <FaRobot style={{ marginRight: "6px", fontSize: "0.9em" }} />
             {"Bot Game"}
           </BottomPillButton>
         )}
