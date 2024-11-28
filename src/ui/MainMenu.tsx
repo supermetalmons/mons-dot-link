@@ -466,7 +466,19 @@ const MainMenu: React.FC = () => {
                 }}>
                 pangchiu wip
               </ExperimentButton>
-              <BuildInfo>{process.env.REACT_APP_BUILD_DATETIME ? `build ${process.env.REACT_APP_BUILD_DATETIME}` : "local dev"}</BuildInfo>
+              <BuildInfo>
+                {process.env.REACT_APP_BUILD_DATETIME
+                  ? `build ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleDateString([], {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })} ${new Date(Number(process.env.REACT_APP_BUILD_DATETIME) * 1000).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}`
+                  : "local dev"}
+              </BuildInfo>
             </ExperimentalMenu>
           )}
         </RockMenu>

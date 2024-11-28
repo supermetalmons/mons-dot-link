@@ -61,7 +61,7 @@ const App = () => {
 
   const handleInfoButtonClick = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    alert("🎯 score 5 points to win. bring mana 💦 to the corners.\n\n🔄 on your turn, except the first one:\n\n👟 move your mons up to a total of 5 spaces.\n🌟 use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 move one of your mana by 1 space — this ends your turn.\n\n☝️ you can carry mana with the central mon (he's a drainer). you can also see an angel, a potion, a bomb, and a supermana.");
+    alert("🎯 bring mana 💦 to the corners (pools), score 5 points to win.\n\n🔄 on your turn, except the first one:\n\n👟 move your mons up to a total of 5 spaces.\n🌟 use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.\n💧 move one of your mana by 1 space — this ends your turn.\n\n☝️ you can carry mana with the central mon (he's a drainer). you can also see an angel, a potion, a bomb, and a supermana.");
   };
 
   return (
