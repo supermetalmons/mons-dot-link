@@ -51,8 +51,8 @@ export const AppearanceToggleButton = styled.button<{ disabled?: boolean; dimmed
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  opacity: ${(props) => (props.dimmed ? 0.7 : 1)};
-  background-color: #f9f9f9de;
+  opacity: ${(props) => (props.dimmed ? 0.77 : 1)};
+  background-color: #f9f9f9;
   border: none;
   display: flex;
   justify-content: center;

@@ -5,7 +5,7 @@ import { Location, Highlight, HighlightKind, AssistedInputKind, Sound, InputModi
 import { colors } from "../content/boardStyles";
 import { playSounds, playReaction } from "../content/sounds";
 import { isAutomatch, sendResignStatus, prepareOnchainVictoryTx, sendMove, isCreateNewInviteFlow, sendEmojiUpdate, setupConnection, startTimer, claimVictoryByTimer, sendRematchProposal, sendAutomatchRequest, connectToAutomatch, sendEndMatchIndicator, rematchSeriesEndIsIndicated, connectToGame } from "../connection/connection";
-import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed, showWaitingStateText } from "../ui/BottomControls";
+import { setAttestVictoryVisible, setWatchOnlyVisible, showResignButton, showVoiceReactionButton, setUndoEnabled, setUndoVisible, disableAndHideUndoResignAndTimerControls, hideTimerButtons, showTimerButtonProgressing, enableTimerVictoryClaim, showPrimaryAction, PrimaryActionType, setInviteLinkActionVisible, setAutomatchVisible, setHomeVisible, setIsReadyToCopyExistingInviteLink, setAutomoveActionVisible, setAutomoveActionEnabled, setAttestVictoryEnabled, showButtonForTx, setAutomatchEnabled, setAutomatchWaitingState, setBotGameOptionVisible, setEndMatchVisible, setEndMatchConfirmed, showWaitingStateText, setBrushButtonDimmed } from "../ui/BottomControls";
 import { Match } from "../connection/connectionModels";
 
 const experimentalDrawingDevMode = false;
@@ -75,6 +75,7 @@ export async function go() {
   } else {
     isOnlineGame = true;
     setHomeVisible(true);
+    setBrushButtonDimmed(true);
   }
 
   Board.setupGameInfoElements(!isCreateNewInviteFlow);
@@ -137,6 +138,7 @@ export function didClickStartBotGameButton() {
   didStartLocalGame = true;
   setHomeVisible(true);
   setUndoVisible(true);
+  setBrushButtonDimmed(true);
   setInviteLinkActionVisible(false);
   setAutomatchVisible(false);
   setBotGameOptionVisible(false);
@@ -161,6 +163,7 @@ export function didFindInviteThatCanBeJoined() {
 
 export function didClickAutomatchButton() {
   setHomeVisible(true);
+  setBrushButtonDimmed(true);
   setAutomoveActionVisible(false);
   setInviteLinkActionVisible(false);
   setBotGameOptionVisible(false);
@@ -443,6 +446,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, isBotI
       if (!isOnlineGame && !didStartLocalGame) {
         didStartLocalGame = true;
         setHomeVisible(true);
+        setBrushButtonDimmed(true);
         setUndoVisible(true);
         setInviteLinkActionVisible(false);
         setAutomatchVisible(false);
@@ -1029,6 +1033,7 @@ function handleResignStatus(onConnect: boolean, resignSenderColor: string) {
 export function didClickInviteActionButtonBeforeThereIsInviteReady() {
   if (!isCreateNewInviteFlow) return;
   setHomeVisible(true);
+  setBrushButtonDimmed(true);
   setAutomatchVisible(false);
   setBotGameOptionVisible(false);
   setAutomoveActionVisible(false);
