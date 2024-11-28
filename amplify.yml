@@ -4,8 +4,8 @@ frontend:
     preBuild:
       commands:
         - npm install --legacy-peer-deps
-        - export REACT_APP_BUILD_DATETIME=$(date '+%s')
-        - echo "Build datetime: $REACT_APP_BUILD_DATETIME"
+        - "export REACT_APP_BUILD_DATETIME=$(date '+%s')"
+        - "echo Build datetime: $REACT_APP_BUILD_DATETIME"
     build:
       commands:
         - npm run build
