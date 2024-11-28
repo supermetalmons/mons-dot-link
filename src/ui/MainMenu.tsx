@@ -500,7 +500,7 @@ const MainMenu: React.FC = () => {
                       const day = date.getUTCDate().toString().padStart(2, "0");
                       const hours = date.getUTCHours().toString().padStart(2, "0");
                       const minutes = date.getUTCMinutes().toString().padStart(2, "0");
-                      return `build ${year}.${month}.${day}.${hours}.${minutes}`;
+                      return `build ${year}.${month}.${day} (${hours}.${minutes})`;
                     })()
                   : "local dev"}
               </BuildInfo>
