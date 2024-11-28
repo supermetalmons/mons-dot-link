@@ -44,14 +44,14 @@ const ControlsContainer = styled.div`
   }
 `;
 
-export const AppearanceToggleButton = styled.button<{ disabled?: boolean }>`
+export const AppearanceToggleButton = styled.button<{ disabled?: boolean; dimmed?: boolean }>`
   position: fixed;
   bottom: 10px;
   left: 9px;
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  opacity: 1;
+  opacity: ${(props) => (props.dimmed ? 0.7 : 1)};
   background-color: #f9f9f9de;
   border: none;
   display: flex;
@@ -320,6 +320,7 @@ let setAutomatchWaitingState: (waiting: boolean) => void;
 
 let setAttestVictoryEnabled: (enabled: boolean) => void;
 let setAttestVictoryVisible: (visible: boolean) => void;
+let setBrushButtonDimmed: (dimmed: boolean) => void;
 
 let showWaitingStateText: (text: string) => void;
 let showButtonForTx: (hash: string) => void;
@@ -356,6 +357,7 @@ const BottomControls: React.FC = () => {
   const [automatchButtonTmpState, setAutomatchButtonTmpState] = useState(false);
   const [inviteCopiedTmpState, setInviteCopiedTmpState] = useState(false);
   const [isVoiceReactionDisabled, setIsVoiceReactionDisabled] = useState(false);
+  const [isBrushButtonDimmed, setIsBrushButtonDimmed] = useState(false);
 
   const [txHash, setTxHash] = useState("");
   const [isUndoDisabled, setIsUndoDisabled] = useState(true);
@@ -434,6 +436,10 @@ const BottomControls: React.FC = () => {
         setIsInviteLoading(false);
       }
     });
+  };
+
+  setBrushButtonDimmed = (dimmed: boolean) => {
+    setIsBrushButtonDimmed(dimmed);
   };
 
   showVoiceReactionButton = (show: boolean) => {
@@ -697,7 +703,7 @@ const BottomControls: React.FC = () => {
 
   return (
     <>
-      <AppearanceToggleButton onClick={!isMobile ? handleBrushClick : undefined} onTouchStart={isMobile ? handleBrushClick : undefined} aria-label="Appearance">
+      <AppearanceToggleButton dimmed={isBrushButtonDimmed} onClick={!isMobile ? handleBrushClick : undefined} onTouchStart={isMobile ? handleBrushClick : undefined} aria-label="Appearance">
         <FaPaintBrush />
       </AppearanceToggleButton>
       <ControlsContainer>
@@ -792,4 +798,4 @@ const BottomControls: React.FC = () => {
   );
 };
 
-export { BottomControls as default, showWaitingStateText, setEndMatchConfirmed, setEndMatchVisible, setBotGameOptionVisible, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
+export { BottomControls as default, setBrushButtonDimmed, showWaitingStateText, setEndMatchConfirmed, setEndMatchVisible, setBotGameOptionVisible, setAutomatchWaitingState, showButtonForTx, setAttestVictoryEnabled, setAutomatchEnabled, setAttestVictoryVisible, hasBottomPopupsVisible, setWatchOnlyVisible, setAutomoveActionEnabled, setAutomoveActionVisible, setIsReadyToCopyExistingInviteLink, showVoiceReactionButton, setInviteLinkActionVisible, setAutomatchVisible, showResignButton, setUndoEnabled, setUndoVisible, setHomeVisible, hideTimerButtons, showTimerButtonProgressing, disableAndHideUndoResignAndTimerControls, hideReactionPicker, enableTimerVictoryClaim, showPrimaryAction };
