@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope, FaLink } from "react-icons/fa";
+import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope, FaLink, FaUpload } from "react-icons/fa";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
 import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
@@ -701,6 +701,15 @@ const BottomControls: React.FC = () => {
     didClickBrushButton();
   };
 
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        url: window.location.href,
+        title: "Join my game",
+      });
+    } catch (_) {}
+  };
+
   return (
     <>
       <AppearanceToggleButton dimmed={isBrushButtonDimmed} onClick={!isMobile ? handleBrushClick : undefined} onTouchStart={isMobile ? handleBrushClick : undefined} aria-label="Appearance">
@@ -758,16 +767,22 @@ const BottomControls: React.FC = () => {
           </BottomPillButton>
         )}
         {isInviteLinkButtonVisible && didCreateInvite && (
-          <BottomPillButton onClick={handleInviteClick} isBlue={true}>
-            {inviteCopiedTmpState ? (
-              "Link is copied"
-            ) : (
-              <>
-                <FaLink style={{ marginRight: "6px", fontSize: "0.9em" }} />
-                {"Copy Link"}
-              </>
-            )}
-          </BottomPillButton>
+          <>
+            <BottomPillButton onClick={handleInviteClick} isBlue={true}>
+              {inviteCopiedTmpState ? (
+                "Link is copied"
+              ) : (
+                <>
+                  <FaLink style={{ marginRight: "6px", fontSize: "0.9em" }} />
+                  {"Copy Link"}
+                </>
+              )}
+            </BottomPillButton>
+            <BottomPillButton onClick={handleShare} isBlue={true}>
+              <FaUpload style={{ marginRight: "6px", fontSize: "0.9em" }} />
+              {"Share"}
+            </BottomPillButton>
+          </>
         )}
         {primaryAction !== PrimaryActionType.None && <BottomPillButton onClick={handlePrimaryActionClick}>{getPrimaryActionButtonText()}</BottomPillButton>}
         {waitingStateText !== "" && (
