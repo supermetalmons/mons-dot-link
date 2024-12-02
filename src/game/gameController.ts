@@ -362,6 +362,7 @@ function applyOutput(output: MonsWeb.OutputModel, isRemoteInput: boolean, isBotI
 
       if (nextInputs[0].kind === MonsWeb.NextInputKind.SelectConsumable) {
         Board.removeHighlights();
+        playSounds([Sound.ChoosePickup]);
         Board.showItemSelection();
         return;
       }
