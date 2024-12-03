@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope, FaLink, FaUpload } from "react-icons/fa";
+import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope, FaLink, FaRegArrowAltCircleUp } from "react-icons/fa";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
 import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
@@ -243,6 +243,13 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
     &:active {
       background-color: ${(props) => (props.isViewOnly ? "var(--color-dark-view-only)" : props.isBlue ? "var(--color-dark-blue-active)" : props.isPink && props.disabled ? "var(--color-dark-pink-disabled)" : props.isPink ? "var(--color-dark-pink-active)" : "var(--color-dark-default-active)")};
     }
+  }
+
+  svg {
+    width: 0.9em;
+    height: 0.9em;
+    margin-right: 6px;
+    flex-shrink: 0;
   }
 `;
 
@@ -779,7 +786,7 @@ const BottomControls: React.FC = () => {
               )}
             </BottomPillButton>
             <BottomPillButton onClick={handleShare} isBlue={true}>
-              <FaUpload style={{ marginRight: "6px", fontSize: "0.9em" }} />
+              <FaRegArrowAltCircleUp style={{ marginRight: "6px", fontSize: "0.9em" }} />
               {"Share"}
             </BottomPillButton>
           </>

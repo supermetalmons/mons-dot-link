@@ -1447,6 +1447,7 @@ function placeItem(item: SVGElement, location: Location, fainted = false, sparkl
 
   if (isPangchiuBoard) {
     applyDefaultPangchiuBoardTransform(img);
+    // TODO: adjust each specific item differently based on the mockup
   }
   if (fainted) {
     SVG.setOrigin(img, location.j, location.i);

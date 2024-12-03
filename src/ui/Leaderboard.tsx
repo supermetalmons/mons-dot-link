@@ -32,7 +32,7 @@ const LeaderboardTable = styled.table`
     font-size: 0.93rem;
 
     @media (prefers-color-scheme: dark) {
-      background-color: #1e1e1e;
+      background-color: #131313;
     }
   }
 

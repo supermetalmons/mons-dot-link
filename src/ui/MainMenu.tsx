@@ -87,7 +87,7 @@ const RockMenu = styled.div<{ isOpen: boolean; showLeaderboard: boolean }>`
   z-index: 1;
 
   @media (prefers-color-scheme: dark) {
-    background-color: #1e1e1e;
+    background-color: #131313;
   }
 `;
 
@@ -109,7 +109,7 @@ const InfoPopover = styled.div<{ isOpen: boolean }>`
   cursor: default;
 
   @media (prefers-color-scheme: dark) {
-    background-color: #1e1e1e;
+    background-color: #131313;
     color: #f5f5f5;
   }
 `;
