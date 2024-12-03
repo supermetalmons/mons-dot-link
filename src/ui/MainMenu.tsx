@@ -327,7 +327,7 @@ const MenuOverlay = styled.div`
   z-index: 2;
 
   @media (prefers-color-scheme: dark) {
-    background: rgba(30, 30, 30, 0.93);
+    background: #131313;
   }
 `;
 
@@ -575,7 +575,22 @@ const MainMenu: React.FC = () => {
           ×
         </CloseButton>
         <InfoTitle>HOW TO PLAY MONS</InfoTitle>
-        💦 Bring mana to the corners (pools).<br/>🎯 Score 5 points to win.<br/><br/>🔄 On your turn, except the first one:<br/><br/>👟 Move your mons up to a total of 5 spaces.<br/>🌟 Use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.<br/>💧 Move one of your mana by 1 space to end your turn.<br/><br/>☝️ You can <u>carry mana with the central mon</u> (he's a drainer). You can also see an angel, a potion, a bomb, and a supermana.
+        💦 Bring mana to the corners (pools).
+        <br />
+        🎯 Score 5 points to win.
+        <br />
+        <br />
+        🔄 On your turn, except the first one:
+        <br />
+        <br />
+        👟 Move your mons up to a total of 5 spaces.
+        <br />
+        🌟 Use one action: 😈 demon, or 👻 spirit, or 🧙‍♀️ mystic.
+        <br />
+        💧 Move one of your mana by 1 space to end your turn.
+        <br />
+        <br />
+        ☝️ You can <u>carry mana with the central mon</u> (he's a drainer). You can also see an angel, a potion, a bomb, and a supermana.
       </InfoPopover>
     </>
   );
