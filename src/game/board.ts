@@ -1449,10 +1449,15 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
     applyDefaultPangchiuBoardTransform(img);
     switch (kind) {
       case ItemKind.Mana:
-        img.style.transform += ` translate(0px, 0px)`;
-        break;
       case ItemKind.ManaBlack:
-        img.style.transform += ` translate(0px, 0px)`;
+        console.log(location.i, location.j);
+        if (location.i === 7 && location.j === 4) {
+          img.style.transform += ` translate(-3px, -3px)`;
+        } else if (location.i < 5) {
+          img.style.transform += ` translate(0px, -10px)`;
+        } else {
+          img.style.transform += ` translate(2px, -5px)`;
+        }
         break;
       case ItemKind.Supermana:
         img.style.transform += ` translate(0px, -8px)`;
