@@ -1467,31 +1467,31 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
         img.style.transform += ` translate(0px, -6px)`;
         break;
       case ItemKind.DemonBlack:
-        img.style.transform += ` translate(0px, 0px)`;
+        img.style.transform += ` translate(7px, -13px)`;
         break;
       case ItemKind.Drainer:
         img.style.transform += ` translate(0px, -6px)`;
         break;
       case ItemKind.DrainerBlack:
-        img.style.transform += ` translate(0px, 0px)`;
+        img.style.transform += ` translate(2px, -10px)`;
         break;
       case ItemKind.Angel:
         img.style.transform += ` translate(0px, 0px)`;
         break;
       case ItemKind.AngelBlack:
-        img.style.transform += ` translate(0px, 0px)`;
+        img.style.transform += ` translate(2px, -5px)`;
         break;
       case ItemKind.Spirit:
         img.style.transform += ` translate(0px, -7px)`;
         break;
       case ItemKind.SpiritBlack:
-        img.style.transform += ` translate(0px, 0px)`;
+        img.style.transform += ` translate(-4px, -11px)`;
         break;
       case ItemKind.Mystic:
         img.style.transform += ` translate(-6px, -11px)`;
         break;
       case ItemKind.MysticBlack:
-        img.style.transform += ` translate(0px, 0px)`;
+        img.style.transform +=` translate(-6px, -17px)`;
         break;
       case ItemKind.Consumable:
         img.style.transform += ` translate(${location.j < 5 ? -14 : 12}px, -8px)`;
