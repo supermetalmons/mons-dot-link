@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
-import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope, FaLink, FaRegArrowAltCircleUp, FaMagic } from "react-icons/fa";
+import { FaUndo, FaFlag, FaCommentAlt, FaTrophy, FaHome, FaRobot, FaPaintBrush, FaStar, FaEnvelope, FaLink, FaShareAlt, FaMagic } from "react-icons/fa";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
 import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
@@ -786,7 +786,7 @@ const BottomControls: React.FC = () => {
               )}
             </BottomPillButton>
             <BottomPillButton onClick={handleShare} isBlue={true}>
-              <FaRegArrowAltCircleUp style={{ marginRight: "6px", fontSize: "0.9em" }} />
+              <FaShareAlt style={{ marginRight: "6px", fontSize: "0.9em" }} />
               {"Share"}
             </BottomPillButton>
           </>
