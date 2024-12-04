@@ -78,3 +78,20 @@ export class Trace {
     this.to = to;
   }
 }
+
+export enum ItemKind {  
+  Mana,
+  ManaBlack,
+  Supermana,
+  Demon,
+  DemonBlack,
+  Drainer, 
+  DrainerBlack,
+  Angel,
+  AngelBlack,
+  Spirit,
+  SpiritBlack,
+  Mystic,
+  MysticBlack,
+  Consumable
+}

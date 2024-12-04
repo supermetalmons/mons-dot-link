@@ -1,7 +1,7 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
 import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
-import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace } from "../utils/gameModels";
+import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace, ItemKind } from "../utils/gameModels";
 import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled, isPangchiuBoard, setCurrentAssetsSet } from "../content/boardStyles";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
 import { playSounds } from "../content/sounds";
@@ -439,7 +439,7 @@ export function stopMonsBoardAsDisplayAnimations() {
 }
 
 function colorPixel(location: Location, white: boolean) {
-  placeItem(white ? mana : manaB, location, false);
+  placeItem(white ? mana : manaB, location, white ? ItemKind.Mana : ItemKind.ManaBlack, false);
 }
 
 function cleanAllPixels() {
@@ -886,19 +886,19 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       const isFainted = item.mon?.is_fainted();
       switch (item.mon?.kind) {
         case MonsWeb.MonKind.Demon:
-          placeItem(isBlack ? demonB : demon, location, isFainted);
+          placeItem(isBlack ? demonB : demon, location, isBlack ? ItemKind.DemonBlack : ItemKind.Demon, isFainted);
           break;
         case MonsWeb.MonKind.Drainer:
-          placeItem(isBlack ? drainerB : drainer, location, isFainted);
+          placeItem(isBlack ? drainerB : drainer, location, isBlack ? ItemKind.DrainerBlack : ItemKind.Drainer, isFainted);
           break;
         case MonsWeb.MonKind.Angel:
-          placeItem(isBlack ? angelB : angel, location, isFainted);
+          placeItem(isBlack ? angelB : angel, location, isBlack ? ItemKind.AngelBlack : ItemKind.Angel, isFainted);
           break;
         case MonsWeb.MonKind.Spirit:
-          placeItem(isBlack ? spiritB : spirit, location, isFainted);
+          placeItem(isBlack ? spiritB : spirit, location, isBlack ? ItemKind.SpiritBlack : ItemKind.Spirit, isFainted);
           break;
         case MonsWeb.MonKind.Mystic:
-          placeItem(isBlack ? mysticB : mystic, location, isFainted);
+          placeItem(isBlack ? mysticB : mystic, location, isBlack ? ItemKind.MysticBlack : ItemKind.Mystic, isFainted);
           break;
       }
       break;
@@ -906,10 +906,10 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       switch (item.mana?.kind) {
         case MonsWeb.ManaKind.Regular:
           const isBlack = item.mana.color === MonsWeb.Color.Black;
-          placeItem(isBlack ? manaB : mana, location);
+          placeItem(isBlack ? manaB : mana, location, isBlack ? ItemKind.ManaBlack : ItemKind.Mana);
           break;
         case MonsWeb.ManaKind.Supermana:
-          placeItem(supermana, location);
+          placeItem(supermana, location, ItemKind.Supermana);
           break;
       }
       break;
@@ -944,7 +944,7 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       }
       break;
     case MonsWeb.ItemModelKind.Consumable:
-      placeItem(bombOrPotion, location, false, true);
+      placeItem(bombOrPotion, location, ItemKind.Consumable, false, true);
       break;
   }
 }
@@ -1435,7 +1435,7 @@ function applyDefaultPangchiuBoardTransform(item: SVGElement) {
   item.style.transform = "scale(1.39)";
 }
 
-function placeItem(item: SVGElement, location: Location, fainted = false, sparkles = false) {
+function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted = false, sparkles = false) {
   const logicalLocation = location;
   location = inBoardCoordinates(location);
   const key = location.toString();
