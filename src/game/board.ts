@@ -1450,8 +1450,9 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
     switch (kind) {
       case ItemKind.Mana:
       case ItemKind.ManaBlack:
-        console.log(location.i, location.j);
-        if (location.i === 7 && location.j === 4) {
+        if (location.i === 0) {
+          break;
+        } else if (location.i === 7 && location.j === 4) {
           img.style.transform += ` translate(-3px, -3px)`;
         } else if (location.i < 5) {
           img.style.transform += ` translate(0px, -10px)`;
