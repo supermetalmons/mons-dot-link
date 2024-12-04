@@ -1447,7 +1447,50 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
 
   if (isPangchiuBoard) {
     applyDefaultPangchiuBoardTransform(img);
-    // TODO: adjust each specific item differently based on the mockup
+    switch (kind) {
+      case ItemKind.Mana:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.ManaBlack:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.Supermana:
+        img.style.transform += ` translate(0px, -8px)`;
+        break;
+      case ItemKind.Demon:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.DemonBlack:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.Drainer:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.DrainerBlack:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.Angel:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.AngelBlack:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.Spirit:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.SpiritBlack:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.Mystic:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.MysticBlack:
+        img.style.transform += ` translate(0px, 0px)`;
+        break;
+      case ItemKind.Consumable:
+        img.style.transform += ` translate(${location.j < 5 ? -14 : 12}px, -8px)`;
+        break;
+    }
   }
   if (fainted) {
     SVG.setOrigin(img, location.j, location.i);
