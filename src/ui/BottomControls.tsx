@@ -750,7 +750,7 @@ const BottomControls: React.FC = () => {
             ) : (
               <>
                 <FaEnvelope style={{ marginRight: "6px", fontSize: "0.9em" }} />
-                {"Direct Game"}
+                {"Link Game"}
               </>
             )}
           </BottomPillButton>
