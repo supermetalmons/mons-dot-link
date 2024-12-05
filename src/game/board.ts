@@ -1369,9 +1369,9 @@ function placeMonWithBomb(item: SVGElement, location: Location, baseItemKind: It
   startAnimation(img);
 
   if (isPangchiuBoard) {
-    // TODO: use baseItemKind for additional transform
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
+    applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
     SVG.setFrame(carriedBomb, location.j + 0.54, location.i + 0.52, 0.75, 0.75);
   }
 }
@@ -1397,9 +1397,9 @@ function placeMonWithSupermana(item: SVGElement, location: Location, baseItemKin
   startAnimation(img);
 
   if (isPangchiuBoard) {
-    // TODO: use baseItemKind for additional transform
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
+    applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
     SVG.setFrame(carriedMana, location.j - 0.03, location.i - 0.5, 1, 1);
   }
 }
@@ -1421,9 +1421,9 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   startAnimation(img);
 
   if (isPangchiuBoard) {
-    // TODO: use baseItemKind for additional transform
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
+    applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
     SVG.setFrame(carriedMana, location.j + 0.23, location.i + 0.15, 1.34, 1.34);
   }
 }
