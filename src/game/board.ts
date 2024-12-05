@@ -1400,7 +1400,9 @@ function placeMonWithSupermana(item: SVGElement, location: Location, baseItemKin
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
-    SVG.setFrame(carriedMana, location.j - 0.03, location.i - 0.5, 1, 1);
+    const xDelta = baseItemKind === ItemKind.Drainer ? 0.03 : -0.03;
+    const yDelta = baseItemKind === ItemKind.Drainer ? 0.55 : 0.63;
+    SVG.setFrame(carriedMana, location.j - xDelta, location.i - yDelta, 1, 1);
   }
 }
 
