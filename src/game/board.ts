@@ -917,29 +917,29 @@ export function putItem(item: MonsWeb.ItemModel, location: Location) {
       const isBlackDrainer = item.mon?.color === MonsWeb.Color.Black;
       const isSupermana = item.mana?.kind === MonsWeb.ManaKind.Supermana;
       if (isSupermana) {
-        placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location);
+        placeMonWithSupermana(isBlackDrainer ? drainerB : drainer, location, isBlackDrainer ? ItemKind.DrainerBlack : ItemKind.Drainer);
       } else {
         const isBlackMana = item.mana?.color === MonsWeb.Color.Black;
-        placeMonWithMana(isBlackDrainer ? drainerB : drainer, isBlackMana ? manaB : mana, location);
+        placeMonWithMana(isBlackDrainer ? drainerB : drainer, isBlackMana ? manaB : mana, location, isBlackDrainer ? ItemKind.DrainerBlack : ItemKind.Drainer);
       }
       break;
     case MonsWeb.ItemModelKind.MonWithConsumable:
       const isBlackWithConsumable = item.mon?.color === MonsWeb.Color.Black;
       switch (item.mon?.kind) {
         case MonsWeb.MonKind.Demon:
-          placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location);
+          placeMonWithBomb(isBlackWithConsumable ? demonB : demon, location, isBlackWithConsumable ? ItemKind.DemonBlack : ItemKind.Demon);
           break;
         case MonsWeb.MonKind.Drainer:
-          placeMonWithBomb(isBlackWithConsumable ? drainerB : drainer, location);
+          placeMonWithBomb(isBlackWithConsumable ? drainerB : drainer, location, isBlackWithConsumable ? ItemKind.DrainerBlack : ItemKind.Drainer);
           break;
         case MonsWeb.MonKind.Angel:
-          placeMonWithBomb(isBlackWithConsumable ? angelB : angel, location);
+          placeMonWithBomb(isBlackWithConsumable ? angelB : angel, location, isBlackWithConsumable ? ItemKind.AngelBlack : ItemKind.Angel);
           break;
         case MonsWeb.MonKind.Spirit:
-          placeMonWithBomb(isBlackWithConsumable ? spiritB : spirit, location);
+          placeMonWithBomb(isBlackWithConsumable ? spiritB : spirit, location, isBlackWithConsumable ? ItemKind.SpiritBlack : ItemKind.Spirit);
           break;
         case MonsWeb.MonKind.Mystic:
-          placeMonWithBomb(isBlackWithConsumable ? mysticB : mystic, location);
+          placeMonWithBomb(isBlackWithConsumable ? mysticB : mystic, location, isBlackWithConsumable ? ItemKind.MysticBlack : ItemKind.Mystic);
           break;
       }
       break;
@@ -1352,7 +1352,7 @@ export function hasBasePlaceholder(location: Location): boolean {
   return basesPlaceholders.hasOwnProperty(key);
 }
 
-function placeMonWithBomb(item: SVGElement, location: Location) {
+function placeMonWithBomb(item: SVGElement, location: Location, baseItemKind: ItemKind) {
   location = inBoardCoordinates(location);
   const img = item.cloneNode(true) as SVGElement;
   SVG.setOrigin(img, location.j, location.i);
@@ -1369,13 +1369,14 @@ function placeMonWithBomb(item: SVGElement, location: Location) {
   startAnimation(img);
 
   if (isPangchiuBoard) {
+    // TODO: use baseItemKind for additional transform
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     SVG.setFrame(carriedBomb, location.j + 0.54, location.i + 0.52, 0.75, 0.75);
   }
 }
 
-function placeMonWithSupermana(item: SVGElement, location: Location) {
+function placeMonWithSupermana(item: SVGElement, location: Location, baseItemKind: ItemKind) {
   location = inBoardCoordinates(location);
   const img = item.cloneNode(true) as SVGElement;
   SVG.setOrigin(img, location.j, location.i);
@@ -1396,13 +1397,14 @@ function placeMonWithSupermana(item: SVGElement, location: Location) {
   startAnimation(img);
 
   if (isPangchiuBoard) {
+    // TODO: use baseItemKind for additional transform
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     SVG.setFrame(carriedMana, location.j - 0.03, location.i - 0.5, 1, 1);
   }
 }
 
-function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location) {
+function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location, baseItemKind: ItemKind) {
   location = inBoardCoordinates(location);
   const img = item.cloneNode(true) as SVGElement;
   SVG.setOrigin(img, location.j, location.i);
@@ -1419,6 +1421,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   startAnimation(img);
 
   if (isPangchiuBoard) {
+    // TODO: use baseItemKind for additional transform
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     SVG.setFrame(carriedMana, location.j + 0.23, location.i + 0.15, 1.34, 1.34);
