@@ -732,13 +732,16 @@ function suggestSavingOnchainRating() {
 }
 
 async function saveOnchainRating(txData: any) {
+  const matchId = currentGameModelMatchId;
   const { sendEasTx } = await import("../connection/eas");
   try {
     const txHash = await sendEasTx(txData);
     if (txHash) {
       setAttestVictoryVisible(false);
       setAttestVictoryEnabled(true);
-      showButtonForTx(txHash);
+      if (matchId === currentGameModelMatchId) {
+        showButtonForTx(txHash);
+      }
     } else {
       setAttestVictoryEnabled(true);
       console.error("no tx hash");
