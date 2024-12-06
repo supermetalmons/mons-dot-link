@@ -32,15 +32,23 @@ const ControlsContainer = styled.div`
   position: fixed;
   bottom: 10px;
   right: 10px;
-  left: 52px;
+  left: 49px;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+
+  @media screen and (max-width: 430px) {
+    gap: 6px;
+  }
 
   @media screen and (max-width: 360px) {
     gap: 6px;
     right: 6px;
     left: 6px;
+  }
+
+  @media screen and (max-width: 320px) {
+    gap: 4px;
   }
 `;
 
@@ -66,6 +74,14 @@ export const AppearanceToggleButton = styled.button<{ disabled?: boolean; dimmed
   outline: none;
   -webkit-touch-callout: none;
   touch-action: none;
+
+  @media screen and (max-width: 360px) {
+    left: 6px;
+  }
+
+  @media screen and (max-width: 320px) {
+    width: 27px;
+  }
 
   svg {
     width: 12px;
@@ -197,7 +213,7 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   }
   @media screen and (max-width: 430px) {
     font-size: 0.77rem;
-    font-weight: 750;
+    font-weight: 700;
   }
   @media screen and (max-width: 420px) {
     padding: 0px 10px;
@@ -750,7 +766,7 @@ const BottomControls: React.FC = () => {
             ) : (
               <>
                 <FaEnvelope style={{ marginRight: "6px", fontSize: "0.9em" }} />
-                {"Link Game"}
+                {"New Link Game"}
               </>
             )}
           </BottomPillButton>
