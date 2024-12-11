@@ -991,6 +991,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
   const updateLayout = () => {
+    updateNamesX();
     const multiplicator = getOuterElementsMultiplicator();
     console.log("outer elements multiplicator", multiplicator);
     const newShouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
@@ -1104,7 +1105,6 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     } else {
       playerNameText = nameText;
     }
-    updateNamesX(); // TODO: must be called within update layout as well since it should depend on a multiplicator
 
     const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
     const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
@@ -1208,6 +1208,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       }
     });
   }
+
+  updateLayout();
 
   if (!allHiddenInitially) {
     renderPlayersNamesLabels();
