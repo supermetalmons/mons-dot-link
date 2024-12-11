@@ -976,6 +976,10 @@ function seeIfShouldOffsetFromBorders(): boolean {
   return window.innerWidth / window.innerHeight < 0.72;
 }
 
+function getOuterElementsMultiplicator(): number {
+  return Math.min(window.innerWidth, window.innerHeight) / 777;
+}
+
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove, "statusMoveEmoji");
 
@@ -983,7 +987,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
   const updateLayout = () => {
-    // TODO: adjust controls sizes as well
+    const multiplicator = getOuterElementsMultiplicator();
+    console.log("outer elements multiplicator", multiplicator);
     const newShouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
     if (newShouldOffsetFromBorders !== shouldOffsetFromBorders) {
       shouldOffsetFromBorders = newShouldOffsetFromBorders;
