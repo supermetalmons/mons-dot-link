@@ -1031,10 +1031,11 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     const avatarSize = 0.777;
 
     const numberText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+
+    SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)); // TODO: move into updateLayout
     SVG.setFill(numberText, colors.scoreText);
     SVG.setOpacity(numberText, 0.69);
-    numberText.setAttribute("font-size", "50");
+    numberText.setAttribute("font-size", "50"); // TODO: move into updateLayout
     numberText.setAttribute("font-weight", "600");
     numberText.textContent = allHiddenInitially ? "" : "0";
     controlsLayer?.append(numberText);
@@ -1045,10 +1046,10 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const timerText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+    SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)); // TODO: move into updateLayout
     SVG.setFill(timerText, "green");
     SVG.setOpacity(timerText, 0.69);
-    timerText.setAttribute("font-size", "50");
+    timerText.setAttribute("font-size", "50"); // TODO: move into updateLayout
     timerText.setAttribute("font-weight", "600");
     timerText.textContent = "";
     controlsLayer?.append(timerText);
@@ -1059,10 +1060,10 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+    SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0)); // TODO: move into updateLayout
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
-    nameText.setAttribute("font-size", "32");
+    nameText.setAttribute("font-size", "32"); // TODO: move into updateLayout
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
     nameText.style.cursor = "pointer";
@@ -1110,7 +1111,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
-      SVG.setFrame(img, 10.5 - x * 0.55 - statusItemsOffsetX, y - statusItemsOffsetY, 0.5, 0.5);
+      SVG.setFrame(img, 10.5 - x * 0.55 - statusItemsOffsetX, y - statusItemsOffsetY, 0.5, 0.5); // TODO: move into updateLayout
       controlsLayer?.appendChild(img);
 
       if (isOpponent) {
@@ -1131,7 +1132,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
     const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji, "avatar");
     avatar.style.pointerEvents = "auto";
-    SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
+    SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize); // TODO: move into updateLayout
     controlsLayer?.append(avatar);
     if (isOpponent) {
       opponentAvatar = avatar;
@@ -1167,6 +1168,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
         }
 
         if (isDesktopSafari) {
+          // TODO: use multiplicator
           const scale = 1.8;
           const sizeString = (avatarSize * 100).toString();
           const newSizeString = (avatarSize * 100 * scale).toString();
@@ -1198,6 +1200,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
             }
           );
         } else {
+          // TODO: transformOrigin might be different for p board
           avatar.style.transformOrigin = "0px 1300px";
           avatar.style.transform = "scale(1.8)";
           avatar.style.transition = "transform 0.3s";
