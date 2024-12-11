@@ -712,23 +712,6 @@ export function showTimer(color: string, remainingSeconds: number) {
   updateNamesX();
 }
 
-function updateNamesX() {
-  if (playerNameText === undefined || opponentNameText === undefined) {
-    return;
-  }
-
-  const offsetX = seeIfShouldOffsetFromBorders() ? minHorizontalOffset : 0;
-  const timerDelta = 1.1;
-  const statusDelta = 0.67;
-
-  const playerDelta = (showsPlayerEndOfGameSuffix ? statusDelta : 0) + (showsPlayerTimer ? timerDelta : 0);
-  const opponentDelta = (showsOpponentEndOfGameSuffix ? statusDelta : 0) + (showsOpponentTimer ? timerDelta : 0);
-
-  let initialX = offsetX + 1.55;
-  SVG.setX(playerNameText, initialX + playerDelta);
-  SVG.setX(opponentNameText, initialX + opponentDelta);
-}
-
 function updateTimerDisplay(timerElement: SVGElement, seconds: number) {
   const displayValue = Math.max(0, seconds);
   if (displayValue <= 10) {
@@ -980,6 +963,27 @@ function getOuterElementsMultiplicator(): number {
   return Math.min(window.innerWidth, window.innerHeight) / 777;
 }
 
+function updateNamesX() {
+  if (playerNameText === undefined || opponentNameText === undefined) {
+    return;
+  }
+
+  const multiplicator = getOuterElementsMultiplicator();
+  console.log("outer elements multiplicator", multiplicator);
+  // TODO: multiplicator should affect layout here
+
+  const offsetX = seeIfShouldOffsetFromBorders() ? minHorizontalOffset : 0;
+  const timerDelta = 1.1;
+  const statusDelta = 0.67;
+
+  const playerDelta = (showsPlayerEndOfGameSuffix ? statusDelta : 0) + (showsPlayerTimer ? timerDelta : 0);
+  const opponentDelta = (showsOpponentEndOfGameSuffix ? statusDelta : 0) + (showsOpponentTimer ? timerDelta : 0);
+
+  let initialX = offsetX + 1.55;
+  SVG.setX(playerNameText, initialX + playerDelta);
+  SVG.setX(opponentNameText, initialX + opponentDelta);
+}
+
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove, "statusMoveEmoji");
 
@@ -1100,7 +1104,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     } else {
       playerNameText = nameText;
     }
-    updateNamesX();
+    updateNamesX(); // TODO: must be called within update layout as well since it should depend on a multiplicator
 
     const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
     const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
