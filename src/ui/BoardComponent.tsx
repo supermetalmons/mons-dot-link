@@ -54,43 +54,54 @@ const BoardComponent: React.FC = () => {
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" style={{ maxHeight: isGridVisible ? "83vh" : "90vh", ...(isGridVisible ? {} : { top: "max(51%, 222.5pt);" }) }} viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
-      <g style={{ display: isGridVisible ? "block" : "none" }}>
-        <rect y="100" width="1100" height="1100" fill={colorLightSquare} />
-        {Array.from({ length: 11 }, (_, row) =>
-          Array.from({ length: 11 }, (_, col) => {
-            const x = col * 100;
-            const y = (row + 1) * 100;
-            if ((row + col) % 2 === 1) {
-              return <rect key={`square-${row}-${col}`} x={x} y={y} width="100" height="100" fill={colorDarkSquare} />;
-            }
-            return null;
-          })
-        )}
+      {isGridVisible ? (
+        <g id="boardBackgroundLayer">
+          <rect y="100" width="1100" height="1100" fill={colorLightSquare} />
+          {Array.from({ length: 11 }, (_, row) =>
+            Array.from({ length: 11 }, (_, col) => {
+              const x = col * 100;
+              const y = (row + 1) * 100;
+              return (row + col) % 2 === 1 ? <rect key={`square-${row}-${col}`} x={x} y={y} width="100" height="100" fill={colorDarkSquare} /> : null;
+            })
+          )}
 
-        <rect x="500" y="600" width="100" height="100" fill={colorManaPool} />
-        <rect x="0" y="100" width="100" height="100" fill={colorManaPool} />
-        <rect x="1000" y="1100" width="100" height="100" fill={colorManaPool} />
-        <rect x="1000" y="100" width="100" height="100" fill={colorManaPool} />
-        <rect x="0" y="1100" width="100" height="100" fill={colorManaPool} />
-        <rect x="0" y="600" width="100" height="100" fill={colorPickupItemSquare} />
-        <rect x="1000" y="600" width="100" height="100" fill={colorPickupItemSquare} />
-        <rect x="400" y="400" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="600" y="400" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="400" y="800" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="600" y="800" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="300" y="500" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="500" y="500" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="700" y="500" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="300" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="500" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
-        <rect x="700" y="700" width="100" height="100" fill={colorSimpleManaSquare} />
-      </g>
+          {[
+            [500, 600],
+            [0, 100],
+            [1000, 1100],
+            [1000, 100],
+            [0, 1100],
+          ].map(([x, y], i) => (
+            <rect key={`mana-pool-${i}`} x={x} y={y} width="100" height="100" fill={colorManaPool} />
+          ))}
 
-      {!isGridVisible && (
-        <>
+          {[
+            [0, 600],
+            [1000, 600],
+          ].map(([x, y], i) => (
+            <rect key={`pickup-${i}`} x={x} y={y} width="100" height="100" fill={colorPickupItemSquare} />
+          ))}
+
+          {[
+            [400, 400],
+            [600, 400],
+            [400, 800],
+            [600, 800],
+            [300, 500],
+            [500, 500],
+            [700, 500],
+            [300, 700],
+            [500, 700],
+            [700, 700],
+          ].map(([x, y], i) => (
+            <rect key={`simple-mana-${i}`} x={x} y={y} width="100" height="100" fill={colorSimpleManaSquare} />
+          ))}
+        </g>
+      ) : (
+        <g id="boardBackgroundLayer">
           <rect x="1" y="101" height="1161" width="1098" fill={prefersDarkMode ? "#232323" : "#FEFCF6"} />
           <image href="assets/bg/Pangchiu.jpg" x="0" y="100" width="1100" style={{ backgroundColor: prefersDarkMode ? "#232323" : "#FEFCF6" }} />
-        </>
+        </g>
       )}
       <g id="monsboard" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
       <g id="highlightsLayer" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>

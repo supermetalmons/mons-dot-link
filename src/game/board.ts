@@ -44,6 +44,7 @@ let board: HTMLElement | null;
 let highlightsLayer: HTMLElement | null;
 let itemsLayer: HTMLElement | null;
 let controlsLayer: HTMLElement | null;
+let boardBackgroundLayer: HTMLElement | null;
 
 const items: { [key: string]: SVGElement } = {};
 const basesPlaceholders: { [key: string]: SVGElement } = {};
@@ -304,6 +305,7 @@ function initializeBoardElements() {
   highlightsLayer = document.getElementById("highlightsLayer");
   itemsLayer = document.getElementById("itemsLayer");
   controlsLayer = document.getElementById("controlsLayer");
+  boardBackgroundLayer = document.getElementById("boardBackgroundLayer");
 }
 
 export function hideBoardPlayersInfo() {
@@ -960,10 +962,11 @@ function seeIfShouldOffsetFromBorders(): boolean {
 }
 
 function getOuterElementsMultiplicator(): number {
-  return Math.min(window.innerWidth, window.innerHeight) / 777;
+  return Math.min(420 / boardBackgroundLayer!.getBoundingClientRect().width, 1);
 }
 
 function getAvatarSize(): number {
+  // return 0.777 * getOuterElementsMultiplicator();
   return 0.777; // TODO: use multiplicator
 }
 
@@ -973,8 +976,6 @@ function updateNamesX() {
   }
 
   const multiplicator = getOuterElementsMultiplicator();
-  console.log("outer elements multiplicator", multiplicator);
-  // TODO: multiplicator should affect layout here
 
   const offsetX = seeIfShouldOffsetFromBorders() ? minHorizontalOffset : 0;
   const timerDelta = 1.1;
@@ -993,7 +994,6 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
   const updateLayout = () => {
     const multiplicator = getOuterElementsMultiplicator();
-    console.log("use outer elements multiplicator", multiplicator);
 
     let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
     const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
