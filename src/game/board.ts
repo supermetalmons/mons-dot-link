@@ -963,6 +963,10 @@ function getOuterElementsMultiplicator(): number {
   return Math.min(window.innerWidth, window.innerHeight) / 777;
 }
 
+function getAvatarSize(): number {
+  return 0.777; // TODO: use multiplicator
+}
+
 function updateNamesX() {
   if (playerNameText === undefined || opponentNameText === undefined) {
     return;
@@ -987,34 +991,43 @@ function updateNamesX() {
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
   const statusMove = loadImage(emojis.statusMove, "statusMoveEmoji");
 
-  let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
-  const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
-
   const updateLayout = () => {
-    updateNamesX();
     const multiplicator = getOuterElementsMultiplicator();
-    console.log("outer elements multiplicator", multiplicator);
-    const newShouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
-    if (newShouldOffsetFromBorders !== shouldOffsetFromBorders) {
-      shouldOffsetFromBorders = newShouldOffsetFromBorders;
-      let delta = shouldOffsetFromBorders ? minHorizontalOffset : -minHorizontalOffset;
+    console.log("use outer elements multiplicator", multiplicator);
 
-      SVG.offsetX(opponentAvatar, delta);
-      SVG.offsetX(playerAvatar, delta);
-      SVG.offsetX(playerScoreText, delta);
-      SVG.offsetX(opponentScoreText, delta);
-      SVG.offsetX(playerNameText, delta);
-      SVG.offsetX(opponentNameText, delta);
-      SVG.offsetX(playerTimer, delta);
-      SVG.offsetX(opponentTimer, delta);
+    let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
+    const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
-      for (const item of opponentMoveStatusItems) {
-        SVG.offsetX(item, -delta);
+    for (const isOpponent of [true, false]) {
+      const y = isOpponent ? 0.333 : isPangchiuBoard ? 12.7 : 12.169;
+      const avatarOffsetY = isOpponent ? 0.23 : -0.1;
+      const avatarSize = getAvatarSize();
+
+      const numberText = isOpponent ? opponentScoreText! : playerScoreText!;
+      SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+      numberText.setAttribute("font-size", "50");
+
+      const timerText = isOpponent ? opponentTimer! : playerTimer!;
+      SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+      timerText.setAttribute("font-size", "50");
+
+      const nameText = isOpponent ? opponentNameText! : playerNameText!;
+      SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+      nameText.setAttribute("font-size", "32");
+
+      const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
+      const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
+
+      for (let x = 0; x < 9; x++) {
+        const img = isOpponent ? opponentMoveStatusItems[x] : playerMoveStatusItems[x];
+        SVG.setFrame(img, 10.5 - x * 0.55 - statusItemsOffsetX, y - statusItemsOffsetY, 0.5, 0.5);
       }
-      for (const item of playerMoveStatusItems) {
-        SVG.offsetX(item, -delta);
-      }
+
+      const avatar = isOpponent ? opponentAvatar! : playerAvatar!;
+      SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
     }
+
+    updateNamesX();
   };
 
   window.addEventListener("resize", updateLayout);
@@ -1026,16 +1039,9 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
   opponentSideMetadata.emojiId = opponentEmojiId;
 
   for (const isOpponent of [true, false]) {
-    const y = isOpponent ? 0.333 : isPangchiuBoard ? 12.7 : 12.169;
-    const avatarOffsetY = isOpponent ? 0.23 : -0.1;
-    const avatarSize = 0.777;
-
     const numberText = document.createElementNS(SVG.ns, "text");
-
-    SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)); // TODO: move into updateLayout
     SVG.setFill(numberText, colors.scoreText);
     SVG.setOpacity(numberText, 0.69);
-    numberText.setAttribute("font-size", "50"); // TODO: move into updateLayout
     numberText.setAttribute("font-weight", "600");
     numberText.textContent = allHiddenInitially ? "" : "0";
     controlsLayer?.append(numberText);
@@ -1046,10 +1052,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const timerText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0)); // TODO: move into updateLayout
     SVG.setFill(timerText, "green");
     SVG.setOpacity(timerText, 0.69);
-    timerText.setAttribute("font-size", "50"); // TODO: move into updateLayout
     timerText.setAttribute("font-weight", "600");
     timerText.textContent = "";
     controlsLayer?.append(timerText);
@@ -1060,10 +1064,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     }
 
     const nameText = document.createElementNS(SVG.ns, "text");
-    SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0)); // TODO: move into updateLayout
     SVG.setFill(nameText, colors.scoreText);
     SVG.setOpacity(nameText, 0.69);
-    nameText.setAttribute("font-size", "32"); // TODO: move into updateLayout
     nameText.setAttribute("font-weight", "270");
     nameText.setAttribute("font-style", "italic");
     nameText.style.cursor = "pointer";
@@ -1107,11 +1109,8 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       playerNameText = nameText;
     }
 
-    const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
-    const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
     for (let x = 0; x < 9; x++) {
       const img = statusMove.cloneNode() as SVGElement;
-      SVG.setFrame(img, 10.5 - x * 0.55 - statusItemsOffsetX, y - statusItemsOffsetY, 0.5, 0.5); // TODO: move into updateLayout
       controlsLayer?.appendChild(img);
 
       if (isOpponent) {
@@ -1132,7 +1131,6 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
 
     const avatar = loadImage(isOpponent ? opponentEmoji : playerEmoji, "avatar");
     avatar.style.pointerEvents = "auto";
-    SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize); // TODO: move into updateLayout
     controlsLayer?.append(avatar);
     if (isOpponent) {
       opponentAvatar = avatar;
@@ -1168,10 +1166,9 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
         }
 
         if (isDesktopSafari) {
-          // TODO: use multiplicator
           const scale = 1.8;
-          const sizeString = (avatarSize * 100).toString();
-          const newSizeString = (avatarSize * 100 * scale).toString();
+          const sizeString = (getAvatarSize() * 100).toString();
+          const newSizeString = (getAvatarSize() * 100 * scale).toString();
 
           avatar.animate(
             [
@@ -1184,7 +1181,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
               {
                 width: newSizeString,
                 height: newSizeString,
-                transform: `translate(0px, -77pt)`,
+                transform: `translate(0px, -77pt)`, // TODO: use multiplicator
                 easing: "ease-in-out",
               },
               {
