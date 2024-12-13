@@ -729,7 +729,7 @@ const BottomControls: React.FC = () => {
     try {
       await navigator.share({
         url: window.location.href,
-        title: "Join my game",
+        title: "Play Mons",
       });
     } catch (_) {}
   };
