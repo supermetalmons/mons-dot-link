@@ -970,8 +970,6 @@ function getAvatarSize(): number {
 }
 
 function updateNamesX() {
-  // TODO: fix for new layout
-  
   if (playerNameText === undefined || opponentNameText === undefined) {
     return;
   }
@@ -979,15 +977,16 @@ function updateNamesX() {
   const multiplicator = getOuterElementsMultiplicator();
 
   const offsetX = seeIfShouldOffsetFromBorders() ? minHorizontalOffset : 0;
-  const timerDelta = 1.1;
-  const statusDelta = 0.67;
+
+  let initialX = offsetX + 1.45 * multiplicator + 0.1;
+  const timerDelta = 0.95 * multiplicator;
+  const statusDelta = 0.67 * multiplicator;
 
   const playerDelta = (showsPlayerEndOfGameSuffix ? statusDelta : 0) + (showsPlayerTimer ? timerDelta : 0);
   const opponentDelta = (showsOpponentEndOfGameSuffix ? statusDelta : 0) + (showsOpponentTimer ? timerDelta : 0);
 
-  let initialX = offsetX + 1.45;
-  SVG.setX(playerNameText, (initialX + playerDelta) * multiplicator + 0.1);
-  SVG.setX(opponentNameText, (initialX + opponentDelta) * multiplicator + 0.1);
+  SVG.setX(playerNameText, initialX + playerDelta);
+  SVG.setX(opponentNameText, initialX + opponentDelta);
 }
 
 export async function setupGameInfoElements(allHiddenInitially: boolean) {
@@ -1008,7 +1007,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       const y = isOpponent ? 1 - avatarSize * 1.203 : isPangchiuBoard ? 12.75 : 12.16;
 
       SVG.setOrigin(numberText, offsetX + avatarSize * 1.21, y + avatarSize * 0.73);
-      SVG.setOrigin(timerText, offsetX + avatarSize * 1.5 * multiplicator, y + avatarSize * 0.73);
+      SVG.setOrigin(timerText, offsetX + avatarSize * 1.85, y + avatarSize * 0.73);
       SVG.setOrigin(nameText, 0, y + avatarSize * 0.65);
 
       numberText.setAttribute("font-size", (50 * multiplicator).toString());
