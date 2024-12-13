@@ -962,8 +962,7 @@ function seeIfShouldOffsetFromBorders(): boolean {
 }
 
 function getOuterElementsMultiplicator(): number {
-  const multiplicator = Math.min(420 / boardBackgroundLayer!.getBoundingClientRect().width, 1);
-  return 1; // TODO: dev tmp
+  return Math.min(420 / boardBackgroundLayer!.getBoundingClientRect().width, 1);
 }
 
 function getAvatarSize(): number {
@@ -971,6 +970,8 @@ function getAvatarSize(): number {
 }
 
 function updateNamesX() {
+  // TODO: fix for new layout
+  
   if (playerNameText === undefined || opponentNameText === undefined) {
     return;
   }
@@ -999,33 +1000,32 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
     const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
     for (const isOpponent of [true, false]) {
-      const y = isOpponent ? 0.333 : isPangchiuBoard ? 12.7 : 12.169;
-      const avatarOffsetY = (isOpponent ? 0.23 : -0.1) * multiplicator;
       const avatarSize = getAvatarSize();
-
       const numberText = isOpponent ? opponentScoreText! : playerScoreText!;
-      SVG.setOrigin(numberText, offsetX + avatarSize + 0.21, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
-      numberText.setAttribute("font-size", (50 * multiplicator).toString());
-
       const timerText = isOpponent ? opponentTimer! : playerTimer!;
-      SVG.setOrigin(timerText, offsetX + avatarSize + 0.21 + 0.5, y + 0.55 - avatarOffsetY + (isOpponent ? 0.013 : 0));
-      timerText.setAttribute("font-size", (50 * multiplicator).toString());
-
       const nameText = isOpponent ? opponentNameText! : playerNameText!;
-      SVG.setOrigin(nameText, 0, y + 0.49 - avatarOffsetY + (isOpponent ? 0.013 : 0));
+
+      const y = isOpponent ? 1 - avatarSize * 1.203 : isPangchiuBoard ? 12.75 : 12.16;
+
+      SVG.setOrigin(numberText, offsetX + avatarSize * 1.21, y + avatarSize * 0.73);
+      SVG.setOrigin(timerText, offsetX + avatarSize * 1.5 * multiplicator, y + avatarSize * 0.73);
+      SVG.setOrigin(nameText, 0, y + avatarSize * 0.65);
+
+      numberText.setAttribute("font-size", (50 * multiplicator).toString());
+      timerText.setAttribute("font-size", (50 * multiplicator).toString());
       nameText.setAttribute("font-size", (32 * multiplicator).toString());
 
-      const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 : 0;
-      const statusItemsOffsetY = isOpponent ? 0.1 : -0.155;
+      const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 * multiplicator : 0;
+      const statusItemsY = y + avatarSize * (isOpponent ? 0.23 : 0.1);
       const statusItemSize = 0.5 * multiplicator;
 
       for (let x = 0; x < 9; x++) {
         const img = isOpponent ? opponentMoveStatusItems[x] : playerMoveStatusItems[x];
-        SVG.setFrame(img, 10.5 - x * 0.55 - statusItemsOffsetX, y - statusItemsOffsetY, statusItemSize, statusItemSize);
+        SVG.setFrame(img, 11 - (1.15 * x + 1) * statusItemSize - statusItemsOffsetX, statusItemsY, statusItemSize, statusItemSize);
       }
 
       const avatar = isOpponent ? opponentAvatar! : playerAvatar!;
-      SVG.setFrame(avatar, offsetX, y - avatarOffsetY, avatarSize, avatarSize);
+      SVG.setFrame(avatar, offsetX, y, avatarSize, avatarSize);
     }
 
     updateNamesX();
