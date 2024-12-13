@@ -1181,7 +1181,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
               {
                 width: newSizeString,
                 height: newSizeString,
-                transform: `translate(0px, -77pt)`, // TODO: use multiplicator
+                transform: `translate(0px, -${getAvatarSize() * 100}pt)`,
                 easing: "ease-in-out",
               },
               {
@@ -1197,8 +1197,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
             }
           );
         } else {
-          // TODO: transformOrigin might be different for p board
-          avatar.style.transformOrigin = "0px 1300px";
+          avatar.style.transformOrigin = `0px ${isPangchiuBoard ? 1369 : 1300}px`;
           avatar.style.transform = "scale(1.8)";
           avatar.style.transition = "transform 0.3s";
           setTimeout(() => {
