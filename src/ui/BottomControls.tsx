@@ -212,19 +212,26 @@ const BottomPillButton = styled.button<{ isPink?: boolean; isBlue?: boolean; isV
   @media screen and (max-width: 300pt) {
     padding: 0px 10px;
   }
-  @media screen and (max-width: 430px) {
+  @media screen and (max-width: 500px) {
+    font-size: 0.81rem;
+    font-weight: 750;
+  }
+  @media screen and (max-width: 468px) {
     font-size: 0.77rem;
     font-weight: 700;
   }
-  @media screen and (max-width: 420px) {
+  @media screen and (max-width: 433px) {
     padding: 0px 10px;
   }
   @media screen and (max-width: 295pt) {
     padding: 0px 8px;
   }
-  @media screen and (max-width: 375px) {
+  @media screen and (max-width: 381px) {
     font-size: 0.72rem;
     font-weight: 720;
+  }
+  @media screen and (max-width: 365px) {
+    font-size: 0.69rem;
   }
   @media screen and (max-width: 320px) {
     font-size: 0.63rem;
