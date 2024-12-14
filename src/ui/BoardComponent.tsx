@@ -23,6 +23,7 @@ const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
   const [currentColorSet, setCurrentColorSet] = useState<ColorSet>(getCurrentColorSet());
   const [prefersDarkMode] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const [isGridVisible] = useState(currentAssetsSet !== AssetsSet.Pangchiu);
 
   useEffect(() => {
     if (!initializationRef.current) {
@@ -47,13 +48,12 @@ const BoardComponent: React.FC = () => {
   const colorManaPool = currentColorSet.manaPool;
   const colorPickupItemSquare = currentColorSet.pickupItemSquare;
   const colorSimpleManaSquare = currentColorSet.simpleManaSquare;
-  const [isGridVisible] = useState(currentAssetsSet !== AssetsSet.Pangchiu);
 
   const standardBoardTransform = "translate(0,100)";
   const pangchiuBoardTransform = "translate(83,184) scale(0.85892388)";
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" className="board-svg" style={{ maxHeight: isGridVisible ? "83vh" : "90vh", ...(isGridVisible ? {} : { top: "max(51%, 222.5pt)" }) }} viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
+    <svg xmlns="http://www.w3.org/2000/svg" className={`board-svg ${isGridVisible ? "grid-visible" : "grid-hidden"}`} viewBox="0 0 1100 1410" shapeRendering="crispEdges" overflow="visible">
       {isGridVisible ? (
         <g id="boardBackgroundLayer">
           <rect y="100" width="1100" height="1100" fill={colorLightSquare} />

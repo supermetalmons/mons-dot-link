@@ -65,13 +65,26 @@ body {
   width: 100vw;
   touch-action: none;
   position: absolute;
-  top: 51.75%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
+.board-svg.grid-visible {
+  top: 51.75%;
+  max-height: 83vh;
+}
+
+.board-svg.grid-hidden {
+  top: 51%;
+  max-height: 90vh;
+}
+
 @media (orientation: portrait) {
-  .board-svg {
+  .board-svg.grid-hidden {
+    top: max(51%, 222.5pt);
+  }
+
+  .board-svg.grid-visible {
     top: max(52.5%, 222.5pt);
   }
 }
