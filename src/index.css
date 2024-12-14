@@ -81,12 +81,22 @@ body {
 
 @media (orientation: portrait) {
   .board-svg.grid-hidden {
-    top: max(51%, 287px);
+    top: 51%;
   }
 
   .board-svg.grid-visible {
     max-height: min(83vh, calc(100dvh - 50pt));
-    top: max(52.5%, 222.5pt);
+    top: 52.5%;
+  }
+
+  @media (max-height: 547px) {
+    .board-svg.grid-hidden {
+      top: 52%;
+    }
+
+    .board-svg.grid-visible {
+      top: 54.5%;
+    }
   }
 }
 
