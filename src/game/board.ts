@@ -1680,7 +1680,17 @@ function setBase(item: SVGElement, location: Location) {
 
 function highlightEmptyDestination(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
+  let highlight: SVGElement;
+
+  if (isPangchiuBoard) {
+    highlight = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(highlight, location.j + 0.35, location.i + 0.35, 0.3, 0.3);
+    highlight.setAttribute("rx", "7");
+    highlight.setAttribute("ry", "7");
+  } else {
+    highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
+  }
+
   highlight.style.pointerEvents = "none";
   SVG.setFill(highlight, color);
   highlightsLayer?.append(highlight);
@@ -1688,47 +1698,71 @@ function highlightEmptyDestination(location: Location, color: string) {
 
 function highlightSelectedItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS(SVG.ns, "g");
-  highlight.style.pointerEvents = "none";
 
-  const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
-  SVG.setFill(circle, color);
+  if (isPangchiuBoard) {
+    const highlight = document.createElementNS(SVG.ns, "rect");
+    highlight.style.pointerEvents = "none";
+    SVG.setFill(highlight, color);
+    SVG.setFrame(highlight, location.j, location.i, 1, 1);
+    highlight.setAttribute("rx", "10");
+    highlight.setAttribute("ry", "10");
+    highlightsLayer?.append(highlight);
+  } else {
+    const highlight = document.createElementNS(SVG.ns, "g");
+    highlight.style.pointerEvents = "none";
 
-  const mask = document.createElementNS(SVG.ns, "mask");
-  mask.setAttribute("id", `highlight-mask-${location.toString()}`);
-  const maskRect = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(maskRect, location.j, location.i, 1, 1);
-  SVG.setFill(maskRect);
-  mask.appendChild(maskRect);
-  highlight.appendChild(mask);
+    const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
+    SVG.setFill(circle, color);
 
-  circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
-  highlight.appendChild(circle);
-  highlightsLayer?.append(highlight);
+    const mask = document.createElementNS(SVG.ns, "mask");
+    mask.setAttribute("id", `highlight-mask-${location.toString()}`);
+    const maskRect = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(maskRect, location.j, location.i, 1, 1);
+    SVG.setFill(maskRect);
+    mask.appendChild(maskRect);
+    highlight.appendChild(mask);
+
+    circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+    highlight.appendChild(circle);
+    highlightsLayer?.append(highlight);
+  }
 }
 
 function highlightStartFromSuggestion(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS(SVG.ns, "g");
-  highlight.style.pointerEvents = "none";
+  let highlight: SVGElement;
 
-  const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
-  SVG.setFill(circle, color);
+  if (isPangchiuBoard) {
+    highlight = document.createElementNS(SVG.ns, "rect");
+    highlight.style.pointerEvents = "none";
+    SVG.setFill(highlight, color);
+    SVG.setFrame(highlight, location.j, location.i, 1, 1);
+    highlight.setAttribute("rx", "10");
+    highlight.setAttribute("ry", "10");
+    SVG.setOpacity(highlight, 0.69);
+  } else {
+    highlight = document.createElementNS(SVG.ns, "g");
+    highlight.style.pointerEvents = "none";
 
-  circle.setAttribute("stroke", colors.startFromStroke);
-  circle.setAttribute("stroke-width", "0.023");
+    const circle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
+    SVG.setFill(circle, color);
 
-  const mask = document.createElementNS(SVG.ns, "mask");
-  mask.setAttribute("id", `highlight-mask-${location.toString()}`);
-  const maskRect = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(maskRect, location.j, location.i, 1, 1);
-  SVG.setFill(maskRect);
-  mask.appendChild(maskRect);
-  highlight.appendChild(mask);
+    circle.setAttribute("stroke", colors.startFromStroke);
+    circle.setAttribute("stroke-width", "0.023");
 
-  circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
-  SVG.setOpacity(highlight, 0.69);
-  highlight.appendChild(circle);
+    const mask = document.createElementNS(SVG.ns, "mask");
+    mask.setAttribute("id", `highlight-mask-${location.toString()}`);
+    const maskRect = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(maskRect, location.j, location.i, 1, 1);
+    SVG.setFill(maskRect);
+    mask.appendChild(maskRect);
+    highlight.appendChild(mask);
+
+    circle.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+    SVG.setOpacity(highlight, 0.69);
+    highlight.appendChild(circle);
+  }
+
   highlightsLayer?.append(highlight);
 
   setTimeout(() => {
@@ -1738,31 +1772,44 @@ function highlightStartFromSuggestion(location: Location, color: string) {
 
 function highlightDestinationItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
-  const highlight = document.createElementNS(SVG.ns, "g");
-  highlight.style.pointerEvents = "none";
 
-  const rect = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(rect, location.j, location.i, 1, 1);
-  SVG.setFill(rect, color);
+  if (isPangchiuBoard) {
+    const highlight = document.createElementNS(SVG.ns, "rect");
+    highlight.style.pointerEvents = "none";
+    SVG.setFrame(highlight, location.j + 0, location.i + 0, 1, 1);
+    highlight.setAttribute("rx", "10");
+    highlight.setAttribute("ry", "10");
+    highlight.setAttribute("stroke", color);
+    highlight.setAttribute("stroke-width", "10");
+    SVG.setFill(highlight, "transparent");
+    highlightsLayer?.append(highlight);
+  } else {
+    const highlight = document.createElementNS(SVG.ns, "g");
+    highlight.style.pointerEvents = "none";
 
-  const mask = document.createElementNS(SVG.ns, "mask");
-  mask.setAttribute("id", `highlight-mask-${location.toString()}`);
+    const rect = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(rect, location.j, location.i, 1, 1);
+    SVG.setFill(rect, color);
 
-  const maskRect = document.createElementNS(SVG.ns, "rect");
-  SVG.setFrame(maskRect, location.j, location.i, 1, 1);
-  SVG.setFill(maskRect);
-  mask.appendChild(maskRect);
+    const mask = document.createElementNS(SVG.ns, "mask");
+    mask.setAttribute("id", `highlight-mask-${location.toString()}`);
 
-  const maskCircle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
-  SVG.setFill(maskCircle, "black");
-  mask.appendChild(maskCircle);
+    const maskRect = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(maskRect, location.j, location.i, 1, 1);
+    SVG.setFill(maskRect);
+    mask.appendChild(maskRect);
 
-  highlight.appendChild(mask);
-  highlight.appendChild(rect);
+    const maskCircle = SVG.circle(location.j + 0.5, location.i + 0.5, 0.56);
+    SVG.setFill(maskCircle, "black");
+    mask.appendChild(maskCircle);
 
-  rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+    highlight.appendChild(mask);
+    highlight.appendChild(rect);
 
-  highlightsLayer?.append(highlight);
+    rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+
+    highlightsLayer?.append(highlight);
+  }
 }
 
 function getTraceColors(): string[] {
