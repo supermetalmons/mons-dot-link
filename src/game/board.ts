@@ -864,6 +864,12 @@ export function showItemSelection(): void {
   itemsLayer?.appendChild(overlay);
 }
 
+export function addElementToItemsLayer(element: SVGElement, depth: number) {
+  // TODO: if p board, insert based on depth
+  // in that case items should be sorted from small to greater depth value
+  itemsLayer?.appendChild(element);
+}
+
 export function putItem(item: MonsWeb.ItemModel, location: Location) {
   switch (item.kind) {
     case MonsWeb.ItemModelKind.Mon:
@@ -1374,7 +1380,7 @@ function placeMonWithBomb(item: SVGElement, location: Location, baseItemKind: It
   container.appendChild(img);
   container.appendChild(carriedBomb);
 
-  itemsLayer?.appendChild(container);
+  addElementToItemsLayer(container, location.i);
   items[location.toString()] = container;
   startAnimation(img);
 
@@ -1402,7 +1408,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location, baseItemKin
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  itemsLayer?.appendChild(container);
+  addElementToItemsLayer(container, location.i);
   items[location.toString()] = container;
   startAnimation(img);
 
@@ -1428,7 +1434,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   container.appendChild(img);
   container.appendChild(carriedMana);
 
-  itemsLayer?.appendChild(container);
+  addElementToItemsLayer(container, location.i);
   items[location.toString()] = container;
   startAnimation(img);
 
@@ -1520,7 +1526,7 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
   if (fainted) {
     SVG.setOrigin(img, location.j, location.i);
     img.style.transform = "rotate(90deg)";
-    itemsLayer?.appendChild(img);
+    addElementToItemsLayer(img, location.i);
     items[key] = img;
   } else if (sparkles) {
     const container = document.createElementNS(SVG.ns, "g");
@@ -1528,11 +1534,11 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
     SVG.setOrigin(img, location.j, location.i);
     container.appendChild(sparkles);
     container.appendChild(img);
-    itemsLayer?.appendChild(container);
+    addElementToItemsLayer(container, location.i);
     items[key] = container;
   } else {
     SVG.setOrigin(img, location.j, location.i);
-    itemsLayer?.appendChild(img);
+    addElementToItemsLayer(img, location.i);
     items[key] = img;
   }
   startAnimation(img, fainted);
