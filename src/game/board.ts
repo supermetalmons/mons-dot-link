@@ -1786,7 +1786,7 @@ function highlightDestinationItem(location: Location, color: string) {
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
     highlight.setAttribute("stroke", color);
-    highlight.setAttribute("stroke-width", "10");
+    highlight.setAttribute("stroke-width", "13");
     SVG.setOpacity(highlight, 0.77);
     SVG.setFill(highlight, "transparent");
     highlightsLayer?.append(highlight);
