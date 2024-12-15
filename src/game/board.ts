@@ -1744,14 +1744,16 @@ function highlightDestinationItem(location: Location, color: string) {
 }
 
 function getTraceColors(): string[] {
-  if (traceIndex === 6) {
+  const isGradient = !isPangchiuBoard;
+
+  if (traceIndex === (isGradient ? 6 : 7)) {
     traceIndex = 0;
   }
 
   traceIndex += 1;
 
   const a = colors.getRainbow(traceIndex.toString());
-  const b = colors.getRainbow((traceIndex + 1).toString());
+  const b = colors.getRainbow((traceIndex + (isGradient ? 1 : 0)).toString());
 
   return [a, b];
 }
