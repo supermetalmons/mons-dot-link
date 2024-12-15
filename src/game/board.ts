@@ -1743,6 +1743,8 @@ function highlightStartFromSuggestion(location: Location, color: string) {
     SVG.setFrame(highlight, location.j, location.i, 1, 1);
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
+    highlight.setAttribute("stroke", color);
+    highlight.setAttribute("stroke-width", "10");
     SVG.setOpacity(highlight, 0.69);
   } else {
     highlight = document.createElementNS(SVG.ns, "g");
