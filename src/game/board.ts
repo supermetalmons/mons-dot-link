@@ -1687,7 +1687,7 @@ function highlightEmptyDestination(location: Location, color: string) {
     SVG.setFrame(highlight, location.j + 0.35, location.i + 0.35, 0.3, 0.3);
     highlight.setAttribute("rx", "7");
     highlight.setAttribute("ry", "7");
-    SVG.setOpacity(highlight, 0.69);
+    SVG.setOpacity(highlight, 0.77);
   } else {
     highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
   }
@@ -1707,7 +1707,9 @@ function highlightSelectedItem(location: Location, color: string) {
     SVG.setFrame(highlight, location.j, location.i, 1, 1);
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
-    SVG.setOpacity(highlight, 0.69);
+    highlight.setAttribute("stroke", color);
+    highlight.setAttribute("stroke-width", "10");
+    SVG.setOpacity(highlight, 0.77);
     highlightsLayer?.append(highlight);
   } else {
     const highlight = document.createElementNS(SVG.ns, "g");
@@ -1783,7 +1785,7 @@ function highlightDestinationItem(location: Location, color: string) {
     highlight.setAttribute("ry", "10");
     highlight.setAttribute("stroke", color);
     highlight.setAttribute("stroke-width", "10");
-    SVG.setOpacity(highlight, 0.69);
+    SVG.setOpacity(highlight, 0.77);
     SVG.setFill(highlight, "transparent");
     highlightsLayer?.append(highlight);
   } else {
