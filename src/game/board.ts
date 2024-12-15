@@ -865,9 +865,25 @@ export function showItemSelection(): void {
 }
 
 export function addElementToItemsLayer(element: SVGElement, depth: number) {
-  // TODO: if p board, insert based on depth
-  // in that case items should be sorted from small to greater depth value
-  itemsLayer?.appendChild(element);
+  if (!itemsLayer) return;
+
+  if (isPangchiuBoard) {
+    const children = Array.from(itemsLayer.children);
+    const insertionIndex = children.findIndex((child) => {
+      const childDepth = Number(child.getAttribute("data-depth") || 0);
+      return childDepth > depth;
+    });
+
+    element.setAttribute("data-depth", depth.toString());
+
+    if (insertionIndex === -1) {
+      itemsLayer.appendChild(element);
+    } else {
+      itemsLayer.insertBefore(element, children[insertionIndex]);
+    }
+  } else {
+    itemsLayer.appendChild(element);
+  }
 }
 
 export function putItem(item: MonsWeb.ItemModel, location: Location) {
