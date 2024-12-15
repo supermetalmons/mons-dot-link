@@ -23,13 +23,13 @@ export const colors = {
   startFromSuggestion: "#FEFB00",
   selectedItem: "#00F900",
   rainbow: {
-    1: "#FF2F92",
-    2: "#FFD478",
-    3: "#FFFB78",
-    4: "#72FA78",
-    5: "#73FDFF",
-    6: "#75D5FF",
-    7: "#D783FF",
+    1: "#FF2F92", // Pink
+    2: "#FFD478", // Orange
+    3: "#FFFB78", // Yellow
+    4: "#72FA78", // Green
+    5: "#73FDFF", // Cyan
+    6: "#75D5FF", // Light Blue
+    7: "#D783FF", // Purple
   } as { [key: string]: string },
 
   getRainbow: function (index: string) {
