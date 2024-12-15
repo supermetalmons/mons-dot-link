@@ -18,7 +18,7 @@ export let isCustomPictureBoardEnabled = isPangchiuBoard; // TODO: decouple boar
 
 export const colors = {
   attackTarget: "#941651",
-  destination: "#009500",
+  destination: isPangchiuBoard ? "#00BC00" : "#009500",
   spiritTarget: "#FF84FF",
   startFromSuggestion: "#FEFB00",
   selectedItem: "#00F900",
