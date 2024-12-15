@@ -1339,7 +1339,7 @@ export function drawTrace(trace: Trace) {
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
   const transform = `translate(${fromCenter.x * 100},${fromCenter.y * 100}) rotate(${angle})`;
 
-  SVG.setFrame(rect, 0, -0.1, length, 0.2);
+  SVG.setFrame(rect, 0, -0.1, length, isPangchiuBoard ? 0.23 : 0.2);
   rect.setAttribute("transform", transform);
 
   SVG.setFill(rect, `url(#trace-gradient-${from.toString()}-${to.toString()})`);
@@ -1347,7 +1347,7 @@ export function drawTrace(trace: Trace) {
 
   const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
     duration: 2000,
-    easing: "ease-out",
+    easing: isPangchiuBoard ? "ease-in" : "ease-out",
   });
 
   fadeOut.onfinish = () => {
