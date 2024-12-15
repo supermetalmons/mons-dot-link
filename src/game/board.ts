@@ -466,7 +466,7 @@ export function didGetEthAddress(address: string, uid: string) {
 }
 
 function renderPlayersNamesLabels() {
-  if (!playerNameText || !opponentNameText || isWaitingForRematchResponse) return;
+  if (!playerNameText || !opponentNameText || isWaitingForRematchResponse || playerScoreText?.textContent === "") return;
 
   if ((!isOnlineGame || opponentSideMetadata.uid === "") && !isGameWithBot) {
     playerNameText.textContent = "";
