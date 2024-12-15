@@ -1780,15 +1780,52 @@ function highlightDestinationItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
 
   if (isPangchiuBoard) {
-    const highlight = document.createElementNS(SVG.ns, "rect");
+    const highlight = document.createElementNS(SVG.ns, "g");
     highlight.style.pointerEvents = "none";
-    SVG.setFrame(highlight, location.j + 0, location.i + 0, 1, 1);
-    highlight.setAttribute("rx", "10");
-    highlight.setAttribute("ry", "10");
-    highlight.setAttribute("stroke", color);
-    highlight.setAttribute("stroke-width", "13");
-    SVG.setOpacity(highlight, 0.77);
-    SVG.setFill(highlight, "transparent");
+
+    const rect = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(rect, location.j, location.i, 1, 1);
+    rect.setAttribute("rx", "10");
+    rect.setAttribute("ry", "10");
+    rect.setAttribute("stroke", color);
+    rect.setAttribute("stroke-width", "13");
+    SVG.setOpacity(rect, 0.77);
+    SVG.setFill(rect, "transparent");
+
+    const mask = document.createElementNS(SVG.ns, "mask");
+    mask.setAttribute("id", `highlight-mask-${location.toString()}`);
+
+    const maskBg = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(maskBg, location.j, location.i, 1, 1);
+    SVG.setFill(maskBg, "white");
+    maskBg.setAttribute("stroke", "white");
+    maskBg.setAttribute("stroke-width", "13");
+    mask.appendChild(maskBg);
+
+    const cutTop = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(cutTop, location.j + 0.3, location.i - 0.1, 0.4, 0.2);
+    SVG.setFill(cutTop, "black");
+    mask.appendChild(cutTop);
+
+    const cutRight = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(cutRight, location.j + 0.9, location.i + 0.3, 0.2, 0.4);
+    SVG.setFill(cutRight, "black");
+    mask.appendChild(cutRight);
+
+    const cutBottom = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(cutBottom, location.j + 0.3, location.i + 0.9, 0.4, 0.2);
+    SVG.setFill(cutBottom, "black");
+    mask.appendChild(cutBottom);
+
+    const cutLeft = document.createElementNS(SVG.ns, "rect");
+    SVG.setFrame(cutLeft, location.j - 0.1, location.i + 0.3, 0.2, 0.4);
+    SVG.setFill(cutLeft, "black");
+    mask.appendChild(cutLeft);
+
+    highlight.appendChild(mask);
+    highlight.appendChild(rect);
+    rect.setAttribute("mask", `url(#highlight-mask-${location.toString()})`);
+
     highlightsLayer?.append(highlight);
   } else {
     const highlight = document.createElementNS(SVG.ns, "g");
