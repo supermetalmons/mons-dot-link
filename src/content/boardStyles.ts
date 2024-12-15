@@ -32,8 +32,18 @@ export const colors = {
     7: "#D783FF", // Purple
   } as { [key: string]: string },
 
+  pangchiuBoardRainbow: {
+    1: "#E01B75", // Pink
+    2: "#FFB23D", // Orange
+    3: "#FFE83D", // Yellow
+    4: "#47D14D", // Green
+    5: "#33F2FF", // Cyan
+    6: "#29B8FF", // Light Blue
+    7: "#B347FF", // Purple
+  } as { [key: string]: string },
+
   getRainbow: function (index: string) {
-    return this.rainbow[index];
+    return isPangchiuBoard ? this.pangchiuBoardRainbow[index] : this.rainbow[index];
   },
   itemSelectionBackground: "rgba(0, 0, 0, 0.5)",
   scoreText: "gray",
