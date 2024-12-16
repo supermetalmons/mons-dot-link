@@ -706,8 +706,10 @@ function verifyMovesIfNeeded(matchId: string, flatMovesString: string, color: st
 }
 
 export function didClickAttestVictoryButton() {
+  const matchId = currentGameModelMatchId ?? "";
+
   if (victoryTx) {
-    saveOnchainRating(victoryTx);
+    saveOnchainRating(victoryTx, matchId);
     return;
   }
 
@@ -717,7 +719,7 @@ export function didClickAttestVictoryButton() {
         victoryTx = res;
       }
       console.log("Will attest with tx:", victoryTx);
-      saveOnchainRating(res);
+      saveOnchainRating(res, matchId);
     })
     .catch((error) => {
       setAttestVictoryEnabled(true);
@@ -732,8 +734,7 @@ function suggestSavingOnchainRating() {
   }
 }
 
-async function saveOnchainRating(txData: any) {
-  const matchId = currentGameModelMatchId;
+async function saveOnchainRating(txData: any, matchId: string) {
   const { sendEasTx } = await import("../connection/eas");
   try {
     const txHash = await sendEasTx(txData);
