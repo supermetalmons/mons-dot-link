@@ -1689,7 +1689,7 @@ function highlightEmptyDestination(location: Location, color: string) {
     SVG.setFrame(highlight, location.j + originOffset, location.i + originOffset, side, side);
     highlight.setAttribute("rx", "7");
     highlight.setAttribute("ry", "7");
-    highlight.style.mixBlendMode = "color";
+    setHighlightBlendMode(highlight);
   } else {
     highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
   }
@@ -1709,7 +1709,7 @@ function highlightSelectedItem(location: Location, color: string) {
     SVG.setFrame(highlight, location.j, location.i, 1, 1);
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
-    highlight.style.mixBlendMode = "color";
+    setHighlightBlendMode(highlight);
     highlightsLayer?.append(highlight);
   } else {
     const highlight = document.createElementNS(SVG.ns, "g");
@@ -1732,6 +1732,16 @@ function highlightSelectedItem(location: Location, color: string) {
   }
 }
 
+const isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
+function setHighlightBlendMode(element: SVGElement) {
+  if (isFirefox) {
+    element.style.opacity = "0.5";
+  } else {
+    element.style.mixBlendMode = "color";
+  }
+}
+
 function highlightStartFromSuggestion(location: Location, color: string) {
   location = inBoardCoordinates(location);
   let highlight: SVGElement;
@@ -1745,7 +1755,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
     highlight.setAttribute("ry", "10");
     highlight.setAttribute("stroke", color);
     highlight.setAttribute("stroke-width", "20");
-    highlight.style.mixBlendMode = "color";
+    setHighlightBlendMode(highlight);
   } else {
     highlight = document.createElementNS(SVG.ns, "g");
     highlight.style.pointerEvents = "none";
@@ -1792,7 +1802,7 @@ function highlightDestinationItem(location: Location, color: string) {
     rect.setAttribute("ry", "10");
     rect.setAttribute("stroke", color);
     rect.setAttribute("stroke-width", strokeWidth);
-    rect.style.mixBlendMode = "color";
+    setHighlightBlendMode(rect);
     SVG.setFill(rect, "transparent");
 
     const mask = document.createElementNS(SVG.ns, "mask");
