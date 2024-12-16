@@ -70,12 +70,12 @@ body {
 }
 
 .board-svg.grid-visible {
-  top: 51.75%;
+  top: 52%;
   max-height: min(83vh, calc(100dvh - 69pt));
 }
 
 .board-svg.grid-hidden {
-  top: 51%;
+  top: 50.85%;
   max-height: min(90vh, calc(100dvh - 69pt));
 }
 
