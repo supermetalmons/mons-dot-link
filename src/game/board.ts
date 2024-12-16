@@ -1782,13 +1782,16 @@ function highlightDestinationItem(location: Location, color: string) {
   if (isPangchiuBoard) {
     const highlight = document.createElementNS(SVG.ns, "g");
     highlight.style.pointerEvents = "none";
+    const strokeWidth = "17";
+    setCenterTranformOrigin(highlight, location);
+    highlight.style.transform = "scale(0.88)";
 
     const rect = document.createElementNS(SVG.ns, "rect");
     SVG.setFrame(rect, location.j, location.i, 1, 1);
     rect.setAttribute("rx", "10");
     rect.setAttribute("ry", "10");
     rect.setAttribute("stroke", color);
-    rect.setAttribute("stroke-width", "13");
+    rect.setAttribute("stroke-width", strokeWidth);
     rect.style.mixBlendMode = "color";
     SVG.setFill(rect, "transparent");
 
@@ -1799,7 +1802,7 @@ function highlightDestinationItem(location: Location, color: string) {
     SVG.setFrame(maskBg, location.j, location.i, 1, 1);
     SVG.setFill(maskBg, "white");
     maskBg.setAttribute("stroke", "white");
-    maskBg.setAttribute("stroke-width", "13");
+    maskBg.setAttribute("stroke-width", strokeWidth);
     mask.appendChild(maskBg);
 
     const cutTop = document.createElementNS(SVG.ns, "rect");
