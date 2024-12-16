@@ -1744,7 +1744,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
     highlight.setAttribute("stroke", color);
-    highlight.setAttribute("stroke-width", "1");
+    highlight.setAttribute("stroke-width", "20");
     highlight.style.mixBlendMode = "color";
   } else {
     highlight = document.createElementNS(SVG.ns, "g");
