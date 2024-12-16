@@ -1684,10 +1684,12 @@ function highlightEmptyDestination(location: Location, color: string) {
 
   if (isPangchiuBoard) {
     highlight = document.createElementNS(SVG.ns, "rect");
-    SVG.setFrame(highlight, location.j + 0.35, location.i + 0.35, 0.3, 0.3);
+    const side = 0.27;
+    const originOffset = (1 - side) * 0.5;
+    SVG.setFrame(highlight, location.j + originOffset, location.i + originOffset, side, side);
     highlight.setAttribute("rx", "7");
     highlight.setAttribute("ry", "7");
-    SVG.setOpacity(highlight, 0.77);
+    highlight.style.mixBlendMode = "color";
   } else {
     highlight = SVG.circle(location.j + 0.5, location.i + 0.5, 0.15);
   }
@@ -1707,9 +1709,7 @@ function highlightSelectedItem(location: Location, color: string) {
     SVG.setFrame(highlight, location.j, location.i, 1, 1);
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
-    highlight.setAttribute("stroke", color);
-    highlight.setAttribute("stroke-width", "10");
-    SVG.setOpacity(highlight, 0.77);
+    highlight.style.mixBlendMode = "color";
     highlightsLayer?.append(highlight);
   } else {
     const highlight = document.createElementNS(SVG.ns, "g");
@@ -1744,8 +1744,8 @@ function highlightStartFromSuggestion(location: Location, color: string) {
     highlight.setAttribute("rx", "10");
     highlight.setAttribute("ry", "10");
     highlight.setAttribute("stroke", color);
-    highlight.setAttribute("stroke-width", "10");
-    SVG.setOpacity(highlight, 0.69);
+    highlight.setAttribute("stroke-width", "1");
+    highlight.style.mixBlendMode = "color";
   } else {
     highlight = document.createElementNS(SVG.ns, "g");
     highlight.style.pointerEvents = "none";
@@ -1789,7 +1789,7 @@ function highlightDestinationItem(location: Location, color: string) {
     rect.setAttribute("ry", "10");
     rect.setAttribute("stroke", color);
     rect.setAttribute("stroke-width", "13");
-    SVG.setOpacity(rect, 0.77);
+    rect.style.mixBlendMode = "color";
     SVG.setFill(rect, "transparent");
 
     const mask = document.createElementNS(SVG.ns, "mask");
