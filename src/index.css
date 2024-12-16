@@ -75,7 +75,7 @@ body {
 }
 
 .board-svg.grid-hidden {
-  top: 50.85%;
+  top: 50.9%;
   max-height: min(90vh, calc(100dvh - 69pt));
 }
 

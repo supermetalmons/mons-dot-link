@@ -728,6 +728,7 @@ export function didClickAttestVictoryButton() {
 function suggestSavingOnchainRating() {
   if (isAutomatch()) {
     setAttestVictoryVisible(true);
+    setAttestVictoryEnabled(true);
   }
 }
 
