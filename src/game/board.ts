@@ -9,6 +9,7 @@ import { didNotDismissAnythingWithOutsideTapJustNow, hasBottomPopupsVisible } fr
 import { hasMainMenuPopupsVisible } from "../ui/MainMenu";
 import { newEmptyPlayerMetadata, resolveEthAddress, getStashedPlayerAddress, openEthAddress, getEnsName, getRating } from "../utils/playerMetadata";
 import { preventTouchstartIfNeeded } from "..";
+import { updateBoardComponentForBoardStyleChange } from "../ui/BoardComponent";
 
 let isExperimentingWithSprites = localStorage.getItem("isExperimentingWithSprites") === "true";
 
@@ -24,8 +25,11 @@ export function toggleExperimentalMode(defaultMode: boolean, animated: boolean, 
     isExperimentingWithSprites = false;
   }
   localStorage.setItem("isExperimentingWithSprites", isExperimentingWithSprites.toString());
+
   window.location.reload(); // TODO: do not reload page, change style immediatelly
+
   // didToggleItemsStyleSet();
+  // updateBoardComponentForBoardStyleChange();
 }
 
 export let playerSideMetadata = newEmptyPlayerMetadata();

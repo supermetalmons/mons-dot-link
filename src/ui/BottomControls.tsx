@@ -5,12 +5,13 @@ import { IoSparklesSharp } from "react-icons/io5";
 import AnimatedHourglassButton from "./AnimatedHourglassButton";
 import { canHandleUndo, didClickUndoButton, didClickStartTimerButton, didClickClaimVictoryByTimerButton, didClickPrimaryActionButton, didClickHomeButton, didClickInviteActionButtonBeforeThereIsInviteReady, didClickAutomoveButton, didClickAttestVictoryButton, didClickAutomatchButton, didClickStartBotGameButton, didClickEndMatchButton, didClickConfirmResignButton, isGameWithBot } from "../game/gameController";
 import { didClickInviteButton, sendVoiceReaction } from "../connection/connection";
-import { didClickBrushButton } from "./BoardComponent";
+import { updateBoardComponentForBoardStyleChange } from "./BoardComponent";
 import { isMobile } from "../utils/misc";
 import { soundPlayer } from "../utils/SoundPlayer";
 import { playReaction } from "../content/sounds";
 import { newReactionOfKind } from "../content/sounds";
 import { showVoiceReactionText } from "../game/board";
+import { toggleBoardStyle } from "../content/boardStyles";
 
 export enum PrimaryActionType {
   None = "none",
@@ -729,7 +730,8 @@ const BottomControls: React.FC = () => {
   };
 
   const handleBrushClick = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
-    didClickBrushButton();
+    toggleBoardStyle();
+    updateBoardComponentForBoardStyleChange();
   };
 
   const handleShare = async () => {

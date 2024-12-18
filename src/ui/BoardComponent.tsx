@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { go } from "../game/gameController";
-import { AssetsSet, ColorSet, currentAssetsSet, getCurrentColorSet, toggleBoardStyle } from "../content/boardStyles";
+import { ColorSet, getCurrentColorSet, isCustomPictureBoardEnabled } from "../content/boardStyles";
 
 const listeners: Array<() => void> = [];
 
-export const subscribeToColorSetChanges = (listener: () => void) => {
+export const subscribeToBoardStyleChanges = (listener: () => void) => {
   listeners.push(listener);
   return () => {
     const index = listeners.indexOf(listener);
@@ -14,8 +14,7 @@ export const subscribeToColorSetChanges = (listener: () => void) => {
   };
 };
 
-export const didClickBrushButton = () => {
-  toggleBoardStyle();
+export const updateBoardComponentForBoardStyleChange = () => {
   listeners.forEach((listener) => listener());
 };
 
@@ -23,7 +22,7 @@ const BoardComponent: React.FC = () => {
   const initializationRef = useRef(false);
   const [currentColorSet, setCurrentColorSet] = useState<ColorSet>(getCurrentColorSet());
   const [prefersDarkMode] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const [isGridVisible] = useState(currentAssetsSet !== AssetsSet.Pangchiu);
+  const [isGridVisible, setIsGridVisible] = useState(!isCustomPictureBoardEnabled());
 
   useEffect(() => {
     if (!initializationRef.current) {
@@ -33,11 +32,12 @@ const BoardComponent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const updateColorSet = () => {
+    const updateColorSetAndGrid = () => {
       setCurrentColorSet(getCurrentColorSet());
+      setIsGridVisible(!isCustomPictureBoardEnabled());
     };
 
-    const unsubscribe = subscribeToColorSetChanges(updateColorSet);
+    const unsubscribe = subscribeToBoardStyleChanges(updateColorSetAndGrid);
     return () => {
       unsubscribe();
     };
