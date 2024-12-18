@@ -13,12 +13,12 @@ export function setCurrentAssetsSet(set: AssetsSet) {
   localStorage.setItem("preferredAssetsSet", set);
 }
 
-export let isPangchiuBoard = currentAssetsSet === AssetsSet.Pangchiu;
-export let isCustomPictureBoardEnabled = isPangchiuBoard; // TODO: decouple board style from assets style
+export const isPangchiuBoard = () => currentAssetsSet === AssetsSet.Pangchiu;
+export const isCustomPictureBoardEnabled = () => isPangchiuBoard();
 
 export const colors = {
   attackTarget: "#941651",
-  destination: isPangchiuBoard ? "#00BC00" : "#009500",
+  destination: isPangchiuBoard() ? "#00BC00" : "#009500",
   spiritTarget: "#FF84FF",
   startFromSuggestion: "#FEFB00",
   selectedItem: "#00F900",
@@ -43,7 +43,7 @@ export const colors = {
   } as { [key: string]: string },
 
   getRainbow: function (index: string) {
-    return isPangchiuBoard ? this.pangchiuBoardRainbow[index] : this.rainbow[index];
+    return isPangchiuBoard() ? this.pangchiuBoardRainbow[index] : this.rainbow[index];
   },
   itemSelectionBackground: "rgba(0, 0, 0, 0.5)",
   scoreText: "gray",

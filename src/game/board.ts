@@ -24,7 +24,8 @@ export function toggleExperimentalMode(defaultMode: boolean, animated: boolean, 
     isExperimentingWithSprites = false;
   }
   localStorage.setItem("isExperimentingWithSprites", isExperimentingWithSprites.toString());
-  window.location.reload();
+  window.location.reload(); // TODO: do not reload page, change style immediatelly
+  // didToggleItemsStyleSet();
 }
 
 export let playerSideMetadata = newEmptyPlayerMetadata();
@@ -797,7 +798,7 @@ export function showItemSelection(): void {
   itemSelectionOverlay = overlay;
 
   const background = document.createElementNS(SVG.ns, "rect");
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     SVG.setOrigin(background, -0.83, -0.84);
     background.style.transform = `scale(${1 / 0.85892388})`;
     SVG.setSizeStr(background, "100%", "1163.5");
@@ -867,7 +868,7 @@ export function showItemSelection(): void {
 export function addElementToItemsLayer(element: SVGElement, depth: number) {
   if (!itemsLayer) return;
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     const children = Array.from(itemsLayer.children);
     const insertionIndex = children.findIndex((child) => {
       const childDepth = Number(child.getAttribute("data-depth") || 0);
@@ -1026,7 +1027,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
       const timerText = isOpponent ? opponentTimer! : playerTimer!;
       const nameText = isOpponent ? opponentNameText! : playerNameText!;
 
-      const y = isOpponent ? 1 - avatarSize * 1.203 : isPangchiuBoard ? 12.75 : 12.16;
+      const y = isOpponent ? 1 - avatarSize * 1.203 : isPangchiuBoard() ? 12.75 : 12.16;
 
       SVG.setOrigin(numberText, offsetX + avatarSize * 1.21, y + avatarSize * 0.73);
       SVG.setOrigin(timerText, offsetX + avatarSize * 1.85, y + avatarSize * 0.73);
@@ -1219,7 +1220,7 @@ export async function setupGameInfoElements(allHiddenInitially: boolean) {
             }
           );
         } else {
-          avatar.style.transformOrigin = `0px ${isPangchiuBoard ? 1369 : 1300}px`;
+          avatar.style.transformOrigin = `0px ${isPangchiuBoard() ? 1369 : 1300}px`;
           avatar.style.transform = "scale(1.8)";
           avatar.style.transition = "transform 0.3s";
           setTimeout(() => {
@@ -1361,7 +1362,7 @@ export function drawTrace(trace: Trace) {
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
   const transform = `translate(${fromCenter.x * 100},${fromCenter.y * 100}) rotate(${angle})`;
 
-  SVG.setFrame(rect, 0, -0.1, length, isPangchiuBoard ? 0.23 : 0.2);
+  SVG.setFrame(rect, 0, -0.1, length, isPangchiuBoard() ? 0.23 : 0.2);
   rect.setAttribute("transform", transform);
 
   SVG.setFill(rect, `url(#trace-gradient-${from.toString()}-${to.toString()})`);
@@ -1369,7 +1370,7 @@ export function drawTrace(trace: Trace) {
 
   const fadeOut = rect.animate([{ opacity: 1 }, { opacity: 0 }], {
     duration: 2000,
-    easing: isPangchiuBoard ? "ease-in" : "ease-out",
+    easing: isPangchiuBoard() ? "ease-in" : "ease-out",
   });
 
   fadeOut.onfinish = () => {
@@ -1400,7 +1401,7 @@ function placeMonWithBomb(item: SVGElement, location: Location, baseItemKind: It
   items[location.toString()] = container;
   startAnimation(img);
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
@@ -1428,7 +1429,7 @@ function placeMonWithSupermana(item: SVGElement, location: Location, baseItemKin
   items[location.toString()] = container;
   startAnimation(img);
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
@@ -1454,7 +1455,7 @@ function placeMonWithMana(item: SVGElement, mana: SVGElement, location: Location
   items[location.toString()] = container;
   startAnimation(img);
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     setCenterTranformOrigin(img, location);
     applyDefaultPangchiuBoardTransform(img);
     applySpecificItemKindPangchiuBoardTransform(img, location, baseItemKind);
@@ -1535,7 +1536,7 @@ function placeItem(item: SVGElement, location: Location, kind: ItemKind, fainted
   const img = item.cloneNode(true) as SVGElement;
   setCenterTranformOrigin(img, location);
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     applyDefaultPangchiuBoardTransform(img);
     applySpecificItemKindPangchiuBoardTransform(img, location, kind);
   }
@@ -1682,7 +1683,7 @@ function highlightEmptyDestination(location: Location, color: string) {
   location = inBoardCoordinates(location);
   let highlight: SVGElement;
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     highlight = document.createElementNS(SVG.ns, "rect");
     const side = 0.27;
     const originOffset = (1 - side) * 0.5;
@@ -1702,7 +1703,7 @@ function highlightEmptyDestination(location: Location, color: string) {
 function highlightSelectedItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     const highlight = document.createElementNS(SVG.ns, "rect");
     highlight.style.pointerEvents = "none";
     SVG.setFill(highlight, color);
@@ -1746,7 +1747,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
   location = inBoardCoordinates(location);
   let highlight: SVGElement;
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     highlight = document.createElementNS(SVG.ns, "rect");
     highlight.style.pointerEvents = "none";
     SVG.setFill(highlight, color);
@@ -1789,7 +1790,7 @@ function highlightStartFromSuggestion(location: Location, color: string) {
 function highlightDestinationItem(location: Location, color: string) {
   location = inBoardCoordinates(location);
 
-  if (isPangchiuBoard) {
+  if (isPangchiuBoard()) {
     const highlight = document.createElementNS(SVG.ns, "g");
     highlight.style.pointerEvents = "none";
     const strokeWidth = "17";
