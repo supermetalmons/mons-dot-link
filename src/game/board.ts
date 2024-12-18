@@ -27,9 +27,18 @@ export function toggleExperimentalMode(defaultMode: boolean, animated: boolean, 
   localStorage.setItem("isExperimentingWithSprites", isExperimentingWithSprites.toString());
 
   window.location.reload(); // TODO: do not reload page, change style immediatelly
+  return;
 
-  // didToggleItemsStyleSet();
-  // updateBoardComponentForBoardStyleChange();
+  updateBoardComponentForBoardStyleChange();
+  didToggleItemsStyleSet(); // TODO: review this one, it was done before there was p board
+
+  setTimeout(() => updateLayout(), 1);
+
+  // TODO: make sure it works when waiting animation is in progress
+  // TODO: make sure it works when there are highlights
+  // TODO: make sure sure it works when there is item selection overlay
+  // TODO: perform new extra necessary changes arised with p board
+  // TODO: search where isPangchiuBoard is called — all these should be recalled when changing p board back and forth
 }
 
 export let playerSideMetadata = newEmptyPlayerMetadata();
@@ -1016,47 +1025,46 @@ function updateNamesX() {
   SVG.setX(opponentNameText, initialX + opponentDelta);
 }
 
-export async function setupGameInfoElements(allHiddenInitially: boolean) {
-  const statusMove = loadImage(emojis.statusMove, "statusMoveEmoji");
+const updateLayout = () => {
+  const multiplicator = getOuterElementsMultiplicator();
 
-  const updateLayout = () => {
-    const multiplicator = getOuterElementsMultiplicator();
+  let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
+  const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
 
-    let shouldOffsetFromBorders = seeIfShouldOffsetFromBorders();
-    const offsetX = shouldOffsetFromBorders ? minHorizontalOffset : 0;
+  for (const isOpponent of [true, false]) {
+    const avatarSize = getAvatarSize();
+    const numberText = isOpponent ? opponentScoreText! : playerScoreText!;
+    const timerText = isOpponent ? opponentTimer! : playerTimer!;
+    const nameText = isOpponent ? opponentNameText! : playerNameText!;
 
-    for (const isOpponent of [true, false]) {
-      const avatarSize = getAvatarSize();
-      const numberText = isOpponent ? opponentScoreText! : playerScoreText!;
-      const timerText = isOpponent ? opponentTimer! : playerTimer!;
-      const nameText = isOpponent ? opponentNameText! : playerNameText!;
+    const y = isOpponent ? 1 - avatarSize * 1.203 : isPangchiuBoard() ? 12.75 : 12.16;
 
-      const y = isOpponent ? 1 - avatarSize * 1.203 : isPangchiuBoard() ? 12.75 : 12.16;
+    SVG.setOrigin(numberText, offsetX + avatarSize * 1.21, y + avatarSize * 0.73);
+    SVG.setOrigin(timerText, offsetX + avatarSize * 1.85, y + avatarSize * 0.73);
+    SVG.setOrigin(nameText, 0, y + avatarSize * 0.65);
 
-      SVG.setOrigin(numberText, offsetX + avatarSize * 1.21, y + avatarSize * 0.73);
-      SVG.setOrigin(timerText, offsetX + avatarSize * 1.85, y + avatarSize * 0.73);
-      SVG.setOrigin(nameText, 0, y + avatarSize * 0.65);
+    numberText.setAttribute("font-size", (50 * multiplicator).toString());
+    timerText.setAttribute("font-size", (50 * multiplicator).toString());
+    nameText.setAttribute("font-size", (32 * multiplicator).toString());
 
-      numberText.setAttribute("font-size", (50 * multiplicator).toString());
-      timerText.setAttribute("font-size", (50 * multiplicator).toString());
-      nameText.setAttribute("font-size", (32 * multiplicator).toString());
+    const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 * multiplicator : 0;
+    const statusItemsY = y + avatarSize * (isOpponent ? 0.23 : 0.1);
+    const statusItemSize = 0.5 * multiplicator;
 
-      const statusItemsOffsetX = shouldOffsetFromBorders ? 0.15 * multiplicator : 0;
-      const statusItemsY = y + avatarSize * (isOpponent ? 0.23 : 0.1);
-      const statusItemSize = 0.5 * multiplicator;
-
-      for (let x = 0; x < 9; x++) {
-        const img = isOpponent ? opponentMoveStatusItems[x] : playerMoveStatusItems[x];
-        SVG.setFrame(img, 11 - (1.15 * x + 1) * statusItemSize - statusItemsOffsetX, statusItemsY, statusItemSize, statusItemSize);
-      }
-
-      const avatar = isOpponent ? opponentAvatar! : playerAvatar!;
-      SVG.setFrame(avatar, offsetX, y, avatarSize, avatarSize);
+    for (let x = 0; x < 9; x++) {
+      const img = isOpponent ? opponentMoveStatusItems[x] : playerMoveStatusItems[x];
+      SVG.setFrame(img, 11 - (1.15 * x + 1) * statusItemSize - statusItemsOffsetX, statusItemsY, statusItemSize, statusItemSize);
     }
 
-    updateNamesX();
-  };
+    const avatar = isOpponent ? opponentAvatar! : playerAvatar!;
+    SVG.setFrame(avatar, offsetX, y, avatarSize, avatarSize);
+  }
 
+  updateNamesX();
+};
+
+export async function setupGameInfoElements(allHiddenInitially: boolean) {
+  const statusMove = loadImage(emojis.statusMove, "statusMoveEmoji");
   window.addEventListener("resize", updateLayout);
 
   const [playerEmojiId, playerEmoji] = emojis.getRandomEmoji();
