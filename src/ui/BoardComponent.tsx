@@ -23,6 +23,7 @@ const BoardComponent: React.FC = () => {
   const [currentColorSet, setCurrentColorSet] = useState<ColorSet>(getCurrentColorSet());
   const [prefersDarkMode] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
   const [isGridVisible, setIsGridVisible] = useState(!isCustomPictureBoardEnabled());
+  const [shouldIncludePangchiuImage, setShouldIncludePangchiuImage] = useState(!isCustomPictureBoardEnabled());
 
   useEffect(() => {
     if (!initializationRef.current) {
@@ -34,7 +35,11 @@ const BoardComponent: React.FC = () => {
   useEffect(() => {
     const updateColorSetAndGrid = () => {
       setCurrentColorSet(getCurrentColorSet());
-      setIsGridVisible(!isCustomPictureBoardEnabled());
+      const newIsGridVisible = !isCustomPictureBoardEnabled();
+      setIsGridVisible(newIsGridVisible);
+      if (!newIsGridVisible) {
+        setShouldIncludePangchiuImage(true);
+      }
     };
 
     const unsubscribe = subscribeToBoardStyleChanges(updateColorSetAndGrid);
@@ -100,7 +105,18 @@ const BoardComponent: React.FC = () => {
       ) : (
         <g id="boardBackgroundLayer">
           <rect x="1" y="101" height="1161" width="1098" fill={prefersDarkMode ? "#232323" : "#FEFCF6"} />
-          <image href="/assets/bg/Pangchiu.jpg" x="0" y="100" width="1100" style={{ backgroundColor: prefersDarkMode ? "#232323" : "#FEFCF6" }} />
+          {shouldIncludePangchiuImage && (
+            <image
+              href="/assets/bg/Pangchiu.jpg"
+              x="0"
+              y="100"
+              width="1100"
+              style={{
+                backgroundColor: prefersDarkMode ? "#232323" : "#FEFCF6",
+                display: isGridVisible ? "none" : "block",
+              }}
+            />
+          )}
         </g>
       )}
       <g id="monsboard" transform={isGridVisible ? standardBoardTransform : pangchiuBoardTransform}></g>
