@@ -199,6 +199,19 @@ function showRematchInterface() {
   }
 }
 
+export function showItemsAfterChangingAssetsStyle() {
+  game.locations_with_content().forEach((loc) => {
+    const location = new Location(loc.i, loc.j);
+    updateLocation(location);
+  });
+
+  const inputsToReapply = currentInputs;
+  currentInputs = [];
+  for (const input of inputsToReapply) {
+    didClickSquare(input);
+  }
+}
+
 export function didReceiveRematchesSeriesEndIndicator() {
   if (isWatchOnly) return;
   showPrimaryAction(PrimaryActionType.None);

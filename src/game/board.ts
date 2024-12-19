@@ -1,6 +1,6 @@
 import * as MonsWeb from "mons-web";
 import * as SVG from "../utils/svg";
-import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse } from "./gameController";
+import { isOnlineGame, didClickSquare, didSelectInputModifier, canChangeEmoji, updateEmoji, isWatchOnly, isGameWithBot, isWaitingForRematchResponse, showItemsAfterChangingAssetsStyle } from "./gameController";
 import { Highlight, HighlightKind, InputModifier, Location, Sound, Trace, ItemKind } from "../utils/gameModels";
 import { colors, currentAssetsSet, AssetsSet, isCustomPictureBoardEnabled, isPangchiuBoard, setCurrentAssetsSet } from "../content/boardStyles";
 import { isDesktopSafari, isModernAndPowerful, defaultInputEventName } from "../utils/misc";
@@ -26,19 +26,9 @@ export function toggleExperimentalMode(defaultMode: boolean, animated: boolean, 
   }
   localStorage.setItem("isExperimentingWithSprites", isExperimentingWithSprites.toString());
 
-  window.location.reload(); // TODO: do not reload page, change style immediatelly
-  return;
-
   updateBoardComponentForBoardStyleChange();
-  didToggleItemsStyleSet(); // TODO: review this one, it was done before there was p board
-
+  didToggleItemsStyleSet();
   setTimeout(() => updateLayout(), 1);
-
-  // TODO: make sure it works when waiting animation is in progress
-  // TODO: make sure it works when there are highlights
-  // TODO: make sure sure it works when there is item selection overlay
-  // TODO: perform new extra necessary changes arised with p board
-  // TODO: search where isPangchiuBoard is called — all these should be recalled when changing p board back and forth
 }
 
 export let playerSideMetadata = newEmptyPlayerMetadata();
@@ -155,22 +145,16 @@ await initializeAssets(true);
 
 export async function didToggleItemsStyleSet() {
   await initializeAssets(false);
-  const updateExistingItems = (elements: { [key: string]: SVGElement }) => {
-    Object.values(elements).forEach((element) => {
-      const images = element.tagName === "image" ? [element] : Array.from(element.getElementsByTagName("image"));
-      images.forEach((img) => {
-        const assetType = img.getAttribute("data-asset-type");
-        if (assetType && assets[assetType]) {
-          SVG.setImage(img, assets[assetType]);
-        }
-      });
-    });
-  };
 
-  updateExistingItems(items);
-  updateExistingItems(basesPlaceholders);
+  removeHighlights();
+  cleanAllPixels();
+  hideItemSelection();
 
-  const allPixelOnlyElements = [...(board?.querySelectorAll('[data-assets-pixel-only="true"]') ?? []), ...(itemsLayer?.querySelectorAll('[data-assets-pixel-only="true"]') ?? [])];
+  if (!monsBoardDisplayAnimationTimeout) {
+    showItemsAfterChangingAssetsStyle();
+  }
+
+  const allPixelOnlyElements = [...(board?.querySelectorAll('[data-assets-pixel-only="true"]') ?? [])];
   allPixelOnlyElements.forEach((element) => {
     SVG.setHidden(element as SVGElement, currentAssetsSet !== AssetsSet.Pixel);
   });
@@ -352,17 +336,7 @@ export function resetForNewGame() {
   }
 
   removeHighlights();
-  for (const key in items) {
-    const element = items[key];
-    removeItemAndCleanUpAnimation(element);
-    delete items[key];
-  }
-
-  for (const key in basesPlaceholders) {
-    const element = basesPlaceholders[key];
-    removeItemAndCleanUpAnimation(element);
-    delete basesPlaceholders[key];
-  }
+  cleanAllPixels();
 }
 
 export function updateEmojiIfNeeded(newEmojiId: string, isOpponentSide: boolean) {
