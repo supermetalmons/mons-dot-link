@@ -23,7 +23,7 @@ const BoardComponent: React.FC = () => {
   const [currentColorSet, setCurrentColorSet] = useState<ColorSet>(getCurrentColorSet());
   const [prefersDarkMode] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
   const [isGridVisible, setIsGridVisible] = useState(!isCustomPictureBoardEnabled());
-  const [shouldIncludePangchiuImage, setShouldIncludePangchiuImage] = useState(!isCustomPictureBoardEnabled());
+  const [shouldIncludePangchiuImage, setShouldIncludePangchiuImage] = useState(isCustomPictureBoardEnabled());
 
   useEffect(() => {
     if (!initializationRef.current) {
