@@ -138,6 +138,9 @@ async function initializeAssets(onStart: boolean) {
       .forEach((set) => {
         import(`../content/gameAssets/gameAssets${set}`).catch(() => {});
       });
+    if (!isExperimentingWithSprites) {
+      import(`../content/gameAssets/monsSprites`).catch(() => {});
+    }
   }
 }
 
